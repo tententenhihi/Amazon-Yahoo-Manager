@@ -15,6 +15,7 @@ var User = new Schema({
     type: {
         type: String,
         required: true,
+        enum: ['admin', 'member'],
         default: 'member',
     },
     username: {
