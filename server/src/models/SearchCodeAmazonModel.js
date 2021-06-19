@@ -23,10 +23,14 @@ var SearchCode = new Schema({
         default: 'ASIN',
         enum: ['ASIN', 'KEYWORD'],
     },
-    isBlackList: {
-        type: Boolean,
+    status: {
+        type: String,
         require: true,
-        default: false,
+        default: 'CREATED',
+        enum: ['CREATED', 'ERROR', 'SUCCESS'],
+    },
+    statusMessage: {
+        type: String,
     },
     created: {
         type: Date,

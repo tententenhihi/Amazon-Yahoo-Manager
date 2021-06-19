@@ -4,6 +4,9 @@ import FS from 'fs';
 import Axios from 'axios';
 import MTD from '../lib/zeltice-mt-downloader';
 
+var toString = (str) => {
+    return str.replace(/[^a-zA-Z0-9 ]/g, '');
+};
 
 const sleep = (time) => {
     return new Promise((resolve, reject) => {
@@ -107,7 +110,6 @@ const downloadFile = async (url, saveFile, onProgress, idVideo) => {
     }
 };
 
-
 var deleteFolder = function (path) {
     if (FS.existsSync(path)) {
         FS.readdirSync(path).forEach(function (file, index) {
@@ -206,6 +208,7 @@ const Utils = {
     deleteFolderRecursive,
     isUrlEndcoded,
     partFileName,
+    toString,
 };
 
 export default Utils;

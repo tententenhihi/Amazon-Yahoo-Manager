@@ -9,6 +9,7 @@ import PassportService from './services/PassportService';
 import UserService from './services/UserService';
 
 import Path from 'path';
+import QueueGetProductAmazon from './services/QueueGetProductAmazon';
 const app = express();
 // Fix Cross
 var corsOptions = {
@@ -31,6 +32,8 @@ app.use('/', indexRouter);
 
 let initData = () => {
     UserService.addUser({ username: 'admin', password: 'admin', type: 'admin', name: 'admin' });
+    new QueueGetProductAmazon();
+    console.log('Server Started.!');
 };
 // Connect mongo DB
 MongoDB.connect(initData);

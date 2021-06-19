@@ -1,5 +1,7 @@
+import QueueGetProductAmazon from '../services/QueueGetProductAmazon';
 import CodeSearchAmazonService from '../services/SearchCodeAmazonService';
 import Response from '../utils/Response';
+
 
 export default class CodeSearchAmazonController {
     static async get(req, res) {
@@ -32,6 +34,7 @@ export default class CodeSearchAmazonController {
                     const code = listCode[i];
                     let newSearchCodeData = { code, idUser: user._id, type };
                     let newSearchCode = await CodeSearchAmazonService.add(newSearchCodeData);
+                    QueueGetProductAmazon.addNew(newSearchCode);
                     listSearchCodeNew.push(newSearchCode);
                 }
                 return response.success200({ listSearchCodeNew });
