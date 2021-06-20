@@ -8,7 +8,11 @@ import VueI18n from "vue-i18n";
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 import Swal from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
-Vue.use(require('vue-moment'));
+import VueLodash from 'vue-lodash'
+import lodash from 'lodash'
+
+Vue.use(VueLodash, { name: 'custom' , lodash: lodash })
+Vue.use(require("vue-moment"));
 Vue.use(Swal, {
   heightAuto: false,
   confirmButtonText: `<span style="padding: 0 10px">OK</span>`

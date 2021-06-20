@@ -9,7 +9,7 @@ export default class ProductAmazonService {
             return result;
         } catch (error) {
             console.log(error);
-            throw new Error(' Error ProductAmazonService-get: ', error.message);
+            throw new Error(' Error ProductAmazonService-get: ' + error.message);
         }
     }
     static async getProductByAsin(asin) {
@@ -27,11 +27,6 @@ export default class ProductAmazonService {
                 authority: 'www.amazon.co.jp',
                 origin: 'https://www.amazon.co.jp',
                 referer: 'https://www.amazon.co.jp/',
-                // "cookie": `session-id=355-9411992-8927462; sp-cdn="L5Z9:VN"; ubid-acbjp=358-2559061-1954248; _msuuid_jniwozxj70=20FE642B-44E7-472D-8572-AC7BF6C52ABB; session-token=nvdAoDrZdOtjlljJ9yLwkOTYeB+gtG2KKf/QOKdbRyA4y3n/US4TH6+OfF69aAnY4ktvuF3zJ1fozIFDNikNq+1/SJ6JKsNo/cqI8BxZEs2E6GiyiJ8ewY+Lm03DmAp8JSeRyO/Rx/hPIv81xzEyjF3crZYzDCBtdEdZ4onx1pgqR/zy4TSkUnt+TZ8PIYm9; skin=noskin; s_cc=true; s_nr=1624111718283-New; s_vnum=2056111718284%26vn%3D1; s_invisit=true; s_dslv=1624111718285; s_dslv_s=First%20Visit; s_c27=GSUNWNFT2ALMPR3L; s_sq=%5B%5BB%5D%5D; s_ppv=80; lc-acbjp=ja_JP; i18n-prefs=JPY; session-id-time=2082787201l`,
-                // "Connection": "keep",
-                // "Connection": "keep",
-                // "Connection": "keep",
-                // "Connection": "keep",
             };
             let requestAmazon = await Axios.get(`https://www.amazon.co.jp/s?k=${asin}`, { headers });
             if (requestAmazon && requestAmazon.status === 200) {
@@ -61,6 +56,17 @@ export default class ProductAmazonService {
                                 $ = cheerio.load(requestProductAmazon.data);
                                 let nameProduct = $('#productTitle').text().trim();
                                 let priceProduct = $('#priceblock_ourprice').text().trim();
+                                if (!priceProduct) {
+                                    priceProduct = $('#price_inside_buybox').text().trim();
+                                }
+                                if (!priceProduct) {
+                                    priceProduct = $('#priceblock_dealprice').text().trim();
+                                }
+                                let delivery = $($('#mir-layout-DELIVERY_BLOCK-slot-DELIVERY_MESSAGE')['0']).text().replace(/\n/g,"").trim();
+                                if (!delivery) {
+                                    // delivery = $('#x').text().trim();
+                                }
+
                                 let imageProduct = $('#landingImage').attr('src');
                                 let containerProductInfo = $('#prodDetails');
                                 let listTableInfo = containerProductInfo.find('table');
@@ -109,8 +115,10 @@ export default class ProductAmazonService {
                                     asin,
                                     name: nameProduct,
                                     price: priceProduct,
+                                    delivery,
                                     image: imageProduct,
                                     infoDetail: productInfo,
+                                    countProduct: 0
                                 };
                                 listProductResult.push(product);
                             }

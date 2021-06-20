@@ -19,6 +19,18 @@ var Product = new Schema({
         type: String,
         required: true,
     },
+    price: {
+        type: String,
+        required: true,
+    },
+    delivery: {
+        type: String,
+        required: true,
+    },
+    countProduct: {
+        type: Number,
+        required: true,
+    },
     image: {
         type: String,
     },

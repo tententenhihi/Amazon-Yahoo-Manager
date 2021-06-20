@@ -1,12 +1,13 @@
 <template>
-  <v-app>
-    <v-main>
-      <Header v-if="isUserLoggedIn" />
-
-      <router-view />
-    </v-main>
-    <div />
-  </v-app>
+  <div id="app">
+    <v-app style="height: 100%">
+      <v-main id="main" style="height: 100%">
+        <Header v-if="isUserLoggedIn" />
+        <router-view />
+      </v-main>
+      <div />
+    </v-app>
+  </div>
 </template>
 
 <script>
@@ -28,8 +29,17 @@ export default {
 };
 </script>
 <style>
+.v-slide-group__content {
+  border-bottom: 1px solid gray;
+}
+#main {
+  overflow-y: auto;
+}
 .stt-table {
   min-width: 70px;
+}
+.col-delivery-table {
+  min-width: 100px;
 }
 .col-image-table {
   min-width: 90px;
@@ -79,9 +89,6 @@ body {
   height: 100%;
   font-family: "Roboto", "Arial", sans-serif !important;
   font-weight: 400 !important;
-}
-#main {
-  overflow-y: auto;
 }
 
 .v-btn {

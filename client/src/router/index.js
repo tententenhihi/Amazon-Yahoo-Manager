@@ -3,7 +3,7 @@ import Router from "vue-router";
 import Login from "../views/Login";
 import Home from "../views/Home";
 import store from "../store/store";
-import Asin from "../views/Asin";
+import Asin from "../views/Asin/index.vue";
 import ProductAmazon from "../views/ProductAmazon";
 
 Vue.use(Router);

@@ -38,15 +38,16 @@ export default class CodeSearchAmazonController {
         try {
             let user = req.user;
             let listCode = req.body.listCode;
+            let groupId = req.body.groupId;
             let type = req.body.type;
             if (!type) {
                 type = 'ASIN';
             }
-            if (listCode && listCode.length > 0) {
+            if (listCode && listCode.length > 0 && groupId) {
                 let listSearchCodeNew = [];
                 for (let i = 0; i < listCode.length; i++) {
                     const code = listCode[i];
-                    let newSearchCodeData = { code, idUser: user._id, type };
+                    let newSearchCodeData = { code, idUser: user._id, type, groupId };
                     let newSearchCode = await CodeSearchAmazonService.add(newSearchCodeData);
                     QueueGetProductAmazon.addNew(newSearchCode);
                     listSearchCodeNew.push(newSearchCode);

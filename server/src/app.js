@@ -10,6 +10,7 @@ import UserService from './services/UserService';
 
 import Path from 'path';
 import QueueGetProductAmazon from './services/QueueGetProductAmazon';
+import SearchCodeSchema from './models/SearchCodeAmazonModel';
 const app = express();
 // Fix Cross
 var corsOptions = {
@@ -30,10 +31,16 @@ app.use(cookieParser());
 app.use('/public', express.static(Path.join(__dirname, '../public')));
 app.use('/', indexRouter);
 
-let initData = () => {
+let initData = async () => {
     UserService.addUser({ username: 'admin', password: 'admin', type: 'admin', name: 'admin' });
     new QueueGetProductAmazon();
     console.log('Server Started.!');
+    
+    // let listCode = await SearchCodeSchema.find({});
+    // for (let i = 0; i < listCode.length; i++) {
+    //     const element = listCode[i];
+    //     await element.remove();
+    // }
 };
 // Connect mongo DB
 MongoDB.connect(initData);

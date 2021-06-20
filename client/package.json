@@ -12,9 +12,12 @@
   "dependencies": {
     "axios": "^0.21.1",
     "js-cookie": "^2.2.1",
+    "lodash": "^4.17.21",
     "material-design-icons-iconfont": "^6.1.0",
     "vue": "^2.5.2",
     "vue-i18n": "^8.24.4",
+    "vue-loading-overlay": "^4.0.3",
+    "vue-lodash": "^2.1.2",
     "vue-moment": "^4.1.0",
     "vue-router": "^3.0.1",
     "vue-sweetalert2": "^4.3.1",

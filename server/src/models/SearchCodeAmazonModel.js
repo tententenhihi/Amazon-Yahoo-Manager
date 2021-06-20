@@ -7,6 +7,11 @@ var SearchCode = new Schema({
         require: true,
         trim: true,
     },
+    groupId: {
+        type: String,
+        require: true,
+        trim: true,
+    },
     idUser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-system-bar color="#6777ef" height="80px" class="app-bar">
+    <v-system-bar color="#6777ef" height="48px" class="app-bar">
       <v-spacer></v-spacer>
 
       <v-menu
@@ -69,6 +69,14 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+    <!-- <div>
+      <v-card
+        class=" container font-weight-bold"
+        style="height: 50px; position: fixed; top: 45px; z-index: 2;"
+      >
+        Product Amazon
+      </v-card>
+    </div> -->
   </div>
 </template>
 
