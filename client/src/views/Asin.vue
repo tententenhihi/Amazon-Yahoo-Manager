@@ -158,7 +158,7 @@ export default {
         let res = await AsinApi.add({ listCode });
         if (res && res.status === 200) {
           this.asinString = "";
-          await getListAsin();
+          await this.getListAsin();
           this.$swal.fire({
             icon: "success",
             title: "Success.!"
