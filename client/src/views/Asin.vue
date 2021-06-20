@@ -157,6 +157,8 @@ export default {
           .filter(item => item.trim() != "");
         let res = await AsinApi.add({ listCode });
         if (res && res.status === 200) {
+          this.asinString = "";
+          await getListAsin();
           this.$swal.fire({
             icon: "success",
             title: "Success.!"

@@ -33,6 +33,7 @@
         @click:append="showPassword = !showPassword"
         :error="errorPassword"
         @focus="errorPassword = false"
+        @keyup.enter="handleLogin()"
       ></v-text-field>
       <v-btn
         class="mt-5"
