@@ -1,23 +1,52 @@
 <template>
   <div>
-    <v-system-bar color="white" height="48px" class="app-bar">
-      <v-app-bar-nav-icon> </v-app-bar-nav-icon>
+    <v-system-bar color="#6777ef" height="80px" class="app-bar">
       <v-spacer></v-spacer>
-      <!-- <v-btn icon :to="'/user'">
-        <v-avatar
-          class="mx-2"
-          v-if="$store.state.isUserLoggedIn"
-          style="border: 1px solid gray; cursor: pointer"
-          color="red"
-          size="32"
-        >
-          <span class="white--text title text-uppercase">B</span>
-        </v-avatar>
-      </v-btn> -->
+
+      <v-menu
+        transition="slide-y-transition"
+        rounded
+        offset-y
+        max-width="180px"
+        right
+        :offset-x="true"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <div v-bind="attrs" v-on="on" class=" mt-2" style="align-self: end;">
+            <v-avatar
+              class="mx-2"
+              v-if="$store.state.isUserLoggedIn"
+              style="border: 1px solid gray; cursor: pointer"
+              size="32"
+              color="white"
+            >
+              <span class="black--text font-weight-bold text-uppercase">B</span>
+            </v-avatar>
+            <span class="white--text fs-12" style="text-transform: none;"
+              >Nguyen Tuan Bac</span
+            >
+            <v-icon color="white">mdi-menu-down</v-icon>
+          </div>
+        </template>
+        <v-list dense>
+          <v-list-item-group>
+            <v-list-item dense>
+              <v-list-item-icon>
+                <v-icon size="18">mdi-logout</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title dense @click="onClickLogout"
+                  >Logout</v-list-item-title
+                >
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-menu>
     </v-system-bar>
     <v-navigation-drawer app v-model="drawer" permanent>
       <v-list-item class="px-2">
-        <v-list-item-title class="pl-4">Yahoo</v-list-item-title>
+        <v-list-item-title class="pl-4">Site Logo</v-list-item-title>
       </v-list-item>
 
       <v-divider></v-divider>
@@ -56,14 +85,19 @@ export default {
       drawer: true,
       menu_items: [
         {
-          text: "Tài khoản",
+          text: "Home",
           icon: "mdi-account-circle",
-          path: "/user/profile"
+          path: "/"
         },
         {
-          text: "Quản lí file",
+          text: "ASIN",
+          icon: "mdi-account-circle",
+          path: "/asin"
+        },
+        {
+          text: "Product",
           icon: "mdi-folder",
-          path: "/user/file"
+          path: "/product"
         }
       ],
 
@@ -74,6 +108,10 @@ export default {
     ...mapState(["languageCurr"])
   },
   methods: {
+    onClickLogout() {
+      this.$store.dispatch("setUser", null);
+      this.$router.push({ path: "/login" });
+    },
     transitionRouter(nameRouter) {
       this.$router.push({ name: nameRouter });
     },

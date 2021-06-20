@@ -2,8 +2,22 @@ import QueueGetProductAmazon from '../services/QueueGetProductAmazon';
 import CodeSearchAmazonService from '../services/SearchCodeAmazonService';
 import Response from '../utils/Response';
 
-
 export default class CodeSearchAmazonController {
+    static async getBlackList(req, res) {
+        let response = new Response(res);
+        try {
+            // let user = req.user;
+            // let payload = {
+            //     ...req.body,
+            //     idUser: user._id,
+            // };
+            // let listSearchCode = await CodeSearchAmazonService.get(payload);
+            return response.success200({ listSearchCodeBlackList: [] });
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
     static async get(req, res) {
         let response = new Response(res);
         try {

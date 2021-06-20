@@ -1,7 +1,17 @@
 import Axios from 'axios';
+import ProductAmazonSchema from '../models/ProductAmazonModel';
 import Utils from '../utils/Utils';
 const cheerio = require('cheerio');
 export default class ProductAmazonService {
+    static async get(idUser) {
+        try {
+            let result = await ProductAmazonSchema.find({ idUser });
+            return result;
+        } catch (error) {
+            console.log(error);
+            throw new Error(' Error ProductAmazonService-get: ', error.message);
+        }
+    }
     static async getProductByAsin(asin) {
         try {
             let headers = {

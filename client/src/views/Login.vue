@@ -1,90 +1,174 @@
 <template>
-  <div
-    class="d-flex flex-column align-center justify-center"
-    style="padding-top: 90px"
-  >
-    <v-card elevation="0">
-      <div class="d-flex flex-column align-center justify-center">
-        <v-card-title>Đăng Nhập</v-card-title>
-        <div class="d-flex justify-center align-center">
-          <span class="pr-3">Tài Khoản</span>
-          <div style="max-width: 400px; min-width: 300px">
-            <v-text-field
-              type="text"
-              append-icon="mdi-account"
-              label="Nhập tài khoản"
-              :rules="[() => !!user || 'This field is required']"
-              :error-messages="errorMessages"
-              v-model="user"
-              require
-            ></v-text-field>
-          </div>
-        </div>
-        <div class="d-flex justify-center align-center py-4">
-          <span class="pr-3">Mật Khẩu</span>
-          <div style="max-width: 400px; min-width: 300px">
-            <v-text-field
-              label="Nhập mật khẩu"
-              :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-              :rules="[() => !!password || 'This field is required']"
-              :error-messages="errorMessages"
-              :type="show1 ? 'text' : 'password'"
-              v-model="password"
-              @click:append="show1 = !show1"
-              require
-            ></v-text-field>
-          </div>
-        </div>
-        <span v-if="errorLogin" class="red-text"
-          >Tài khoản hoặc mật khẩu không chính xác !</span
+  <v-container class="text-center">
+    <v-sheet
+      style="max-width: 400px; margin: auto; margin-top: 100px;"
+      elevation="3"
+      rounded="lg"
+      class="pa-5 pb-5"
+    >
+      <h3>Login</h3>
+      <v-text-field
+        ref="username"
+        id="username"
+        name="username"
+        v-model="user.username"
+        label="Tài khoản"
+        prepend-inner-icon="mdi-account-circle"
+        :rules="[rules.requiredUsername]"
+        :error="errorUsername"
+        @focus="errorUsername = false"
+        :disabled="isLoading"
+      ></v-text-field>
+      <v-text-field
+        ref="password"
+        id="password"
+        name="password"
+        :disabled="isLoading"
+        v-model="user.password"
+        label="Mật khẩu"
+        prepend-inner-icon="mdi-lock"
+        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        :rules="[rules.requiredPasswd]"
+        :type="showPassword ? 'text' : 'password'"
+        @click:append="showPassword = !showPassword"
+        :error="errorPassword"
+        @focus="errorPassword = false"
+      ></v-text-field>
+      <v-btn
+        class="mt-5"
+        :loading="isLoading"
+        :disabled="isLoading"
+        color="#1877f2"
+        large
+        block
+        @click="handleLogin()"
+      >
+        <span style="color: #fff; font-size: 18px" class="font-weight-bold"
+          >Đăng nhập</span
         >
-        <div>
-          <v-btn color="primary" class="px-4 py-2 mt-3" @click="handleLogin"
-            >Đăng Nhập</v-btn
-          >
-        </div>
+        <template v-slot:loader>
+          <span class="custom-loader">
+            <v-icon light>mdi-cached</v-icon>
+          </span>
+        </template>
+      </v-btn>
+      <!-- <div class="mt-4">
+        <span class="forgot-password" style="font-size: 14px"
+          >Quên mậ khẩu?</span
+        >
       </div>
-    </v-card>
-  </div>
+      <v-divider class="my-4"></v-divider>
+      <v-btn color="#42b72a" large @click="$refs.signUpModal.show()">
+        <span style="color: white; font-size: 15px; font-weight: bold"
+          >Tạo tài khoản mới</span
+        >
+      </v-btn> -->
+    </v-sheet>
+  </v-container>
 </template>
 
 <script>
-import AuthenticationService from "../services/auth";
+import AuthApi from "../services/auth";
+
 export default {
   data() {
     return {
-      show1: false,
-      user: "",
-      password: "",
-      errorMessages: "",
-      errorLogin: false,
+      errorPassword: false,
+      errorUsername: false,
+      isLoading: false,
+      user: {
+        username: "",
+        password: ""
+      },
+      showPassword: false,
+      loading: false,
+      rules: {
+        requiredPasswd: value => !!value || "Nhập mật khẩu.",
+        requiredUsername: value => !!value || "Nhập tài khoản.",
+        min: v => v.length >= 8 || "Min 8 characters",
+        emailMatch: () => `The email and password you entered don't match`
+      }
     };
   },
   methods: {
     async handleLogin() {
       // Check Data
+      if (!this.user.username) {
+        this.errorUsername = true;
+      }
+      if (!this.user.password) {
+        this.errorPassword = true;
+      }
+      if (this.errorPassword || this.errorUsername) {
+        return;
+      }
+      this.isLoading = true;
 
-      const response = await AuthenticationService.login({
-        username: this.user.toLowerCase(),
-        password: this.password,
+      const response = await AuthApi.login({
+        username: this.user.username.toLowerCase(),
+        password: this.user.password
       });
+
       if (response && response.status === 200) {
         this.$store.dispatch("setUser", response.data.userData);
-        /* let res = await Api.get("api/v1/service/get-data");
-        /*  if (res && res.status === 200) {
-          let data = res.data.data;
-          this.$store.dispatch("setData", data);
-        } */
-        console.log("access");
-        this.$router.push({ name: "Home" });
-      } else if (response.status === 400 && response.data.isActive === false) {
-        this.errorLogin = true;
-        console.log("error");
+        this.$router.push("/");
       }
-    },
+      this.isLoading = false;
+    }
   },
+  mounted() {
+    this.$refs.username.focus();
+    if (this.$route.query && this.$route.query.isActive) {
+      this.$swal.fire({
+        icon: "success",
+        title: "Kích hoạt thành công. Đăng nhập ngay!"
+      });
+    }
+  }
 };
 </script>
 
-<style>
+<style scoped>
+.forgot-password {
+  color: #1877f2;
+  cursor: pointer;
+}
+
+.custom-loader {
+  animation: loader 1s infinite;
+  display: flex;
+}
+
+@-moz-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 </style>

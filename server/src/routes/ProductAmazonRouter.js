@@ -3,6 +3,6 @@ import AmazonController from '../controllers/AmazonController';
 
 var ProductAmazonRouter = express.Router();
 
-// ProductAmazonRouter.route('/get').post(AmazonController.getInfoProductByASIN);
+ProductAmazonRouter.route('/get').get(AmazonController.get);
 
 export default ProductAmazonRouter;
