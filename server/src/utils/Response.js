@@ -27,6 +27,10 @@ class Response {
         return this.res.status(401).json({ type: 'UnAuthorized 401' });
     }
 
+    error404(data) {
+        return this.res.status(404).json({ ...data, type: '404 Not Found' });
+    }
+
     existed409(data) {
         return this.res.status(409).json({ ...data, type: 'Existed 409' });
     }

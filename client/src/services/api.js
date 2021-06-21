@@ -36,7 +36,7 @@ var showError = res => {
     case 404:
       vue.$swal.fire({
         icon: "error",
-        title: `Không tìm thấy Api`
+        title: `${res.data.message ? res.data.message : "Không tìm thấy Api"}`
       });
       break;
     case 409:

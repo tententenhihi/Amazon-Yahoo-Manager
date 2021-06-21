@@ -1,5 +1,5 @@
 import UserModel from '../models/UserModel';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 class UserService {
     static async checkUserLive(userId) {

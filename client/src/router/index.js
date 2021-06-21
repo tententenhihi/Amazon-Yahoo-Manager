@@ -6,9 +6,11 @@ import store from "../store/store";
 import Asin from "../views/Asin/index.vue";
 import ProductAmazon from "../views/ProductAmazon";
 
+import YahooAccounts from '@/views/users/YahooAccounts'
+
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   mode: "history",
   routes: [
     {
@@ -51,6 +53,29 @@ export default new Router({
           next();
         }
       }
+    },
+    {
+      path: '/yahoo-accounts',
+      name: 'YahooAccounts',
+      component: YahooAccounts,
+      meta: {
+        requiredAuth: true
+      }
     }
   ]
 });
+
+const waitForStorageToBeReady = async (to, from, next) => {
+  const authUser = store.state.isUserLoggedIn;
+  if (((to.name !== 'login' && to.meta.requiredAuth) || to.name === null) && !authUser) {
+    next({name: 'login'})
+  } else {
+    if ((to.name === null || to.name === 'login') && authUser) {
+      next({name: 'Home'})
+    }
+    next()
+  }
+}
+router.beforeEach(waitForStorageToBeReady)
+
+export default router

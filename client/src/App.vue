@@ -1,24 +1,25 @@
 <template>
   <div id="app">
-    <v-app style="height: 100%">
-      <v-main id="main" style="height: 100%">
-        <Header v-if="isUserLoggedIn" />
+    <div class="page-wrapper chiller-theme toggled">
+      <Sidebar v-if="isUserLoggedIn" />
+      <main class="page-content">
         <router-view />
-      </v-main>
-      <div />
-    </v-app>
+      </main>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import Header from "./layouts/Header.vue";
+import Sidebar from "./layouts/Sidebar.vue";
 
 export default {
   name: "App",
 
   components: {
-    Header
+    Header,
+    Sidebar
   },
   computed: {
     ...mapState(["isUserLoggedIn"])
@@ -28,58 +29,13 @@ export default {
   })
 };
 </script>
-<style>
-.v-slide-group__content {
-  border-bottom: 1px solid gray;
-}
-#main {
-  overflow-y: auto;
-}
-.stt-table {
-  min-width: 70px;
-}
-.col-delivery-table {
-  min-width: 100px;
-}
-.col-image-table {
-  min-width: 90px;
-}
-.small-radio i {
-  font-size: 19px;
-}
-.small-radio label {
-  font-size: 14px;
-  padding-left: 0px;
-  margin-left: -4px;
-  font-weight: 400;
-  color: black !important;
-}
-.small-radio .v-radio {
-  padding: 0px;
-}
-.small-radio [class*="__ripple"] {
-  left: 0;
-}
+<style src="@/assets/css/reset.css"></style>
+<style src="@/assets/css/common.css"></style>
+<style src="@/assets/css/style.css"></style>
 
-.radius-20 {
-  border-radius: 20px;
-}
-.v-tabs-slider-wrapper {
-  height: 0px !important;
-}
-.v-tab--active {
-  color: black !important;
-  font-weight: bold;
-}
-.v-application {
-  font-family: "Roboto", "Arial", sans-serif !important;
-  font-weight: 400 !important;
-}
-html {
-  overflow-y: hidden !important;
-}
+<style>
 body {
-  height: 100vh;
+  min-height: 100vh;
   font-family: "Roboto", "Arial", sans-serif !important;
   font-weight: 400 !important;
 }

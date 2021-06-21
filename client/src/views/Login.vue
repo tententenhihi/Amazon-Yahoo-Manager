@@ -1,71 +1,69 @@
 <template>
-  <v-container class="text-center">
-    <v-sheet
-      style="max-width: 400px; margin: auto; margin-top: 100px;"
-      elevation="3"
-      rounded="lg"
-      class="pa-5 pb-5"
-    >
-      <h3>Login</h3>
-      <v-text-field
-        ref="username"
-        id="username"
-        name="username"
-        v-model="user.username"
-        label="Tài khoản"
-        prepend-inner-icon="mdi-account-circle"
-        :rules="[rules.requiredUsername]"
-        :error="errorUsername"
-        @focus="errorUsername = false"
-        :disabled="isLoading"
-      ></v-text-field>
-      <v-text-field
-        ref="password"
-        id="password"
-        name="password"
-        :disabled="isLoading"
-        v-model="user.password"
-        label="Mật khẩu"
-        prepend-inner-icon="mdi-lock"
-        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-        :rules="[rules.requiredPasswd]"
-        :type="showPassword ? 'text' : 'password'"
-        @click:append="showPassword = !showPassword"
-        :error="errorPassword"
-        @focus="errorPassword = false"
-        @keyup.enter="handleLogin()"
-      ></v-text-field>
-      <v-btn
-        class="mt-5"
-        :loading="isLoading"
-        :disabled="isLoading"
-        color="#1877f2"
-        large
-        block
-        @click="handleLogin()"
-      >
-        <span style="color: #fff; font-size: 18px" class="font-weight-bold"
-          >Đăng nhập</span
-        >
-        <template v-slot:loader>
-          <span class="custom-loader">
-            <v-icon light>mdi-cached</v-icon>
-          </span>
-        </template>
-      </v-btn>
-      <!-- <div class="mt-4">
-        <span class="forgot-password" style="font-size: 14px"
-          >Quên mậ khẩu?</span
-        >
+  <div class="wrapper">
+    <section class="content">
+      <div class="login-box">
+        <div class="login-box-body">
+          <div class="login-logo">
+            <a href="javascript:void(0)">ログイン</a>
+          </div>
+          <ValidationObserver tag="form" @submit.prevent="onSubmit" ref="formLogin">
+            <div class="form-group position-relative">
+              <ValidationProvider rules="required" v-slot="{ errors }" tag="div" class="form-group position-relative">
+                <div class="input-group_nouse">
+                  <div class="form-group text">
+                    <input
+                      ref="username"
+                      type="text"
+                      name="username"
+                      class="form-control"
+                      placeholder="ユーザーIDを入力してください。"
+                      id="username"
+                      rules="required"
+                      v-model="user.username"
+                    />
+                  </div>
+                </div>
+                <span
+                  class="fa fa-user form-control-feedback"
+                ></span>
+                <div class="error-message" v-if="errors.length">{{errors[0]}}</div>
+              </ValidationProvider>
+
+              <ValidationProvider rules="required" v-slot="{ errors }" tag="div" class="form-group position-relative">
+                <div class="input-group_nouse">
+                  <div class="form-group password">
+                    <input
+                      type="password"
+                      name="password"
+                      class="form-control"
+                      placeholder="パスワードを入力してください。"
+                      id="password"
+                      v-model="user.password"
+                    />
+                  </div>
+                </div>
+                <span
+                  class="fa fa-lock form-control-feedback"
+                ></span>
+                <div class="error-message" v-if="errors.length">{{errors[0]}}</div>
+              </ValidationProvider>
+              <div class="">
+                <div class="col-xs-5" style="width: 100%">
+                  <button
+                    type="submit"
+                    name="submit"
+                    class="btn btn-primary btn-block btn-flat"
+                  >
+                    ログイン&nbsp;<i class="fa fa-sign-in-alt" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ValidationObserver>
+        </div>
       </div>
-      <v-divider class="my-4"></v-divider>
-      <v-btn color="#42b72a" large @click="$refs.signUpModal.show()">
-        <span style="color: white; font-size: 15px; font-weight: bold"
-          >Tạo tài khoản mới</span
-        >
-      </v-btn> -->
-    </v-sheet>
-  </v-container>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -79,97 +77,48 @@ export default {
       isLoading: false,
       user: {
         username: "",
-        password: ""
+        password: "",
       },
       showPassword: false,
       loading: false,
       rules: {
-        requiredPasswd: value => !!value || "Nhập mật khẩu.",
-        requiredUsername: value => !!value || "Nhập tài khoản.",
-        min: v => v.length >= 8 || "Min 8 characters",
-        emailMatch: () => `The email and password you entered don't match`
-      }
+        requiredPasswd: (value) => !!value || "Nhập mật khẩu.",
+        requiredUsername: (value) => !!value || "Nhập tài khoản.",
+        min: (v) => v.length >= 8 || "Min 8 characters",
+        emailMatch: () => `The email and password you entered don't match`,
+      },
     };
   },
   methods: {
-    async handleLogin() {
-      // Check Data
-      if (!this.user.username) {
-        this.errorUsername = true;
-      }
-      if (!this.user.password) {
-        this.errorPassword = true;
-      }
-      if (this.errorPassword || this.errorUsername) {
-        return;
-      }
-      this.isLoading = true;
+    async onSubmit () {
+      let result = await this.$refs.formLogin.validate();
+      if (result) {
+        this.isLoading = true;
 
-      const response = await AuthApi.login({
-        username: this.user.username.toLowerCase(),
-        password: this.user.password
-      });
+        const response = await AuthApi.login({
+          username: this.user.username.toLowerCase(),
+          password: this.user.password,
+        });
 
-      if (response && response.status === 200) {
-        this.$store.dispatch("setUser", response.data.userData);
-        this.$router.push("/");
+        if (response && response.status === 200) {
+          this.$store.dispatch("setUser", response.data.userData);
+          this.$router.push("/");
+        }
+        this.isLoading = false;
       }
-      this.isLoading = false;
-    }
+    },
   },
   mounted() {
     this.$refs.username.focus();
     if (this.$route.query && this.$route.query.isActive) {
       this.$swal.fire({
         icon: "success",
-        title: "Kích hoạt thành công. Đăng nhập ngay!"
+        title: "Kích hoạt thành công. Đăng nhập ngay!",
       });
     }
-  }
+  },
 };
 </script>
 
 <style scoped>
-.forgot-password {
-  color: #1877f2;
-  cursor: pointer;
-}
-
-.custom-loader {
-  animation: loader 1s infinite;
-  display: flex;
-}
-
-@-moz-keyframes loader {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-@-webkit-keyframes loader {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-@-o-keyframes loader {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes loader {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 </style>

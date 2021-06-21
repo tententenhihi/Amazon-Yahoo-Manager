@@ -4,6 +4,7 @@ import FileRouter from './FileRouter';
 import AmazonRouter from './AmazonRouter';
 import SearchCodeRouter from './SearchCodeRouter';
 import ProductAmazonRouter from './ProductAmazonRouter';
+import YahooAccountRouter from './YahooAccountRouter';
 
 var router = express.Router();
 
@@ -17,5 +18,6 @@ router.use('/file', FileRouter);
 router.use('/api/v1/amazon', AmazonRouter);
 router.use('/api/v1/amazon/search-code', SearchCodeRouter);
 router.use('/api/v1/amazon/product', ProductAmazonRouter);
+router.use('/api/v1/yahoo-account', YahooAccountRouter);
 
 export default router;

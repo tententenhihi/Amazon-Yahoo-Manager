@@ -1,6 +1,6 @@
 import UserModel from '../models/UserModel';
 import Response from '../utils/Response';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { SECRET_KEY, LIFE_TIME_TOKEN } from '../configs/settings';
 import UserService from '../services/UserService';

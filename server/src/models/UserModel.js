@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 
 var User = new Schema({
     password: {
@@ -55,6 +55,10 @@ var User = new Schema({
     idGroup: {
         type: String,
         default: '',
+    },
+    maxYahooAccount: {
+        type: Number,
+        default: 10
     },
     created: {
         type: Date,
