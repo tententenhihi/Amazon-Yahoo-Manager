@@ -6,7 +6,9 @@ import store from "../store/store";
 import Asin from "../views/Asin/index.vue";
 import ProductAmazon from "../views/ProductAmazon";
 
-import YahooAccounts from '@/views/users/YahooAccounts'
+const YahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/accounts" */ '@/views/users/YahooAccounts.vue');
+
+const AsinManagement = () => import(/* webpackChunkName: "/static/js/chunks/asin" */ '@/views/asin/AsinManagement.vue');
 
 Vue.use(Router);
 
@@ -15,43 +17,31 @@ const router = new Router({
   routes: [
     {
       path: "/login",
-      name: "login",
+      name: "Login",
       component: Login
     },
     {
       path: "/",
       name: "Home",
       component: Home,
-      beforeEnter: (to, from, next) => {
-        if (!store.state.isUserLoggedIn) {
-          next("/login");
-        } else {
-          next();
-        }
+      meta: {
+        requiredAuth: true
       }
     },
     {
       path: "/asin",
       name: "asin",
       component: Asin,
-      beforeEnter: (to, from, next) => {
-        if (!store.state.isUserLoggedIn) {
-          next("/login");
-        } else {
-          next();
-        }
+      meta: {
+        requiredAuth: true
       }
     },
     {
       path: "/product",
       name: "product",
       component: ProductAmazon,
-      beforeEnter: (to, from, next) => {
-        if (!store.state.isUserLoggedIn) {
-          next("/login");
-        } else {
-          next();
-        }
+      meta: {
+        requiredAuth: true
       }
     },
     {
@@ -61,16 +51,28 @@ const router = new Router({
       meta: {
         requiredAuth: true
       }
-    }
+    },
+    {
+      path: '/asin-management',
+      name: 'AsinManagement',
+      component: AsinManagement,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '*',
+      redirect: '/'
+    },
   ]
 });
 
 const waitForStorageToBeReady = async (to, from, next) => {
   const authUser = store.state.isUserLoggedIn;
-  if (((to.name !== 'login' && to.meta.requiredAuth) || to.name === null) && !authUser) {
-    next({name: 'login'})
+  if (((to.name !== 'Login' && to.meta.requiredAuth) || to.name === null) && !authUser) {
+    next({name: 'Login'})
   } else {
-    if ((to.name === null || to.name === 'login') && authUser) {
+    if ((to.name === null || to.name === 'Login') && authUser) {
       next({name: 'Home'})
     }
     next()
