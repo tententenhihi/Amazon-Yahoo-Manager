@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "datatables.net": "^1.10.25",
+    "datatables.net-dt": "^1.1.0",
+    "jquery": "^3.6.0",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.21",
     "material-design-icons-iconfont": "^6.1.0",

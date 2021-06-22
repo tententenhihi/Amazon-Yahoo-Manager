@@ -12,6 +12,14 @@ import VueLodash from 'vue-lodash'
 import lodash from 'lodash'
 import {ValidationProvider, ValidationObserver, extend, setInteractionMode} from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
+import 'datatables.net'
+import 'datatables.net-dt'
+import $ from 'jquery'
+
+Vue.prototype.$ = $;
+// global.jQuery = require('jquery');
+// let $ = global.jQuery;
+// window.$ = $;
 
 Vue.use(VueLodash, { name: 'custom' , lodash: lodash })
 Vue.use(require("vue-moment"));
