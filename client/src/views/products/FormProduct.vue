@@ -150,7 +150,7 @@ export default {
         result = await ProductAmazonApi.update(this.productId, formData)
       }
       if (result && result.status === 200) {
-        self.$swal.fire(
+        this.$swal.fire(
           "Successful!",
           "Your product has been updated.",
           "success"
