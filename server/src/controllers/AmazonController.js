@@ -1,7 +1,7 @@
 import Response from '../utils/Response';
 import ProductAmazonService from '../services/ProductAmazonService';
 import ProductAmazonSchema from '../models/ProductAmazonModel';
-const UploadFile = require('../helpers/uploadFile')
+const UploadFile = require('../helpers/UploadFile')
 
 export default class AmazonController {
     static async get(req, res) {
