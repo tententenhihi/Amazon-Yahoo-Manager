@@ -121,4 +121,9 @@ export default {
 </script>
 
 <style scoped>
+@media screen and (min-width: 768px) {
+  .wrapper {
+    margin-left: -280px;
+  }
+}
 </style>

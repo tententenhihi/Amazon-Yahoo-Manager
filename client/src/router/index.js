@@ -8,7 +8,7 @@ import ProductAmazon from "../views/ProductAmazon";
 
 const YahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/accounts" */ '@/views/users/YahooAccounts.vue');
 
-const AsinManagement = () => import(/* webpackChunkName: "/static/js/chunks/asin" */ '@/views/asin/AsinManagement.vue');
+const AsinManagement = () => import(/* webpackChunkName: "/static/js/chunks/asin" */ '@/views/Asin/AsinManagement.vue');
 
 const ProductList = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/List.vue');
 const FormProduct = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/FormProduct.vue');
