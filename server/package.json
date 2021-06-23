@@ -23,6 +23,7 @@
     "debug": "~2.6.9",
     "dom-parser": "^0.1.6",
     "express": "~4.16.1",
+    "express-fileupload": "^1.2.1",
     "form-data": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",

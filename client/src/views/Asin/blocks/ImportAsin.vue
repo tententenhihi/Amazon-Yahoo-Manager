@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import AsinApi from '@/services/AsinApi'
+import AsinApi from '@/services/asinApi'
 export default {
   name: 'ImportAsin',
   data() {

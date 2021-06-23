@@ -60,5 +60,8 @@ var Product = new Schema({
     },
 });
 
+Product.statics.TYPE = ['AMAZON', 'YAHOO']
+Product.statics.STATUS = ['CREATED', 'ERROR', 'SUCCESS']
+
 var ProductAmazonSchema = mongoose.model('ProductAmazon', Product);
 module.exports = ProductAmazonSchema;

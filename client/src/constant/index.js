@@ -1,0 +1,4 @@
+export default {
+  PRODUCT_TYPE: ['AMAZON', 'YAHOO'],
+  PRODUCT_STATUS: ['CREATED', 'ERROR', 'SUCCESS']
+}

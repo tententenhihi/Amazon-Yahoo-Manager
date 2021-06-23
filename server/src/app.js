@@ -11,6 +11,8 @@ import UserService from './services/UserService';
 import Path from 'path';
 import QueueGetProductAmazon from './services/QueueGetProductAmazon';
 import SearchCodeSchema from './models/SearchCodeAmazonModel';
+import upload from 'express-fileupload'
+
 const app = express();
 // Fix Cross
 var corsOptions = {
@@ -29,6 +31,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/public', express.static(Path.join(__dirname, '../public')));
+app.use(upload())
+app.use('/uploads', express.static('uploads'));
 app.use('/', indexRouter);
 
 let initData = async () => {

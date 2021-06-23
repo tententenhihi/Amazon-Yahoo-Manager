@@ -1,15 +1,169 @@
 <template>
-  <div class="wrapper-content">
-    123
+  <div class="wrapper-content" v-if="isInit">
+    <div class="box-header">
+      <i class="fa fa-edit mr-2"></i>{{ productId ? 'Edit product' : 'Add new product'}}
+    </div>
+    <hr />
+    <div class="box-content">
+      <div class="px-30 py-20">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="asin">Asin</label>
+            <input type="text" class="form-control" id="asin" v-model="product.asin" placeholder="Asin">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" v-model="product.name" placeholder="Name">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="url">Url</label>
+            <input type="text" class="form-control" id="url" v-model="product.url" placeholder="Url">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="price">Price(¥)</label>
+            <input type="number" class="form-control" id="price" v-model="product.price" placeholder="Price">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="countProduct">Count product</label>
+            <input type="number" class="form-control" id="countProduct" v-model="product.countProduct" placeholder="Count product">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="delivery">Delivery</label>
+            <input type="text" class="form-control" id="delivery" v-model="product.delivery" placeholder="Delivery">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="type">Type</label>
+            <select id="type" class="form-control" v-model="product.type">
+              <template v-for="(type, index) in $constants.PRODUCT_TYPE">
+                <option :value="type" :key="index">{{type}}</option>
+              </template>
+            </select>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="status">Status</label>
+            <select id="status" class="form-control" v-model="product.status">
+              <template v-for="(status, index) in $constants.PRODUCT_STATUS">
+                <option :value="status" :key="index">{{status}}</option>
+              </template>
+            </select>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="image">Image</label>
+            <input type="file" class="form-control" id="image" ref="imageProduct" @change="onUploadImage">
+          </div>
+          <div class="col-md-12 mb-20">
+            <img :src="previewImage" alt="" width="200px">
+          </div>
+        </div>
+        <label for="name" class="form-row">
+          Info Detail <button class="btn btn-primary btn-add-info ml-2 mb-2" @click="addNewInfoDetail()">+</button>
+        </label>
+        <template v-for="(info, index) in product.infoDetail">
+          <div class="row my-1" :key="index">
+            <div class="col-md-4">
+              <input type="text" class="form-control" v-model="info.name" placeholder="Name">
+            </div>
+            <div class="col-md-4">
+              <input type="text" class="form-control" v-model="info.value" placeholder="Value">
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-warning" @click="deleteInfoDetail(index)">x</button>
+            </div>
+          </div>
+        </template>
+        <div class="row mt-20">
+          <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
+            Save
+          </button>
+          <router-link :to="{name: 'Products'}" tag="button" class="btn btn-warning mb-1">Cancel</router-link>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import ProductAmazonApi from '@/services/ProductAmazonApi'
 export default {
-
+  name: 'FormProduct',
+  data () {
+    return {
+      product: {
+        asin: '',
+        name: '',
+        url: '',
+        price: '',
+        countProduct: '',
+        delivery: '',
+        type: this.$constants.PRODUCT_TYPE[0],
+        status: this.$constants.PRODUCT_STATUS[0],
+        image: '',
+        infoDetail: [],
+      },
+      previewImage: '',
+      isInit: false,
+    }
+  },
+  async mounted () {
+    if (this.productId != 0) {
+      let result = await ProductAmazonApi.show({_id: this.productId})
+      if (result && result.status === 200) {
+        this.product = result.data
+        this.previewImage = this.product.image
+      } else {
+        this.$router.push({name: 'Products'})
+      }
+    }
+    this.isInit = true
+  },
+  computed: {
+    productId () {
+      return this.$route.params.id || 0
+    }
+  },
+  methods: {
+    addNewInfoDetail () {
+      this.product.infoDetail.push({
+        name: '',
+        value: ''
+      })
+    },
+    deleteInfoDetail (index) {
+      this.product.infoDetail.splice(index, 1)
+    },
+    onUploadImage (e) {
+      const image = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(image);
+      reader.onload = e =>{
+        this.previewImage = e.target.result;
+      };
+    },
+    async onSaveProduct () {
+      let formData = new FormData();
+      formData.append('payload', JSON.stringify(this.product));
+      formData.append('image', this.$refs.imageProduct.files[0])
+      let result = null
+      if (this.productId == 0) {
+        result = await ProductAmazonApi.create(formData)
+      } else {
+        result = await ProductAmazonApi.update(this.productId, formData)
+      }
+      if (result && result.status === 200) {
+        self.$swal.fire(
+          "Successful!",
+          "Your product has been updated.",
+          "success"
+        );
+      }
+    }
+  }
 }
 </script>
 
 <style scoped>
-
+.btn-add-info {
+  width: 26px;
+  padding: 0;
+}
 </style>

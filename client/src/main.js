@@ -15,8 +15,12 @@ import * as rules from 'vee-validate/dist/rules';
 import 'datatables.net'
 import 'datatables.net-dt'
 import $ from 'jquery'
+import Constants from './constant/index'
+import Helpers from './helpers/index';
 
 Vue.prototype.$ = $;
+Vue.prototype.$constants = Constants;
+Vue.prototype.$helpers = Helpers;
 
 Vue.use(VueLodash, { name: 'custom' , lodash: lodash })
 Vue.use(require("vue-moment"));

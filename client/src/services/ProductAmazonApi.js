@@ -1,16 +1,26 @@
 import Api from "./api";
-
+const prefix = '/api/v1/amazon/product'
 export default {
-  add(credentials) {
-    return Api.post("/api/v1/amazon/product/add", credentials);
-  },
   get(credentials) {
-    return Api.get("/api/v1/amazon/product/get", credentials);
+    return Api.get(`${prefix}/get`, credentials);
   },
-  update(credentials) {
-    return Api.post("/api/v1/amazon/product/update", credentials);
+  show(credentials) {
+    return Api.get(`${prefix}/show/${credentials._id}`, credentials);
   },
-  delete(credentials) {
-    return Api.post("/api/v1/amazon/product/delete", credentials);
+  create(credentials) {
+    return Api.post(`${prefix}/create`, credentials, {headers: {
+      'Content-Type': 'multipart/form-data'
+    }});
+  },
+  update(id, credentials) {
+    return Api.post(`${prefix}/update/${id}`, credentials, {headers: {
+      'Content-Type': 'multipart/form-data'
+    }});
+  },
+  delete(id) {
+    return Api.post(`${prefix}/delete/${id}`);
+  },
+  createByCsv(data) {
+    return Api.post(`${prefix}/create-by-csv`, data);
   }
 };

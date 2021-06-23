@@ -6,7 +6,7 @@
     <nav id="sidebar" class="sidebar-wrapper">
       <div class="sidebar-content">
         <div class="sidebar-brand">
-          <a href="#">pro sidebar</a>
+          <a href="#">AYM</a>
           <div id="close-sidebar">
             <i class="fas fa-times"></i>
           </div>
@@ -20,9 +20,8 @@
             />
           </div>
           <div class="user-info">
-            <span class="user-name"
-              >Jhon
-              <strong>Smith</strong>
+            <span class="user-name">
+              <strong>Mongji</strong>
             </span>
             <span class="user-role">Administrator</span>
             <span class="user-status">
@@ -57,7 +56,20 @@
                 </ul>
               </div>
             </li>
-            <li class="header-menu" @click="onClickLogout">
+            <li class="sidebar-dropdown">
+              <router-link :to="{name: 'AsinManagement'}">
+                <i class="fa fa-list"></i>
+                <span>Asin Management</span>
+              </router-link>
+            </li>
+            <li class="sidebar-dropdown">
+              <router-link :to="{name: 'Products'}">
+                <i class="fa fa-calendar"></i>
+                <span>Products Management</span>
+              </router-link>
+            </li>
+
+            <li class="sidebar-dropdown mt-60" @click="onClickLogout">
               <a href="#">
                 <i class="fa fa-power-off"></i>
                 <span>ログアウト</span>
