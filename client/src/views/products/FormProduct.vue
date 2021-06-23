@@ -155,6 +155,7 @@ export default {
           "Your product has been updated.",
           "success"
         );
+        this.$router.push({name: 'Products'})
       }
     }
   }

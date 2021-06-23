@@ -69,6 +69,34 @@
               </router-link>
             </li>
 
+            <li class="sidebar-dropdown active">
+              <a href="#">
+                <i class="fa fa-user"></i>
+                <span>Settings</span>
+              </a>
+              <div class="sidebar-submenu d-block">
+                <ul>
+                  <li>
+                    <router-link :to="{name: 'TemplateSetting'}">
+                      <i class="fa fa-list"></i>
+                      <span>Template Setting</span>
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link :to="{name: 'ProductDescriptionSetting'}">
+                      <i class="fa fa-edit"></i>
+                      <span>Product Description</span>
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link :to="{name: 'YahooAuctionPublicSetting'}">
+                      <i class="fa fa-edit"></i>
+                      <span>Yahoo Auction Public</span>
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </li>
             <li class="sidebar-dropdown mt-60" @click="onClickLogout">
               <a href="#">
                 <i class="fa fa-power-off"></i>

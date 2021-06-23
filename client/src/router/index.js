@@ -13,6 +13,13 @@ const AsinManagement = () => import(/* webpackChunkName: "/static/js/chunks/asin
 const ProductList = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/List.vue');
 const FormProduct = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/FormProduct.vue');
 
+const TemplateSetting =
+  () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/TemplateSetting.vue');
+const ProductDescriptionSetting =
+  () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/ProductDescriptionSetting.vue');
+const YahooAuctionPublicSetting =
+  () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/YahooAuctionPublicSetting.vue');
+
 Vue.use(Router);
 
 const router = new Router({
@@ -75,6 +82,30 @@ const router = new Router({
       path: '/product/:id',
       name: 'FormProduct',
       component: FormProduct,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/template-setting',
+      name: 'TemplateSetting',
+      component: TemplateSetting,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/product-description-setting',
+      name: 'ProductDescriptionSetting',
+      component: ProductDescriptionSetting,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/yahoo-auction-public-setting',
+      name: 'YahooAuctionPublicSetting',
+      component: YahooAuctionPublicSetting,
       meta: {
         requiredAuth: true
       }

@@ -1,24 +1,26 @@
 <template>
-  <div class="page-container">
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" id="import-tab" data-toggle="tab" href="#import" role="tab" aria-controls="import" aria-selected="true">Import Asin</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="black-list-tab" data-toggle="tab" href="#black-list" role="tab" aria-controls="black-list" aria-selected="false">Black list</a>
-      </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="import" role="tabpanel" aria-labelledby="import-tab">
-        <ImportAsin @getListAsin="getListAsin" />
+  <div class="wrapper-content">
+    <div class="page-container">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item ml-20">
+          <a class="nav-link active" id="import-tab" data-toggle="tab" href="#import" role="tab" aria-controls="import" aria-selected="true">Import Asin</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="black-list-tab" data-toggle="tab" href="#black-list" role="tab" aria-controls="black-list" aria-selected="false">Black list</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="import" role="tabpanel" aria-labelledby="import-tab">
+          <ImportAsin @getListAsin="getListAsin" />
+        </div>
+        <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+          <History :listAsin="listAsin" />
+        </div>
+        <div class="tab-pane fade" id="black-list" role="tabpanel" aria-labelledby="black-list-tab">...</div>
       </div>
-      <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
-        <History :listAsin="listAsin" />
-      </div>
-      <div class="tab-pane fade" id="black-list" role="tabpanel" aria-labelledby="black-list-tab">...</div>
     </div>
   </div>
 </template>
