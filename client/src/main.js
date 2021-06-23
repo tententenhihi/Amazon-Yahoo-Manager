@@ -3,7 +3,7 @@ import Vue from "vue";
 import App from "./App";
 import router from "./router";
 import store from "./store/store";
-import vuetify from "./plugins/vuetify";
+// import vuetify from "./plugins/vuetify";
 import VueI18n from "vue-i18n";
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 import Swal from "vue-sweetalert2";
@@ -44,7 +44,7 @@ setInteractionMode('passive');
 new Vue({
   el: "#app",
   router,
-  vuetify,
+  // vuetify,
   store,
   components: { App },
   template: "<App/>"

@@ -10,6 +10,8 @@ const YahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/accou
 
 const AsinManagement = () => import(/* webpackChunkName: "/static/js/chunks/asin" */ '@/views/asin/AsinManagement.vue');
 
+const ProductList = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/List.vue');
+
 Vue.use(Router);
 
 const router = new Router({
@@ -56,6 +58,14 @@ const router = new Router({
       path: '/asin-management',
       name: 'AsinManagement',
       component: AsinManagement,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/products',
+      name: 'ProductList',
+      component: ProductList,
       meta: {
         requiredAuth: true
       }

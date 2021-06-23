@@ -15,7 +15,9 @@
       <div class="tab-pane fade show active" id="import" role="tabpanel" aria-labelledby="import-tab">
         <ImportAsin @getListAsin="getListAsin" />
       </div>
-      <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">...</div>
+      <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+        <History :listAsin="listAsin" />
+      </div>
       <div class="tab-pane fade" id="black-list" role="tabpanel" aria-labelledby="black-list-tab">...</div>
     </div>
   </div>
@@ -24,10 +26,12 @@
 <script>
 import AsinApi from "../../services/asinApi";
 import ImportAsin from './blocks/ImportAsin.vue'
+import History from './blocks/History.vue'
 export default {
   name: 'AsinManagement',
   components: {
-    ImportAsin
+    ImportAsin,
+    History
   },
   data() {
     return {
@@ -55,6 +59,7 @@ export default {
         let res = await AsinApi.get();
         if (res && res.status === 200) {
           this.listAsin = res.data.listSearchCode;
+          console.log('dasd: ', this.listAsin);
         }
       } catch (error) {
         this.$swal.fire({

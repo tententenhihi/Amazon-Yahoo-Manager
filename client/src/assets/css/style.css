@@ -499,3 +499,33 @@ body {
   background-color: #fff;
   padding: 20px;
 }
+
+.thead-purple {
+  background-color: #605ca8;
+  color: #fff;
+}
+
+.wrapper-content {
+  background-color: #ffffff;
+  margin: 20px;
+}
+.wrapper-content .box-header {
+  position: relative;
+  padding: 20px;
+}
+.wrapper-content .box-header .btn-add-account {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  background-color: #00a65a;
+  border-color: #00a65a;
+  color: #ffffff;
+}
+.form-line {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+.form-line label {
+  text-align: end;
+}

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="wrapper-table">
+    <div class="wrapper-content">
       <div class="box-header">
         <i class="fa fa-list mr-2"></i>アカウント一覧
         <button
@@ -254,34 +254,6 @@ export default {
 </script>
 
 <style scoped>
-.wrapper-table {
-  background-color: #ffffff;
-  margin: 20px;
-}
-.wrapper-table .box-header {
-  position: relative;
-  padding: 20px;
-}
-.wrapper-table .box-header .btn-add-account {
-  position: absolute;
-  right: 20px;
-  top: 15px;
-  background-color: #00a65a;
-  border-color: #00a65a;
-  color: #ffffff;
-}
-.form-line {
-  display: flex;
-  justify-content: end;
-  align-items: center;
-}
-.form-line label {
-  text-align: end;
-}
-.thead-purple {
-  background-color: #605ca8;
-  color: #fff;
-}
 #accountTable_length {
   margin-bottom: 20px;
 }
