@@ -6,6 +6,7 @@ import SearchCodeRouter from './SearchCodeRouter';
 import ProductAmazonRouter from './ProductAmazonRouter';
 import YahooAccountRouter from './YahooAccountRouter';
 import ProductGlobalSettingRouter from './ProductGlobalSettingRouter';
+import AuctionPublicSettingRouter from './AuctionPublicSettingRouter';
 
 var router = express.Router();
 
@@ -21,5 +22,6 @@ router.use('/api/v1/amazon/search-code', SearchCodeRouter);
 router.use('/api/v1/amazon/product', ProductAmazonRouter);
 router.use('/api/v1/yahoo-account', YahooAccountRouter);
 router.use('/api/v1/product-global-setting', ProductGlobalSettingRouter);
+router.use('/api/v1/auction-global-setting', AuctionPublicSettingRouter);
 
 export default router;

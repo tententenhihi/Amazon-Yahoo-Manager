@@ -5,7 +5,8 @@ export default class ProductGlobalSettingController {
     static async get(req, res) {
         let response = new Response(res);
         try {
-            let setting = await ProductGlobalSettingService.get();
+            let user = req.user
+            let setting = await ProductGlobalSettingService.get(user._id);
             return response.success200({ setting });
         } catch (error) {
             console.log(error);
@@ -17,8 +18,9 @@ export default class ProductGlobalSettingController {
         let response = new Response(res);
         try {
             let { product_detail, payment_detail, delivery_detail, precaution_detail } = req.body
-
+            let user = req.user
             let data = {
+                user_id: user._id,
                 product_detail,
                 payment_detail,
                 delivery_detail,
@@ -38,8 +40,9 @@ export default class ProductGlobalSettingController {
         let response = new Response(res);
         try {
             let { product_detail, payment_detail, delivery_detail, precaution_detail, template, _id } = req.body
-
+            let userId = req.user._id
             let data = {
+                user_id: userId,
                 _id,
                 product_detail,
                 payment_detail,

@@ -1,12 +1,11 @@
-import ProductGlobalSettingModel from '../models/ProductGlobalSettingModel';
+import AuctionPublicSettingModel from '../models/AuctionPublicSettingModel';
 
-export default class ProductGlobalSettingService {
+export default class AuctionPublicSettingService {
     static async get (userId) {
         try {
-            let res = await ProductGlobalSettingModel.find({user_id: userId}).sort({ _id: -1 }).limit(1);
+            let res = await AuctionPublicSettingModel.find({user_id: userId}).sort({ _id: -1 }).limit(1);
             if (!res.length) {
-                res = await ProductGlobalSettingModel.create({
-                    template: 1,
+                res = await AuctionPublicSettingModel.create({
                     user_id: userId
                 });
             }
@@ -18,7 +17,7 @@ export default class ProductGlobalSettingService {
     }
     static async create (data) {
         try {
-            let res = await ProductGlobalSettingModel.create(data);
+            let res = await AuctionPublicSettingModel.create(data);
             return res._doc;
         } catch (error) {
             console.log(error);
@@ -27,7 +26,7 @@ export default class ProductGlobalSettingService {
     }
     static async update (data) {
         try {
-            let res = await ProductGlobalSettingModel.findOneAndUpdate({ _id: data._id, user_id: data.user_id }, data, { new: true });
+            let res = await AuctionPublicSettingModel.findOneAndUpdate({ _id: data._id, user_id: data.user_id }, data, { new: true });
             return res._doc;
         } catch (error) {
             console.log(error);

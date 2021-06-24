@@ -7,9 +7,9 @@
       <div class="sidebar-content">
         <div class="sidebar-brand">
           <a href="#">AYM</a>
-          <div id="close-sidebar">
+          <!-- <div id="close-sidebar">
             <i class="fas fa-times"></i>
-          </div>
+          </div> -->
         </div>
         <div class="sidebar-header">
           <div class="user-pic">
@@ -48,11 +48,11 @@
                       <span>アカウント設定</span>
                     </router-link>
                   </li>
-                  <li>
+                  <!-- <li>
                     <a href="#">
                       <i class="fa fa-lock"></i>
                       <span>パスワード変更</span></a>
-                  </li>
+                  </li> -->
                 </ul>
               </div>
             </li>
