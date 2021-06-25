@@ -9,7 +9,7 @@ var ProductYahoo = new Schema({
     },
     product_status: {
         type: Number,
-        required: true,
+        default: 0,
     },
     product_status_des: {
         type: String,
@@ -99,17 +99,21 @@ var ProductYahoo = new Schema({
         type: Boolean,
         default: false
     },
-    featured_auction: {
+    ship_schedule: {
         type: Number,
-        default: 0,
+        default: 0
+    },
+    featured_auction: {
+        type: String,
+        default: '',
     },
     bold_text: {
-        type: Number,
-        default: 0,
+        type: Boolean,
+        default: false,
     },
     bg_color: {
-        type: Number,
-        default: 0,
+        type: Boolean,
+        default: false,
     },
     conspicuous_icon: {
         type: Number,
