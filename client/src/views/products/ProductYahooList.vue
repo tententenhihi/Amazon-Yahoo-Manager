@@ -54,6 +54,7 @@
 <script>
 import ProductYahooApi from '@/services/ProductYahooApi'
 const PRODUCT_STATUS = [
+  {},
   { display: '中古', value: 1 },
   { display: '新品', value: 2 },
   { display: 'その他', value: 3 },
