@@ -27,7 +27,7 @@
             <tr v-for="(product, index) in products" :key="product._id">
               <th scope="row">{{ index + 1 }}</th>
               <td>
-                {{product.product_status}}
+                {{ PRODUCT_STATUS[product.product_status].display}}
               </td>
               <td>{{ product.quantity }}</td>
               <td>{{ HOLDING_PERIOD[product.holding_period].display }}</td>
@@ -53,6 +53,11 @@
 
 <script>
 import ProductYahooApi from '@/services/ProductYahooApi'
+const PRODUCT_STATUS = [
+  { display: '中古', value: 1 },
+  { display: '新品', value: 2 },
+  { display: 'その他', value: 3 },
+]
 const HOLDING_PERIOD = [
   { display: '当日終了', value: 0 },
   { display: '1日間', value: 1 },
@@ -165,6 +170,7 @@ export default {
       PREFECTURE,
       SHIP_SCHEDULE,
       CONSPICUOUS_ICON,
+      PRODUCT_STATUS
     }
   },
   async mounted () {
