@@ -1,13 +1,12 @@
 import express from 'express';
-import AmazonController from '../controllers/AmazonController';
+import ProductYahooController from '../controllers/ProductYahooController';
 
-var ProductAmazonRouter = express.Router();
+var ProductYahooRouter = express.Router();
 
-ProductAmazonRouter.route('/get').get(AmazonController.get);
-ProductAmazonRouter.route('/show/:_id').get(AmazonController.getDetailProduct);
-ProductAmazonRouter.route('/create').post(AmazonController.createProduct);
-ProductAmazonRouter.route('/update/:_id').post(AmazonController.updateProduct);
-ProductAmazonRouter.route('/delete/:_id').post(AmazonController.deleteProduct);
-ProductAmazonRouter.route('/create-by-csv').post(AmazonController.createProductByCSV);
+ProductYahooRouter.route('/get').get(ProductYahooController.get);
+ProductYahooRouter.route('/show/:_id').get(ProductYahooController.getDetailProduct);
+ProductYahooRouter.route('/create').post(ProductYahooController.createProduct);
+ProductYahooRouter.route('/update/:_id').post(ProductYahooController.updateProduct);
+ProductYahooRouter.route('/delete/:_id').post(ProductYahooController.deleteProduct);
 
-export default ProductAmazonRouter;
+export default ProductYahooRouter;

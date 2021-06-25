@@ -12,6 +12,8 @@ const AsinManagement = () => import(/* webpackChunkName: "/static/js/chunks/asin
 
 const ProductList = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/List.vue');
 const FormProduct = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/FormProduct.vue');
+const ProductYahooList = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/ProductYahooList.vue');
+const FormProductYahoo = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/FormProductYahoo.vue');
 
 const TemplateSetting =
   () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/TemplateSetting.vue');
@@ -82,6 +84,22 @@ const router = new Router({
       path: '/product/:id',
       name: 'FormProduct',
       component: FormProduct,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/products-yahoo',
+      name: 'ProductYahooList',
+      component: ProductYahooList,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/products-yahoo/:id',
+      name: 'FormProductYahoo',
+      component: FormProductYahoo,
       meta: {
         requiredAuth: true
       }

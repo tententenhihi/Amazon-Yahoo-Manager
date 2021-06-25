@@ -65,7 +65,7 @@ var ProductYahoo = new Schema({
     },
     prefecture: {
         type: String,
-        require: true
+        require: ''
     },
     address: {
         type: String,

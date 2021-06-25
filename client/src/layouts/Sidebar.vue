@@ -65,7 +65,13 @@
             <li class="sidebar-dropdown">
               <router-link :to="{name: 'Products'}">
                 <i class="fa fa-calendar"></i>
-                <span>Products Management</span>
+                <span>Products Amazon</span>
+              </router-link>
+            </li>
+            <li class="sidebar-dropdown">
+              <router-link :to="{name: 'ProductYahooList'}">
+                <i class="fa fa-calendar"></i>
+                <span>Products Yahoo</span>
               </router-link>
             </li>
 
