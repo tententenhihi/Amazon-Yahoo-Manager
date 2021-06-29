@@ -10,8 +10,10 @@ import UserService from './services/UserService';
 
 import Path from 'path';
 import QueueGetProductAmazon from './services/QueueGetProductAmazon';
+import QueueLoginYahooAuction from './services/QueueLoginYahooAuction'
 import SearchCodeSchema from './models/SearchCodeAmazonModel';
 import upload from 'express-fileupload'
+import getProductYahooAuction from './crons/getProductYahooAuction'
 
 const app = express();
 // Fix Cross
@@ -38,6 +40,8 @@ app.use('/', indexRouter);
 let initData = async () => {
     UserService.addUser({ username: 'admin', password: 'admin', type: 'admin', name: 'admin' });
     new QueueGetProductAmazon();
+    new QueueLoginYahooAuction();
+    // getProductYahooAuction.start();
     console.log('Server Started.!');
     
     // let listCode = await SearchCodeSchema.find({});

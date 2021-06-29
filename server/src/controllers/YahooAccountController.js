@@ -2,7 +2,7 @@ import YahooAccountModel from '../models/YahooAccount';
 import UserModel from '../models/UserModel';
 import Response from '../utils/Response';
 import bcrypt from 'bcryptjs';
-
+import QueueLoginYahooAuction from '../services/QueueLoginYahooAuction'
 class YahooAccountController {
     static async getListAccount(req, res) {
         let response = new Response(res);
@@ -20,7 +20,7 @@ class YahooAccountController {
         let user = req.user
         try {
             if (name && yahoo_id && password) {
-                let quantityAccount = await YahooAccountModel.find({user_id: user._id}).count()
+                let quantityAccount = await YahooAccountModel.find({user_id: user._id}).countDocuments()
                 user = await UserModel.findById(user._id)
                 if (quantityAccount >= user.maxYahooAccount) {
                     return response.error404({...req.body, message: 'Your Account is maximum.You can not create new account'});
@@ -39,6 +39,7 @@ class YahooAccountController {
                         user_id: user._id
                     });
                     let result = await newAccount.save();
+                    QueueLoginYahooAuction.addNew(newAccount)
                     response.success200(result._doc);
                 }
             } else {
@@ -64,6 +65,7 @@ class YahooAccountController {
                     existAccount.password = password
                     existAccount.hash_password = bcrypt.hashSync(password, 10)
                     let result = await existAccount.save();
+                    QueueLoginYahooAuction.addNew(existAccount)
                     response.success200(result._doc);
                 }
             } else {

@@ -4,8 +4,7 @@ const cheerio = require('cheerio');
 const { lowerFirst } = require('lodash');
 
 (async () => {
-  const browser = await puppeteer.launch(
-  );
+  const browser = await puppeteer.launch();
   // const page = await browser.newPage();
 
   // await page.goto('https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver',

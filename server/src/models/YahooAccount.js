@@ -24,6 +24,19 @@ var YahooAccount = new Schema({
         type: String,
         trim: true,
     },
+    cookies_auction: {
+        type: Array,
+        default: []
+    },
+    status: {
+        type: String,
+        require: true,
+        default: 'CREATED',
+        enum: ['CREATED', 'ERROR', 'SUCCESS'],
+    },
+    statusMessage: {
+        type: String,
+    },
     created: {
         type: Date,
         default: Date.now,

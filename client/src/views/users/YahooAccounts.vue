@@ -150,6 +150,9 @@ export default {
       }
       self.$nextTick(() => {
         self.$("#accountTable").DataTable({
+          initComplete: function() {
+            $(this.api().table().container()).find('input').parent().wrap('<form>').parent().attr('autocomplete', 'off');
+          },
           language: {
             sEmptyTable: "テーブルにデータがありません",
             sInfo: " _TOTAL_ 件中 _START_ から _END_ まで表示",
