@@ -65,19 +65,19 @@
             <li class="sidebar-dropdown">
               <router-link :to="{name: 'Products'}">
                 <i class="fa fa-calendar"></i>
-                <span>Products Amazon</span>
+                <span>製品AMAZON</span>
               </router-link>
             </li>
             <li class="sidebar-dropdown">
               <router-link :to="{name: 'ProductYahooList'}">
                 <i class="fa fa-calendar"></i>
-                <span>Products Yahoo</span>
+                <span>製品YAHOO</span>
               </router-link>
             </li>
             <li class="sidebar-dropdown">
               <router-link :to="{name: 'YahooAuctionSelling'}">
                 <i class="fa fa-list"></i>
-                <span>YahooAuctionSelling</span>
+                <span>落札商品管理</span>
               </router-link>
             </li>
 

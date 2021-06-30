@@ -8,7 +8,9 @@ const autoLoginYahoo = async (inputData, cb) => {
         console.log('start login and get product')
         if (inputData.status == 'ERROR') {
             console.log(' ==== Start login Yahoo ====');
-            const browser = await puppeteer.launch({headless: false});
+            const browser = await puppeteer.launch({
+                args: ["--no-sandbox", "--disable-setuid-sandbox"]
+            });
             const page = await browser.newPage();
             await page.goto('https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver',
                 {waitUntil: 'load', timeout: 0});
@@ -32,7 +34,9 @@ const autoLoginYahoo = async (inputData, cb) => {
                 throw new Error('Can not get cookies')
             }
         }
-        const browser = await puppeteer.launch({headless: false});
+        const browser = await puppeteer.launch({
+            args: ["--no-sandbox", "--disable-setuid-sandbox"]
+        });
         let page2 = await browser.newPage();
         await page2.setCookie(...inputData.cookies_auction);
         await page2.goto('https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling',
