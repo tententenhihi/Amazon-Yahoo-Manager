@@ -14,9 +14,9 @@
                     <input
                       ref="username"
                       type="text"
-                      name="username"
+                      name="ユーザー名"
                       class="form-control"
-                      placeholder="ユーザーIDを入力してください。"
+                      placeholder="ユーザー名を入力してください。"
                       id="username"
                       rules="required"
                       v-model="user.username"
@@ -34,7 +34,7 @@
                   <div class="form-group password">
                     <input
                       type="password"
-                      name="password"
+                      name="パスワード"
                       class="form-control"
                       placeholder="パスワードを入力してください。"
                       id="password"

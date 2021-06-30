@@ -5,12 +5,12 @@
         <table id="historyTable" class="display pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
-              <th scope="col">No</th>
-              <th scope="col">Group ID</th>
-              <th scope="col">Count Asin</th>
-              <th scope="col">Count Asin Geted Product</th>
-              <th scope="col">Created At</th>
-              <th scope="col">Action</th>
+              <th scope="col">数</th>
+              <th scope="col">グループID</th>
+              <th scope="col">ASIN数</th>
+              <th scope="col">商品情報を取得成功したASIN数</th>
+              <th scope="col">で作成された</th>
+              <th scope="col">操作</th>
             </tr>
           </thead>
           <tbody>
@@ -22,7 +22,7 @@
               <td>{{ group.created }}</td>
               <td>
                 <button class="btn btn-outline-info mr-2" @click="openDetailGroup(group)">
-                  <i class="fa fa-list"></i> Detail
+                  <i class="fa fa-list"></i> 詳細
                 </button>
               </td>
             </tr>
@@ -38,9 +38,9 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Status</th>
-              <th>Message</th>
+              <th>コード</th>
+              <th>状態</th>
+              <th>メッセージ</th>
             </tr>
           </thead>
           <tbody>
@@ -54,7 +54,7 @@
       </template>
       <template v-slot:button>
         <button class="btn btn-warning" @click="$refs.modalDetalGroup.closeModal()">
-          <i class="fa fa-times"></i> Cancel
+          <i class="fa fa-times"></i> キャンセル
         </button>
       </template>
     </modal-component>
@@ -80,7 +80,6 @@ export default {
   },
   watch: {
     listAsin () {
-      console.log('vao day', this.listAsin);
       let self = this;
       self.$nextTick(() => {
         if (self.$("#historyTable").DataTable()) {

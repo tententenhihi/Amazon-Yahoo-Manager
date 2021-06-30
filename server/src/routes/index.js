@@ -8,6 +8,7 @@ import YahooAccountRouter from './YahooAccountRouter';
 import ProductGlobalSettingRouter from './ProductGlobalSettingRouter';
 import AuctionPublicSettingRouter from './AuctionPublicSettingRouter';
 import ProductYahooRouter from './ProductYahooRouter';
+import ProductAuctionRouter from './ProductAuctionRouter';
 
 var router = express.Router();
 
@@ -25,5 +26,6 @@ router.use('/api/v1/yahoo-account', YahooAccountRouter);
 router.use('/api/v1/product-global-setting', ProductGlobalSettingRouter);
 router.use('/api/v1/auction-global-setting', AuctionPublicSettingRouter);
 router.use('/api/v1/product-yahoo', ProductYahooRouter);
+router.use('/api/v1/product-auction', ProductAuctionRouter);
 
 export default router;

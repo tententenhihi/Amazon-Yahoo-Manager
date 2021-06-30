@@ -59,7 +59,7 @@
             <li class="sidebar-dropdown">
               <router-link :to="{name: 'AsinManagement'}">
                 <i class="fa fa-list"></i>
-                <span>Asin Management</span>
+                <span>ASIN管理</span>
               </router-link>
             </li>
             <li class="sidebar-dropdown">
@@ -74,30 +74,36 @@
                 <span>Products Yahoo</span>
               </router-link>
             </li>
+            <li class="sidebar-dropdown">
+              <router-link :to="{name: 'YahooAuctionSelling'}">
+                <i class="fa fa-list"></i>
+                <span>YahooAuctionSelling</span>
+              </router-link>
+            </li>
 
             <li class="sidebar-dropdown active">
               <a href="#">
-                <i class="fa fa-user"></i>
-                <span>Settings</span>
+                <i class="fa fa-cogs"></i>
+                <span>出品設定</span>
               </a>
               <div class="sidebar-submenu d-block">
                 <ul>
                   <li>
                     <router-link :to="{name: 'TemplateSetting'}">
-                      <i class="fa fa-list"></i>
-                      <span>Template Setting</span>
+                      <i class="fa fa-list-alt"></i>
+                      <span>テンプレート</span>
                     </router-link>
                   </li>
                   <li>
                     <router-link :to="{name: 'ProductDescriptionSetting'}">
                       <i class="fa fa-edit"></i>
-                      <span>Product Description</span>
+                      <span>説明文</span>
                     </router-link>
                   </li>
                   <li>
                     <router-link :to="{name: 'YahooAuctionPublicSetting'}">
-                      <i class="fa fa-edit"></i>
-                      <span>Yahoo Auction Public</span>
+                      <i class="fa fa-tasks"></i>
+                      <span>自動出品設定</span>
                     </router-link>
                   </li>
                 </ul>

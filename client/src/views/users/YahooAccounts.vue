@@ -20,6 +20,8 @@
                 <th scope="col">名前</th>
                 <th scope="col">Yahoo! オークID</th>
                 <th scope="col">ステータス</th>
+                <th scope="col">Status</th>
+                <th scope="col">Status Message</th>
                 <th scope="col">変更</th>
               </tr>
             </thead>
@@ -29,10 +31,16 @@
                 <td>{{ account.name }}</td>
                 <td>{{ account.yahoo_id }}</td>
                 <td>
-                  <div>認証</div>
-                  <!-- 認証未 -->
-                  <button class="btn btn-sm btn-info">再認証</button>
+                  <div v-if="account.cookies_auction.length > 4">
+                    認証
+                    <!-- <button class="btn btn-sm btn-info">再認証</button> -->
+                  </div>
+                  <div v-else style="color:red">
+                    認証未
+                  </div>
                 </td>
+                <td>{{ account.status }}</td>
+                <td>{{ account.statusMessage }}</td>
                 <td>
                   <button
                     class="btn btn-md btn-warning mb-1"

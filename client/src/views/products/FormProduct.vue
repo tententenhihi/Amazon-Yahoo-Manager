@@ -8,31 +8,31 @@
       <div class="px-30 py-20">
         <div class="form-row">
           <div class="form-group col-md-6">
-            <label for="asin">Asin</label>
+            <label for="asin">ASIN</label>
             <input type="text" class="form-control" id="asin" v-model="product.asin" placeholder="Asin">
           </div>
           <div class="form-group col-md-6">
-            <label for="name">Name</label>
+            <label for="name">名前</label>
             <input type="text" class="form-control" id="name" v-model="product.name" placeholder="Name">
           </div>
           <div class="form-group col-md-6">
-            <label for="url">Url</label>
+            <label for="url">URL</label>
             <input type="text" class="form-control" id="url" v-model="product.url" placeholder="Url">
           </div>
           <div class="form-group col-md-6">
-            <label for="price">Price(¥)</label>
+            <label for="price">価格(¥)</label>
             <input type="number" class="form-control" id="price" v-model="product.price" placeholder="Price">
           </div>
           <div class="form-group col-md-6">
-            <label for="countProduct">Count product</label>
+            <label for="countProduct">製品を数える</label>
             <input type="number" class="form-control" id="countProduct" v-model="product.countProduct" placeholder="Count product">
           </div>
           <div class="form-group col-md-6">
-            <label for="delivery">Delivery</label>
+            <label for="delivery">配達</label>
             <input type="text" class="form-control" id="delivery" v-model="product.delivery" placeholder="Delivery">
           </div>
           <div class="form-group col-md-6">
-            <label for="type">Type</label>
+            <label for="type">タイプ</label>
             <select id="type" class="form-control" v-model="product.type">
               <template v-for="(type, index) in $constants.PRODUCT_TYPE">
                 <option :value="type" :key="index">{{type}}</option>
@@ -40,7 +40,7 @@
             </select>
           </div>
           <div class="form-group col-md-6">
-            <label for="status">Status</label>
+            <label for="status">状態</label>
             <select id="status" class="form-control" v-model="product.status">
               <template v-for="(status, index) in $constants.PRODUCT_STATUS">
                 <option :value="status" :key="index">{{status}}</option>
@@ -48,7 +48,7 @@
             </select>
           </div>
           <div class="form-group col-md-6">
-            <label for="image">Image</label>
+            <label for="image">画像</label>
             <input type="file" class="form-control" id="image" ref="imageProduct" @change="onUploadImage">
           </div>
           <div class="col-md-12 mb-20">
@@ -56,7 +56,7 @@
           </div>
         </div>
         <label for="name" class="form-row">
-          Info Detail <button class="btn btn-primary btn-add-info ml-2 mb-2" @click="addNewInfoDetail()">+</button>
+          情報詳細 <button class="btn btn-primary btn-add-info ml-2 mb-2" @click="addNewInfoDetail()">+</button>
         </label>
         <template v-for="(info, index) in product.infoDetail">
           <div class="row my-1" :key="index">
@@ -73,9 +73,9 @@
         </template>
         <div class="row mt-20">
           <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
-            Save
+            セーブ
           </button>
-          <router-link :to="{name: 'Products'}" tag="button" class="btn btn-warning mb-1">Cancel</router-link>
+          <router-link :to="{name: 'Products'}" tag="button" class="btn btn-warning mb-1">キャンセル</router-link>
         </div>
       </div>
     </div>
@@ -151,8 +151,8 @@ export default {
       }
       if (result && result.status === 200) {
         this.$swal.fire(
-          "Successful!",
-          "Your product has been updated.",
+          "成功",
+          "製品が更新されました。",
           "success"
         );
         this.$router.push({name: 'Products'})

@@ -1,21 +1,21 @@
 <template>
   <div class="mx-20 mt-60">
     <div class="form-group row">
-      <label class="font-weight-bold col-md-2 col-sm-6" for="group-id">Group Asin ID (*): </label>
-      <input type="text" class="form-control col-md-4 col-sm-6" placeholder="Enter group asin id"
+      <label class="font-weight-bold col-md-2 col-sm-6" for="group-id">ASINグループID (*): </label>
+      <input type="text" class="form-control col-md-4 col-sm-6" placeholder="ASINグループIDを入力"
         id="group-id" v-model="groupId">
     </div>
     <div class="row my-20">
       <textarea class="form-control col-md-6" id="" cols="30" rows="10"
-        placeholder="Please input asin code. One code per line" v-model="asinString"></textarea>
+        placeholder="ASINを入力、一行で一つだけです。" v-model="asinString"></textarea>
       <div class="col-md-4">
         <button class="btn btn-common btn-info mb-10" @click="$refs.inputCSV.click()">
-          Import CSV
+          CSVインポート
         </button>
         <input ref="inputCSV" hidden type="file" name="" accept=".txt" id="" @change="onSelectFileCSV" />
         <br>
         <button class="btn btn-common btn-success" @click="onClickAddAsin">
-          Process
+          プロセスへ
         </button>
       </div>
     </div>
@@ -60,7 +60,7 @@ export default {
       } catch (error) {
         this.$swal.fire({
           icon: "error",
-          title: "Errror.!",
+          title: "エラー",
           text: error.message
         });
       }
@@ -71,16 +71,16 @@ export default {
           this.isErrorGroupId = true;
           return this.$swal.fire({
             icon: "error",
-            title: "Lỗi",
-            text: "Chưa nhập Group Asin ID.!"
+            title: "エラー",
+            text: "接続エラー!"
           });
         }
         if (!this.asinString || this.asinString.trim() === "") {
           this.isErrorasinString = true;
           return this.$swal.fire({
             icon: "error",
-            title: "Lỗi",
-            text: "Chưa nhập Asin code.!"
+            title: "エラー",
+            text: "接続エラー!"
           });
         }
         let listCode = this.asinString
@@ -92,13 +92,13 @@ export default {
           await this.$emit("getListAsin");
           this.$swal.fire({
             icon: "success",
-            title: "Success.!"
+            title: "成功.!"
           });
         }
       } catch (error) {
         this.$swal.fire({
           icon: "error",
-          title: "Errror.!",
+          title: "エラー",
           text: error.message
         });
       }

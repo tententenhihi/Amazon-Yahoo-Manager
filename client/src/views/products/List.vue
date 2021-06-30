@@ -1,15 +1,15 @@
 <template>
   <div class="wrapper-content">
     <div class="box-header">
-      <i class="fa fa-list mr-2"></i>Product List
+      <i class="fa fa-list mr-2"></i>製品リスト
       <button class="btn btn-add-account" @click="goToFormProduct(0)">
-        <i class="fa fa-plus"></i> Add Product
+        <i class="fa fa-plus"></i> その他の商品
       </button>
     </div>
     <div class="csv-button ml-20">
-      <button class="btn btn-outline-info mr-1 mb-1" @click="$refs.importCSV.click()">Import CSV</button>
+      <button class="btn btn-outline-info mr-1 mb-1" @click="$refs.importCSV.click()">CSVインポート</button>
       <input type="file" hidden ref="importCSV" accept=".csv" name="" @change="onChangeFileCSV">
-      <button class="btn btn-outline-primary mb-1" @click="onClickExportCSV">Export CSV</button>
+      <button class="btn btn-outline-primary mb-1" @click="onClickExportCSV">CSVエスポルト</button>
     </div>
     <hr class="mt-10" />
     <div class="box-content">
@@ -17,15 +17,15 @@
         <table id="productTable" class="display pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
-              <th scope="col">No</th>
-              <th scope="col">Image</th>
-              <th scope="col">Name</th>
-              <th scope="col">Price</th>
-              <th scope="col">Delivery</th>
-              <th scope="col">Count</th>
-              <th scope="col">Asin</th>
-              <th scope="col">Created</th>
-              <th scope="col">Actions</th>
+              <th scope="col">数</th>
+              <th scope="col">画像</th>
+              <th scope="col">名前</th>
+              <th scope="col">価格</th>
+              <th scope="col">配達</th>
+              <th scope="col">カウント</th>
+              <th scope="col">ASIN</th>
+              <th scope="col">で作成された</th>
+              <th scope="col">操作</th>
             </tr>
           </thead>
           <tbody>
@@ -42,10 +42,10 @@
               <td>{{ product.created }}</td>
               <td>
                 <button class="btn btn-md btn-warning mb-1 mr-1" @click="goToFormProduct(product._id)">
-                  <i class="fa fa-edit"></i> Edit
+                  <i class="fa fa-edit"></i> 編集
                 </button>
                 <button class="btn btn-md btn-danger" @click="onConfirmDelete(product, index)">
-                  <i class="fa fa-trash"></i> Delete
+                  <i class="fa fa-trash"></i> 削除
                 </button>
               </td>
             </tr>
@@ -79,7 +79,7 @@ export default {
       } catch (error) {
         this.$swal.fire({
           icon: "error",
-          title: "Errror.!",
+          title: "エラー",
           text: error.message
         });
       }
@@ -97,14 +97,14 @@ export default {
       let self = this;
       self.$swal
         .fire({
-          title: "Delete",
-          text: "Do you really want to remove this product?",
+          title: "削除",
+          text: "この製品を本当に削除しますか？",
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
-          confirmButtonText: '<i class="fa fa-check-square"></i> Yes',
-          cancelButtonText: '<i class="fa fa-times"></i>  No',
+          confirmButtonText: '<i class="fa fa-check-square"></i> はい',
+          cancelButtonText: '<i class="fa fa-times"></i>  番号',
         })
         .then(async (result) => {
           if (result.isConfirmed) {
@@ -113,8 +113,8 @@ export default {
               self.products.splice(index, 1);
               this.createDatatable()
               self.$swal.fire(
-                "Deleted!",
-                "Your product has been deleted.",
+                "削除しました！",
+                "商品が削除されました。",
                 "success"
               );
             }
@@ -152,8 +152,8 @@ export default {
           let result = await ProductAmazonApi.createByCsv(productList);
           if (result && result.status === 200) {
             self.$swal.fire(
-              "Successful!",
-              "Your product has been updated.",
+              "成功",
+              "製品が更新されました。",
               "success"
             );
             self.products = self.products.concat(result.data.products)
@@ -166,7 +166,7 @@ export default {
       } catch (error) {
         this.$swal.fire({
           icon: "error",
-          title: "Errror.!",
+          title: "エラー",
           text: error.message
         });
       }
@@ -175,16 +175,17 @@ export default {
       let data = []
       data.push([
         'Asin"',
-        '"Name"',
+        '"名前"',
         '"Url"',
-        '"Price"',
-        '"Count Product"',
-        '"Delivery"',
-        '"Type"',
-        '"Status"',
-        '"Image"',
-        '"Created At"',
+        '"価格"',
+        '"カウント製品""',
+        '"配達"',
+        '"タイプ"',
+        '"状態"',
+        '"画像"',
+        '"で作成"',
       ])
+      
       this.products.map((product) => {
         let item = [
           product.asin + '"',

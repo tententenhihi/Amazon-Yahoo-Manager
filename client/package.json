@@ -19,7 +19,7 @@
     "material-design-icons-iconfont": "^6.1.0",
     "vee-validate": "^3.4.10",
     "vue": "^2.5.2",
-    "vue-i18n": "^8.24.4",
+    "vue-i18n": "^8.24.5",
     "vue-loading-overlay": "^4.0.3",
     "vue-lodash": "^2.1.2",
     "vue-moment": "^4.1.0",

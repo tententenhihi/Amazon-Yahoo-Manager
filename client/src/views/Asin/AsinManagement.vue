@@ -3,13 +3,13 @@
     <div class="page-container">
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item ml-20">
-          <a class="nav-link active" id="import-tab" data-toggle="tab" href="#import" role="tab" aria-controls="import" aria-selected="true">Import Asin</a>
+          <a class="nav-link active" id="import-tab" data-toggle="tab" href="#import" role="tab" aria-controls="import" aria-selected="true">ASINインポート</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>
+          <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">履歴</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="black-list-tab" data-toggle="tab" href="#black-list" role="tab" aria-controls="black-list" aria-selected="false">Black list</a>
+          <a class="nav-link" id="black-list-tab" data-toggle="tab" href="#black-list" role="tab" aria-controls="black-list" aria-selected="false">ブラックリスト</a>
         </li>
       </ul>
       <div class="tab-content" id="myTabContent">
@@ -42,12 +42,12 @@ export default {
       search: "",
       headers: [
         {
-          text: "NO",
+          text: "数",
           value: "stt"
         },
-        { text: "Code", value: "code" },
-        { text: "Product", value: "isProductGeted" },
-        { text: "Created", value: "created" }
+        { text: "コード", value: "code" },
+        { text: "製品", value: "isProductGeted" },
+        { text: "で作成された", value: "created" }
       ]
     };
   },
@@ -66,7 +66,7 @@ export default {
       } catch (error) {
         this.$swal.fire({
           icon: "error",
-          title: "Errror.!",
+          title: "未ログイン!",
           text: error.message
         });
       }
