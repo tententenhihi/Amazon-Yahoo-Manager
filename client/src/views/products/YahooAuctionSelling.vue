@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper-content">
     <div class="box-header">
-      <i class="fa fa-list mr-2"></i>Yahoo Action Selling
+      <i class="fa fa-list mr-2"></i>落札商品管理
     </div>
     <hr class="mt-10" />
     <div class="box-content">

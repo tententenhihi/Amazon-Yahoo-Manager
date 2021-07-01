@@ -33,11 +33,11 @@
                 <td>
                   <div v-if="account.cookies_auction.length > 4">
                     認証
-                    <!-- <button class="btn btn-sm btn-info">再認証</button> -->
                   </div>
                   <div v-else style="color:red">
                     認証未
                   </div>
+                  <button class="btn btn-sm btn-info" @click="onReAuth(account)">再認証</button>
                 </td>
                 <td>{{ account.status }}</td>
                 <td>{{ account.statusMessage }}</td>
@@ -260,6 +260,9 @@ export default {
           }
         });
     },
+    async onReAuth (account) {
+      let result = await YahooAccountApi.update(account);
+    }
   },
 };
 </script>
