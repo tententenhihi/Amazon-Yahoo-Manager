@@ -9,8 +9,7 @@ const autoLoginYahoo = async (inputData, cb) => {
         if (inputData.status == 'ERROR') {
             console.log(' ==== Start login Yahoo ====');
             const browser = await puppeteer.launch({
-                args: ["--no-sandbox", "--disable-setuid-sandbox"],
-                headless: false
+                args: ["--no-sandbox", "--disable-setuid-sandbox"]
             });
             const page = await browser.newPage();
             await page.goto('https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver',
@@ -21,6 +20,7 @@ const autoLoginYahoo = async (inputData, cb) => {
             await page.waitForNavigation();
             await page.type('#passwd', inputData.password);
             await page.click('#btnSubmit');
+            console.log(page.url());
             // Get cookies
             const cookies = await page.cookies();
             console.log('cookies: ', cookies);
@@ -32,7 +32,7 @@ const autoLoginYahoo = async (inputData, cb) => {
                 console.log(' ==== End login ====');
                 cb(null, inputData);
             } else {
-                throw new Error('Can not get cookies')
+                throw new Error('Can not get cookies:', page.url())
             }
         }
         const browser = await puppeteer.launch({
