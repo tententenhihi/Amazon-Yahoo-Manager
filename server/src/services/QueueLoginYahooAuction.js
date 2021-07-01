@@ -9,7 +9,8 @@ const autoLoginYahoo = async (inputData, cb) => {
         if (inputData.status == 'ERROR') {
             console.log(' ==== Start login Yahoo ====');
             const browser = await puppeteer.launch({
-                args: ["--no-sandbox", "--disable-setuid-sandbox"]
+                args: ["--no-sandbox", "--disable-setuid-sandbox"],
+                headless: false
             });
             const page = await browser.newPage();
             await page.goto('https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver',
@@ -53,6 +54,7 @@ const autoLoginYahoo = async (inputData, cb) => {
             let price = tdList[2].children[0].children[0].data;
 
             let product = new ProductAuctionModel();
+            product.user_id = inputData.user_id;
             product.yahoo_id = inputData.yahoo_id;
             product.product_id = productId;
             product.name = name;
