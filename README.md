@@ -6,7 +6,7 @@
 
 # Update Server
 cd /root/Amazon-Yahoo-Manager <br />
-git pull origin feature/nghdung <br />
+git pull origin main <br />
 cd server/ <br />
 npm i <br />
 npm run build <br />
