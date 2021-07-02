@@ -8,10 +8,24 @@ const autoLoginYahoo = async (inputData, cb) => {
         console.log('start login and get product')
         if (inputData.status == 'ERROR') {
             console.log(' ==== Start login Yahoo ====');
-            const browser = await puppeteer.launch({
-                args: ["--no-sandbox", "--disable-setuid-sandbox"],
-                headless: false
-            });
+            const args = [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-infobars',
+                '--window-position=0,0',
+                '--ignore-certifcate-errors',
+                '--ignore-certifcate-errors-spki-list',
+                '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"'
+            ];
+        
+            const options = {
+                args,
+                headless: true,
+                ignoreHTTPSErrors: true,
+                userDataDir: './tmp'
+            };
+        
+            const browser = await puppeteer.launch(options);
             const page = await browser.newPage();
             await page.goto('https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver',
                 {waitUntil: 'load', timeout: 0});
