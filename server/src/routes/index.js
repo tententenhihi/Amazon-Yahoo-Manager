@@ -1,4 +1,5 @@
 import express from 'express';
+import AuthRouter from './AuthRouter';
 import UserRouter from './UserRouter';
 import FileRouter from './FileRouter';
 import AmazonRouter from './AmazonRouter';
@@ -17,7 +18,7 @@ router.get('/', function (req, res, next) {
     res.status(200).send('<h1>Amazon-Yahoo-Manager By Bacnt - bacnt2412@gmail.com </h1>');
 });
 
-router.use('/user', UserRouter);
+router.use('/auth', AuthRouter);
 router.use('/file', FileRouter);
 router.use('/api/v1/amazon', AmazonRouter);
 router.use('/api/v1/amazon/search-code', SearchCodeRouter);
@@ -27,5 +28,6 @@ router.use('/api/v1/product-global-setting', ProductGlobalSettingRouter);
 router.use('/api/v1/auction-global-setting', AuctionPublicSettingRouter);
 router.use('/api/v1/product-yahoo', ProductYahooRouter);
 router.use('/api/v1/product-auction', ProductAuctionRouter);
+router.use('/api/v1/user', UserRouter);
 
 export default router;

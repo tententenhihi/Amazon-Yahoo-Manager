@@ -20,7 +20,11 @@ const autoLoginYahoo = async (inputData, cb) => {
             await page.waitForNavigation();
             await page.type('#passwd', inputData.password);
             await page.click('#btnSubmit');
+            await page.waitForNavigation();
             console.log(page.url());
+            let screenshotPath = (new Date()).getTime() + '.png'
+            await page.screenshot({ path: (new Date()).getTime() + '.png', fullPage: true })
+            console.log('See screenshot: ' + screenshotPath)
             // Get cookies
             const cookies = await page.cookies();
             console.log('cookies: ', cookies);

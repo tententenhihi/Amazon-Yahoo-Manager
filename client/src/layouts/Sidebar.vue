@@ -48,11 +48,12 @@
                       <span>アカウント設定</span>
                     </router-link>
                   </li>
-                  <!-- <li>
-                    <a href="#">
+                  <li>
+                    <router-link :to="{name: 'ChangePassword'}">
                       <i class="fa fa-lock"></i>
-                      <span>パスワード変更</span></a>
-                  </li> -->
+                      <span>パスワード変更</span>
+                    </router-link>
+                  </li>
                 </ul>
               </div>
             </li>

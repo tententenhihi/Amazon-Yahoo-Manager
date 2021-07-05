@@ -6,7 +6,8 @@ import store from "../store/store";
 import Asin from "../views/Asin/index.vue";
 import ProductAmazon from "../views/ProductAmazon";
 
-const YahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/accounts" */ '@/views/users/YahooAccounts.vue');
+const YahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/users" */ '@/views/users/YahooAccounts.vue');
+const ChangePassword = () => import(/* webpackChunkName: "/static/js/chunks/users" */ '@/views/users/ChangePassword.vue');
 
 const AsinManagement = () => import(/* webpackChunkName: "/static/js/chunks/asin" */ '@/views/Asin/AsinManagement.vue');
 
@@ -63,6 +64,14 @@ const router = new Router({
       path: '/yahoo-accounts',
       name: 'YahooAccounts',
       component: YahooAccounts,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/change-password',
+      name: 'ChangePassword',
+      component: ChangePassword,
       meta: {
         requiredAuth: true
       }
