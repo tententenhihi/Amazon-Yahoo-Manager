@@ -17,6 +17,7 @@ import $ from 'jquery'
 import Constants from './constant/index'
 import Helpers from './helpers/index';
 import i18n from './lang/lang';
+import './helpers/validate';
 
 Vue.prototype.$ = $;
 Vue.prototype.$constants = Constants;

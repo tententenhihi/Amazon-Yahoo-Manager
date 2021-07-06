@@ -536,3 +536,7 @@ body {
   justify-content: flex-end;
   align-items: center;
 }
+.error-message {
+  margin: 5px 0;
+  color: red;
+}

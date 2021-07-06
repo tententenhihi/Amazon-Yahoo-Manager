@@ -21,7 +21,7 @@
           </div>
           <div class="user-info">
             <span class="user-name">
-              <strong>Mongji</strong>
+              <strong>Admin</strong>
             </span>
             <span class="user-role">Administrator</span>
             <span class="user-status">

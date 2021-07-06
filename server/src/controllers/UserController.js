@@ -24,7 +24,7 @@ class UserController {
             });
           });
         } else {
-          return response.error400({message: 'Password not match'});
+          return response.error400({message: '現在のパスワードが正しくありません'});
         }
       });
     } catch (error) {

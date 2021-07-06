@@ -26,6 +26,9 @@ const ProductDescriptionSetting =
 const YahooAuctionPublicSetting =
   () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/YahooAuctionPublicSetting.vue');
 
+// admin
+const AdminUsers = () => import(/* webpackChunkName: "/static/js/chunks/admin/users" */ '@/views/admin/users/Users.vue');
+
 Vue.use(Router);
 
 const router = new Router({
@@ -146,6 +149,16 @@ const router = new Router({
       component: YahooAuctionPublicSetting,
       meta: {
         requiredAuth: true
+      }
+    },
+    // admin
+    {
+      path: '/admin/users',
+      name: 'AdminUsers',
+      component: AdminUsers,
+      meta: {
+        requiredAuth: true,
+        layout: 'admin'
       }
     },
     {

@@ -102,7 +102,11 @@ export default {
 
         if (response && response.status === 200) {
           this.$store.dispatch("setUser", response.data.userData);
-          this.$router.push("/");
+          if (response.data.userData.type === 'admin') {
+            this.$router.push({name: 'AdminUsers'});
+          } else {
+            this.$router.push("/");
+          }
         }
         this.isLoading = false;
       }

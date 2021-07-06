@@ -60,6 +60,10 @@ var User = new Schema({
         type: Number,
         default: 10
     },
+    deleted_at: {
+        type: Date,
+        required: false,
+    },
     created: {
         type: Date,
         default: Date.now,

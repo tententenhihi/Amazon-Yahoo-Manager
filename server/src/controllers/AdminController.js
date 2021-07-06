@@ -1,19 +1,16 @@
 import UserModel from '../models/UserModel';
 import Response from '../utils/Response';
+import bcrypt from 'bcryptjs'
+const saltRounds = 10
 
 class AdminController {
   static async getAllUsers (req, res) {
     let response = new Response(res);
     try {
-      let userLogin = req.user
-      if (userLogin.type === 'admin') {
-        let users = await UserModel.find({
-          type: 'member',
-        })
-        return response.success200({users});
-      } else {
-        return response.error400({message: 'アクセスできません。'})
-      }
+      let users = await UserModel.find({
+        type: 'member',
+      })
+      return response.success200({users});
     } catch (error) {
       console.log(error);
       return response.error500(error)
@@ -22,20 +19,81 @@ class AdminController {
   static async createUser (req, res) {
     let response = new Response(res);
     try {
-      let userLogin = req.user
-      if (userLogin.type === 'admin') {
-        let users = await UserModel.find({
-          type: 'member',
-        })
-        return response.success200({users});
+      const {username, password, name, status} = req.body;
+      if (!username || !password || !name || !status) {
+        return response.error400({message: '完全な情報を入力してください。'})
+      }
+      let existUsers = await UserModel.find({username});
+      console.log('existUsers: ', existUsers);
+      if (existUsers.length) {
+        return response.error400({message: 'ユーザー名は既に存在します'})
       } else {
-        return response.error400({message: 'アクセスできません。'})
+        let user = new UserModel();
+        user.username = username;
+        user.name = name;
+        user.status = status;
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+          bcrypt.hash(password, salt, async function (err, hash) {
+            user.password = password;
+            user.hash_password = hash
+            await user.save()
+            return response.success200({user});
+          });
+        });
       }
     } catch (error) {
       console.log(error);
       return response.error500(error)
     }
-  } 
+  }
+
+  static async updateUser (req, res) {
+    let response = new Response(res);
+    try {
+      const {password, name, status} = req.body;
+      const {user_id} = req.params
+      let user = await UserModel.findById(user_id);
+      if (user) {
+        user.name = name;
+        user.status = status;
+        if (password) {
+          bcrypt.genSalt(saltRounds, function(err, salt) {
+            bcrypt.hash(password, salt, async function (err, hash) {
+              user.password = password;
+              user.hash_password = hash
+              await user.save()
+              return response.success200({user});
+            });
+          });
+        } else {
+          await user.save()
+          return response.success200({user});
+        }
+      } else {
+        return response.error400({message: 'ユーザーが見つかりません。'})
+      }
+    } catch (error) {
+      console.log(error);
+      return response.error500(error)
+    }
+  }
+
+  static async deleteUser (req, res) {
+    let response = new Response(res);
+    try {
+      const {user_id} = req.params
+      let user = await UserModel.findById(user_id);
+      if (user) {
+        await user.remove()
+        return response.success200({user});
+      } else {
+        return response.error400({message: 'ユーザーが見つかりません。'})
+      }
+    } catch (error) {
+      console.log(error);
+      return response.error500(error)
+    }
+  }
 }
 
 export default AdminController;
