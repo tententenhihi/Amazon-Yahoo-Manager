@@ -20,6 +20,8 @@
                 <th scope="col">ユーザー名</th>
                 <th scope="col">名前</th>
                 <th scope="col">状態</th>
+                <th scope="col">賞味期限</th>
+                <th scope="col">アカウント枠</th>
                 <th scope="col">変更</th>
               </tr>
             </thead>
@@ -29,6 +31,8 @@
                 <td>{{ user.username }}</td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.status }}</td>
+                <td>{{ user.used_account + '/' + user.maxYahooAccount }}</td>
+                <td>{{ $moment(user.expired_at).format("YYYY-MM-DD") }}</td>
                 <td>
                   <button
                     class="btn btn-md btn-warning mb-1"
@@ -55,6 +59,17 @@
         <h5><i class="fa fa-user-plus"></i> ユーザーを追加する</h5>
       </template>
       <template>
+        <div class="form-group form-line">
+          <label class="col-sm-4 control-label">Email: </label>
+          <div class="col-sm-7">
+            <input
+              :disabled="editId"
+              type="text"
+              class="form-control input-sm"
+              v-model="email"
+            />
+          </div>
+        </div>
         <div class="form-group form-line">
           <label class="col-sm-4 control-label">ユーザー名: </label>
           <div class="col-sm-7">
@@ -85,7 +100,7 @@
           </div>
         </div>
         <div class="form-group form-line">
-          <label class="col-sm-4 control-label">名前: </label>
+          <label class="col-sm-4 control-label">アカウント枠: </label>
           <div class="col-sm-7">
             <input
               type="number"
@@ -126,6 +141,22 @@
             />
           </div>
         </div>
+        <div class="form-group form-line">
+          <label class="col-sm-4 control-label">注意: </label>
+          <div class="col-sm-7">
+            <textarea v-model="note" class="form-control input-sm" cols="30" rows="10"></textarea>
+          </div>
+        </div>
+        <div class="form-group form-line">
+          <label class="col-sm-4 control-label">賞味期限: </label>
+          <div class="col-sm-7">
+            <input
+              type="date"
+              class="form-control input-sm"
+              v-model="expired_at"
+            />
+          </div>
+        </div>
       </template>
       <template v-slot:button>
         <div class="button-group">
@@ -146,7 +177,7 @@ import AdminApi from "@/services/AdminApi";
 const STATUS_USER = ['LIVE', 'LOCKED']
 export default {
   name: "AdminUsers",
-  data() {
+  data () {
     return {
       STATUS_USER,
       isResetPassword: false,
@@ -157,15 +188,21 @@ export default {
         status: STATUS_USER[0],
         password: "",
         re_password: "",
-        maxYahooAccount: 10
+        maxYahooAccount: 5,
+        email: "",
+        note: "",
+        expired_at: ""
       },
+      email: "",
+      note: "",
+      expired_at: "",
       username: "",
       name: "",
       status: STATUS_USER[0],
       password: "",
       re_password: "",
       editId: "",
-      maxYahooAccount: 10,
+      maxYahooAccount: 5,
       tableUser: null,
     };
   },
@@ -215,9 +252,12 @@ export default {
       this.username = "";
       this.name = "";
       this.status = STATUS_USER[0];
-      this.maxYahooAccount = 10;
+      this.maxYahooAccount = 5;
       this.password = "";
       this.re_password = "";
+      this.email = "";
+      this.note = "";
+      this.expired_at = "";
       this.editId = "";
     },
     async getListUser() {
@@ -233,6 +273,9 @@ export default {
       this.maxYahooAccount = user.maxYahooAccount
       this.password = "";
       this.re_password = "";
+      this.email = user.email;
+      this.note = user.note;
+      this.expired_at = this.$moment(user.expired_at).format("YYYY-MM-DD")
       this.editId = user._id;
       this.$refs.modalInfoUser.openModal();
     },
@@ -242,7 +285,10 @@ export default {
         name: this.name,
         status: this.status,
         password: this.password,
-        maxYahooAccount: this.maxYahooAccount
+        maxYahooAccount: this.maxYahooAccount,
+        email: this.email,
+        note: this.note,
+        expired_at: this.expired_at
       };
       if (this.editId) {
         credential._id = this.editId;
@@ -260,7 +306,7 @@ export default {
         let result = await AdminApi.createUser(credential);
         if (result && result.status === 200) {
           this.onCloseModal();
-          this.users.push(result.data.user);
+          this.users.push({...result.data.user, used_account: 0});
           this.createDatatable()
         }
       }

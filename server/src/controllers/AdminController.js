@@ -1,4 +1,5 @@
 import UserModel from '../models/UserModel';
+import YahooAccountModel from '../models/YahooAccount';
 import Response from '../utils/Response';
 import bcrypt from 'bcryptjs'
 const saltRounds = 10
@@ -10,6 +11,10 @@ class AdminController {
       let users = await UserModel.find({
         type: 'member',
       })
+      for (let index = 0; index < users.length; index++) {
+        let countAccount = await YahooAccountModel.find({user_id: users[index]._id}).countDocuments();
+        users[index].used_account = countAccount;
+      }
       return response.success200({users});
     } catch (error) {
       console.log(error);
@@ -19,11 +24,11 @@ class AdminController {
   static async createUser (req, res) {
     let response = new Response(res);
     try {
-      const {username, password, name, status} = req.body;
-      if (!username || !password || !name || !status) {
+      const {username, password, name, status, email, expired_at, note} = req.body;
+      if (!username || !password || !name || !status || !email || !expired_at) {
         return response.error400({message: '完全な情報を入力してください。'})
       }
-      let existUsers = await UserModel.find({username});
+      let existUsers = await UserModel.find({email});
       console.log('existUsers: ', existUsers);
       if (existUsers.length) {
         return response.error400({message: 'ユーザー名は既に存在します'})
@@ -31,7 +36,10 @@ class AdminController {
         let user = new UserModel();
         user.username = username;
         user.name = name;
+        user.email = email;
+        user.expired_at = expired_at;
         user.status = status;
+        user.note = note
         bcrypt.genSalt(saltRounds, function(err, salt) {
           bcrypt.hash(password, salt, async function (err, hash) {
             user.password = password;
@@ -50,12 +58,14 @@ class AdminController {
   static async updateUser (req, res) {
     let response = new Response(res);
     try {
-      const {password, name, status} = req.body;
+      const {password, name, status, experied_at, note} = req.body;
       const {user_id} = req.params
       let user = await UserModel.findById(user_id);
       if (user) {
         user.name = name;
         user.status = status;
+        user.experied_at = experied_at;
+        user.note = note;
         if (password) {
           bcrypt.genSalt(saltRounds, function(err, salt) {
             bcrypt.hash(password, salt, async function (err, hash) {
