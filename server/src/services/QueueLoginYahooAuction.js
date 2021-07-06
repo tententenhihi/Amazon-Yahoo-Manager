@@ -3,6 +3,10 @@ import puppeteer from 'puppeteer';
 import cheerio from 'cheerio';
 import ProductAuctionModel from '../models/ProductAuctionModel'
 let queueLogin = null;
+
+function convertCookieToString(cookies) {
+    return cookies.map(function(c) { return `${c.name}=${c.value}` }).join('; ')
+}
 const autoLoginYahoo = async (inputData, cb) => {
     try {
         console.log('start login and get product')
@@ -37,7 +41,7 @@ const autoLoginYahoo = async (inputData, cb) => {
             await page.click('#btnSubmit');
             // Get cookies
             const cookies = await page.cookies();
-            console.log('cookies: ', cookies);
+            console.log('raw_cookies: ', convertCookieToString(cookies));
             if (cookies.length > 4) {
                 inputData.cookies_auction = cookies;
                 inputData.status = 'SUCCESS';
