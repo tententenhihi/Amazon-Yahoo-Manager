@@ -37,7 +37,7 @@
             </li>
             
             <li class="sidebar-dropdown mt-60" @click="onClickLogout">
-              <a href="#">
+              <a style="cursor: pointer">
                 <i class="fa fa-power-off"></i>
                 <span>ログアウト</span>
               </a>

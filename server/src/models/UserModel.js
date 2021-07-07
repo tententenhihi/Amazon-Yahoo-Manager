@@ -16,7 +16,7 @@ var User = new Schema({
         default: '',
     },
     verified_at: {
-        type: String,
+        type: Date,
         default: ''
     },
     password: {

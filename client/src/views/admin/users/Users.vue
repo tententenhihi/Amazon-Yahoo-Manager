@@ -17,6 +17,7 @@
             <thead class="thead-purple">
               <tr>
                 <th scope="col">No</th>
+                <th scope="col">メールアドレス</th>
                 <th scope="col">ユーザー名</th>
                 <th scope="col">名前</th>
                 <th scope="col">状態</th>
@@ -28,6 +29,7 @@
             <tbody>
               <tr v-for="(user, index) in users" :key="user._id">
                 <th scope="row">{{ index + 1 }}</th>
+                <td>{{ user.email }}</td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.status }}</td>
@@ -60,7 +62,7 @@
       </template>
       <template>
         <div class="form-group form-line">
-          <label class="col-sm-4 control-label">Email: </label>
+          <label class="col-sm-4 control-label">メールアドレス: </label>
           <div class="col-sm-7">
             <input
               :disabled="editId"

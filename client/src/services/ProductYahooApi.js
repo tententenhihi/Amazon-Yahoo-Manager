@@ -1,6 +1,14 @@
 import Api from "./api";
 const prefix = '/api/v1/product-yahoo'
 export default {
+  getPhotos(data) {
+    let configs = {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+    return Api.post(`${prefix}/get_photos`, data, configs);
+  },
   get(credentials) {
     return Api.get(`${prefix}/get`, credentials);
   },

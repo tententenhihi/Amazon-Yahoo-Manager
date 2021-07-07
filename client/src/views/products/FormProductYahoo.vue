@@ -10,6 +10,19 @@
           <div class="col-md-9">
             <div class="row">::: 商品情報 :::</div>
             <div class="row">
+              <div class="col-md-4 text-align-end">Photos :</div>
+              <div class="col-md-8">
+                <input type="file" id="file" ref="file" @change="selectFile()"/>
+              </div>
+            </div>
+            <div class="row"></div>
+            <div class="row" v-if="product.photo_url">
+              <div class="col-md-4 text-align-end"></div>
+              <div class="col-md-8">
+                <img :src="product.photo_url" width="100px" />
+              </div>
+            </div>
+            <div class="row">
               <div class="col-md-4 text-align-end">商品の状態 :</div>
               <div class="col-md-8">
                 <input type="radio" v-model="product.product_status" class="ml-2" id="second" :value="1">
@@ -427,7 +440,11 @@ export default {
         bold_text: 0,
         bg_color: 0,
         conspicuous_icon: 1,
-        gift_icon: false
+        gift_icon: false,
+        photo_url: '',
+        photo_height: 0,
+        photo_width: 0,
+        thumbnail_path: ''
       },
       HOLDING_PERIOD,
       ENDING_TIME,
@@ -452,6 +469,19 @@ export default {
     }
   },
   methods: {
+    async selectFile() {
+      this.file = this.$refs.file.files[0];
+
+      let formData = new FormData();
+      formData.append('file', this.file);
+
+      let result = await ProductYahooApi.getPhotos(formData)
+
+      this.product.photo_url = result.data.url
+      this.product.photo_height = result.data.height
+      this.product.photo_width = result.data.width
+      this.product.thumbnail_path = result.data.thumb_path
+    },
     async onSaveProduct () {
       let result = null
       if (this.productYahooId == 0) {

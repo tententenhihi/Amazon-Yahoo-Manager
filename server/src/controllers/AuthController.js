@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { SECRET_KEY, LIFE_TIME_TOKEN } from '../configs/settings';
 import UserService from '../services/UserService';
 import Utils from '../utils/Utils';
-
+import VerifyCodeSchema from '../models/VerifyCodeModel';
 class AuthController {
     static async checkAdmin(req, res, next) {
         let user = req.user;
@@ -108,6 +108,28 @@ class AuthController {
         } catch (error) {
             console.log('===========', error);
             return response.error500(error);
+        }
+    }
+
+    static async forgotPassword (req, res) {
+        let response = new Response(res);
+        try {
+            const {email} = req.body
+            let user = await UserService.findUser({email});
+            console.log(user);
+            if (user) {
+                let newCode = new VerifyCodeSchema();
+                newCode.email = user.email
+                newCode.code = Utils.generateKey()
+                await newCode.save();
+                // :todo send mail
+                return response.success200({status: true})
+            } else {
+                return response.error400({message: 'ユーザーが見つかりません。'})
+            }
+
+        } catch (error) {
+            response.error500(error);
         }
     }
 }

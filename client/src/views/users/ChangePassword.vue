@@ -57,7 +57,6 @@ export default {
     async onChangePassword () {
       this.passwordCompare = this.credential.password
       let validate = await this.$refs.formChangePass.validate();
-      console.log(validate);
       if (validate) {
         let res = await UserApi.changePassword(this.credential);
         if (res && res.status === 200) {

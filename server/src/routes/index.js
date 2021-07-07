@@ -10,6 +10,8 @@ import ProductGlobalSettingRouter from './ProductGlobalSettingRouter';
 import AuctionPublicSettingRouter from './AuctionPublicSettingRouter';
 import ProductYahooRouter from './ProductYahooRouter';
 import ProductAuctionRouter from './ProductAuctionRouter';
+import TradeMessageTemplateRouter from './TradeMessageTemplateRouter';
+import RatingTemplateRouter from './RatingTemplateRouter';
 import AdminRouter from './AdminRouter';
 
 var router = express.Router();
@@ -29,6 +31,8 @@ router.use('/api/v1/product-global-setting', ProductGlobalSettingRouter);
 router.use('/api/v1/auction-global-setting', AuctionPublicSettingRouter);
 router.use('/api/v1/product-yahoo', ProductYahooRouter);
 router.use('/api/v1/product-auction', ProductAuctionRouter);
+router.use('/api/v1/trade-message-template', TradeMessageTemplateRouter);
+router.use('/api/v1/rating-template', RatingTemplateRouter);
 router.use('/api/v1/user', UserRouter);
 router.use('/api/v1/admin', AdminRouter);
 
