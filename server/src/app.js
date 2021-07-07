@@ -14,6 +14,7 @@ import QueueLoginYahooAuction from './services/QueueLoginYahooAuction'
 import SearchCodeSchema from './models/SearchCodeAmazonModel';
 import upload from 'express-fileupload'
 import getProductYahooAuction from './crons/getProductYahooAuction'
+import AuctionYahooService from './services/AuctionYahooService';
 
 const app = express();
 // Fix Cross
@@ -49,6 +50,8 @@ let initData = async () => {
     //     const element = listCode[i];
     //     await element.remove();
     // }
+
+    AuctionYahooService.getProductAuctionsSuccess();
 };
 // Connect mongo DB
 MongoDB.connect(initData);
