@@ -1,12 +1,16 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Login from "../views/Login";
 import Home from "../views/Home";
 import store from "../store/store";
 import Asin from "../views/Asin/index.vue";
 import ProductAmazon from "../views/ProductAmazon";
 
-const YahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/accounts" */ '@/views/users/YahooAccounts.vue');
+const Login = () => import(/* webpackChunkName: "/static/js/chunks/auth" */ '@/views/auth/Login.vue');
+const ForgotPassword = () => import(/* webpackChunkName: "/static/js/chunks/auth" */ '@/views/auth/ForgotPassword.vue');
+const ResetPassword = () => import(/* webpackChunkName: "/static/js/chunks/auth" */ '@/views/auth/ResetPassword.vue');
+
+const YahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/users" */ '@/views/users/YahooAccounts.vue');
+const ChangePassword = () => import(/* webpackChunkName: "/static/js/chunks/users" */ '@/views/users/ChangePassword.vue');
 
 const AsinManagement = () => import(/* webpackChunkName: "/static/js/chunks/asin" */ '@/views/Asin/AsinManagement.vue');
 
@@ -17,13 +21,22 @@ const FormProductYahoo = () => import(/* webpackChunkName: "/static/js/chunks/pr
 
 const YahooAuctionSelling = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/YahooAuctionSelling.vue');
 
-
 const TemplateSetting =
   () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/TemplateSetting.vue');
 const ProductDescriptionSetting =
   () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/ProductDescriptionSetting.vue');
 const YahooAuctionPublicSetting =
   () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/YahooAuctionPublicSetting.vue');
+
+const TradeMessageTemplate = () => import(/* webpackChunkName: "/static/js/chunks/trade-message-template" */ '@/views/trade-message-template/Index.vue');
+const FormTradeMessageTemplate = () => import(/* webpackChunkName: "/static/js/chunks/trade-message-template" */ '@/views/trade-message-template/FormInput.vue');
+
+const RatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/rating-template" */ '@/views/rating-template/Index.vue');
+const FormRatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/rating-template" */ '@/views/rating-template/FormInput.vue');
+
+
+// admin
+const AdminUsers = () => import(/* webpackChunkName: "/static/js/chunks/admin/users" */ '@/views/admin/users/Users.vue');
 
 Vue.use(Router);
 
@@ -34,6 +47,16 @@ const router = new Router({
       path: "/login",
       name: "Login",
       component: Login
+    },
+    {
+      path: "/forgot-password",
+      name: "ForgotPassword",
+      component: ForgotPassword
+    },
+    {
+      path: "/reset-password",
+      name: "ResetPassword",
+      component: ResetPassword
     },
     {
       path: "/",
@@ -63,6 +86,14 @@ const router = new Router({
       path: '/yahoo-accounts',
       name: 'YahooAccounts',
       component: YahooAccounts,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/change-password',
+      name: 'ChangePassword',
+      component: ChangePassword,
       meta: {
         requiredAuth: true
       }
@@ -137,6 +168,48 @@ const router = new Router({
       component: YahooAuctionPublicSetting,
       meta: {
         requiredAuth: true
+      }
+    },
+    {
+      path: '/trade-message-template',
+      name: 'TradeMessageTemplate',
+      component: TradeMessageTemplate,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/trade-message-template/:id',
+      name: 'FormTradeMessageTemplate',
+      component: FormTradeMessageTemplate,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/rating-template',
+      name: 'RatingTemplate',
+      component: RatingTemplate,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/rating-template/:id',
+      name: 'FormRatingTemplate',
+      component: FormRatingTemplate,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    // admin
+    {
+      path: '/admin/users',
+      name: 'AdminUsers',
+      component: AdminUsers,
+      meta: {
+        requiredAuth: true,
+        layout: 'admin'
       }
     },
     {

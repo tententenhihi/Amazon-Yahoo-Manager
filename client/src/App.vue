@@ -1,28 +1,26 @@
 <template>
   <div id="app">
-    <div class="page-wrapper chiller-theme toggled">
-      <Sidebar v-if="isUserLoggedIn" />
-      <main class="page-content">
-        <router-view />
-      </main>
-    </div>
+    <component :is="layout"></component>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import Header from "./layouts/Header.vue";
-import Sidebar from "./layouts/Sidebar.vue";
+import NormalLayout from "./layouts/NormalLayout.vue";
+import AdminLayout from "./layouts/AdminLayout.vue";
 
 export default {
   name: "App",
 
   components: {
-    Header,
-    Sidebar
+    NormalLayout,
+    AdminLayout
   },
   computed: {
-    ...mapState(["isUserLoggedIn"])
+    ...mapState(["isUserLoggedIn"]),
+    layout () {
+      return (this.$route.meta.layout || 'normal') + '-layout';
+    }
   },
   data: () => ({
     //
