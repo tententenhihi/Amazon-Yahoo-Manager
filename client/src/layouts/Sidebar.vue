@@ -21,7 +21,7 @@
           </div>
           <div class="user-info">
             <span class="user-name">
-              <strong>Mongji</strong>
+              <strong>Admin</strong>
             </span>
             <span class="user-role">Administrator</span>
             <span class="user-status">
@@ -48,11 +48,12 @@
                       <span>アカウント設定</span>
                     </router-link>
                   </li>
-                  <!-- <li>
-                    <a href="#">
+                  <li>
+                    <router-link :to="{name: 'ChangePassword'}">
                       <i class="fa fa-lock"></i>
-                      <span>パスワード変更</span></a>
-                  </li> -->
+                      <span>パスワード変更</span>
+                    </router-link>
+                  </li>
                 </ul>
               </div>
             </li>
@@ -101,6 +102,18 @@
                     </router-link>
                   </li>
                   <li>
+                    <router-link :to="{name: 'TradeMessageTemplate'}">
+                      <i class="fa fa-book"></i>
+                      <span>取引ナビテンプレート管理</span>
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link :to="{name: 'RatingTemplate'}">
+                      <i class="fa fa-book"></i>
+                      <span>評価テンプレート管理</span>
+                    </router-link>
+                  </li>
+                  <li>
                     <router-link :to="{name: 'YahooAuctionPublicSetting'}">
                       <i class="fa fa-tasks"></i>
                       <span>自動出品設定</span>
@@ -110,7 +123,7 @@
               </div>
             </li>
             <li class="sidebar-dropdown mt-60" @click="onClickLogout">
-              <a href="#">
+              <a style="cursor: pointer">
                 <i class="fa fa-power-off"></i>
                 <span>ログアウト</span>
               </a>
@@ -127,7 +140,7 @@ export default {
   methods: {
     onClickLogout() {
       this.$store.dispatch("setUser", null);
-      this.$router.push({ path: "/login" });
+      this.$router.push({ name: "Login" });
     },
   }
 };

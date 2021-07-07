@@ -60,6 +60,9 @@
               </div>
             </div>
           </ValidationObserver>
+          <div>
+            Forgot pasword
+          </div>
         </div>
       </div>
     </section>
@@ -67,7 +70,7 @@
 </template>
 
 <script>
-import AuthApi from "../services/auth";
+import AuthApi from "@/services/auth";
 
 export default {
   data() {
@@ -102,7 +105,11 @@ export default {
 
         if (response && response.status === 200) {
           this.$store.dispatch("setUser", response.data.userData);
-          this.$router.push("/");
+          if (response.data.userData.type === 'admin') {
+            this.$router.push({name: 'AdminUsers'});
+          } else {
+            this.$router.push("/");
+          }
         }
         this.isLoading = false;
       }

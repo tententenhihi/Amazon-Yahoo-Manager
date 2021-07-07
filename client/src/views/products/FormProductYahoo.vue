@@ -491,8 +491,8 @@ export default {
       }
       if (result && result.status === 200) {
         this.$swal.fire(
-          "Successful!",
-          "Your product has been updated.",
+          "成功",
+          "製品が更新されました。",
           "success"
         );
         this.$router.push({name: 'ProductYahooList'})

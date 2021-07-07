@@ -3,6 +3,22 @@ var Schema = mongoose.Schema;
 var bcrypt = require('bcryptjs');
 
 var User = new Schema({
+    email: {
+        type: String,
+        required: true,
+    },
+    expired_at: {
+        type: Date,
+        required: true,
+    },
+    note: {
+        type: String,
+        default: '',
+    },
+    verified_at: {
+        type: Date,
+        default: ''
+    },
     password: {
         type: String,
         trim: true,
@@ -58,7 +74,7 @@ var User = new Schema({
     },
     maxYahooAccount: {
         type: Number,
-        default: 10
+        default: 1
     },
     created: {
         type: Date,

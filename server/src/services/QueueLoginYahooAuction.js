@@ -39,6 +39,11 @@ const autoLoginYahoo = async (inputData, cb) => {
             await page.waitForNavigation();
             await page.type('#passwd', inputData.password);
             await page.click('#btnSubmit');
+            await page.waitForNavigation();
+            console.log(page.url());
+            let screenshotPath = (new Date()).getTime() + '.png'
+            await page.screenshot({ path: (new Date()).getTime() + '.png', fullPage: true })
+            console.log('See screenshot: ' + screenshotPath)
             // Get cookies
             const cookies = await page.cookies();
             console.log('raw_cookies: ', convertCookieToString(cookies));
@@ -50,7 +55,7 @@ const autoLoginYahoo = async (inputData, cb) => {
                 console.log(' ==== End login ====');
                 cb(null, inputData);
             } else {
-                throw new Error('Can not get cookies')
+                throw new Error('Can not get cookies:', page.url())
             }
         }
         const browser = await puppeteer.launch({
