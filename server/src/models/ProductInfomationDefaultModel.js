@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var ProductYahoo = new Schema({
+var ProductInfomationDefault = new Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -65,7 +65,7 @@ var ProductYahoo = new Schema({
     },
     prefecture: {
         type: String,
-        require: ''
+        default: ''
     },
     address: {
         type: String,
@@ -130,5 +130,5 @@ var ProductYahoo = new Schema({
 });
 
 
-var ProductYahooSchema = mongoose.model('ProductYahoo', ProductYahoo);
-module.exports = ProductYahooSchema;
+var ProductInfomationDefaultSchema = mongoose.model('ProductInfomationDefault', ProductInfomationDefault);
+module.exports = ProductInfomationDefaultSchema;
