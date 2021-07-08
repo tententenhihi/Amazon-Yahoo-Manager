@@ -6,8 +6,9 @@ export default class ProductInfomationDefaultController {
         let response = new Response(res);
         try {
             let user = req.user;
-            let products = await ProductInfomationDefaultService.get(user._id);
-            return response.success200({ products });
+            let product = await ProductInfomationDefaultService.get(user._id);
+            console.log(product);
+            return response.success200(product);
         } catch (error) {
             console.log(error);
             return response.error500(error);
@@ -89,21 +90,7 @@ export default class ProductInfomationDefaultController {
                 gift_icon,
             };
 
-            let result = await ProductInfomationDefaultService.update(_id, data);
-            if (result) {
-                response.success200(result);
-            }
-        } catch (error) {
-            response.error500(error);
-        }
-    }
-
-    static async getDetailProduct(req, res) {
-        let response = new Response(res);
-        try {
-            const { _id } = req.params;
-            console.log(_id);
-            let result = await ProductInfomationDefaultService.show(_id);
+            let result = await ProductInfomationDefaultService.create(data);
             if (result) {
                 response.success200(result);
             }

@@ -1,7 +1,7 @@
 import Queue from 'better-queue';
 import puppeteer from 'puppeteer';
 import cheerio from 'cheerio';
-import ProductAuctionModel from '../models/ProductAuctionModel'
+import ProductYahooModel from '../models/ProductYahooModel'
 let queueLogin = null;
 
 function convertCookieToString(cookies) {
@@ -76,7 +76,7 @@ const autoLoginYahoo = async (inputData, cb) => {
             let name = tdList[1].children[0].children[0].data;
             let price = tdList[2].children[0].children[0].data;
 
-            let product = new ProductAuctionModel();
+            let product = new ProductYahooModel();
             product.user_id = inputData.user_id;
             product.yahoo_id = inputData.yahoo_id;
             product.product_id = productId;

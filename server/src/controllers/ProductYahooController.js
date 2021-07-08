@@ -31,11 +31,80 @@ export default class ProductYahooController {
         }
     }
 
-    static async uploadProduct(req, res) {
+    static async createProduct(req, res) {
         let response = new Response(res);
         try {
-            let result = await AuctionYahooService.uploadNewProduct();
-            response.success200({ result });
+            let result;
+            let user = req.user;
+            let {
+                product_status,
+                product_status_des,
+                price_cut_negotiations,
+                quantity,
+                holding_period,
+                ending_time,
+                returnAbility,
+                remarks_for_returns,
+                bid_limit,
+                automatic_extension,
+                early_termination,
+                auto_relisting,
+                paid_type,
+                shipping_cost,
+                prefecture,
+                address,
+                shipping_method_1,
+                shipping_rate_1,
+                shipping_method_2,
+                shipping_rate_2,
+                shipping_method_3,
+                shipping_rate_3,
+                overseas_shipping,
+                ship_schedule,
+                featured_auction,
+                bold_text,
+                bg_color,
+                conspicuous_icon,
+                gift_icon,
+            } = req.body;
+
+            let data = {
+                user_id: user._id,
+                product_status,
+                product_status_des,
+                price_cut_negotiations,
+                quantity,
+                holding_period,
+                ending_time,
+                returnAbility,
+                remarks_for_returns,
+                bid_limit,
+                automatic_extension,
+                early_termination,
+                auto_relisting,
+                paid_type,
+                shipping_cost,
+                prefecture,
+                address,
+                shipping_method_1,
+                shipping_rate_1,
+                shipping_method_2,
+                shipping_rate_2,
+                shipping_method_3,
+                shipping_rate_3,
+                overseas_shipping,
+                ship_schedule,
+                featured_auction,
+                bold_text,
+                bg_color,
+                conspicuous_icon,
+                gift_icon,
+            };
+
+            let createProduct = await ProductInfomationDefaultService.update(_id, data);
+            // let uploadAuction = await AuctionYahooService.uploadNewProduct();
+
+            response.success200({ createProduct });
         } catch (error) {
             console.log(error);
             console.log(error.response);

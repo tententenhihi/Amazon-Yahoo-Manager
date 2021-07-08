@@ -27,6 +27,8 @@ const ProductDescriptionSetting =
   () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/ProductDescriptionSetting.vue');
 const YahooAuctionPublicSetting =
   () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/YahooAuctionPublicSetting.vue');
+const ProductInfomationDefault = () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/ProductInfomationDefault.vue');
+
 
 const TradeMessageTemplate = () => import(/* webpackChunkName: "/static/js/chunks/trade-message-template" */ '@/views/trade-message-template/Index.vue');
 const FormTradeMessageTemplate = () => import(/* webpackChunkName: "/static/js/chunks/trade-message-template" */ '@/views/trade-message-template/FormInput.vue');
@@ -134,6 +136,14 @@ const router = new Router({
       path: '/products-yahoo/:id',
       name: 'FormProductYahoo',
       component: FormProductYahoo,
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/product-information-default',
+      name: 'ProductInfomationDefault',
+      component: ProductInfomationDefault,
       meta: {
         requiredAuth: true
       }

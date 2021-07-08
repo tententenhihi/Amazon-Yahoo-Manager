@@ -9,7 +9,7 @@ export default class ProductInfomationDefaultService {
                     user_id: userId
                 });
             }
-            return Array.isArray(res) ? res[0] : res._doc;
+            return Array.isArray(res) ? res[0]._doc : res._doc;
         } catch (error) {
             console.log(error);
             throw new Error('ProductInfomationDefaultService-get: ' + error.message);
@@ -26,7 +26,6 @@ export default class ProductInfomationDefaultService {
     }
     static async show(productId) {
         try {
-            console.log(productId);
             let product = await ProductInfomationDefaultSchema.findById(productId);
             if (!product) {
                 throw new Error('Product not found');
@@ -52,6 +51,4 @@ export default class ProductInfomationDefaultService {
             throw new Error(error.message);
         }
     }
-
- 
 }

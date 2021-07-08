@@ -69,12 +69,28 @@
                 <span>AMAZON製品</span>
               </router-link>
             </li>
-            <li class="sidebar-dropdown">
+            <li class="sidebar-dropdown active">
+              <a href="#">
+                <i class="fa fa-check-square"></i>
+                <span>出品管理</span>
+              </a>
+              <div class="sidebar-submenu d-block">
+                <ul>
+                  <li>
+                    <router-link :to="{name: 'ProductYahooList'}">
+                      <i class="fa fa-calendar"></i>
+                      <span>Y!オーク取扱商品管理</span>
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <!-- <li class="sidebar-dropdown">
               <router-link :to="{name: 'ProductYahooList'}">
                 <i class="fa fa-calendar"></i>
                 <span>YAHOO製品</span>
               </router-link>
-            </li>
+            </li> -->
             <li class="sidebar-dropdown">
               <router-link :to="{name: 'YahooAuctionSelling'}">
                 <i class="fa fa-list"></i>
@@ -89,6 +105,12 @@
               </a>
               <div class="sidebar-submenu d-block">
                 <ul>
+                  <li>
+                    <router-link :to="{name: 'ProductInfomationDefault'}">
+                      <i class="fa fa-list-alt"></i>
+                      <span>出品データデフォルト値</span>
+                    </router-link>
+                  </li>
                   <li>
                     <router-link :to="{name: 'TemplateSetting'}">
                       <i class="fa fa-list-alt"></i>
