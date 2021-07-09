@@ -427,6 +427,7 @@
 
 <script>
 import ProductYahooApi from '@/services/ProductYahooApi'
+import ProductInfomationDefaultApi from '@/services/ProductInfomationDefaultApi'
 const HOLDING_PERIOD = [
   { display: '当日終了', value: 0 },
   { display: '1日間', value: 1 },
@@ -599,9 +600,9 @@ export default {
     }
   },
   async mounted () {
-    let result = await ProductYahooApi.get()
-    if (result && result.status === 200) {
-      this.product = {...this.product, ...result.data}
+    let infoDefault = await ProductInfomationDefaultApi.get()
+    if (infoDefault && infoDefault.status === 200) {
+      this.product = {...this.product, ...infoDefault.data}
     }
   },
   methods: {
@@ -636,12 +637,6 @@ export default {
       let formData = new FormData();
       this.product.image_length = this.images.length
       formData.append('payload', JSON.stringify(this.product));
-
-      // for (let index = 0; index < this.images.length; index++) {
-      //   const element = this.images[index];
-        
-      // }
-      // formData.append('images', this.images)
       for (let index = 0; index < this.product.image_length; index++) {
         formData.append(`image-${index}`, this.images[index].file)
       }
