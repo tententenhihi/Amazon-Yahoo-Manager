@@ -16,8 +16,9 @@ const AsinManagement = () => import(/* webpackChunkName: "/static/js/chunks/asin
 
 const ProductList = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/List.vue');
 const FormProduct = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/FormProduct.vue');
-const ProductYahooList = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/ProductYahooList.vue');
-const FormProductYahoo = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/FormProductYahoo.vue');
+
+const ProductYahooList = () => import(/* webpackChunkName: "/static/js/chunks/yahoo-auction-products" */ '@/views/yahoo-auction-products/ProductYahooList.vue');
+const FormProductYahoo = () => import(/* webpackChunkName: "/static/js/chunks/yahoo-auction-products" */ '@/views/yahoo-auction-products/FormProductYahoo.vue');
 
 const YahooAuctionSelling = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/YahooAuctionSelling.vue');
 

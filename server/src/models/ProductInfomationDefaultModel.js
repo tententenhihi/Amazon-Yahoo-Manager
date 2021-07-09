@@ -9,15 +9,15 @@ var ProductInfomationDefault = new Schema({
     },
     product_status: {
         type: Number,
-        default: 0,
+        default: 1,
     },
     product_status_des: {
         type: String,
         default: ''
     },
     price_cut_negotiations: {
-        type: Boolean,
-        default: false
+        type: Number,
+        default: 0
     },
     quantity: {
         type: Number,
@@ -32,8 +32,8 @@ var ProductInfomationDefault = new Schema({
         default: 0,
     },
     returnAbility: {
-        type: Boolean,
-        default: false
+        type: Number,
+        default: 0
     },
     remarks_for_returns: {
         type: String,
@@ -56,11 +56,11 @@ var ProductInfomationDefault = new Schema({
         default: 0,
     },
     paid_type: {
-        type: Boolean,
+        type: Number,
         default: 0
     },
     shipping_cost: {
-        type: Boolean,
+        type: Number,
         default: 0
     },
     prefecture: {

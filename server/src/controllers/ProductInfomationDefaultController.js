@@ -7,7 +7,6 @@ export default class ProductInfomationDefaultController {
         try {
             let user = req.user;
             let product = await ProductInfomationDefaultService.get(user._id);
-            console.log(product);
             return response.success200(product);
         } catch (error) {
             console.log(error);
@@ -90,7 +89,7 @@ export default class ProductInfomationDefaultController {
                 gift_icon,
             };
 
-            let result = await ProductInfomationDefaultService.create(data);
+            let result = await ProductInfomationDefaultService.update(_id, data);
             if (result) {
                 response.success200(result);
             }

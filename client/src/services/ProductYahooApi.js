@@ -1,5 +1,5 @@
 import Api from "./api";
-const prefix = '/api/v1/product-auction'
+const prefix = '/api/v1/product-yahoo'
 export default {
   get(credentials) {
     return Api.get(`${prefix}/get`, credentials);
@@ -7,9 +7,9 @@ export default {
   // show(credentials) {
   //   return Api.get(`${prefix}/show/${credentials._id}`, credentials);
   // },
-  // create(credentials) {
-  //   return Api.post(`${prefix}/create`, credentials);
-  // },
+  create(credentials) {
+    return Api.post(`${prefix}/create`, credentials);
+  },
   // update(id, credentials) {
   //   return Api.post(`${prefix}/update/${id}`, credentials);
   // },

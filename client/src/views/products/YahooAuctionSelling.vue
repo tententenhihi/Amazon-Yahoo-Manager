@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import ProductAuctionApi from '@/services/ProductAuctionApi'
+// import ProductAuctionApi from '@/services/ProductAuctionApi'
 export default {
   name: 'ProductList',
   data () {
@@ -48,24 +48,24 @@ export default {
     }
   },
   async mounted () {
-    await this.getListProduct();
+    // await this.getListProduct();
     this.createDatatable()
   },
   methods: {
-    async getListProduct() {
-      try {
-        let res = await ProductAuctionApi.get();
-        if (res && res.status === 200) {
-          this.products = res.data.products;
-        }
-      } catch (error) {
-        this.$swal.fire({
-          icon: "error",
-          title: "エラー",
-          text: error.message
-        });
-      }
-    },
+    // async getListProduct() {
+    //   try {
+    //     let res = await ProductAuctionApi.get();
+    //     if (res && res.status === 200) {
+    //       this.products = res.data.products;
+    //     }
+    //   } catch (error) {
+    //     this.$swal.fire({
+    //       icon: "error",
+    //       title: "エラー",
+    //       text: error.message
+    //     });
+    //   }
+    // },
     createDatatable () {
       let self = this;
       if (self.$("#productTable").DataTable()) {

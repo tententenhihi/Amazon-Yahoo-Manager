@@ -46,25 +46,25 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end"><font color="red">*</font> フォルダ :</div>
                   <div class="col-md-8">
-                    <select class="form-control" id="">
-                      <option value="0">なし</option>
-                      <option value="1">あり</option>
+                    <select class="form-control" v-model="product.folder">
+                      <option v-for="(folder, index) in TARGET_FOLDER" :key="index" :value="folder.value">
+                      {{folder.display}}</option>
                     </select>
                   </div>
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                   <div class="col-md-4 text-align-end">仕入れ元サイト :</div>
                   <div class="col-md-8">
-                    <select class="form-control" id="">
-                      <option value="0">なし</option>
-                      <option value="1">あり</option>
+                    <select class="form-control" v-model="product.folder">
+                      <option v-for="(folder, index) in TARGET_FOLDER" :key="index" :value="folder.value">
+                      {{folder.display}}</option>
                     </select>
                   </div>
-                </div>
+                </div> -->
                 <div class="row">
                   <div class="col-md-4 text-align-end">仕入れ元ID :</div>
                   <div class="col-md-8">
-                    <input type="text" class="form-control" name="" id="">
+                    <input type="text" v-model="product.supplier_id" class="form-control" name="">
                   </div>
                 </div>
                 <div class="row">
@@ -72,7 +72,7 @@
                     <small>(商品名は全角64文字以内)</small>
                   </div>
                   <div class="col-md-8">
-                    <input type="text" class="form-control" name="" id="">
+                    <input type="text" v-model="product.product_name" class="form-control" name="">
                   </div>
                 </div>
                 <div class="row">
@@ -82,19 +82,19 @@
                   <div class="col-md-4 text-align-end"><font color="red">*</font>Yahoo商品のカテゴリー（ID指定）:
                   </div>
                   <div class="col-md-8">
-                    <input type="text" class="form-control" name="" id="">
+                    <input type="text" v-model="product.yahoo_category_id" class="form-control" name="">
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-4 text-align-end">開始価格 : <br> <small>(JPY)</small></div>
                   <div class="col-md-4">
-                    <input type="number" class="form-control" name="" id="">
+                    <input type="number" v-model="product.starting_price" class="form-control" name="">
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-4 text-align-end">即決価格 : <br> <small>(JPY)</small></div>
                   <div class="col-md-4">
-                    <input type="number" class="form-control" name="" id="">
+                    <input type="number" v-model="product.prompt_decision_price" class="form-control" name="">
                     <p>
                       空欄で自動計算されます。開始価格と同額を設定すると、定額出品となります。入札者がこの価格以上で入札すると、終了時間前でも自動的に落札されます。
                     </p>
@@ -103,7 +103,7 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end">仕入れ価格 : <br> <small>(JPY)</small></div>
                   <div class="col-md-4">
-                    <input type="number" class="form-control" name="" id="">
+                    <input type="number" v-model="product.purchase_price" class="form-control" name="">
                   </div>
                 </div>
                 <div class="row">
@@ -120,14 +120,14 @@
                 <div class="row">
                   <div class="col-md-4"></div>
                   <div class="col-md-8">
-                    <input type="text" class="form-control" id="" v-model="product.product_status_des">
+                    <input type="text" class="form-control" v-model="product.product_status_des">
                     中古・その他を選んだ場合、必ず上記に状態を全角15文字以内で記載して下さい。
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-4 text-align-end"><font color="red">*</font>値下げ交渉 :</div>
                   <div class="col-md-8">
-                    <select class="form-control" id="" v-model="product.price_cut_negotiations">
+                    <select class="form-control" v-model="product.price_cut_negotiations">
                       <option value="0">なし</option>
                       <option value="1">あり</option>
                     </select>
@@ -136,14 +136,14 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end">個数 :</div>
                   <div class="col-md-8">
-                    <input type="number" :mix="1" v-model="product.quantity" id="" class="form-control">
+                    <input type="number" :mix="1" v-model="product.quantity" class="form-control">
                     ※IDの評価が10以下の方は1個に固定されます。
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-4 text-align-end">開催期間 :</div>
                   <div class="col-md-8">
-                    <select class="form-control" v-model="product.holding_period" id="">
+                    <select class="form-control" v-model="product.holding_period">
                       <option v-for="(period, index) in HOLDING_PERIOD" :key="index" :value="period.value">{{period.display}}</option>
                     </select>
                   </div>
@@ -151,7 +151,7 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end">終了時間 :</div>
                   <div class="col-md-8">
-                    <select class="form-control" id="">
+                    <select class="form-control">
                       <option v-for="(time, index) in ENDING_TIME" :key="index" :value="time.value">{{time.display}}</option>
                     </select>
                   </div>
@@ -168,7 +168,7 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end">返品の備考 :</div>
                   <div class="col-md-8">
-                    <input type="text" id="" class="form-control" v-model="product.remarks_for_returns">
+                    <input type="text" class="form-control" v-model="product.remarks_for_returns">
                     ※IDの評価が10以下の方は1個に固定されます。
                   </div>
                 </div>
@@ -221,7 +221,7 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end">自動再出品 :</div>
                   <div class="col-md-8 d-flex">
-                    <select class="form-control" id="" v-model="product.auto_relisting">
+                    <select class="form-control" v-model="product.auto_relisting">
                       <option v-for="(n, index) in 4" :key="index" :value="index">{{n}}</option>
                     </select>
                     <div class="mt-2 ml-2">回</div>
@@ -230,14 +230,14 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end">最低落札価格  :</div>
                   <div class="col-md-8 d-flex">
-                    <input type="number" style="width: 180px" class="form-control" id="">
+                    <input type="number" v-model="product.lowest_bid_price" style="width: 180px" class="form-control">
                     <div class="mt-2 ml-2">回（半角数字） ※有料オプション</div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-4 text-align-end">商品詳細  :</div>
                   <div class="col-md-8 d-flex">
-                    <textarea class="form-control" id="" cols="30" rows="5"></textarea>
+                    <textarea class="form-control" v-model="product.product_detail" cols="30" rows="5"></textarea>
                   </div>
                 </div>
               </div>
@@ -304,7 +304,7 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end">商品発送元の地域 :</div>
                   <div class="col-md-2">
-                    <select class="form-control" id="" v-model="product.prefecture">
+                    <select class="form-control" v-model="product.prefecture">
                       <option v-for="(pref, index) in PREFECTURE" :key="index" :value="pref.value">{{pref.display}}</option>
                     </select>
                   </div>
@@ -347,7 +347,7 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end">発送までの日数 :</div>
                   <div class="col-md-8">
-                    <select class="form-control" id="" v-model="product.ship_schedule">
+                    <select class="form-control" v-model="product.ship_schedule">
                       <option v-for="(ship, index) in SHIP_SCHEDULE" :key="index" :value="ship.value">{{ship.display}}</option>
                     </select>
                   </div>
@@ -392,7 +392,7 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end">目立ちアイコン :</div>
                   <div class="col-md-8">
-                    <select class="form-control" id="" v-model="product.conspicuous_icon">
+                    <select class="form-control" v-model="product.conspicuous_icon">
                       <option v-for="(icon, index) in CONSPICUOUS_ICON" :key="index" :value="icon.value">{{icon.display}}</option>
                     </select>
                     1出品あたり21.60円（税込）
@@ -415,9 +415,10 @@
         </div>
         <div class="row mt-20">
           <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
-            Save
+            保存
           </button>
-          <router-link :to="{name: 'ProductYahooList'}" tag="button" class="btn btn-warning mb-1">Cancel</router-link>
+          <router-link :to="{name: 'ProductYahooList'}" tag="button" class="btn btn-warning mb-1">
+            キャンセル</router-link>
         </div>
       </div>
     </div>
@@ -425,7 +426,7 @@
 </template>
 
 <script>
-import ProductInfomationDefaultApi from '@/services/ProductInfomationDefaultApi'
+import ProductYahooApi from '@/services/ProductYahooApi'
 const HOLDING_PERIOD = [
   { display: '当日終了', value: 0 },
   { display: '1日間', value: 1 },
@@ -528,11 +529,29 @@ const CONSPICUOUS_ICON = [
   { display: '正規店購入', value: 5 },
   { display: '産地直送', value: 6 },
 ]
+const TARGET_FOLDER = [
+  {display: '基本フォルダ', value: 0},
+  {display: '1日目', value: 1},
+  {display: '2日目', value: 2},
+  {display: '3日目', value: 3},
+  {display: '4日目', value: 4},
+  {display: '5日目', value: 5},
+  {display: '6日目', value: 6},
+]
 export default {
   name: 'FormProduct',
   data () {
     return {
       product: {
+        product_name: '',
+        yahoo_category_id: '',
+        supplier_id: '',
+        folder: '',
+        starting_price: '',
+        prompt_decision_price: '',
+        purchase_price: '',
+        lowest_bid_price: '',
+        product_detail: '',
         product_status: 1,
         product_status_des: '',
         price_cut_negotiations: false,
@@ -572,6 +591,7 @@ export default {
       PREFECTURE,
       SHIP_SCHEDULE,
       CONSPICUOUS_ICON,
+      TARGET_FOLDER,
       isShowProductInfo: false,
       isShowPayment: false,
       isShowDelivery: false,
@@ -579,9 +599,9 @@ export default {
     }
   },
   async mounted () {
-    let result = await ProductInfomationDefaultApi.get()
+    let result = await ProductYahooApi.get()
     if (result && result.status === 200) {
-      this.product = result.data
+      this.product = {...this.product, ...result.data}
     }
   },
   methods: {
@@ -613,7 +633,19 @@ export default {
       this.images.splice(index, 1)
     },
     async onSaveProduct () {
-      let result = await ProductInfomationDefaultApi.update(this.product._id, this.product)
+      let formData = new FormData();
+      this.product.image_length = this.images.length
+      formData.append('payload', JSON.stringify(this.product));
+
+      // for (let index = 0; index < this.images.length; index++) {
+      //   const element = this.images[index];
+        
+      // }
+      // formData.append('images', this.images)
+      for (let index = 0; index < this.product.image_length; index++) {
+        formData.append(`image-${index}`, this.images[index].file)
+      }
+      let result = await ProductYahooApi.create(formData)
       if (result && result.status === 200) {
         this.$swal.fire(
           "成功",

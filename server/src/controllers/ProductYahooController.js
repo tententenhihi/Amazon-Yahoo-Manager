@@ -1,7 +1,7 @@
 import Response from '../utils/Response';
 import ProductYahooService from '../services/ProductYahooService';
 import AuctionYahooService from '../services/AuctionYahooService';
-
+import UploadFile from '../helpers/UploadFile'
 export default class ProductYahooController {
     static async get(req, res) {
         let response = new Response(res);
@@ -34,9 +34,17 @@ export default class ProductYahooController {
     static async createProduct(req, res) {
         let response = new Response(res);
         try {
-            let result;
             let user = req.user;
             let {
+                product_name,
+                yahoo_category_id,
+                supplier_id,
+                folder,
+                starting_price,
+                prompt_decision_price,
+                purchase_price,
+                lowest_bid_price,
+                product_detail,
                 product_status,
                 product_status_des,
                 price_cut_negotiations,
@@ -66,10 +74,21 @@ export default class ProductYahooController {
                 bg_color,
                 conspicuous_icon,
                 gift_icon,
-            } = req.body;
+                image_length
+            } = JSON.parse(req.body.payload);
 
             let data = {
                 user_id: user._id,
+                product_name,
+                yahoo_category_id,
+                images: [],
+                supplier_id,
+                folder,
+                starting_price,
+                prompt_decision_price,
+                purchase_price,
+                lowest_bid_price,
+                product_detail,
                 product_status,
                 product_status_des,
                 price_cut_negotiations,
@@ -100,11 +119,19 @@ export default class ProductYahooController {
                 conspicuous_icon,
                 gift_icon,
             };
+            if (req.files && image_length) {
+                for (let index = 0; index < image_length; index++) {
+                    const element = req.files[`image-` + index];
+                    data.images.push(await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' }))
+                }
+            } else {
+                response.error400({message: 'Image is required'})
+            }
 
-            let createProduct = await ProductInfomationDefaultService.update(_id, data);
+            let result = await ProductYahooService.create(data);
             // let uploadAuction = await AuctionYahooService.uploadNewProduct();
 
-            response.success200({ createProduct });
+            response.success200({ result });
         } catch (error) {
             console.log(error);
             console.log(error.response);
