@@ -400,7 +400,7 @@ const CONSPICUOUS_ICON = [
   { display: '産地直送', value: 6 },
 ]
 export default {
-  name: 'FormProduct',
+  name: 'ProductInfomationDefault',
   data () {
     return {
       product: {
