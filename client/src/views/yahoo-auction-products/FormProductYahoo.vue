@@ -125,7 +125,7 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end"><font color="red">*</font>値下げ交渉 :</div>
+                  <div class="col-md-4 text-align-end">値下げ交渉 :</div>
                   <div class="col-md-8">
                     <select class="form-control" v-model="product.offer">
                       <option value="no">なし</option>

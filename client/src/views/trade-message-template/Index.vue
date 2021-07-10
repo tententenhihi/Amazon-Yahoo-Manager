@@ -9,7 +9,7 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 py-20">
-        <table class="table table-striped display pt-20 mb-20" style="width: 100%">
+        <table class="table table-responsive table-striped display pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
               <th scope="col">テンプレート名</th>
@@ -26,7 +26,7 @@
                   @click="goToFormTradeMessageTemplate(template._id)">
                   <i class="fa fa-edit"></i> 編集
                 </button>
-                <button class="btn btn-md btn-danger" @click="onConfirmDelete(template, index)">
+                <button class="btn btn-md btn-danger mb-1 mr-1" @click="onConfirmDelete(template, index)">
                   <i class="fa fa-trash"></i> 削除
                 </button>
               </td>
