@@ -3,18 +3,6 @@ import ProductYahooService from '../services/ProductYahooService';
 import AuctionYahooService from '../services/AuctionYahooService';
 import UploadFile from '../helpers/UploadFile'
 export default class ProductYahooController {
-    static async get(req, res) {
-        let response = new Response(res);
-        try {
-            let user = req.user;
-            let products = await ProductYahooService.get(user._id);
-            return response.success200({ products });
-        } catch (error) {
-            console.log(error);
-            return response.error500(error);
-        }
-    }
-
     static async getPhoto(req, res) {
         let response = new Response(res);
         try {
@@ -31,93 +19,117 @@ export default class ProductYahooController {
         }
     }
 
+    static async get(req, res) {
+        let response = new Response(res);
+        try {
+            let user = req.user;
+            let products = await ProductYahooService.get(user._id);
+            return response.success200({ products });
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
+
+
     static async createProduct(req, res) {
         let response = new Response(res);
         try {
             let user = req.user;
             let {
-                product_name,
-                yahoo_category_id,
-                supplier_id,
-                folder,
-                starting_price,
-                prompt_decision_price,
-                purchase_price,
-                lowest_bid_price,
-                product_detail,
-                product_status,
-                product_status_des,
-                price_cut_negotiations,
+                folder_id,
+                product_model,
+                foreign_key,
+                product_yahoo_title,
+                yahoo_auction_category_id,
+                start_price,
+                bid_or_buy_price,
+                import_price,
+                status,
+                status_comment,
+                offer,
                 quantity,
-                holding_period,
-                ending_time,
-                returnAbility,
-                remarks_for_returns,
-                bid_limit,
-                automatic_extension,
-                early_termination,
-                auto_relisting,
-                paid_type,
-                shipping_cost,
-                prefecture,
-                address,
-                shipping_method_1,
-                shipping_rate_1,
-                shipping_method_2,
-                shipping_rate_2,
-                shipping_method_3,
-                shipping_rate_3,
-                overseas_shipping,
+                duration,
+                closing_time,
+                retpolicy,
+                retpolicy_comment,
+                min_bid_rating,
+                bad_rating_ratio,
+                bid_credit_limit,
+                auto_extension,
+                close_early,
+                num_resubmit,
+                reserve_price,
+                description,
+                ship_time,
+                shipping,
+                location,
+                city,
+                ship_name1,
+                ship_fee1,
+                ship_name2,
+                ship_fee2,
+                ship_name3,
+                ship_fee3,
+                foreign_check,
                 ship_schedule,
-                featured_auction,
-                bold_text,
-                bg_color,
-                conspicuous_icon,
-                gift_icon,
+                featured_amount,
+                bold,
+                highlight,
+                gift,
+                wrapping,
                 image_length
             } = JSON.parse(req.body.payload);
 
+            if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id ||
+                !description ) {
+                return response.error400({message: '必須フィールドをすべて入力してください'})
+            }
+
             let data = {
                 user_id: user._id,
-                product_name,
-                yahoo_category_id,
                 images: [],
-                supplier_id,
-                folder,
-                starting_price,
-                prompt_decision_price,
-                purchase_price,
-                lowest_bid_price,
-                product_detail,
-                product_status,
-                product_status_des,
-                price_cut_negotiations,
+                folder_id,
+                product_model,
+                foreign_key,
+                product_yahoo_title,
+                yahoo_auction_category_id,
+                start_price,
+                bid_or_buy_price,
+                import_price,
+                status,
+                status_comment,
+                offer,
                 quantity,
-                holding_period,
-                ending_time,
-                returnAbility,
-                remarks_for_returns,
-                bid_limit,
-                automatic_extension,
-                early_termination,
-                auto_relisting,
-                paid_type,
-                shipping_cost,
-                prefecture,
-                address,
-                shipping_method_1,
-                shipping_rate_1,
-                shipping_method_2,
-                shipping_rate_2,
-                shipping_method_3,
-                shipping_rate_3,
-                overseas_shipping,
+                duration,
+                closing_time,
+                retpolicy,
+                retpolicy_comment,
+                min_bid_rating,
+                bad_rating_ratio,
+                bid_credit_limit,
+                auto_extension,
+                close_early,
+                num_resubmit,
+                reserve_price,
+                description,
+                ship_time,
+                shipping,
+                location,
+                city,
+                ship_name1,
+                ship_fee1,
+                ship_name2,
+                ship_fee2,
+                ship_name3,
+                ship_fee3,
+                foreign_check,
                 ship_schedule,
-                featured_auction,
-                bold_text,
-                bg_color,
-                conspicuous_icon,
-                gift_icon,
+                featured_amount,
+                bold,
+                highlight,
+                gift,
+                wrapping
             };
             if (req.files && image_length) {
                 for (let index = 0; index < image_length; index++) {
@@ -125,7 +137,7 @@ export default class ProductYahooController {
                     data.images.push(await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' }))
                 }
             } else {
-                response.error400({message: 'Image is required'})
+                return response.error400({message: 'Image is required'})
             }
 
             let result = await ProductYahooService.create(data);
@@ -137,6 +149,153 @@ export default class ProductYahooController {
             console.log(error.response);
 
             response.error500(error);
+        }
+    }
+
+    static async getDetailProduct (req, res) {
+        let response = new Response(res);
+        try {
+            const {_id} = req.params;
+            let result = await ProductYahooService.show(_id);
+            if (result) {
+                response.success200(result);
+            }
+        } catch (error) {
+            response.error500(error)
+        }
+    }
+
+    static async updateProduct(req, res) {
+        let response = new Response(res);
+        try {
+            let user = req.user;
+            const {_id} = req.params
+            let {
+                folder_id,
+                images,
+                product_model,
+                foreign_key,
+                product_yahoo_title,
+                yahoo_auction_category_id,
+                start_price,
+                bid_or_buy_price,
+                import_price,
+                status,
+                status_comment,
+                offer,
+                quantity,
+                duration,
+                closing_time,
+                retpolicy,
+                retpolicy_comment,
+                min_bid_rating,
+                bad_rating_ratio,
+                bid_credit_limit,
+                auto_extension,
+                close_early,
+                num_resubmit,
+                reserve_price,
+                description,
+                ship_time,
+                shipping,
+                location,
+                city,
+                ship_name1,
+                ship_fee1,
+                ship_name2,
+                ship_fee2,
+                ship_name3,
+                ship_fee3,
+                foreign_check,
+                ship_schedule,
+                featured_amount,
+                bold,
+                highlight,
+                gift,
+                wrapping,
+                image_length
+            } = JSON.parse(req.body.payload);
+
+            if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id ||
+                !description ) {
+                return response.error400({message: '必須フィールドをすべて入力してください'})
+            }
+
+            let data = {
+                user_id: user._id,
+                images,
+                folder_id,
+                product_model,
+                foreign_key,
+                product_yahoo_title,
+                yahoo_auction_category_id,
+                start_price,
+                bid_or_buy_price,
+                import_price,
+                status,
+                status_comment,
+                offer,
+                quantity,
+                duration,
+                closing_time,
+                retpolicy,
+                retpolicy_comment,
+                min_bid_rating,
+                bad_rating_ratio,
+                bid_credit_limit,
+                auto_extension,
+                close_early,
+                num_resubmit,
+                reserve_price,
+                description,
+                ship_time,
+                shipping,
+                location,
+                city,
+                ship_name1,
+                ship_fee1,
+                ship_name2,
+                ship_fee2,
+                ship_name3,
+                ship_fee3,
+                foreign_check,
+                ship_schedule,
+                featured_amount,
+                bold,
+                highlight,
+                gift,
+                wrapping
+            };
+            if (req.files && image_length) {
+                for (let index = 0; index < image_length; index++) {
+                    const element = req.files[`image-` + index];
+                    if(element) {
+                        data.images[index] = await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' })
+                    }
+                }
+            }
+            let result = await ProductYahooService.update(_id, data);
+            // let uploadAuction = await AuctionYahooService.uploadNewProduct();
+
+            response.success200({ result });
+        } catch (error) {
+            console.log(error);
+            console.log(error.response);
+
+            response.error500(error);
+        }
+    }
+    
+    static async deleteProduct (req, res) {
+        let response = new Response(res);
+        try {
+            const {_id} = req.params;
+            let result = await ProductYahooService.delete(_id);
+            if (result) {
+                response.success200({ success: true });
+            }
+        } catch (error) {
+            response.error500(error)
         }
     }
 }

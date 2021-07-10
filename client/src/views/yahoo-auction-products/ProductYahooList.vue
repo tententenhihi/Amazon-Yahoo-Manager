@@ -7,15 +7,16 @@
       </button>
     </div>
     <hr class="mt-10" />
-    <!-- <div class="box-content">
+    <div class="box-content">
       <div class="px-30 py-20">
         <table id="productTable" class="display pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
               <th scope="col">数</th>
+              <th scope="col">Y！オーク商品名</th>
               <th scope="col">商品の状態</th>
               <th scope="col">個数</th>
-              <th scope="col">開催期間</th>
+              <th scope="col">Yahoo商品のカテゴリー（ID指定）</th>
               <th scope="col">終了時間</th>
               <th scope="col">返品の可否</th>
               <th scope="col">商品発送元の地域</th>
@@ -26,15 +27,16 @@
           <tbody>
             <tr v-for="(product, index) in products" :key="product._id">
               <th scope="row">{{ index + 1 }}</th>
+              <th scope="row">{{ product.product_yahoo_title }}</th>
               <td>
-                {{ PRODUCT_STATUS[product.product_status].display}}
+                {{ displayProductStatus(product) }}
               </td>
               <td>{{ product.quantity }}</td>
-              <td>{{ HOLDING_PERIOD[product.holding_period].display }}</td>
-              <td>{{ ENDING_TIME[product.ending_time].display }}</td>
-              <td>{{ product.returnAbility }}</td>
-              <td>{{ PREFECTURE[product.prefecture].display }}</td>
-              <td>{{ product.created }}</td>
+              <td>{{ product.yahoo_auction_category_id }}</td>
+              <td>{{ displayEndingTime(product) }}</td>
+              <td>{{ product.retpolicy }}</td>
+              <td>{{ displayLocation(product) }}</td>
+              <td>{{ $moment(product.created).format("YYYY/MM/DD") }}</td>
               <td>
                 <button class="btn btn-md btn-warning mb-1 mr-1" @click="goToFormProduct(product._id)">
                   <i class="fa fa-edit"></i> 編集
@@ -47,17 +49,16 @@
           </tbody>
         </table>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 
 <script>
-// import ProductYahooApi from '@/services/ProductYahooApi'
+import ProductYahooApi from '@/services/ProductYahooApi'
 const PRODUCT_STATUS = [
-  {},
-  { display: '中古', value: 1 },
-  { display: '新品', value: 2 },
-  { display: 'その他', value: 3 },
+  { display: '中古', value: 'used' },
+  { display: '新品', value: 'new' },
+  { display: 'その他', value: 'other' },
 ]
 const HOLDING_PERIOD = [
   { display: '当日終了', value: 0 },
@@ -175,24 +176,24 @@ export default {
     }
   },
   async mounted () {
-    // await this.getListProduct();
-    // this.createDatatable()
+    await this.getListProduct();
+    this.createDatatable()
   },
   methods: {
-    // async getListProduct() {
-    //   try {
-    //     let res = await ProductYahooApi.get();
-    //     if (res && res.status === 200) {
-    //       this.products = res.data.products;
-    //     }
-    //   } catch (error) {
-    //     this.$swal.fire({
-    //       icon: "error",
-    //       title: "エラー",
-    //       text: error.message
-    //     });
-    //   }
-    // },
+    async getListProduct() {
+      try {
+        let res = await ProductYahooApi.get();
+        if (res && res.status === 200) {
+          this.products = res.data.products;
+        }
+      } catch (error) {
+        this.$swal.fire({
+          icon: "error",
+          title: "エラー",
+          text: error.message
+        });
+      }
+    },
     createDatatable () {
       let self = this;
       if (self.$("#productTable").DataTable()) {
@@ -202,36 +203,52 @@ export default {
         self.$("#productTable").DataTable({});
       });
     },
-    // onConfirmDelete(product, index) {
-    //   let self = this;
-    //   self.$swal
-    //     .fire({
-    //       title: "削除",
-    //       text: "この製品を本当に削除しますか？",
-    //       icon: "warning",
-    //       showCancelButton: true,
-    //       confirmButtonColor: "#00a65a",
-    //       cancelButtonColor: "#f39c12",
-    //       confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-    //       cancelButtonText: '<i class="fa fa-times"></i>  番号',
-    //     })
-    //     .then(async (result) => {
-    //       if (result.isConfirmed) {
-    //         let res = await ProductYahooApi.delete(product._id);
-    //         if (res && res.status == 200) {
-    //           self.products.splice(index, 1);
-    //           this.createDatatable()
-    //           self.$swal.fire(
-    //             "削除しました！",
-    //             "商品が削除されました。",
-    //             "success"
-    //           );
-    //         }
-    //       }
-    //     });
-    // },
+    onConfirmDelete(product, index) {
+      let self = this;
+      self.$swal
+        .fire({
+          title: "削除",
+          text: "この製品を本当に削除しますか？",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#00a65a",
+          cancelButtonColor: "#f39c12",
+          confirmButtonText: '<i class="fa fa-check-square"></i> はい',
+          cancelButtonText: '<i class="fa fa-times"></i>  番号',
+        })
+        .then(async (result) => {
+          if (result.isConfirmed) {
+            let res = await ProductYahooApi.delete(product._id);
+            if (res && res.status == 200) {
+              self.products.splice(index, 1);
+              this.createDatatable()
+              self.$swal.fire(
+                "削除しました！",
+                "商品が削除されました。",
+                "success"
+              );
+            }
+          }
+        });
+    },
     goToFormProduct (id) {
       this.$router.push({name: 'FormProductYahoo', params: {id} })
+    },
+    displayProductStatus (product) {
+      return this.PRODUCT_STATUS.find(item => item.value === product.status) ?
+        this.PRODUCT_STATUS.find(item => item.value === product.status).display : ''
+    },
+    displayDuration (product) {
+      return this.HOLDING_PERIOD.find(item => item.value === product.duration) ?
+        this.HOLDING_PERIOD.find(item => item.value === product.duration).display : ''
+    },
+    displayEndingTime (product) {
+      return this.ENDING_TIME.find(item => item.value === product.closing_time) ?
+        this.ENDING_TIME.find(item => item.value === product.closing_time).display : ''
+    },
+    displayLocation (product) {
+      return this.PREFECTURE.find(item => item.value === product.location) ?
+        this.PREFECTURE.find(item => item.value === product.location).display : ''
     },
   }
 }
