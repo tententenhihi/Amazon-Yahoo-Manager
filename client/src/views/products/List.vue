@@ -44,7 +44,7 @@
                 <button class="btn btn-md btn-warning mb-1 mr-1" @click="goToFormProduct(product._id)">
                   <i class="fa fa-edit"></i> 編集
                 </button>
-                <button class="btn btn-md btn-danger" @click="onConfirmDelete(product, index)">
+                <button class="btn btn-md btn-danger mb-1 mr-1" @click="onConfirmDelete(product, index)">
                   <i class="fa fa-trash"></i> 削除
                 </button>
               </td>

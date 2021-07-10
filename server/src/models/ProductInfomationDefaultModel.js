@@ -7,121 +7,129 @@ var ProductInfomationDefault = new Schema({
         ref: 'User',
         required: true,
     },
-    product_status: {
-        type: Number,
-        default: 1,
+    status: {
+        type: String,
+        default: 'used',
     },
-    product_status_des: {
+    status_comment: {
         type: String,
         default: ''
     },
-    price_cut_negotiations: {
-        type: Number,
-        default: 0
+    offer: {
+        type: String,
+        default: ''
     },
     quantity: {
         type: Number,
         default: 1,
     },
-    holding_period: {
+    duration: {
         type: Number,
         default: 0
     },
-    ending_time: {
+    closing_time: {
         type: Number,
         default: 0,
     },
-    returnAbility: {
-        type: Number,
-        default: 0
+    retpolicy: {
+        type: String,
+        default: 'no'
     },
-    remarks_for_returns: {
+    retpolicy_comment: {
         type: String,
         default: ''
     },
-    bid_limit: {
-        type: Array,
-        default: []
+    min_bid_rating: {
+        type: String,
+        default: ''
     },
-    automatic_extension: {
-        type: Boolean,
-        default: false
+    bad_rating_ratio: {
+        type: String,
+        default: ''
     },
-    early_termination: {
-        type: Boolean,
-        default: false
+    bid_credit_limit: {
+        type: String,
+        default: ''
     },
-    auto_relisting: {
+    auto_extension: {
+        type: String,
+        default: ''
+    },
+    close_early: {
+        type: String,
+        default: ''
+    },
+    num_resubmit: {
         type: Number,
         default: 0,
     },
-    paid_type: {
-        type: Number,
-        default: 0
+    ship_time: {
+        type: String,
+        default: 'after'
     },
-    shipping_cost: {
-        type: Number,
-        default: 0
+    shipping: {
+        type: String,
+        default: 'buyer'
     },
-    prefecture: {
+    location: {
         type: String,
         default: ''
     },
-    address: {
+    city: {
         type: String,
         default: ''
     },
-    shipping_method_1: {
+    ship_name1: {
         type: String,
         default: ''
     },
-    shipping_rate_1: {
+    ship_fee1: {
         type: String,
         default: ''
     },
-    shipping_method_2: {
+    ship_name2: {
         type: String,
         default: ''
     },
-    shipping_rate_2: {
+    ship_fee2: {
         type: String,
         default: ''
     },
-    shipping_method_3: {
+    ship_name3: {
         type: String,
         default: ''
     },
-    shipping_rate_3: {
+    ship_fee3: {
         type: String,
         default: ''
     },
-    overseas_shipping: {
-        type: Boolean,
-        default: false
+    foreign_check: {
+        type: String,
+        default: 'no'
     },
     ship_schedule: {
         type: Number,
-        default: 0
+        default: 1
     },
-    featured_auction: {
+    featured_amount: {
         type: String,
         default: '',
     },
-    bold_text: {
-        type: Boolean,
-        default: false,
+    bold: {
+        type: String,
+        default: 'no',
     },
-    bg_color: {
-        type: Boolean,
-        default: false,
+    highlight: {
+        type: String,
+        default: 'no',
     },
-    conspicuous_icon: {
+    gift: {
+        type: Number,
+        default: 1
+    },
+    wrapping: {
         type: Number,
         default: 1,
-    },
-    gift_icon: {
-        type: Boolean,
-        default: false
     },
     created: {
         type: Date,
