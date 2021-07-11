@@ -57,6 +57,9 @@ class AuthController {
                     if (userLogin.status === 'LOCKED') {
                         return response.error400({ message: 'アカウントがロックされました' });
                     }
+                    if (!userLogin.verified_at) {
+                        return response.error400({ message: 'アカウントの有効化についてはメールを確認してください' });
+                    }
                     let checkPassword = userLogin.comparePassword(password);
                     if (checkPassword) {
                         let token = userLogin.token;

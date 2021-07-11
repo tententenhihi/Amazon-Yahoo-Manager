@@ -29,13 +29,18 @@
         </div>
         <div class="sidebar-menu">
           <ul>
-            <li class="sidebar-dropdown my-20">
+            <li class="sidebar-dropdown mt-20">
+              <router-link :to="{name: 'Home'}">
+                <i class="fa fa-home"></i>
+                <span>ホームページ</span>
+              </router-link>
+            </li>
+            <li class="sidebar-dropdown">
               <router-link :to="{name: 'AdminUsers'}">
                 <i class="fa fa-user"></i>
                 <span>ユーザー設定</span>
               </router-link>
             </li>
-            
             <li class="sidebar-dropdown mt-60" @click="onClickLogout">
               <a style="cursor: pointer">
                 <i class="fa fa-power-off"></i>

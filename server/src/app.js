@@ -12,6 +12,7 @@ import Path from 'path';
 import QueueGetProductAmazon from './services/QueueGetProductAmazon';
 import QueueLoginYahooAuction from './services/QueueLoginYahooAuction';
 import upload from 'express-fileupload';
+require('dotenv').config()
 
 const app = express();
 // Fix Cross

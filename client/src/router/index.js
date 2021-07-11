@@ -90,7 +90,8 @@ const router = new Router({
       name: 'YahooAccounts',
       component: YahooAccounts,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'user'
       }
     },
     {
@@ -98,7 +99,8 @@ const router = new Router({
       name: 'ChangePassword',
       component: ChangePassword,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'user'
       }
     },
     {
@@ -130,21 +132,14 @@ const router = new Router({
       name: 'ProductYahooList',
       component: ProductYahooList,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'product'
       }
     },
     {
       path: '/products-yahoo/:id',
       name: 'FormProductYahoo',
       component: FormProductYahoo,
-      meta: {
-        requiredAuth: true
-      }
-    },
-    {
-      path: '/product-information-default',
-      name: 'ProductInfomationDefault',
-      component: ProductInfomationDefault,
       meta: {
         requiredAuth: true
       }
@@ -158,11 +153,21 @@ const router = new Router({
       }
     },
     {
+      path: '/product-information-default',
+      name: 'ProductInfomationDefault',
+      component: ProductInfomationDefault,
+      meta: {
+        requiredAuth: true,
+        type: 'config'
+      }
+    },
+    {
       path: '/template-setting',
       name: 'TemplateSetting',
       component: TemplateSetting,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -170,7 +175,8 @@ const router = new Router({
       name: 'ProductDescriptionSetting',
       component: ProductDescriptionSetting,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -178,7 +184,8 @@ const router = new Router({
       name: 'YahooAuctionPublicSetting',
       component: YahooAuctionPublicSetting,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -186,7 +193,8 @@ const router = new Router({
       name: 'TradeMessageTemplate',
       component: TradeMessageTemplate,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -194,7 +202,8 @@ const router = new Router({
       name: 'FormTradeMessageTemplate',
       component: FormTradeMessageTemplate,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -202,7 +211,8 @@ const router = new Router({
       name: 'RatingTemplate',
       component: RatingTemplate,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -210,7 +220,8 @@ const router = new Router({
       name: 'FormRatingTemplate',
       component: FormRatingTemplate,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     // admin
@@ -220,7 +231,8 @@ const router = new Router({
       component: AdminUsers,
       meta: {
         requiredAuth: true,
-        layout: 'admin'
+        layout: 'admin',
+        isAdmin: true
       }
     },
     {
@@ -232,8 +244,15 @@ const router = new Router({
 
 const waitForStorageToBeReady = async (to, from, next) => {
   const authUser = store.state.isUserLoggedIn;
+  const user = store.state.user
   if (((to.name !== 'Login' && to.meta.requiredAuth) || to.name === null) && !authUser) {
     next({name: 'Login'})
+  } else if (to.meta.isAdmin && authUser) {
+    if (user.type == 'admin') {
+      next()
+    } else {
+      next({name: 'Home'})
+    }
   } else {
     if ((to.name === null || to.name === 'Login') && authUser) {
       next({name: 'Home'})
