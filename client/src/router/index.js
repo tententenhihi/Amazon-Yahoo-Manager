@@ -30,7 +30,6 @@ const YahooAuctionPublicSetting =
   () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/YahooAuctionPublicSetting.vue');
 const ProductInfomationDefault = () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/ProductInfomationDefault.vue');
 
-
 const TradeMessageTemplate = () => import(/* webpackChunkName: "/static/js/chunks/trade-message-template" */ '@/views/trade-message-template/Index.vue');
 const FormTradeMessageTemplate = () => import(/* webpackChunkName: "/static/js/chunks/trade-message-template" */ '@/views/trade-message-template/FormInput.vue');
 
@@ -40,6 +39,7 @@ const FormRatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/
 
 // admin
 const AdminUsers = () => import(/* webpackChunkName: "/static/js/chunks/admin/users" */ '@/views/admin/users/Users.vue');
+const AdminProxy = () => import(/* webpackChunkName: "/static/js/chunks/admin/proxy" */ '@/views/admin/proxy/Index.vue');
 
 Vue.use(Router);
 
@@ -229,6 +229,16 @@ const router = new Router({
       path: '/admin/users',
       name: 'AdminUsers',
       component: AdminUsers,
+      meta: {
+        requiredAuth: true,
+        layout: 'admin',
+        isAdmin: true
+      }
+    },
+    {
+      path: '/admin/proxy',
+      name: 'AdminProxy',
+      component: AdminProxy,
       meta: {
         requiredAuth: true,
         layout: 'admin',

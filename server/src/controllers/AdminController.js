@@ -1,6 +1,8 @@
 import UserModel from '../models/UserModel';
 import YahooAccountModel from '../models/YahooAccount';
+import VerifyCodeSchema from '../models/VerifyCodeModel'
 import Response from '../utils/Response';
+import Utils from '../utils/Utils'
 import bcrypt from 'bcryptjs'
 const { sendEmail } = require('../helpers/sendEmail')
 
@@ -13,15 +15,15 @@ class AdminController {
       let users = await UserModel.find({
         type: 'member',
       })
-      users = [...users]
+      let countYahoo = [];
       for (let index = 0; index < users.length; index++) {
         let countAccount = await YahooAccountModel.find({user_id: users[index]._id}).countDocuments();
-        console.log('countAccountcountAccountcountAccount: ', countAccount);
-        users[index]['used_account'] = countAccount;
-        console.log('abc: ', users[index]);
+        countYahoo.push({
+          user_id: users[index]._id,
+          count: countAccount
+        })
       }
-      console.log('usersusers: ', users);
-      return response.success200({users});
+      return response.success200({users, countYahoo});
     } catch (error) {
       console.log(error);
       return response.error500(error)
@@ -30,7 +32,6 @@ class AdminController {
   static async createUser (req, res) {
     let response = new Response(res);
     try {
-      console.log(process.env.GMAIL_SERVICE_NAME);
       const {username, password, name, status, email, expired_at, note} = req.body;
       if (!username || !password || !name || !status || !email || !expired_at) {
         return response.error400({message: '完全な情報を入力してください。'})
@@ -51,8 +52,15 @@ class AdminController {
             user.password = password;
             user.hash_password = hash
             await user.save();
+            let newCode = new VerifyCodeSchema();
+            newCode.email = user.email
+            newCode.code = Utils.generateKey()
+            await newCode.save();
             let body = `
-              <div style="color: black">${user.email}</div>
+              <div style="color: black">
+                Please click to link to active your account: <br>
+                http://${process.env.WEB_SERVER_HOST}/login?code=${newCode.code}
+              </div>
             `
             await sendEmail(user.email, body, 'Amazon Yahoo Manager active account')
             return response.success200({user});

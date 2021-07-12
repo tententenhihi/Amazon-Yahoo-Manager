@@ -18,14 +18,11 @@ import Constants from './constant/index'
 import Helpers from './helpers/index';
 import i18n from './lang/lang';
 import './helpers/validate';
-import VueSidebarMenu from 'vue-sidebar-menu'
-import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 
 Vue.prototype.$ = $;
 Vue.prototype.$constants = Constants;
 Vue.prototype.$helpers = Helpers;
 
-Vue.use(VueSidebarMenu)
 Vue.use(VueLodash, { name: 'custom' , lodash: lodash })
 Vue.use(require("vue-moment"));
 Vue.use(Swal, {

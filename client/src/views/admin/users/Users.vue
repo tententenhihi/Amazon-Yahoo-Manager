@@ -266,6 +266,11 @@ export default {
       let result = await AdminApi.getUsers();
       if (result && result.status === 200) {
         this.users = result.data.users || [];
+        let countYahoo = result.data.countYahoo;
+        this.users = this.users.map(user => {
+          user.used_account = countYahoo.find(item => item.user_id === user._id).count;
+          return user;
+        })
       }
     },
     onOpenModalUser(user) {

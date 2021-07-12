@@ -41,6 +41,12 @@
                 <span>ユーザー設定</span>
               </router-link>
             </li>
+            <li class="sidebar-dropdown">
+              <router-link :to="{name: 'AdminProxy'}">
+                <i class="fa fa-cog"></i>
+                <span>Proxy</span>
+              </router-link>
+            </li>
             <li class="sidebar-dropdown mt-60" @click="onClickLogout">
               <a style="cursor: pointer">
                 <i class="fa fa-power-off"></i>

@@ -12,14 +12,14 @@
                 <div class="input-group_nouse">
                   <div class="form-group text">
                     <input
-                      ref="username"
+                      ref="email"
                       type="text"
                       name="ユーザー名"
                       class="form-control"
-                      placeholder="ユーザー名を入力してください。"
-                      id="username"
+                      placeholder="Emailを入力してください。"
+                      id="email"
                       rules="required"
-                      v-model="user.username"
+                      v-model="user.email"
                     />
                   </div>
                 </div>
@@ -77,19 +77,29 @@ export default {
     return {
       isLoading: false,
       user: {
-        username: "",
+        email: "",
         password: "",
       },
     };
   },
   methods: {
+    async verifyAccount (code) {
+      let res = await AuthApi.account({code});
+      if (res && res.status === 200) {
+        this.$swal.fire({
+        icon: "success",
+        title: "アクティベーションに成功しました。 ここでログイン！",
+      });
+      }
+      console.log(res);
+    },
     async onSubmit () {
       let result = await this.$refs.formLogin.validate();
       if (result) {
         this.isLoading = true;
 
         const response = await AuthApi.login({
-          username: this.user.username.toLowerCase(),
+          email: this.user.email.toLowerCase(),
           password: this.user.password,
         });
 
@@ -105,14 +115,11 @@ export default {
       }
     },
   },
-  mounted() {
-    this.$refs.username.focus();
-    if (this.$route.query && this.$route.query.isActive) {
-      this.$swal.fire({
-        icon: "success",
-        title: "Kích hoạt thành công. Đăng nhập ngay!",
-      });
+  async mounted () {
+    if (this.$route.query && this.$route.query.code) {
+      await this.verifyAccount(this.$route.query.code)
     }
+    this.$refs.email.focus();
   },
 };
 </script>
