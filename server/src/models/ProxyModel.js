@@ -2,6 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var Proxy = new Schema({
+  proxy_id: {
+    type: Number,
+    required: true,
+  },
   ip: {
     type: String,
     require: true,

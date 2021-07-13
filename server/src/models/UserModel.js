@@ -9,7 +9,7 @@ var User = new Schema({
     },
     expired_at: {
         type: Date,
-        required: true,
+        default: '',
     },
     note: {
         type: String,

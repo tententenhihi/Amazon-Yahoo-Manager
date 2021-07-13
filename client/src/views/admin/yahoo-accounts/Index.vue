@@ -17,7 +17,7 @@
           :container-class="'pagination'"
           :page-class="'page-item'">
         </paginate>
-        <table class="table table-responsive table-striped display pt-10 mb-20" style="width: 100%">
+        <table class="table table-responsive table-striped display pt-10 my-20">
           <thead class="thead-purple">
             <tr>
               <th scope="col">ID</th>
@@ -80,8 +80,8 @@
 import AdminApi from '@/services/AdminApi'
 const PAGE_SIZE = 20
 const STATUS_PROXY = [
-  { value: 'all', display: 'ALL'},
-  { value: 'live', display: 'LIVE'},
+  { value: 'all', display: 'All'},
+  { value: 'live', display: 'Live'},
   { value: 'used', display: 'Used'},
   { value: 'die', display: 'Die'},
 ]

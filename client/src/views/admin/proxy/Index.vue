@@ -32,7 +32,7 @@
           :container-class="'pagination'"
           :page-class="'page-item'">
         </paginate>
-        <table class="table table-responsive table-striped display pt-10 mb-20" style="width: 100%">
+        <table class="table table-responsive table-striped display pt-10 mb-20">
           <thead class="thead-purple">
             <tr>
               <th scope="col">ID</th>
@@ -43,7 +43,7 @@
           </thead>
           <tbody>
             <tr v-for="(proxy, index) in tableData" :key="index">
-              <td>{{ proxy._id }}</td>
+              <td>{{ proxy.proxy_id }}</td>
               <td>{{proxy.ip }}</td>
               <td>{{ proxy.status }}</td>
               <td>{{ $moment(proxy.created).format('YYYY/MM/DD') }}</td>

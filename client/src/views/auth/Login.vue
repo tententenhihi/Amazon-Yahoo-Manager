@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     async verifyAccount (code) {
-      let res = await AuthApi.account({code});
+      let res = await AuthApi.verifyAccount({code});
       if (res && res.status === 200) {
         this.$swal.fire({
         icon: "success",
