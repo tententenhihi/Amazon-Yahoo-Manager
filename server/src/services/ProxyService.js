@@ -10,9 +10,10 @@ export default class ProxyService {
         }
       }
       let result = await axios.get('https://brightdata.com/api/zone/route_ips?zone=zone2&country=jp', configs)
-      let data = result.data.split('\n').map(item => {
+      let data = result.data.split('\n').map((item, index) => {
         return {
-          ip: item
+          ip: item,
+          proxy_id: ++index
         }
       });
       await ProxySchema.insertMany(data);

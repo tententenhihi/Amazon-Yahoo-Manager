@@ -494,8 +494,8 @@ body {
 
 .form-control-feedback {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 2px;
+  right: 2px;
   z-index: 2;
   display: block;
   width: 34px;
@@ -503,6 +503,7 @@ body {
   line-height: 34px;
   text-align: center;
   pointer-events: none;
+  background: #FFFFFF;
 }
 
 .btn.btn-flat {
@@ -581,28 +582,41 @@ body {
 }
 
 ul.pagination {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  width: 100%;
-  height: 40px;
-  align-items: center;
-  text-align: center;
-  margin-top: 10px;
-  color: blue;
+  padding-left: 0;
+  list-style: none;
+  border-radius: .25rem;
+  margin: 10px 0;
 }
-ul.pagination li {
-  width: 35px;
-  border: 1px solid gray;
-  height: 35px;
-  line-height: 35px;
-  margin: 0 2px;
+ul.pagination li a {
+  position: relative;
+  display: block;
+  padding: .5rem .75rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: #007bff;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
 }
-ul.pagination li.disabled {
-  background-color: rgb(226, 218, 218);
+ul.pagination li:last-child a {
+  border-top-right-radius: .25rem;
+  border-bottom-right-radius: .25rem;
 }
-ul.pagination li.active {
-  background-color: #7fb7ec;
-  color: #ffffff;
+ul.pagination li:first-child a {
+  border-top-left-radius: .25rem;
+  border-bottom-left-radius: .25rem;
 }
-ul.pagination li.active a{
-  color: #ffffff;
+ul.pagination li:last-child:not(:disabled):not(.disabled) {
+  cursor: pointer;
+}
+ul.pagination li.active a {
+  z-index: 1;
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+.table-responsive {
+  display: table;
 }

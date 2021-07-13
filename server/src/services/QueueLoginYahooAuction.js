@@ -10,7 +10,7 @@ function convertCookieToString(cookies) {
 const autoLoginYahoo = async (inputData, cb) => {
     try {
         console.log('start login and get product')
-        if (inputData.status == 'ERROR') {
+        if (inputData.status != 'SUCCESS') {
             console.log(' ==== Start login Yahoo ====');
             const args = [
                 '--no-sandbox',

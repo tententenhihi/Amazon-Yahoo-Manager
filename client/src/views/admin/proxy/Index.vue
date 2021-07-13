@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper-content">
+  <div class="wrapper-content" v-if="isInit">
     <div class="box-header">
       Proxies
     </div>
@@ -32,7 +32,7 @@
           :container-class="'pagination'"
           :page-class="'page-item'">
         </paginate>
-        <table class="table table-responsive table-striped display pt-10 mb-20" style="width: 100%">
+        <table class="table table-responsive table-striped display pt-10 my-20">
           <thead class="thead-purple">
             <tr>
               <th scope="col">ID</th>
@@ -43,7 +43,7 @@
           </thead>
           <tbody>
             <tr v-for="(proxy, index) in tableData" :key="index">
-              <td>{{ proxy._id }}</td>
+              <td>{{ proxy.proxy_id }}</td>
               <td>{{proxy.ip }}</td>
               <td>{{ proxy.status }}</td>
               <td>{{ $moment(proxy.created).format('YYYY/MM/DD') }}</td>
@@ -68,8 +68,8 @@
 import AdminApi from '@/services/AdminApi'
 const PAGE_SIZE = 20
 const STATUS_PROXY = [
-  { value: 'all', display: 'ALL'},
-  { value: 'live', display: 'LIVE'},
+  { value: 'all', display: 'All'},
+  { value: 'live', display: 'Live'},
   { value: 'used', display: 'Used'},
   { value: 'die', display: 'Die'},
 ]
@@ -82,11 +82,13 @@ export default {
       page: 1,
       filter_status: 'all',
       searchStr: '',
-      searchData: []
+      searchData: [],
+      isInit: false
     }
   },
   async mounted () {
     await this.getProxies();
+    this.isInit = true;
   },
   computed: {
     tableData () {

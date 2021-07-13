@@ -1,5 +1,6 @@
 import YahooAccountModel from '../models/YahooAccount';
 import UserModel from '../models/UserModel';
+import ProxySchema from '../models/ProxyModel';
 import Response from '../utils/Response';
 import bcrypt from 'bcryptjs';
 import QueueLoginYahooAuction from '../services/QueueLoginYahooAuction'
@@ -38,15 +39,21 @@ class YahooAccountController {
                         hash_password: bcrypt.hashSync(password, 10),
                         user_id: user._id
                     });
+                    let proxy = await ProxySchema.findOne({ status: 'live' });
+                    newAccount.proxy_id = proxy._id
+                    
                     let result = await newAccount.save();
+                    proxy.status = 'used'
+                    await proxy.save()
+                    
                     QueueLoginYahooAuction.addNew(newAccount)
                     response.success200(result._doc);
                 }
             } else {
-                response.error400({message: 'Parameters is required'});
+                return response.error400({message: 'Parameters is required'});
             }
         } catch (error) {
-            response.error500(error);
+            return response.error500(error);
         }
     }
 
