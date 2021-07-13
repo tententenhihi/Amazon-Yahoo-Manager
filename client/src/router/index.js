@@ -30,7 +30,6 @@ const YahooAuctionPublicSetting =
   () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/YahooAuctionPublicSetting.vue');
 const ProductInfomationDefault = () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/ProductInfomationDefault.vue');
 
-
 const TradeMessageTemplate = () => import(/* webpackChunkName: "/static/js/chunks/trade-message-template" */ '@/views/trade-message-template/Index.vue');
 const FormTradeMessageTemplate = () => import(/* webpackChunkName: "/static/js/chunks/trade-message-template" */ '@/views/trade-message-template/FormInput.vue');
 
@@ -40,6 +39,9 @@ const FormRatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/
 
 // admin
 const AdminUsers = () => import(/* webpackChunkName: "/static/js/chunks/admin/users" */ '@/views/admin/users/Users.vue');
+const AdminProxy = () => import(/* webpackChunkName: "/static/js/chunks/admin/proxy" */ '@/views/admin/proxy/Index.vue');
+const AdminYahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/admin/yahoo-accounts" */
+  '@/views/admin/yahoo-accounts/Index.vue');
 
 Vue.use(Router);
 
@@ -90,7 +92,8 @@ const router = new Router({
       name: 'YahooAccounts',
       component: YahooAccounts,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'user'
       }
     },
     {
@@ -98,7 +101,8 @@ const router = new Router({
       name: 'ChangePassword',
       component: ChangePassword,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'user'
       }
     },
     {
@@ -130,21 +134,14 @@ const router = new Router({
       name: 'ProductYahooList',
       component: ProductYahooList,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'product'
       }
     },
     {
       path: '/products-yahoo/:id',
       name: 'FormProductYahoo',
       component: FormProductYahoo,
-      meta: {
-        requiredAuth: true
-      }
-    },
-    {
-      path: '/product-information-default',
-      name: 'ProductInfomationDefault',
-      component: ProductInfomationDefault,
       meta: {
         requiredAuth: true
       }
@@ -158,11 +155,21 @@ const router = new Router({
       }
     },
     {
+      path: '/product-information-default',
+      name: 'ProductInfomationDefault',
+      component: ProductInfomationDefault,
+      meta: {
+        requiredAuth: true,
+        type: 'config'
+      }
+    },
+    {
       path: '/template-setting',
       name: 'TemplateSetting',
       component: TemplateSetting,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -170,7 +177,8 @@ const router = new Router({
       name: 'ProductDescriptionSetting',
       component: ProductDescriptionSetting,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -178,7 +186,8 @@ const router = new Router({
       name: 'YahooAuctionPublicSetting',
       component: YahooAuctionPublicSetting,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -186,7 +195,8 @@ const router = new Router({
       name: 'TradeMessageTemplate',
       component: TradeMessageTemplate,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -194,7 +204,8 @@ const router = new Router({
       name: 'FormTradeMessageTemplate',
       component: FormTradeMessageTemplate,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -202,7 +213,8 @@ const router = new Router({
       name: 'RatingTemplate',
       component: RatingTemplate,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     {
@@ -210,7 +222,8 @@ const router = new Router({
       name: 'FormRatingTemplate',
       component: FormRatingTemplate,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'config'
       }
     },
     // admin
@@ -220,7 +233,28 @@ const router = new Router({
       component: AdminUsers,
       meta: {
         requiredAuth: true,
-        layout: 'admin'
+        layout: 'admin',
+        isAdmin: true
+      }
+    },
+    {
+      path: '/admin/proxy',
+      name: 'AdminProxy',
+      component: AdminProxy,
+      meta: {
+        requiredAuth: true,
+        layout: 'admin',
+        isAdmin: true
+      }
+    },
+    {
+      path: '/admin/yahoo-accounts',
+      name: 'AdminYahooAccounts',
+      component: AdminYahooAccounts,
+      meta: {
+        requiredAuth: true,
+        layout: 'admin',
+        isAdmin: true
       }
     },
     {
@@ -232,8 +266,15 @@ const router = new Router({
 
 const waitForStorageToBeReady = async (to, from, next) => {
   const authUser = store.state.isUserLoggedIn;
+  const user = store.state.user
   if (((to.name !== 'Login' && to.meta.requiredAuth) || to.name === null) && !authUser) {
     next({name: 'Login'})
+  } else if (to.meta.isAdmin && authUser) {
+    if (user.type == 'admin') {
+      next()
+    } else {
+      next({name: 'Home'})
+    }
   } else {
     if ((to.name === null || to.name === 'Login') && authUser) {
       next({name: 'Home'})

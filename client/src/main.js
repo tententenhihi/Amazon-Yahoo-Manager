@@ -18,6 +18,7 @@ import Constants from './constant/index'
 import Helpers from './helpers/index';
 import i18n from './lang/lang';
 import './helpers/validate';
+import Paginate from 'vuejs-paginate'
 
 Vue.prototype.$ = $;
 Vue.prototype.$constants = Constants;
@@ -39,6 +40,7 @@ import ModalComponent from './components/commons/ModalComponent'
 Vue.component('modal-component', ModalComponent)
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
+Vue.component('paginate', Paginate)
 
 Object.keys(rules).forEach(rule => {
   extend(rule, rules[rule]);

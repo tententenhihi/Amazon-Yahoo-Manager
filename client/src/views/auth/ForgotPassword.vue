@@ -4,7 +4,7 @@
       <div class="login-box">
         <div class="login-box-body">
           <div class="login-logo">
-            <a href="javascript:void(0)">パスワードがわからない方はこちら</a>
+            <a href="javascript:void(0)">パスワードをお忘れですか</a>
           </div>
           <ValidationObserver tag="form" @submit.prevent="onSubmit" ref="formForgotpassword">
             <div class="form-group position-relative">

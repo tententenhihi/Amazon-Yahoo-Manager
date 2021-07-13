@@ -15,6 +15,10 @@ var YahooAccount = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
+    proxy_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Proxy',
+    },
     password: {
         type: String,
         trim: true,

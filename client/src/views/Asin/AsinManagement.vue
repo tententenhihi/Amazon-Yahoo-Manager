@@ -61,7 +61,6 @@ export default {
         let res = await AsinApi.get();
         if (res && res.status === 200) {
           this.listAsin = res.data.listSearchCode;
-          console.log('dasd: ', this.listAsin);
         }
       } catch (error) {
         this.$swal.fire({

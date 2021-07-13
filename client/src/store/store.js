@@ -16,6 +16,11 @@ export default new Vuex.Store({
     },
     isLoading: false
   },
+  getters: {
+    getUserInfo (state) {
+      return state.user;
+    }
+  },
   mutations: {
     setLoading(state, data) {
       state.isLoading = data;

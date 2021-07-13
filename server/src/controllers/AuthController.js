@@ -6,6 +6,9 @@ import { SECRET_KEY, LIFE_TIME_TOKEN } from '../configs/settings';
 import UserService from '../services/UserService';
 import Utils from '../utils/Utils';
 import VerifyCodeSchema from '../models/VerifyCodeModel';
+const { sendEmail } = require('../helpers/sendEmail')
+const saltRounds = 10
+
 class AuthController {
     static async checkAdmin(req, res, next) {
         let user = req.user;
@@ -45,17 +48,20 @@ class AuthController {
     static async login(req, res) {
         let response = new Response(res);
         try {
-            let username = req.body.username;
+            let email = req.body.email;
             let password = req.body.password;
             console.log(req.body);
-            // For the given username fetch user from DB
-            if (username && password) {
+            // For the given email fetch user from DB
+            if (email && password) {
                 let userLogin = await UserModel.findOne({
-                    username,
+                    email,
                 });
                 if (userLogin) {
                     if (userLogin.status === 'LOCKED') {
                         return response.error400({ message: 'アカウントがロックされました' });
+                    }
+                    if (!userLogin.verified_at) {
+                        return response.error400({ message: 'アカウントの有効化についてはメールを確認してください' });
                     }
                     let checkPassword = userLogin.comparePassword(password);
                     if (checkPassword) {
@@ -65,7 +71,7 @@ class AuthController {
                                 if (err) {
                                     token = await jwt.sign(
                                         {
-                                            username: username,
+                                            email: email,
                                             type: userLogin.type,
                                             _id: userLogin._id,
                                         },
@@ -81,7 +87,7 @@ class AuthController {
                         } else {
                             token = await jwt.sign(
                                 {
-                                    username: username,
+                                    email: email,
                                     type: userLogin.type,
                                     _id: userLogin._id,
                                 },
@@ -116,20 +122,85 @@ class AuthController {
         try {
             const {email} = req.body
             let user = await UserService.findUser({email});
-            console.log(user);
             if (user) {
                 let newCode = new VerifyCodeSchema();
                 newCode.email = user.email
                 newCode.code = Utils.generateKey()
                 await newCode.save();
-                // :todo send mail
+                let body = `
+                    <div style="color: black">
+                        Please click to link to reset password: <br>
+                        http://${process.env.WEB_SERVER_HOST}/reset-password?code=${newCode.code}
+                    </div>
+                `
+                await sendEmail(user.email, body, 'Amazon Yahoo Manager reset password')
                 return response.success200({status: true})
             } else {
                 return response.error400({message: 'ユーザーが見つかりません。'})
             }
-
         } catch (error) {
             response.error500(error);
+        }
+    }
+
+    static async resetPassword (req, res) {
+        let response = new Response(res);
+        try {
+            const { password, code} = req.body
+            let verifyCode = await VerifyCodeSchema.findOne({code});
+            if (verifyCode) {
+                verifyCode.status = 1;
+                await verifyCode.save();
+                let user = await UserModel.findOne({email: verifyCode.email});
+                bcrypt.genSalt(saltRounds, function(err, salt) {
+                    bcrypt.hash(password, salt, async function (err, hash) {
+                        user.password = password;
+                        user.hash_password = hash
+                        await user.save()
+                        return response.success200({success: true});
+                    });
+                });
+            } else {
+                return response.error400({message: 'コードが見つかりません。'})
+            }
+        } catch (error) {
+            response.error500(error);
+        }
+    }
+
+    static async verifyAccount (req, res) {
+        let response = new Response(res);
+        try {
+            const {code} = req.body
+            let verifyCode = await VerifyCodeSchema.findOne({code, status: 0});
+            if (verifyCode && Object.keys(verifyCode).length) {
+                verifyCode.status = 1;
+                await verifyCode.save();
+                let user = await UserModel.findOne({email: verifyCode.email});
+                user.verified_at = new Date()
+                await user.save();
+                return response.success200(verifyCode._doc)
+            } else {
+                return response.error400({message: '間違ったコード'});
+            }
+        } catch (error) {
+            return response.error500(error);
+        }
+    }
+
+    static async getVerifyCode (req, res) {
+        let response = new Response(res);
+        try {
+            const {code} = req.body
+            let verifyCode = await VerifyCodeSchema.findOne({code, status: 0});
+            console.log(verifyCode);
+            if (verifyCode && Object.keys(verifyCode).length) {
+                return response.success200(verifyCode._doc)
+            } else {
+                return response.error400({message: '間違ったコード'});
+            }
+        } catch (error) {
+            return response.error500(error);
         }
     }
 }

@@ -10,5 +10,14 @@ export default {
   },
   resetPassword (credentials) {
     return Api.post( prefix + "/reset-password", credentials);
+  },
+  resetPassword (credentials) {
+    return Api.post( prefix + "/reset-password", credentials);
+  },
+  verifyAccount (credentials) {
+    return Api.post( prefix + "/verify-account", credentials);
+  },
+  getVerifyCode (credentials) {
+    return Api.post( prefix + "/get-verify-code", credentials);
   }
 };

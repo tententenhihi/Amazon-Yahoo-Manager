@@ -309,9 +309,9 @@
         </div>
         <div class="row mt-20">
           <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
-            Save
+            保存
           </button>
-          <router-link :to="{name: 'ProductYahooList'}" tag="button" class="btn btn-warning mb-1 mr-1">Cancel</router-link>
+          <router-link :to="{name: 'ProductYahooList'}" tag="button" class="btn btn-warning mb-1 mr-1">キャンセル</router-link>
         </div>
       </div>
     </div>
