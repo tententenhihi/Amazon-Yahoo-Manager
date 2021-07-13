@@ -21,26 +21,31 @@
           <thead class="thead-purple">
             <tr>
               <th scope="col">ID</th>
-              <th scope="col">Name</th>
+              <th scope="col">Username</th>
               <th scope="col">Yahoo ID</th>
               <th scope="col">Status</th>
               <th scope="col">Proxy IP</th>
-              <th scope="col">Created At</th>
               <th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(account, index) in tableData" :key="index">
               <td>{{ account._id }}</td>
-              <td>{{ account.name }}</td>
+              <td>{{ account.users[0].username }}</td>
               <td>{{ account.yahoo_id }}</td>
               <td>{{ account.status }}</td>
-              <td>{{ getProxyIp(account.proxy_id) }}</td>
-              <td>{{ $moment(account.created).format('YYYY/MM/DD') }}</td>
               <td>
-                <button class="btn btn-md btn-warning mb-1 mr-1"
+                <template v-if="account.proxies[0]">
+                  {{account.proxies[0].ip}} <br>
+                  <span>
+                    {{account.proxies[0].status}}
+                  </span>
+                </template>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-warning"
                   @click="setProxyToAccount(index)">
-                  <i class="fa fa-edit"></i> Set Proxy
+                    Change Proxy
                 </button>
               </td>
             </tr>
@@ -126,10 +131,6 @@ export default {
           text: error.message
         });
       }
-    },
-    getProxyIp(proxy_id) {
-      let proxy = this.proxies.find(item => item._id === proxy_id)
-      return proxy ? proxy.ip : ''
     },
     setProxyToAccount (index) {
       this.$refs.modalProxyAccount.openModal()

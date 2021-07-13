@@ -494,8 +494,8 @@ body {
 
 .form-control-feedback {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 2px;
+  right: 2px;
   z-index: 2;
   display: block;
   width: 34px;
@@ -503,6 +503,7 @@ body {
   line-height: 34px;
   text-align: center;
   pointer-events: none;
+  background: #FFFFFF;
 }
 
 .btn.btn-flat {
@@ -602,6 +603,10 @@ ul.pagination li a {
 ul.pagination li:last-child a {
   border-top-right-radius: .25rem;
   border-bottom-right-radius: .25rem;
+}
+ul.pagination li:first-child a {
+  border-top-left-radius: .25rem;
+  border-bottom-left-radius: .25rem;
 }
 ul.pagination li:last-child:not(:disabled):not(.disabled) {
   cursor: pointer;

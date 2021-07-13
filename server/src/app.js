@@ -38,7 +38,7 @@ app.use('/', indexRouter);
 
 let initData = async () => {
     UserService.addUser({ username: 'admin', password: 'admin', type: 'admin', name: 'admin',
-        email: "admin@gmail.com" , verified_at = new Date() });
+        email: "admin@gmail.com" , verified_at: new Date() });
     new QueueGetProductAmazon();
     new QueueLoginYahooAuction();
     // getProductYahooAuction.start();

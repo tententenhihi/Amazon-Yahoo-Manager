@@ -135,8 +135,11 @@ class AdminController {
   static async getYahooAccount (req, res) {
     let response = new Response(res)
     try {
-      let yahooAccount = await YahooAccountModel.find();
-      let proxies = await ProxyModel.find();
+      let yahooAccount = await YahooAccountModel.aggregate([
+          { $lookup: { from: 'users', localField: 'user_id', foreignField: '_id', as: 'users'}},
+          { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxies'}},
+        ]);
+      let proxies = await ProxyModel.find({status: 'live'});
 
       return response.success200({accounts: yahooAccount, proxies})
     } catch (error) {
