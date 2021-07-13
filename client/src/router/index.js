@@ -40,6 +40,8 @@ const FormRatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/
 // admin
 const AdminUsers = () => import(/* webpackChunkName: "/static/js/chunks/admin/users" */ '@/views/admin/users/Users.vue');
 const AdminProxy = () => import(/* webpackChunkName: "/static/js/chunks/admin/proxy" */ '@/views/admin/proxy/Index.vue');
+const AdminYahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/admin/yahoo-accounts" */
+  '@/views/admin/yahoo-accounts/Index.vue');
 
 Vue.use(Router);
 
@@ -239,6 +241,16 @@ const router = new Router({
       path: '/admin/proxy',
       name: 'AdminProxy',
       component: AdminProxy,
+      meta: {
+        requiredAuth: true,
+        layout: 'admin',
+        isAdmin: true
+      }
+    },
+    {
+      path: '/admin/yahoo-accounts',
+      name: 'AdminYahooAccounts',
+      component: AdminYahooAccounts,
       meta: {
         requiredAuth: true,
         layout: 'admin',

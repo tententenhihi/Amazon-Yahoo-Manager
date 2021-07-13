@@ -7,7 +7,7 @@ import indexRouter from './routes/index';
 import MongoDB from './services/MongoDB';
 import PassportService from './services/PassportService';
 import UserService from './services/UserService';
-
+import ProxyService from './services/ProxyService'
 import Path from 'path';
 import QueueGetProductAmazon from './services/QueueGetProductAmazon';
 import QueueLoginYahooAuction from './services/QueueLoginYahooAuction';
@@ -41,6 +41,7 @@ let initData = async () => {
     new QueueGetProductAmazon();
     new QueueLoginYahooAuction();
     // getProductYahooAuction.start();
+    ProxyService.getIpProxy();
     console.log('Server Started.!');
 
     // let listCode = await SearchCodeSchema.find({});

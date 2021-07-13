@@ -13,5 +13,14 @@ export default {
   },
   deleteUser (data) {
     return Api.post(prefix + "/users/delete/" + data._id, data);
-  }
+  },
+  getProxies () {
+    return Api.get(prefix + "/proxies");
+  },
+  getYahooAccounts () {
+    return Api.get(prefix + "/yahoo-accounts");
+  },
+  setProxyToYahooAccount (data) {
+    return Api.post(prefix + "/set-proxy-to-yahoo-account", data);
+  },
 };

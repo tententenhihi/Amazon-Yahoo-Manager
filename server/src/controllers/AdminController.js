@@ -4,7 +4,8 @@ import VerifyCodeSchema from '../models/VerifyCodeModel'
 import Response from '../utils/Response';
 import Utils from '../utils/Utils'
 import bcrypt from 'bcryptjs'
-const { sendEmail } = require('../helpers/sendEmail')
+import { sendEmail } from '../helpers/sendEmail'
+import ProxyModel from '../models/ProxyModel'
 
 const saltRounds = 10
 
@@ -119,6 +120,51 @@ class AdminController {
       }
     } catch (error) {
       console.log(error);
+      return response.error500(error)
+    }
+  }
+  static async getProxies (req, res) {
+    let response = new Response(res);
+    try {
+      let proxies = await ProxyModel.find();
+      return response.success200({proxies})
+    } catch {
+      return response.error500(res)
+    }
+  }
+  static async getYahooAccount (req, res) {
+    let response = new Response(res)
+    try {
+      let yahooAccount = await YahooAccountModel.find();
+      let proxies = await ProxyModel.find();
+
+      return response.success200({accounts: yahooAccount, proxies})
+    } catch (error) {
+      return response.error500(error)
+    }
+  }
+
+  static async setProxyToYahooAccount (req, res) {
+    let response = new Response(res)
+    try {
+      const {proxy_id, yahoo_account_id} = req.body;
+      let yahooAccount = await YahooAccountModel.findById(yahoo_account_id);
+      if (!yahooAccount) {
+        return response.error400({message: 'アカウントが存在しません。'})
+      }
+      let proxy = await ProxyModel.findById(proxy_id);
+      if (!proxy) {
+        return response.error400({message: 'プロキシが存在しません。'})
+      }
+
+      yahooAccount.proxy_id = proxy._id;
+      await yahooAccount.save();
+
+      proxy.status = 'used';
+      await proxy.save();
+
+      return response.success200({account: yahooAccount})
+    } catch (error) {
       return response.error500(error)
     }
   }

@@ -579,3 +579,30 @@ body {
   margin: 5px 0;
   color: red;
 }
+
+ul.pagination {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  align-items: center;
+  text-align: center;
+  margin-top: 10px;
+  color: blue;
+}
+ul.pagination li {
+  width: 35px;
+  border: 1px solid gray;
+  height: 35px;
+  line-height: 35px;
+  margin: 0 2px;
+}
+ul.pagination li.disabled {
+  background-color: rgb(226, 218, 218);
+}
+ul.pagination li.active {
+  background-color: #7fb7ec;
+  color: #ffffff;
+}
+ul.pagination li.active a{
+  color: #ffffff;
+}

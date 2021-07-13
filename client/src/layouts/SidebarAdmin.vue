@@ -47,6 +47,12 @@
                 <span>Proxy</span>
               </router-link>
             </li>
+            <li class="sidebar-dropdown">
+              <router-link :to="{name: 'AdminYahooAccounts'}">
+                <i class="fa fa-list"></i>
+                <span>Yahoo Account</span>
+              </router-link>
+            </li>
             <li class="sidebar-dropdown mt-60" @click="onClickLogout">
               <a style="cursor: pointer">
                 <i class="fa fa-power-off"></i>
