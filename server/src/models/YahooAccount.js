@@ -29,9 +29,8 @@ var YahooAccount = new Schema({
         type: String,
         trim: true,
     },
-    cookies_auction: {
-        type: Array,
-        default: []
+    cookie: {
+        type: String
     },
     status: {
         type: String,

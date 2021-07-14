@@ -36,6 +36,7 @@ app.use('/public', express.static(Path.join(__dirname, '../public')));
 app.use(upload());
 app.use('/uploads', express.static('uploads'));
 app.use('/', indexRouter);
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
 let initData = async () => {
     UserService.addUser({
@@ -48,23 +49,9 @@ let initData = async () => {
     // ProxyService.getIpProxy();
     console.log('Server Started.!');
 
-    BrightDataService.getAllIp();
+    BrightDataService.loadProxyToDB();
 
-    // process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
-    // require('axios-https-proxy-fix').get('http://lumtest.com/myip.json',
-    //     {
-    //         proxy: {
-    //             host: 'zproxy.lum-superproxy.io',
-    //             port: '22225',
-    //             auth: {
-    //                 username: 'lum-customer-c_84db29ae-zone-zone2-ip-178.171.80.121',
-    //                 password: '7ox35md3j0jm'
-    //             }
-    //         }
-    //     }
-    // )
-    //     .then(function (data) { console.log(data); },
-    //         function (err) { console.error(err); });
+    ProxyService.checkLiveProxy();
 
 };
 // Connect mongo DB

@@ -1,4 +1,6 @@
 import Axios from 'axios';
+import ProxySchema from '../models/ProxyModel';
+
 let token = `fccab79c0ecbb29bd950417e492131ca`;
 let username = 'lum-customer-c_84db29ae';
 var port = 22225;
@@ -43,7 +45,6 @@ export default class BrightDataService {
                 Authorization: `Bearer ${token}`
             }
             let res = await Axios.get(url, { headers });
-            console.log(' #### res: ', res);
             if (res && res.status === 200) {
                 return res.data;
             }
@@ -71,17 +72,24 @@ export default class BrightDataService {
         for (const zone of listZone) {
             for (const ip of zone.ips) {
                 listIp.push({
-                    zone: zone.name,
                     ip,
-                    username,
+                    host: 'zproxy.lum-superproxy.io',
+                    username: username + '-zone-' + zone.name + '-ip-' + ip,
                     password: zone.password,
-
+                    port: 22225
                 })
             }
         }
         return listIp;
     }
     static async loadProxyToDB() {
-        let listProxy = getAllIp();
+        let listProxy = await this.getAllIp();
+        for (const proxy of listProxy) {
+            let checkExist = await ProxySchema.findOne(proxy);
+            if (!checkExist) {
+                let newProxy = new ProxySchema(proxy);
+                await newProxy.save();
+            }
+        }
     }
 }
