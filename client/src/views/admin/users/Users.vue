@@ -13,10 +13,10 @@
       <hr class="mt-10" />
       <div class="box-content">
         <div class="px-30 py-20">
-          <table id="userTable" class="display pt-20 mb-20" style="width: 100%">
+          <table id="userTable" class="table display pt-20 mb-20" style="width: 100%">
             <thead class="thead-purple">
               <tr>
-                <th scope="col">No</th>
+                <th scope="col">ID</th>
                 <th scope="col">メールアドレス</th>
                 <th scope="col">ユーザー名</th>
                 <th scope="col">名前</th>
@@ -28,12 +28,12 @@
             </thead>
             <tbody>
               <tr v-for="(user, index) in users" :key="user._id">
-                <th scope="row">{{ index + 1 }}</th>
+                <th scope="row">{{ user.userId }}</th>
                 <td>{{ user.email }}</td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.status }}</td>
-                <td>{{ user.used_account + '/' + user.maxYahooAccount }}</td>
+                <td>{{ user.yahooaccounts.length + '/' + user.maxYahooAccount }}</td>
                 <td>{{ $moment(user.expired_at).format("YYYY-MM-DD") }}</td>
                 <td>
                   <button
@@ -266,11 +266,6 @@ export default {
       let result = await AdminApi.getUsers();
       if (result && result.status === 200) {
         this.users = result.data.users || [];
-        let countYahoo = result.data.countYahoo;
-        this.users = this.users.map(user => {
-          user.used_account = countYahoo.find(item => item.user_id === user._id).count;
-          return user;
-        })
       }
     },
     onOpenModalUser(user) {
@@ -313,7 +308,7 @@ export default {
         let result = await AdminApi.createUser(credential);
         if (result && result.status === 200) {
           this.onCloseModal();
-          this.users.push({...result.data.user, used_account: 0});
+          this.users.push({...result.data.user, yahooaccounts: []});
           this.createDatatable()
         }
       }
