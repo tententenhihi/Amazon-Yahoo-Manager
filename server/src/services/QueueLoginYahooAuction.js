@@ -5,22 +5,23 @@ let queueLogin = null;
 
 const autoLoginYahoo = async (inputData, cb) => {
     try {
-        let proxy = await ProxyService.getProxyById(inputData.proxy_id);
-        if (proxy) {
+        let proxyResult = await ProxyService.findByIdAndCheckLive(inputData.proxy_id);
+        if (proxyResult.status === 'SUCCESS') {
+            let proxy = proxyResult.data;
             let cookie = await AuctionYahooService.getCookie(inputData, proxy);
             inputData.cookie = cookie;
             inputData.status = 'SUCCESS';
-            await inputData.save();
-            console.log('done get product yahoo auction');
         } else {
-            throw new Error('Proxy not found.!')
+            inputData.status = proxyResult.status;
+            inputData.statusMessage = proxyResult.statusMessage;
         }
+        await inputData.save();
         cb();
     } catch (error) {
         console.log(' ### Error Queue autoLoginYahoo: ', error);
-        inputData.status = 'ERROR'
-        inputData.statusMessage = 'Error: ' + error.message,
-            await inputData.save();
+        inputData.status = 'ERROR';
+        inputData.statusMessage = 'Error: ' + error.message;
+        await inputData.save();
         cb({ error });
     }
 };
