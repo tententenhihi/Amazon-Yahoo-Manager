@@ -56,6 +56,9 @@ class AuthController {
                 let userLogin = await UserModel.findOne({
                     email,
                 });
+                if (!userLogin) {
+                    userLogin = await UserModel.findOne({username: email})
+                }
                 if (userLogin) {
                     if (userLogin.status === 'LOCKED') {
                         return response.error400({ message: 'アカウントがロックされました' });
