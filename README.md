@@ -3,18 +3,10 @@
 - npm install
 - npm install -g win-node-env
 - Tạo file settings.js từ file setting-default.js trong src/configs
+# Setup Puppeteer
+apt install libnss3-dev libgdk-pixbuf2.0-dev libgtk-3-dev libxss-dev
 
 # Update Server
-cd /root/Amazon-Yahoo-Manager <br />
-git pull origin main <br />
-cd server/ <br />
-npm i <br />
-npm run build <br />
-pm2 delete www <br />
-pm2 start dist/bin/www.js <br />
-cd ../client <br />
-npm i <br />
-npm run build <br />
-sudo rm -r /var/www/dist <br />
-sudo cp -r dist /var/www/dist <br />
-<br />
+cd /root/Amazon-Yahoo-Manager; git pull origin main; cd server/; npm run build;
+cd /root/Amazon-Yahoo-Manager; git pull origin main; cd client/; npm run build; rm -r /var/www/dist; cp -r dist/ /var/www/
+

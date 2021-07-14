@@ -12,6 +12,7 @@ import Path from 'path';
 import QueueGetProductAmazon from './services/QueueGetProductAmazon';
 import QueueLoginYahooAuction from './services/QueueLoginYahooAuction';
 import upload from 'express-fileupload';
+import BrightDataService from './services/BrightDataService';
 require('dotenv').config()
 
 const app = express();
@@ -37,19 +38,34 @@ app.use('/uploads', express.static('uploads'));
 app.use('/', indexRouter);
 
 let initData = async () => {
-    UserService.addUser({ username: 'admin', password: 'admin', type: 'admin', name: 'admin',
-        email: "admin@gmail.com" , verified_at: new Date() });
+    UserService.addUser({
+        username: 'admin', password: 'admin', type: 'admin', name: 'admin',
+        email: "admin@gmail.com", verified_at: new Date()
+    });
     new QueueGetProductAmazon();
     new QueueLoginYahooAuction();
     // getProductYahooAuction.start();
-    ProxyService.getIpProxy();
+    // ProxyService.getIpProxy();
     console.log('Server Started.!');
 
-    // let listCode = await SearchCodeSchema.find({});
-    // for (let i = 0; i < listCode.length; i++) {
-    //     const element = listCode[i];
-    //     await element.remove();
-    // }
+    BrightDataService.getAllIp();
+
+    // process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+    // require('axios-https-proxy-fix').get('http://lumtest.com/myip.json',
+    //     {
+    //         proxy: {
+    //             host: 'zproxy.lum-superproxy.io',
+    //             port: '22225',
+    //             auth: {
+    //                 username: 'lum-customer-c_84db29ae-zone-zone2-ip-178.171.80.121',
+    //                 password: '7ox35md3j0jm'
+    //             }
+    //         }
+    //     }
+    // )
+    //     .then(function (data) { console.log(data); },
+    //         function (err) { console.error(err); });
+
 };
 // Connect mongo DB
 MongoDB.connect(initData);
