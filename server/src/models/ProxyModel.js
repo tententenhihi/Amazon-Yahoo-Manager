@@ -31,7 +31,7 @@ var Proxy = new Schema({
   status: {
     type: String,
     required: true,
-    enum: ['live', 'used', 'die', 'lock'],
+    enum: ['live', 'used', 'lock', 'die'],
     default: 'live',
   },
   created: {

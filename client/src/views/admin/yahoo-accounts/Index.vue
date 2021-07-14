@@ -6,6 +6,23 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 pb-20">
+        <div class="search-proxy mt-10">
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="userid">User Id</label>
+              <input type="text" class="form-control" id="userid" v-model="searchUserId">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" id="username" v-model="searchUsername">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="proxy">Proxy</label>
+              <input type="text" class="form-control" id="proxy" v-model="searchProxy">
+            </div>
+          </div>
+          <button class="btn btn-primary" @click="searchYahooAccount">Search</button>
+        </div>
         <paginate
           v-if="pageCount > 1"
           v-model="page"
@@ -20,7 +37,7 @@
         <table class="table table-responsive table-striped display pt-10 my-20">
           <thead class="thead-purple">
             <tr>
-              <th scope="col">ID</th>
+              <th scope="col">User ID</th>
               <th scope="col">Username</th>
               <th scope="col">Yahoo ID</th>
               <th scope="col">Status</th>
@@ -30,7 +47,7 @@
           </thead>
           <tbody>
             <tr v-for="(account, index) in tableData" :key="index">
-              <td>{{ account._id }}</td>
+              <td>{{ account.users[0].userId }}</td>
               <td>{{ account.users[0].username }}</td>
               <td>{{ account.yahoo_id }}</td>
               <td>{{ account.status }}</td>
@@ -88,6 +105,7 @@ const STATUS_PROXY = [
   { value: 'all', display: 'All'},
   { value: 'live', display: 'Live'},
   { value: 'used', display: 'Used'},
+  { value: 'lock', display: 'Lock'},
   { value: 'die', display: 'Die'},
 ]
 export default {
@@ -100,6 +118,10 @@ export default {
       page: 1,
       selectedProxy: null,
       selectAccount: null,
+      searchUserId: '',
+      searchUsername: '',
+      searchProxy: '',
+      searchData: [],
     }
   },
   async mounted () {
@@ -107,10 +129,10 @@ export default {
   },
   computed: {
     tableData () {
-      return this.accounts.slice((this.page - 1) * PAGE_SIZE, this.page * PAGE_SIZE)
+      return this.searchData.slice((this.page - 1) * PAGE_SIZE, this.page * PAGE_SIZE)
     },
     pageCount () {
-      return Math.ceil(this.accounts.length / PAGE_SIZE)
+      return Math.ceil(this.searchData.length / PAGE_SIZE)
     },
     liveProxies () {
       return this.proxies.filter(item => item.status === 'live')
@@ -123,6 +145,7 @@ export default {
         if (res && res.status === 200) {
           this.accounts = res.data.accounts;
           this.proxies = res.data.proxies;
+          this.searchData = this.accounts
         }
       } catch (error) {
         this.$swal.fire({
@@ -146,16 +169,30 @@ export default {
           icon: "success",
           title: "Success",
         });
-        this.accounts[this.selectAccount] = {...res.data.account};
-        this.accounts = [...this.accounts]
-        let indexProxy = this.proxies.findIndex(pro => pro._id === this.selectedProxy);
-        this.proxies[indexProxy].status = 'used'
+        await this.getYahooAccounts();
         this.selectedProxy = null
         this.$refs.modalProxyAccount.closeModal()
       }
     },
     onCloseModal () {
       this.$refs.modalProxyAccount.closeModal()
+    },
+    searchYahooAccount () {
+      this.searchData = this.accounts.filter(account => {
+        let condition = true;
+        if (this.searchUserId) {
+          condition = condition && account.users.length && account.users[0].userId && account.users[0].userId.toString().includes(this.searchUserId)
+        }
+        if (this.searchUsername) {
+          condition = condition && account.users.length && account.users[0].username.includes(this.searchUsername)
+        }
+        if (this.searchProxy) {
+          condition = condition && account.proxies.length && account.proxies[0].ip.includes(this.searchProxy)
+        }
+        if (condition) {
+          return account;
+        }
+      })
     }
   }
 }

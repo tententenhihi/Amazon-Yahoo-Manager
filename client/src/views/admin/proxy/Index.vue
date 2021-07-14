@@ -71,6 +71,7 @@ const STATUS_PROXY = [
   { value: 'all', display: 'All'},
   { value: 'live', display: 'Live'},
   { value: 'used', display: 'Used'},
+  { value: 'lock', display: 'Lock'},
   { value: 'die', display: 'Die'},
 ]
 export default {
