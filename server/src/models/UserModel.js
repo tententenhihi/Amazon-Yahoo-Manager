@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcryptjs');
+var autoIncrement = require('mongoose-auto-increment');
 
 var User = new Schema({
     email: {
@@ -76,6 +77,8 @@ var User = new Schema({
         type: Number,
         default: 1
     },
+    userId: { type: Number, default: 1 },
+    seq: { type: Number, default: 1 },
     created: {
         type: Date,
         default: Date.now,
@@ -85,6 +88,12 @@ var User = new Schema({
 User.methods.comparePassword = function (password) {
     return bcrypt.compareSync(password, this.hash_password);
 };
-
+autoIncrement.initialize(mongoose.connection);
+User.plugin(autoIncrement.plugin, {
+    model: 'User',
+    field: 'userId',
+    startAt: 1,
+    incrementBy: 1
+});
 var UserSchema = mongoose.model('User', User);
 module.exports = UserSchema;

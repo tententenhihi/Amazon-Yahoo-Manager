@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcryptjs');
+var autoIncrement = require('mongoose-auto-increment');
 
 var YahooAccount = new Schema({
     name: {
@@ -41,6 +42,8 @@ var YahooAccount = new Schema({
     statusMessage: {
         type: String,
     },
+    accountId: { type: Number, default: 1 },
+    seq: { type: Number, default: 1 },
     created: {
         type: Date,
         default: Date.now,
@@ -50,6 +53,13 @@ var YahooAccount = new Schema({
 YahooAccount.methods.comparePassword = function (password) {
     return bcrypt.compareSync(password, this.hash_password);
 };
+autoIncrement.initialize(mongoose.connection);
+YahooAccount.plugin(autoIncrement.plugin, {
+    model: 'YahooAccount',
+    field: 'accountId',
+    startAt: 1,
+    incrementBy: 1
+});
 
 var YahooAccountSchema = mongoose.model('YahooAccount', YahooAccount);
 module.exports = YahooAccountSchema;

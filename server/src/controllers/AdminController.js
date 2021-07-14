@@ -13,18 +13,11 @@ class AdminController {
   static async getAllUsers (req, res) {
     let response = new Response(res);
     try {
-      let users = await UserModel.find({
-        type: 'member',
-      })
-      let countYahoo = [];
-      for (let index = 0; index < users.length; index++) {
-        let countAccount = await YahooAccountModel.find({user_id: users[index]._id}).countDocuments();
-        countYahoo.push({
-          user_id: users[index]._id,
-          count: countAccount
-        })
-      }
-      return response.success200({users, countYahoo});
+      let users = await UserModel.aggregate([
+        { $match: { type: 'member' }},
+        { $lookup: { from: 'yahooaccounts', localField: '_id', foreignField: 'user_id', as: 'yahooaccounts'}},
+      ]);
+      return response.success200({users});
     } catch (error) {
       console.log(error);
       return response.error500(error)
@@ -33,12 +26,15 @@ class AdminController {
   static async createUser (req, res) {
     let response = new Response(res);
     try {
-      const {username, password, name, status, email, expired_at, note} = req.body;
+      const {username, password, name, status, email, expired_at, note, maxYahooAccount} = req.body;
       if (!username || !password || !name || !status || !email || !expired_at) {
         return response.error400({message: '完全な情報を入力してください。'})
       }
-      let existUsers = await UserModel.find({email});
-      if (existUsers.length) {
+      let existUsers = await UserModel.findOne({email});
+      if (!existUsers) {
+        existUsers = await UserModel.findOne({username});
+      }
+      if (existUsers) {
         return response.error400({message: 'ユーザー名は既に存在します'})
       } else {
         let user = new UserModel();
@@ -47,7 +43,8 @@ class AdminController {
         user.email = email;
         user.expired_at = expired_at;
         user.status = status;
-        user.note = note
+        user.note = note;
+        user.maxYahooAccount = parseInt(maxYahooAccount);
         bcrypt.genSalt(saltRounds, function(err, salt) {
           bcrypt.hash(password, salt, async function (err, hash) {
             user.password = password;
@@ -136,9 +133,9 @@ class AdminController {
     let response = new Response(res)
     try {
       let yahooAccount = await YahooAccountModel.aggregate([
-          { $lookup: { from: 'users', localField: 'user_id', foreignField: '_id', as: 'users'}},
-          { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxies'}},
-        ]);
+        { $lookup: { from: 'users', localField: 'user_id', foreignField: '_id', as: 'users'}},
+        { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxies'}},
+      ]);
       let proxies = await ProxyModel.find({status: 'live'});
 
       return response.success200({accounts: yahooAccount, proxies})
@@ -159,7 +156,6 @@ class AdminController {
       if (!proxy) {
         return response.error400({message: 'プロキシが存在しません。'})
       }
-
       yahooAccount.proxy_id = proxy._id;
       await yahooAccount.save();
 
