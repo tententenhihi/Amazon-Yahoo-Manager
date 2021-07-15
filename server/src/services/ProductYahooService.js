@@ -145,7 +145,7 @@ export default class ProductYahooService {
     static async create(data) {
         try {
             let product = await ProductYahooSchema.create(data);
-            return product._doc;
+            return product;
         } catch (error) {
             console.log(error);
             throw new Error(error.message);

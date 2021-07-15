@@ -43,7 +43,7 @@
           </thead>
           <tbody>
             <tr v-for="(proxy, index) in tableData" :key="index">
-              <td>{{ proxy.proxy_id }}</td>
+              <td>{{ proxy.id }}</td>
               <td>{{proxy.ip }}</td>
               <td>{{ proxy.status }}</td>
               <td>{{ $moment(proxy.created).format('YYYY/MM/DD') }}</td>

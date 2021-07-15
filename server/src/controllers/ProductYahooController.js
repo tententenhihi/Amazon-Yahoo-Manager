@@ -1,7 +1,11 @@
 import Response from '../utils/Response';
 import ProductYahooService from '../services/ProductYahooService';
 import AuctionYahooService from '../services/AuctionYahooService';
-import UploadFile from '../helpers/UploadFile'
+import UploadFile from '../helpers/UploadFile';
+import UserService from '../services/UserService';
+import ProxyService from '../services/ProxyService';
+import AccountYahooService from '../services/AccountYahooService';
+
 export default class ProductYahooController {
     static async getPhoto(req, res) {
         let response = new Response(res);
@@ -30,7 +34,6 @@ export default class ProductYahooController {
             return response.error500(error);
         }
     }
-
 
     static async createProduct(req, res) {
         let response = new Response(res);
@@ -78,7 +81,7 @@ export default class ProductYahooController {
                 highlight,
                 gift,
                 wrapping,
-                image_length
+                image_length,
             } = JSON.parse(req.body.payload);
 
             if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id ||
@@ -129,19 +132,32 @@ export default class ProductYahooController {
                 bold,
                 highlight,
                 gift,
-                wrapping
+                wrapping,
             };
             if (req.files && image_length) {
                 for (let index = 0; index < image_length; index++) {
                     const element = req.files[`image-` + index];
-                    data.images.push(await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' }))
+                    data.images.push(await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' }));
                 }
             } else {
-                return response.error400({message: 'Image is required'})
+                return response.error400({ message: 'Image is required' });
             }
 
             let result = await ProductYahooService.create(data);
-            // let uploadAuction = await AuctionYahooService.uploadNewProduct();
+
+            // console.log(' ######################### result: ', result);
+            // //Upload product
+            // let yahooAccount = await AccountYahooService.findById('60ef00cd20e11f462010c643');
+            // if (yahooAccount) {
+            //     let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+            //     if (proxyResult.status === 'SUCCESS') {
+            //         let uploadAuction = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, result, proxyResult.data);
+            //     } else {
+            //         result.status = proxyResult.status;
+            //         result.statusMessage = proxyResult.statusMessage;
+            //     }
+            //     await result.save();
+            // }
 
             response.success200({ result });
         } catch (error) {
@@ -152,16 +168,16 @@ export default class ProductYahooController {
         }
     }
 
-    static async getDetailProduct (req, res) {
+    static async getDetailProduct(req, res) {
         let response = new Response(res);
         try {
-            const {_id} = req.params;
+            const { _id } = req.params;
             let result = await ProductYahooService.show(_id);
             if (result) {
                 response.success200(result);
             }
         } catch (error) {
-            response.error500(error)
+            response.error500(error);
         }
     }
 
@@ -169,7 +185,7 @@ export default class ProductYahooController {
         let response = new Response(res);
         try {
             let user = req.user;
-            const {_id} = req.params
+            const { _id } = req.params;
             let {
                 folder_id,
                 images,
@@ -213,7 +229,7 @@ export default class ProductYahooController {
                 highlight,
                 gift,
                 wrapping,
-                image_length
+                image_length,
             } = JSON.parse(req.body.payload);
 
             if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id ||
@@ -264,13 +280,13 @@ export default class ProductYahooController {
                 bold,
                 highlight,
                 gift,
-                wrapping
+                wrapping,
             };
             if (req.files && image_length) {
                 for (let index = 0; index < image_length; index++) {
                     const element = req.files[`image-` + index];
-                    if(element) {
-                        data.images[index] = await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' })
+                    if (element) {
+                        data.images[index] = await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' });
                     }
                 }
             }
@@ -285,17 +301,17 @@ export default class ProductYahooController {
             response.error500(error);
         }
     }
-    
-    static async deleteProduct (req, res) {
+
+    static async deleteProduct(req, res) {
         let response = new Response(res);
         try {
-            const {_id} = req.params;
+            const { _id } = req.params;
             let result = await ProductYahooService.delete(_id);
             if (result) {
                 response.success200({ success: true });
             }
         } catch (error) {
-            response.error500(error)
+            response.error500(error);
         }
     }
 }
