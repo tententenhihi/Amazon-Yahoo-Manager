@@ -1,11 +1,12 @@
+import bcrypt from 'bcryptjs'
+import Utils from '../utils/Utils'
+import Response from '../utils/Response';
 import UserModel from '../models/UserModel';
 import YahooAccountModel from '../models/YahooAccount';
 import VerifyCodeSchema from '../models/VerifyCodeModel'
-import Response from '../utils/Response';
-import Utils from '../utils/Utils'
-import bcrypt from 'bcryptjs'
-import { sendEmail } from '../helpers/sendEmail'
 import ProxyModel from '../models/ProxyModel'
+import AsinAmazonService from '../services/AsinAmazonService';
+import { sendEmail } from '../helpers/sendEmail'
 
 const saltRounds = 10
 
@@ -23,6 +24,7 @@ class AdminController {
       return response.error500(error)
     }
   }
+
   static async createUser (req, res) {
     let response = new Response(res);
     try {
@@ -120,6 +122,7 @@ class AdminController {
       return response.error500(error)
     }
   }
+
   static async getProxies (req, res) {
     let response = new Response(res);
     try {
@@ -129,6 +132,7 @@ class AdminController {
       return response.error500(res)
     }
   }
+
   static async getYahooAccount (req, res) {
     let response = new Response(res)
     try {
@@ -167,6 +171,54 @@ class AdminController {
       return response.error500(error)
     }
   }
+
+  static async getWhiteListAsin (req, res) {
+    let response = new Response(res);
+    try {
+      let white_list = await AsinAmazonService.getWhiteList();
+      return response.success200({white_list});
+    } catch (error) {
+      console.log(error);
+      return response.error500(error)
+    }
+  }
+
+  static async getBlackListAsin (req, res) {
+    let response = new Response(res);
+    try {
+      let black_list = await AsinAmazonService.getBlackList();
+      return response.success200({black_list});
+    } catch (error) {
+      console.log(error);
+      return response.error500(error)
+    }
+  }
+
+  static async createAsinAmazon (req, res) {
+    let response = new Response(res);
+    try {
+      let {asin, type} = req.body
+      let data = {asin, type}
+      let result = await AsinAmazonService.create(data)
+      return result
+    } catch (error) {
+      console.log(error);
+      return response.error500(error)
+    }
+  }
+
+  static async deleteAsinAmazon (req, res) {
+    let response = new Response(res);
+    try {
+      let {_id} = req.params
+      let result = await AsinAmazonService.delete(_id)
+      return result
+    } catch (error) {
+      console.log(error);
+      return response.error500(error)
+    }
+  }
+
 }
 
 export default AdminController;

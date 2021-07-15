@@ -50,6 +50,16 @@ export default class ProductInfomationDefaultController {
                 highlight,
                 gift,
                 wrapping,
+                extra_stock,
+                profit,
+                yahoo_auction_shipping,
+                makeshop_shipping,
+                amazon_shipping,
+                yahoo_auction_fee,
+                yahoo_auction_profit_type,
+                yahoo_auction_price_profit,
+                yahoo_auction_static_profit,
+                yahoo_auction_bid_price
             } = req.body;
             let user = req.user;
 
@@ -85,7 +95,17 @@ export default class ProductInfomationDefaultController {
                 bold,
                 highlight,
                 gift,
-                wrapping
+                wrapping,
+                extra_stock,
+                profit,
+                yahoo_auction_shipping,
+                makeshop_shipping,
+                amazon_shipping,
+                yahoo_auction_fee,
+                yahoo_auction_profit_type,
+                yahoo_auction_price_profit,
+                yahoo_auction_static_profit,
+                yahoo_auction_bid_price
             };
 
             let result = await ProductInfomationDefaultService.update(_id, data);

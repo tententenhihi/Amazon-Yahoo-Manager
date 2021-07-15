@@ -7,7 +7,6 @@ class UserController {
     let response = new Response(res);
     try {
       let user = req.user;
-      console.log(req.body);
       user = await UserSchema.findById(user._id)
       console.log(user);
       bcrypt.compare(req.body.current_password, user.hash_password, function(err, res) {
