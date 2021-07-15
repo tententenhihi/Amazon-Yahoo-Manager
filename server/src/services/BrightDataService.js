@@ -11,14 +11,14 @@ export default class BrightDataService {
             let url = `https://brightdata.com/api/zone/get_active_zones`;
             let headers = {
                 Authorization: `Bearer ${token}`,
-            }
+            };
             let res = await Axios.get(url, { headers, timeout: 30 * 1000 });
             if (res && res.status === 200) {
                 return res.data;
             }
-            return null
+            return null;
         } catch (error) {
-            console.log(" ### Error BrightDataService getZone: ", error);
+            console.log(' ### Error BrightDataService getZone: ', error);
             return null;
         }
     }
@@ -26,15 +26,15 @@ export default class BrightDataService {
         try {
             let url = `https://brightdata.com/api/zone?zone=${zoneName}`;
             let headers = {
-                Authorization: `Bearer ${token}`
-            }
+                Authorization: `Bearer ${token}`,
+            };
             let res = await Axios.get(url, { headers });
             if (res && res.status === 200) {
                 return res.data;
             }
-            return null
+            return null;
         } catch (error) {
-            console.log(" ### Error BrightDataService getInfoZone: ", error);
+            console.log(' ### Error BrightDataService getInfoZone: ', error);
             return null;
         }
     }
@@ -42,15 +42,15 @@ export default class BrightDataService {
         try {
             let url = `https://brightdata.com/api/zone/route_ips?zone=${zoneName}&country=jp`;
             let headers = {
-                Authorization: `Bearer ${token}`
-            }
+                Authorization: `Bearer ${token}`,
+            };
             let res = await Axios.get(url, { headers });
             if (res && res.status === 200) {
                 return res.data;
             }
-            return null
+            return null;
         } catch (error) {
-            console.log(" ### Error BrightDataService getIpByZone: ", error);
+            console.log(' ### Error BrightDataService getIpByZone: ', error);
             return null;
         }
     }
@@ -63,7 +63,7 @@ export default class BrightDataService {
                     zone.password = infoZone.password[0];
                     let listIpByZone = await this.getIpByZone(zone.name);
                     if (listIpByZone) {
-                        zone.ips = listIpByZone.split('\n').filter(x => x !== '');
+                        zone.ips = listIpByZone.split('\n').filter((x) => x !== '');
                     }
                 }
             }
@@ -76,19 +76,23 @@ export default class BrightDataService {
                     host: 'zproxy.lum-superproxy.io',
                     username: username + '-zone-' + zone.name + '-ip-' + ip,
                     password: zone.password,
-                    port: 22225
-                })
+                    port: 22225,
+                });
             }
         }
         return listIp;
     }
     static async loadProxyToDB() {
-        let listProxy = await this.getAllIp();
-        for (const proxy of listProxy) {
-            let checkExist = await ProxySchema.findOne(proxy);
-            if (!checkExist) {
-                let newProxy = new ProxySchema(proxy);
-                await newProxy.save();
+        let check = await ProxySchema.find({});
+
+        if (!check || check.length == 0) {
+            let listProxy = await this.getAllIp();
+            for (const proxy of listProxy) {
+                let checkExist = await ProxySchema.findOne(proxy);
+                if (!checkExist) {
+                    let newProxy = new ProxySchema(proxy);
+                    await newProxy.save();
+                }
             }
         }
     }

@@ -1,9 +1,11 @@
 <template>
   <div id="app">
     <component :is="layout"></component>
-    <loading :active.sync="isLoading"
-      :can-cancel="true"
-      :is-full-page="true"/>
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="false"
+      :is-full-page="true"
+    />
   </div>
 </template>
 
@@ -11,15 +13,15 @@
 import { mapState } from "vuex";
 import NormalLayout from "./layouts/NormalLayout.vue";
 import AdminLayout from "./layouts/AdminLayout.vue";
-import Loading from 'vue-loading-overlay';
-import 'vue-loading-overlay/dist/vue-loading.css';
+import Loading from "vue-loading-overlay";
+import "vue-loading-overlay/dist/vue-loading.css";
 
 export default {
   name: "App",
-  data () {
+  data() {
     return {
-      isLoading: true
-    }
+      isLoading: false
+    };
   },
   components: {
     NormalLayout,
@@ -28,19 +30,19 @@ export default {
   },
   computed: {
     ...mapState(["isUserLoggedIn"]),
-    layout () {
-      return (this.$route.meta.layout || 'normal') + '-layout';
+    layout() {
+      return (this.$route.meta.layout || "normal") + "-layout";
     }
   },
-  created () {
-    this.$eventBus.$on('showLoading', this.onShowLoading)
+  created() {
+    this.$eventBus.$on("showLoading", this.onShowLoading);
   },
-  beforeDestroy () {
-    this.$eventBus.$off('showLoading', this.onShowLoading)
+  beforeDestroy() {
+    this.$eventBus.$off("showLoading", this.onShowLoading);
   },
   methods: {
-    onShowLoading (value) {
-      this.isLoading = value
+    onShowLoading(value) {
+      this.isLoading = value;
     }
   }
 };

@@ -3,7 +3,6 @@ import ProductYahooController from '../controllers/ProductYahooController';
 
 var ProductYahooRouter = express.Router();
 
-ProductYahooRouter.route('/get_photos').post(ProductYahooController.getPhoto);
 ProductYahooRouter.route('/get').get(ProductYahooController.get);
 ProductYahooRouter.route('/create').post(ProductYahooController.createProduct);
 ProductYahooRouter.route('/show/:_id').get(ProductYahooController.getDetailProduct);

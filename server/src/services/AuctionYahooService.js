@@ -210,10 +210,10 @@ export default class AuctionYahooService {
             headers,
             proxy: proxyConfig,
         });
-        if (Fs.existsSync('./preview.html')) {
-            Fs.unlinkSync('./preview.html');
-        }
-        Fs.writeFileSync('./preview.html', resPreview.data);
+        // if (Fs.existsSync('./preview.html')) {
+        //     Fs.unlinkSync('./preview.html');
+        // }
+        // Fs.writeFileSync('./preview.html', resPreview.data);
 
         let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
         if (mgc) mgc = mgc[1];
@@ -349,7 +349,7 @@ export default class AuctionYahooService {
             headers,
             proxy: proxyConfig,
         });
-        Fs.writeFileSync('./submit.html', resSubmit.data);
+        // Fs.writeFileSync('./submit.html', resSubmit.data);
 
         console.log(' =========== Upload Product Auction DONE ============= ');
         if (resSubmit.data.includes('以下の商品の出品手続きが完了しました。ご利用ありがとうございました。')) {

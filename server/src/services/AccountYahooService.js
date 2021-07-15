@@ -10,4 +10,13 @@ export default class AccountYahooService {
             return null;
         }
     }
+    static async findOne(data) {
+        try {
+            let account = await YahooAccountSchema.findOne(data);
+            return account;
+        } catch (error) {
+            console.log(' Error AccountYahooService findById: ', error);
+            return null;
+        }
+    }
 }
