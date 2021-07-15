@@ -8,26 +8,45 @@
     </div>
     <hr class="mt-10" />
     <div class="box-content">
-      <div class="px-30 py-20">
+      <div class="px-10 py-20">
         <table id="productTable" class="display pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
               <th scope="col">数</th>
-              <th scope="col">Y！オーク商品名</th>
-              <th scope="col">商品の状態</th>
-              <th scope="col">個数</th>
-              <th scope="col">Yahoo商品のカテゴリー（ID指定）</th>
-              <th scope="col">終了時間</th>
-              <th scope="col">返品の可否</th>
-              <th scope="col">商品発送元の地域</th>
-              <th scope="col">で作成</th>
-              <th scope="col">操作</th>
+              <th scope="col">画像</th>
+              <th scope="col">Y！オーク商品の名前</th>
+              <th scope="col">期間(日)</th>
+              <th scope="col">開始価格</th>
+              <th scope="col">即決価格</th>
+              <th scope="col">送料</th>
+              <th scope="col">出品停止在庫数</th>
+              <th scope="col">数量</th>
+              <th scope="col">仕入元の値段</th>
+              <th scope="col">想定利益</th>
+              <th scope="col">仕入元の在庫数</th>
+              <th scope="col">出品中</th>
+              <th scope="col">在庫 監視</th>
+              <th scope="col">利益 監視</th>
+              <th scope="col">プライムのみ監視</th>
+              <th scope="col">画像挿入</th>
+              <th scope="col">Amazon カテゴリ ID</th>
+              <th scope="col">ヤフー カテゴリ ID (出品予定)</th>
+              <th scope="col">紐付け情報</th>
+              <th scope="col">備考</th>
+              <th scope="col">備考</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(product, index) in products" :key="product._id">
               <th scope="row">{{ index + 1 }}</th>
-              <th scope="row">{{ product.product_yahoo_title }}</th>
+              <th>{{ product.images[0] }}</th>
+              <th>{{ product.product_yahoo_title }}</th>
+              <th>{{ product.duration }}</th>
+              <th>{{ product.start_price }}</th>
+              <th>{{ product.bid_or_buy_price }}</th>
+              <th>{{ product.shipping }}</th>
+              <th>{{ product.product_yahoo_title }}</th>
+              <th>{{ product.product_yahoo_title }}</th>
               <td>
                 {{ displayProductStatus(product) }}
               </td>
@@ -147,20 +166,20 @@ const PREFECTURE = [
   { value: 48, display: '海外' },
 ]
 const SHIP_SCHEDULE = [
-  { display: '１〜２日', value: 0 },
-  { display: '２〜３日', value: 1 },
+  { display: '１〜２日', value: 1 },
+  { display: '２〜３日', value: 7 },
   { display: '３〜７日', value: 2 },
-  { display: '７日〜１３日', value: 3 },
-  { display: '１４日以降', value: 4 },
+  { display: '７日〜１３日', value: 5 },
+  { display: '１４日以降', value: 6 },
 ]
 const CONSPICUOUS_ICON = [
-  { display: '美品', value: 0 },
-  { display: '非売品', value: 1 },
-  { display: '限定品', value: 2 },
-  { display: '保証書付', value: 3 },
-  { display: '全巻セット', value: 4 },
-  { display: '正規店購入', value: 5 },
-  { display: '産地直送', value: 6 },
+  { display: '美品', value: 2 },
+  { display: '非売品', value: 3 },
+  { display: '限定品', value: 4 },
+  { display: '保証書付', value: 5 },
+  { display: '全巻セット', value: 6 },
+  { display: '正規店購入', value: 7 },
+  { display: '産地直送', value: 8 },
 ]
 export default {
   name: 'ProductYahooList',

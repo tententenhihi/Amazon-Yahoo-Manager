@@ -180,6 +180,14 @@ export default class ProductYahooService {
                 throw new Error('Product not found');
             } else {
                 await product.remove();
+                for (let index = 0; index < product.images.length; index++) {
+                    const element = product.images[index];
+                    try {
+                        fs.unlinkSync('uploads/' + element)
+                    } catch (error) {
+                        console.log(error);                        
+                    }
+                }
                 return true;
             }
         } catch (error) {

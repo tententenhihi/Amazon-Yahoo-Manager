@@ -50,7 +50,7 @@ class YahooAccountController {
                     response.success200(result._doc);
                 }
             } else {
-                return response.error400({message: 'Parameters is required'});
+                return response.error400({message: 'パラメータが必要です。'});
             }
         } catch (error) {
             return response.error500(error);

@@ -1,5 +1,5 @@
 <template>
-  <div class="modal fade show" :ref="ref" :id="idModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade show" :ref="ref" :id="idModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content modal-success">
         <div class="modal-header" v-if="isModalHeader">

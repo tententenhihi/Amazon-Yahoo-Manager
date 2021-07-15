@@ -1,5 +1,7 @@
 import Axios from "axios";
 import store from "../store/store";
+import {EventBus} from '@/events/eventBus'
+
 import Vue from "vue";
 var vue = new Vue({});
 
@@ -72,8 +74,11 @@ export default class Api {
     };
     var res = {};
     try {
+      EventBus.$emit('showLoading', true)
       res = await Axios.post(url, data, newConfig);
+      EventBus.$emit('showLoading', false)
     } catch (err) {
+      EventBus.$emit('showLoading', false)
       res = err.response;
     }
 
@@ -112,7 +117,9 @@ export default class Api {
 
     var res = {};
     try {
+      EventBus.$emit('showLoading', true)
       res = await Axios.get(url, newConfig);
+      EventBus.$emit('showLoading', false)
     } catch (err) {
       res = err.response;
     }

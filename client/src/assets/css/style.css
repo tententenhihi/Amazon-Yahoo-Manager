@@ -97,7 +97,7 @@ body {
 
 @media screen and (min-width: 768px) {
   .page-wrapper.toggled .page-content {
-    padding-left: 300px;
+    padding-left: 270px;
   }
 }
 
@@ -118,12 +118,12 @@ body {
 /*----------------sidebar-wrapper----------------*/
 
 .sidebar-wrapper {
-  width: 280px;
+  width: 260px;
   height: 100%;
   max-height: 100%;
   position: fixed;
   top: 0;
-  left: -270px;
+  left: -260px;
   z-index: 999;
 }
 
@@ -279,7 +279,7 @@ body {
 }
 
 .sidebar-wrapper .sidebar-menu .sidebar-dropdown .sidebar-submenu li {
-  padding-left: 25px;
+  padding-left: 5px;
   font-size: 13px;
 }
 
@@ -539,7 +539,7 @@ body {
 
 .wrapper-content {
   background-color: #ffffff;
-  margin: 20px;
+  margin: 20px 10px;
 }
 
 .wrapper-content .box-header {
@@ -568,6 +568,7 @@ body {
 
 .text-align-end {
   text-align: end;
+  margin-top: 3px;
 }
 
 .label-end-center {
@@ -619,4 +620,26 @@ ul.pagination li.active a {
 }
 .table-responsive {
   display: table;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(133, 131, 131); 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(128, 127, 127); 
 }

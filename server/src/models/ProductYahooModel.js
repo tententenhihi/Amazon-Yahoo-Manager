@@ -53,7 +53,7 @@ var Product = new Schema({
     },
     offer: {
         type: String,
-        default: ''
+        default: 'no'
     },
     quantity: {
         type: Number,
@@ -77,23 +77,23 @@ var Product = new Schema({
     },
     min_bid_rating: {
         type: String,
-        default: ''
+        default: 'no'
     },
     bad_rating_ratio: {
         type: String,
-        default: ''
+        default: 'no'
     },
     bid_credit_limit: {
         type: String,
-        default: ''
+        default: 'no'
     },
     auto_extension: {
         type: String,
-        default: ''
+        default: 'no'
     },
     close_early: {
         type: String,
-        default: ''
+        default: 'no'
     },
     num_resubmit: {
         type: Number,
@@ -169,11 +169,11 @@ var Product = new Schema({
     },
     gift: {
         type: Number,
-        default: 1
+        default: 0
     },
     wrapping: {
-        type: Number,
-        default: 1,
+        type: String,
+        default: 'no',
     },
     created: {
         type: Date,

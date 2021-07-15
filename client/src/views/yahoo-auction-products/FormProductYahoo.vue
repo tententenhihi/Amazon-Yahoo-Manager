@@ -101,7 +101,7 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">仕入れ価格 : <br> <small>(JPY)</small></div>
+                  <div class="col-md-4 text-align-end"><font color="red">*</font>仕入れ価格 : <br> <small>(JPY)</small></div>
                   <div class="col-md-4">
                     <input type="number" v-model="product.import_price" class="form-control">
                   </div>
@@ -159,9 +159,9 @@
                 <div class="row">
                   <div class="col-md-4 text-align-end">返品の可否 :</div>
                   <div class="col-md-8">
-                    <input type="radio" v-model="product.retpolicy" class="ml-2" :value="0" id="non-return">
+                    <input type="radio" v-model="product.retpolicy" class="ml-2" value="no" id="non-return">
                     <label for="non-return">返品不可</label> 
-                    <input type="radio" v-model="product.retpolicy" class="ml-2" :value="1" id="accept-return">
+                    <input type="radio" v-model="product.retpolicy" class="ml-2" value="yes" id="accept-return">
                     <label for="accept-return">返品可</label>
                   </div>
                 </div>
@@ -180,19 +180,19 @@
                   <div class="col-md-4 text-align-end">入札制限 :</div>
                   <div class="col-md-8">
                     <div class="form-check">
-                      <input class="form-check-input" v-model="product.min_bid_rating" type="checkbox" id="overral-evaluation">
+                      <input class="form-check-input" v-model="product.min_bid_rating" true-value="yes" false-value="no" type="checkbox" id="overral-evaluation">
                       <label class="form-check-label" for="overral-evaluation">
                         総合評価で制限
                       </label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" v-model="product.bad_rating_ratio" type="checkbox" id="bad-evaluation">
+                      <input class="form-check-input" v-model="product.bad_rating_ratio" true-value="yes" false-value="no" type="checkbox" id="bad-evaluation">
                       <label class="form-check-label" for="bad-evaluation">
                         悪い評価の割合で制限 （詳細)
                       </label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" v-model="product.bid_credit_limit" type="checkbox" id="bidder-authen">
+                      <input class="form-check-input" v-model="product.bid_credit_limit" true-value="yes" false-value="no" type="checkbox" id="bidder-authen">
                       <label class="form-check-label" for="bidder-authen">
                         入札者認証制限あり (詳細)
                       </label>
@@ -204,13 +204,13 @@
                   <div class="col-md-8">
                     <div class="form-check d-flex">
                       <div class="mr-30">
-                        <input class="form-check-input" v-model="product.auto_extension" type="checkbox" id="automatic-extension">
+                        <input class="form-check-input" v-model="product.auto_extension" true-value="yes" false-value="no" type="checkbox" id="automatic-extension">
                         <label class="form-check-label" for="automatic-extension">
                           自動延長あり
                         </label>
                       </div>
                       <div>
-                        <input class="form-check-input" v-model="product.close_early" type="checkbox" id="early-terminate">
+                        <input class="form-check-input" v-model="product.close_early" true-value="yes" false-value="no" type="checkbox" id="early-terminate">
                         <label class="form-check-label" for="early-terminate">
                           早期終了あり
                         </label>
@@ -252,7 +252,7 @@
                   <div class="col-md-4 text-align-end">決済方法 :</div>
                   <div class="col-md-8">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" checked disabled>
+                      <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" checked disabled>
                       <label class="form-check-label">
                         Yahoo!かんたん決済（詳細）
                       </label>
@@ -302,7 +302,7 @@
             <transition name="fade">
               <div v-show="isShowDelivery">
                 <div class="row">
-                  <div class="col-md-4 text-align-end">商品発送元の地域 :</div>
+                  <div class="col-md-4 text-align-end"><font color="red">*</font>商品発送元の地域 :</div>
                   <div class="col-md-2">
                     <select class="form-control" v-model="product.location">
                       <option v-for="(pref, index) in PREFECTURE" :key="index" :value="pref.value">{{pref.display}}</option>
@@ -337,7 +337,7 @@
                   <div class="col-md-4 text-align-end">海外発送 :</div>
                   <div class="col-md-8">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="overseas" v-model="product.foreign_check">
+                      <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="overseas" v-model="product.foreign_check">
                       <label class="form-check-label" for="overseas">
                         海外発送にも対応する
                       </label>
@@ -371,7 +371,7 @@
                   <div class="col-md-4 text-align-end">太字テキスト :</div>
                   <div class="col-md-8">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="bold-text" v-model="product.bold">
+                      <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="bold-text" v-model="product.bold">
                       <label class="form-check-label" for="bold-text">
                         1出品あたり10.80円（税込）
                       </label>
@@ -382,7 +382,7 @@
                   <div class="col-md-4 text-align-end">背景色 :</div>
                   <div class="col-md-8">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="bg-color" v-model="product.highlight">
+                      <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="bg-color" v-model="product.highlight">
                       <label class="form-check-label" for="bg-color">
                         1出品あたり32.40円（税込）
                       </label>
@@ -402,7 +402,7 @@
                   <div class="col-md-4 text-align-end">贈答品アイコン :</div>
                   <div class="col-md-8">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="gift-icon" v-model="product.wrapping">
+                      <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="gift-icon" v-model="product.wrapping">
                       <label class="form-check-label" for="gift-icon">
                         1出品あたり21.60円（税込）
                       </label>
@@ -515,20 +515,20 @@ const PREFECTURE = [
   { value: 48, display: '海外' },
 ]
 const SHIP_SCHEDULE = [
-  { display: '１〜２日', value: 0 },
-  { display: '２〜３日', value: 1 },
+  { display: '１〜２日', value: 1 },
+  { display: '２〜３日', value: 7 },
   { display: '３〜７日', value: 2 },
-  { display: '７日〜１３日', value: 3 },
-  { display: '１４日以降', value: 4 },
+  { display: '７日〜１３日', value: 5 },
+  { display: '１４日以降', value: 6 },
 ]
 const CONSPICUOUS_ICON = [
-  { display: '美品', value: 0 },
-  { display: '非売品', value: 1 },
-  { display: '限定品', value: 2 },
-  { display: '保証書付', value: 3 },
-  { display: '全巻セット', value: 4 },
-  { display: '正規店購入', value: 5 },
-  { display: '産地直送', value: 6 },
+  { display: '美品', value: 2 },
+  { display: '非売品', value: 3 },
+  { display: '限定品', value: 4 },
+  { display: '保証書付', value: 5 },
+  { display: '全巻セット', value: 6 },
+  { display: '正規店購入', value: 7 },
+  { display: '産地直送', value: 8 },
 ]
 const TARGET_FOLDER = [
   {display: '基本フォルダ', value: 0},

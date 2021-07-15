@@ -1,6 +1,9 @@
 <template>
   <div id="app">
     <component :is="layout"></component>
+    <loading :active.sync="isLoading"
+      :can-cancel="true"
+      :is-full-page="true"/>
   </div>
 </template>
 
@@ -8,13 +11,20 @@
 import { mapState } from "vuex";
 import NormalLayout from "./layouts/NormalLayout.vue";
 import AdminLayout from "./layouts/AdminLayout.vue";
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default {
   name: "App",
-
+  data () {
+    return {
+      isLoading: true
+    }
+  },
   components: {
     NormalLayout,
-    AdminLayout
+    AdminLayout,
+    Loading
   },
   computed: {
     ...mapState(["isUserLoggedIn"]),
@@ -22,9 +32,17 @@ export default {
       return (this.$route.meta.layout || 'normal') + '-layout';
     }
   },
-  data: () => ({
-    //
-  })
+  created () {
+    this.$eventBus.$on('showLoading', this.onShowLoading)
+  },
+  beforeDestroy () {
+    this.$eventBus.$off('showLoading', this.onShowLoading)
+  },
+  methods: {
+    onShowLoading (value) {
+      this.isLoading = value
+    }
+  }
 };
 </script>
 <style src="@/assets/css/reset.css"></style>
@@ -32,6 +50,9 @@ export default {
 <style src="@/assets/css/style.css"></style>
 
 <style>
+.vld-overlay.is-full-page {
+  z-index: 9999 !important;
+}
 body {
   min-height: 100vh;
   font-family: "Roboto", "Arial", sans-serif !important;

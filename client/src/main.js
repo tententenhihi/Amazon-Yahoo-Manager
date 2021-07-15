@@ -19,10 +19,12 @@ import Helpers from './helpers/index';
 import i18n from './lang/lang';
 import './helpers/validate';
 import Paginate from 'vuejs-paginate'
+import {EventBus} from '@/events/eventBus'
 
 Vue.prototype.$ = $;
 Vue.prototype.$constants = Constants;
 Vue.prototype.$helpers = Helpers;
+Vue.prototype.$eventBus = EventBus;
 
 Vue.use(VueLodash, { name: 'custom' , lodash: lodash })
 Vue.use(require("vue-moment"));

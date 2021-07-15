@@ -82,7 +82,7 @@ export default class ProductYahooController {
             } = JSON.parse(req.body.payload);
 
             if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id ||
-                !description ) {
+                !description || !location || !import_price ) {
                 return response.error400({message: '必須フィールドをすべて入力してください'})
             }
 
@@ -217,7 +217,7 @@ export default class ProductYahooController {
             } = JSON.parse(req.body.payload);
 
             if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id ||
-                !description ) {
+                !description || !location || !import_price ) {
                 return response.error400({message: '必須フィールドをすべて入力してください'})
             }
 
