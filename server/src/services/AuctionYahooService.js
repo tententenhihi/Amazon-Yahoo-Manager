@@ -116,6 +116,11 @@ export default class AuctionYahooService {
         } else {
             location = location.display;
         }
+        if (productData.bid_or_buy_price) {
+            productData.sales_mode = 'salesmode_buynow';
+        } else {
+            productData.sales_mode = 'auction';
+        }
         // PREVIEW
         let previewParams = {
             aID: '',
@@ -144,7 +149,6 @@ export default class AuctionYahooService {
             is_yahuneko_nekoposu_ship: 'yes',
             is_yahuneko_taqbin_ship: 'no',
             is_jp_yupacket_official_ship: 'yes',
-            salesmode: 'auction',
             submitUnixtime: Date.now(),
             markdown_ratio: 0,
             promoteCtoOfficial_shipMethod: 'クリックポスト',
@@ -156,6 +160,7 @@ export default class AuctionYahooService {
             ...payloadImage,
             Title: productData.product_yahoo_title,
             category: productData.yahoo_auction_category_id,
+            salesmode: productData.sales_mode,
             StartPrice: productData.start_price,
             BidOrBuyPrice: productData.bid_or_buy_price,
             istatus: productData.status,
@@ -210,12 +215,17 @@ export default class AuctionYahooService {
             headers,
             proxy: proxyConfig,
         });
-        // if (Fs.existsSync('./preview.html')) {
-        //     Fs.unlinkSync('./preview.html');
-        // }
-        // Fs.writeFileSync('./preview.html', resPreview.data);
 
         let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
+        if (mgc == null) {
+            let $Preview = cheerio.load(resPreview.data);
+            let message = $Preview('strong').text();
+            return {
+                status: 'UPLOAD_ERROR',
+                statusMessage: message,
+            };
+        }
+
         if (mgc) mgc = mgc[1];
 
         // SUBMIT
@@ -242,122 +252,24 @@ export default class AuctionYahooService {
             isYahunekoPack: 'true',
             '.crumb': keys.crumb,
             is_paypay_fleamarket_cross_listing: 0,
-
-            // markdown_ratio: '',
-            // categoryPath: 'オークション > おもちゃ、ゲーム > ゲーム > トレーディングカードゲーム > 遊戯王（コナミ） > その他',
-            // LastStartPrice: '',
-            // startDate: '1625637884',
-            // endDate: '1625897084',
-            // DurationDetail: '',
-            // initNumResubmit: '',
-            // aspj3: '',
-            // aspj4: '',
-            // charityOption: '',
-            // markdownPrice1: '',
-            // markdownPrice2: '',
-            // markdownPrice3: '',
-            // itemsizeStr: '－',
-            // itemweightStr: '－',
-            // ypkOK: '',
-            // hacoboon_shipratelink: '',
-            // affiliateRate: '',
-            // cpaAmount: '',
-            // initialFeaturedCharge: '',
-            // GiftIconCharge: '',
-            // ReserveFeeOnly: '',
-            // reserveFeeTotal: '',
-            // IsPrivacyDeliveryAvailable: '',
-            // brand_line_id: '',
-            // brand_line_name: '',
-            // item_spec_size_id: '',
-            // item_spec_size_type: '',
-            // item_spec_size: '',
-            // item_segment_id: '',
-            // item_segment: '',
-            // catalog_id: '',
-            // catalog_jan_code: '',
-            // catalog_name: '',
-            // catalog_spec_select_type: '',
-            // catalog_spec_numerical_type: '',
-            // paymethod1: '',
-            // paymethod2: '',
-            // paymethod3: '',
-            // paymethod4: '',
-            // paymethod5: '',
-            // paymethod6: '',
-            // paymethod7: '',
-            // paymethod8: '',
-            // paymethod9: '',
-            // paymethod10: '',
-            // shipnameWithSuffix1: '',
-            // shipratelink1: '',
-            // shipnameWithSuffix2: '',
-            // shipratelink2: '',
-            // shipnameWithSuffix3: '',
-            // shipratelink3: '',
-            // shipnameWithSuffix4: '',
-            // shipratelink4: '',
-            // shipnameWithSuffix5: '',
-            // shipratelink5: '',
-            // shipnameWithSuffix6: '',
-            // shipratelink6: '',
-            // shipnameWithSuffix7: '',
-            // shipratelink7: '',
-            // shipnameWithSuffix8: '',
-            // shipratelink8: '',
-            // shipnameWithSuffix9: '',
-            // shipratelink9: '',
-            // shipnameWithSuffix10: '',
-            // shipratelink10: '',
-            // bkname1: '',
-            // bkname2: '',
-            // bkname3: '',
-            // bkname4: '',
-            // bkname5: '',
-            // bkname6: '',
-            // bkname7: '',
-            // bkname8: '',
-            // bkname9: '',
-            // bkname10: '',
-            // hacoboonMiniFeeInfoAreaName1: '',
-            // hacoboonMiniFeeInfoFee1: '',
-            // hacoboonMiniFeeInfoAreaName2: '',
-            // hacoboonMiniFeeInfoFee2: '',
-            // hacoboonMiniFeeInfoAreaName3: '',
-            // hacoboonMiniFeeInfoFee3: '',
-            // hacoboonMiniFeeInfoAreaName4: '',
-            // hacoboonMiniFeeInfoFee4: '',
-            // hacoboonMiniCvsPref: '',
-            // aspj1: '',
-            // isFirstSubmit: '',
-            // is_hb_ship: '',
-            // hb_shipratelink: '',
-            // hb_ship_fee: '',
-            // hb_hokkaido_ship_fee: '',
-            // hb_okinawa_ship_fee: '',
-            // hb_isolatedisland_ship_fee: '',
-            // hb_deliveryfeesize: '',
-            // is_hbmini_ship: '',
-            // is_yahuneko_taqbin_compact_ship: '',
-            // yahuneko_taqbin_deliveryfeesize: '',
-            // is_jp_yupack_official_ship: '',
-            // jp_yupack_deliveryfeesize: '',
-            // draftIndex: '',
         };
         payload = Qs.stringify(previewParams);
         let resSubmit = await axios.post(`https://auctions.yahoo.co.jp/sell/jp/config/submit`, payload, {
             headers,
             proxy: proxyConfig,
         });
-        // Fs.writeFileSync('./submit.html', resSubmit.data);
-
         console.log(' =========== Upload Product Auction DONE ============= ');
         if (resSubmit.data.includes('以下の商品の出品手続きが完了しました。ご利用ありがとうございました。')) {
-            return true;
+            return {
+                status: 'UPLOAD_SUCCESS',
+            };
         } else {
             let $ = cheerio.load(resSubmit.data);
             let message = $('strong').text();
-            return message;
+            return {
+                status: 'UPLOAD_ERROR',
+                statusMessage: message,
+            };
         }
     }
     static async getProductAuctionsSuccess(cookie, proxy) {
@@ -815,17 +727,18 @@ export default class AuctionYahooService {
         let urlLogin =
             'https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver';
 
+        let timeout = 5 * 60 * 1000;
         // urlLogin = 'http://lumtest.com/myip.json';
-        await page.goto(urlLogin, { waitUntil: 'load', timeout: 0 });
+        await page.goto(urlLogin, { waitUntil: 'load', timeout: timeout });
         page.setDefaultNavigationTimeout(0);
         await page.type('#username', account.yahoo_id);
         await Utils.sleep(3000);
         await page.click('#btnNext');
-        await page.waitForNavigation({ timeout: 30 * 1000 });
+        await page.waitForNavigation({ timeout: timeout });
         await page.type('#passwd', account.password);
         await Utils.sleep(3000);
         await page.click('#btnSubmit');
-        await page.waitForNavigation({ timeout: 30 * 1000 });
+        await page.waitForNavigation({ timeout: timeout });
         const cookies = await page.cookies();
         console.log(cookies);
         browser.close();

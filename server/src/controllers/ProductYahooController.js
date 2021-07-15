@@ -133,7 +133,9 @@ export default class ProductYahooController {
                 if (yahooAccount) {
                     let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                     if (proxyResult.status === 'SUCCESS') {
-                        let uploadAuction = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, result, proxyResult.data);
+                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, result, proxyResult.data);
+                        result.status = uploadAuctionResult.status;
+                        result.statusMessage = uploadAuctionResult.statusMessage;
                     } else {
                         result.status = proxyResult.status;
                         result.statusMessage = proxyResult.statusMessage;
@@ -273,8 +275,6 @@ export default class ProductYahooController {
                 }
             }
             let result = await ProductYahooService.update(_id, data);
-            // let uploadAuction = await AuctionYahooService.uploadNewProduct();
-
             response.success200({ result });
         } catch (error) {
             console.log(error);

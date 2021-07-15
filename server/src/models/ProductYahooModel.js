@@ -9,7 +9,7 @@ var Product = new Schema({
     },
     images: {
         type: Array,
-        default: []
+        default: [],
     },
     folder_id: {
         type: String,
@@ -21,7 +21,7 @@ var Product = new Schema({
     },
     foreign_key: {
         type: String,
-        default: ''
+        default: '',
     },
     product_yahoo_title: {
         type: String,
@@ -29,7 +29,7 @@ var Product = new Schema({
     },
     yahoo_auction_category_id: {
         type: String,
-        required: true
+        required: true,
     },
     start_price: {
         type: String,
@@ -45,15 +45,15 @@ var Product = new Schema({
     },
     status: {
         type: String,
-        default: 'used',
+        default: 'CREATED',
     },
     status_comment: {
         type: String,
-        default: ''
+        default: '',
     },
     offer: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     quantity: {
         type: Number,
@@ -61,7 +61,7 @@ var Product = new Schema({
     },
     duration: {
         type: Number,
-        default: 0
+        default: 0,
     },
     closing_time: {
         type: Number,
@@ -69,31 +69,31 @@ var Product = new Schema({
     },
     retpolicy: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     retpolicy_comment: {
         type: String,
-        default: ''
+        default: '',
     },
     min_bid_rating: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     bad_rating_ratio: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     bid_credit_limit: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     auto_extension: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     close_early: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     num_resubmit: {
         type: Number,
@@ -101,59 +101,59 @@ var Product = new Schema({
     },
     reserve_price: {
         type: Number,
-        defaul: 0
+        defaul: 0,
     },
     description: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_time: {
         type: String,
-        default: 'after'
+        default: 'after',
     },
     shipping: {
         type: String,
-        default: 'buyer'
+        default: 'buyer',
     },
     location: {
         type: String,
-        default: ''
+        default: '',
     },
     city: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_name1: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_fee1: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_name2: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_fee2: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_name3: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_fee3: {
         type: String,
-        default: ''
+        default: '',
     },
     foreign_check: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     ship_schedule: {
         type: Number,
-        default: 1
+        default: 1,
     },
     featured_amount: {
         type: String,
@@ -169,7 +169,7 @@ var Product = new Schema({
     },
     gift: {
         type: Number,
-        default: 0
+        default: 0,
     },
     wrapping: {
         type: String,
@@ -180,7 +180,6 @@ var Product = new Schema({
         default: Date.now,
     },
 });
-
 
 var ProductYahooSchema = mongoose.model('ProductYahoo', Product);
 module.exports = ProductYahooSchema;
