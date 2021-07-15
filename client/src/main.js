@@ -19,7 +19,7 @@ import Helpers from './helpers/index';
 import i18n from './lang/lang';
 import './helpers/validate';
 import Paginate from 'vuejs-paginate'
-import {EventBus} from '@/events/eventBus'
+import {EventBus} from '@/events/EventBus'
 
 Vue.prototype.$ = $;
 Vue.prototype.$constants = Constants;

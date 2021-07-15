@@ -1,6 +1,6 @@
 import Axios from "axios";
 import store from "../store/store";
-import {EventBus} from '@/events/eventBus'
+import {EventBus} from '@/events/EventBus'
 
 import Vue from "vue";
 var vue = new Vue({});
