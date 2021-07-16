@@ -23,4 +23,16 @@ export default {
   setProxyToYahooAccount (data) {
     return Api.post(prefix + "/set-proxy-to-yahoo-account", data);
   },
+  getBlackListAsin () {
+    return Api.get(prefix + "/get-black-list-asin")
+  },
+  getWhiteListAsin () {
+    return Api.get(prefix + "/get-white-list-asin")
+  },
+  createAsin (data) {
+    return Api.post(prefix + "/create-asin", data)
+  },
+  deleteAsin (id) {
+    return Api.post(prefix + "/delete-asin/" + id)
+  }
 };

@@ -200,7 +200,7 @@ class AdminController {
       let {asin, type} = req.body
       let data = {asin, type}
       let result = await AsinAmazonService.create(data)
-      return result
+      return response.success200({asin: result})
     } catch (error) {
       console.log(error);
       return response.error500(error)
@@ -212,7 +212,7 @@ class AdminController {
     try {
       let {_id} = req.params
       let result = await AsinAmazonService.delete(_id)
-      return result
+      return response.success200({success: result})
     } catch (error) {
       console.log(error);
       return response.error500(error)

@@ -1,317 +1,423 @@
 <template>
   <div class="wrapper-content">
     <div class="box-header">
-      <i class="fa fa-edit mr-2"></i>出品データデフォルト値
+      <i class="fa fa-edit mr-2"></i>出品情報管理
     </div>
     <hr />
     <div class="box-content">
       <div class="px-30 py-20">
-        <div class="form-row">
-          <div class="col-md-9">
-            <div class="row item-info">
-              <span @click="isShowProductInfo = !isShowProductInfo">::: 商品情報 :::</span>
-            </div>
-            <transition name="fade">
-              <div v-show="isShowProductInfo">
-                <div class="row">
-                  <div class="col-md-4 text-align-end">商品の状態 :</div>
-                  <div class="col-md-8">
-                    <input type="radio" v-model="product.status" class="ml-2" id="second" value="used">
-                    <label for="second">中古</label>
-                    <input type="radio" v-model="product.status" class="ml-2" id="new" value="new">
-                    <label for="new">新品</label>
-                    <input type="radio" v-model="product.status" class="ml-2" id="other" value="other">
-                    <label for="other">その他</label>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4"></div>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" v-model="product.status_comment">
-                    中古・その他を選んだ場合、必ず上記に状態を全角15文字以内で記載して下さい。
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">値下げ交渉 :</div>
-                  <div class="col-md-8">
-                    <select class="form-control" v-model="product.offer">
-                      <option value="no">なし</option>
-                      <option value="yes">あり</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">個数 :</div>
-                  <div class="col-md-8">
-                    <input type="number" :min="1" v-model="product.quantity" class="form-control">
-                    ※IDの評価が10以下の方は1個に固定されます。
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">開催期間 :</div>
-                  <div class="col-md-8">
-                    <select class="form-control" v-model="product.duration">
-                      <option v-for="(period, index) in HOLDING_PERIOD" :key="index" :value="period.value">{{period.display}}</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">終了時間 :</div>
-                  <div class="col-md-8">
-                    <select class="form-control" v-model="product.closing_time">
-                      <option v-for="(time, index) in ENDING_TIME" :key="index" :value="time.value">{{time.display}}</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">返品の可否 :</div>
-                  <div class="col-md-8">
-                    <input type="radio" v-model="product.retpolicy" class="ml-2" value="no" id="non-return">
-                    <label for="non-return">返品不可</label> 
-                    <input type="radio" v-model="product.retpolicy" class="ml-2" value="yes" id="accept-return">
-                    <label for="accept-return">返品可</label>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">返品の備考 :</div>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" v-model="product.retpolicy_comment">
-                    ※IDの評価が10以下の方は1個に固定されます。
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end"></div>
-                  <div class="col-md-8">返品可の場合、全角30文字以内で必須入力です。</div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">入札制限 :</div>
-                  <div class="col-md-8">
-                    <div class="form-check">
-                      <input class="form-check-input" true-value="yes" false-value="no" v-model="product.min_bid_rating" type="checkbox" id="overral-evaluation">
-                      <label class="form-check-label" for="overral-evaluation">
-                        総合評価で制限
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" true-value="yes" false-value="no" v-model="product.bad_rating_ratio" type="checkbox" id="bad-evaluation">
-                      <label class="form-check-label" for="bad-evaluation">
-                        悪い評価の割合で制限 （詳細)
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" true-value="yes" false-value="no" v-model="product.bid_credit_limit" type="checkbox" id="bidder-authen">
-                      <label class="form-check-label" for="bidder-authen">
-                        入札者認証制限あり (詳細)
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">その他 :</div>
-                  <div class="col-md-8">
-                    <div class="form-check d-flex">
-                      <div class="mr-30">
-                        <input class="form-check-input" true-value="yes" false-value="no" v-model="product.auto_extension" type="checkbox" id="automatic-extension">
-                        <label class="form-check-label" for="automatic-extension">
-                          自動延長あり
-                        </label>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item ml-20">
+            <a class="nav-link active" id="auto-generate-tab" data-toggle="tab" href="#auto-generate" role="tab" aria-controls="auto-generate" aria-selected="true">出品ファイル自動生成管理 </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="data-default-tab" data-toggle="tab" href="#data-default" role="tab" aria-controls="data-default" aria-selected="false">出品データデフォルト値 </a>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="auto-generate" role="tabpanel" aria-labelledby="auto-generate-tab">
+            <div class="form-row mt-20">
+              <div class="col-md-9">
+                <transition name="fade">
+                  <div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end mt-2">残り在庫 :</div>
+                      <div class="col-md-4">
+                        <input type="text" pattern="\d*" class="form-control" :maxlength="1" :min="0" :max="1" v-model="product.extra_stock">
                       </div>
-                      <div>
-                        <input class="form-check-input" true-value="yes" false-value="no" v-model="product.close_early" type="checkbox" id="early-terminate">
-                        <label class="form-check-label" for="early-terminate">
-                          早期終了あり
-                        </label>
+                      <div class="col-md-4">
+                        以下になったら、出品停止
+                        <p><small>
+                          アマゾンapiの仕様変更により ツール側も <br>
+                          在庫は0以外入力できない仕様に変更されました <br>
+                          在庫ありなしのみとなります。
+                        </small></p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end mt-2">利益 <small>(円)</small> :</div>
+                      <div class="col-md-4">
+                        <input type="number" class="form-control" v-model="product.profit">
+                      </div>
+                      <div class="col-md-4 mt-2">
+                        以下になったら、出品停止
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end mt-2">ヤフオクで設定する　送料一律 <small>(円)</small> :</div>
+                      <div class="col-md-4">
+                        <input type="number" class="form-control" v-model="product.yahoo_auction_shipping">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end mt-2">MakeShopで設定する　送料一律 <small>(円)</small> :</div>
+                      <div class="col-md-4">
+                        <input type="number" class="form-control" v-model="product.makeshop_shipping">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end mt-2">Amazonで設定する　送料一律 <small>(円)</small> :</div>
+                      <div class="col-md-4">
+                        <input type="number" class="form-control" v-model="product.amazon_shipping">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end mt-2">ヤフオク手数料 <small>(%)</small> :</div>
+                      <div class="col-md-4">
+                        <input type="number" class="form-control" v-model="product.yahoo_auction_fee">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end mt-2">
+                        <input type="radio" class="ml-2" v-model="product.yahoo_auction_profit_type" id="price-profit" :value="0">
+                        <label class="ml-20" for="price-profit">ヤフオクの販売価格設定する　利益率 <small>(%)</small> :</label>
+                      </div>
+                      <div class="col-md-4">
+                        <input type="number" class="form-control" v-model="product.yahoo_auction_price_profit">
+                      </div>
+                      <div class="col-md-4 mt-2">
+                        乗せた金額を自動生成
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end mt-2">
+                        <input type="radio" class="ml-2" v-model="product.yahoo_auction_profit_type" id="static-profit" :value="1">
+                        <label class="ml-20" for="static-profit">ヤフオクの販売価格設定する　利益金額 <small>(円)</small> :</label>
+                      </div>
+                      <div class="col-md-4">
+                        <input type="number" class="form-control" v-model="product.yahoo_auction_static_profit">
+                      </div>
+                      <div class="col-md-4 mt-2">
+                        乗せた金額を自動生成
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end mt-2">ヤフオクの即決価格 販売価格から <small>(円)</small> :</div>
+                      <div class="col-md-4">
+                        <input type="number" class="form-control" v-model="product.yahoo_auction_bid_price">
+                      </div>
+                      <div class="col-md-4 mt-2">
+                        乗せた金額を自動生成
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">自動再出品 :</div>
-                  <div class="col-md-8 d-flex">
-                    <select class="form-control" v-model="product.num_resubmit">
-                      <option v-for="(n, index) in 4" :key="index" :value="index">{{n}}</option>
-                    </select>
-                    <div class="mt-2 ml-2">回</div>
-                  </div>
-                </div>
+                </transition>
               </div>
-            </transition>
-
-            <div class="row item-info">
-              <span @click="isShowPayment = !isShowPayment">::: 支払い :::</span>
             </div>
-            <transition name="fade">
-              <div v-show="isShowPayment">
-                <div class="row">
-                  <div class="col-md-4 text-align-end">決済方法 :</div>
-                  <div class="col-md-8">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" checked disabled>
-                      <label class="form-check-label">
-                        Yahoo!かんたん決済（詳細）
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">代金先払い、後払い :</div>
-                  <div class="col-md-8">
-                    <div class="form-check">
-                      <input class="form-check-input" v-model="product.ship_time" type="radio" value="after" id="prepaid">
-                      <label class="form-check-label" for="prepaid">
-                        代金先払い（支払い確認後商品を発送）
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" v-model="product.ship_time" type="radio" value="before" id="postpaid">
-                      <label class="form-check-label" for="postpaid">
-                        代金後払い（落札後、支払いの確認をまたずに商品を発送）
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">送料負担 :</div>
-                  <div class="col-md-8">
-                    <div class="form-check">
-                      <input class="form-check-input" v-model="product.shipping" type="radio" value="buyer" id="bidder">
-                      <label class="form-check-label" for="bidder">
-                        落札者
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" v-model="product.shipping" type="radio" value="seller" id="seller">
-                      <label class="form-check-label" for="seller">
-                        出品者（落札者は無料）
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </transition>
-
-            <div class="row item-info">
-              <span @click="isShowDelivery = !isShowDelivery">::: 配送方法 :::</span>
+            <div class="row mt-20 justify-content-center">
+              <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
+                <i class="fa fa-save (alias)"></i>  保存
+              </button>
             </div>
-            <transition name="fade">
-              <div v-show="isShowDelivery">
-                <div class="row">
-                  <div class="col-md-4 text-align-end">商品発送元の地域 :</div>
-                  <div class="col-md-2">
-                    <select class="form-control" v-model="product.location">
-                      <option v-for="(pref, index) in PREFECTURE" :key="index" :value="pref.value">{{pref.display}}</option>
-                    </select>
-                  </div>
-                  <div class="col-md-3">市区町村（任意/全角10文字以内）：</div>
-                  <div class="col-md-3">
-                    <input type="text" class="form-control" v-model="product.city">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">送料、配送方法 :</div>
-                  <div class="col-md-8">
-                    <div class="d-flex my-1">
-                      <input type="text" v-model="product.ship_name1" style="width:45%" class="form-control mr-2">
-                      <input type="text" v-model="product.ship_fee1" style="width:45%" class="form-control">
-                      <span class="ml-2 mt-2">円</span>
-                    </div>
-                    <div class="d-flex my-1">
-                      <input type="text" v-model="product.ship_name2" style="width:45%" class="form-control mr-2">
-                      <input type="text" v-model="product.ship_fee2" style="width:45%" class="form-control">
-                      <span class="ml-2 mt-2">円</span>
-                    </div>
-                    <div class="d-flex my-1">
-                      <input type="text" v-model="product.ship_name3" style="width:45%" class="form-control mr-2">
-                      <input type="text" v-model="product.ship_fee3" style="width:45%" class="form-control">
-                      <span class="ml-2 mt-2">円</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">海外発送 :</div>
-                  <div class="col-md-8">
-                    <div class="form-check">
-                      <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="overseas" v-model="product.foreign_check">
-                      <label class="form-check-label" for="overseas">
-                        海外発送にも対応する
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">発送までの日数 :</div>
-                  <div class="col-md-8">
-                    <select class="form-control" v-model="product.ship_schedule">
-                      <option v-for="(ship, index) in SHIP_SCHEDULE" :key="index" :value="ship.value">{{ship.display}}</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </transition>
-
-            <div class="row item-info">
-              <span @click="isShowChargedOption = !isShowChargedOption">::: 有料オプション :::</span>
-            </div>
-            <transition name="fade">
-              <div v-show="isShowChargedOption">
-                <div class="row">
-                  <div class="col-md-4 text-align-end">注目のオークション :</div>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" v-model="product.featured_amount">
-                    円  （半角数字）   1日あたり20円（税込21.60円）～
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">太字テキスト :</div>
-                  <div class="col-md-8">
-                    <div class="form-check">
-                      <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="bold-text" v-model="product.bold">
-                      <label class="form-check-label" for="bold-text">
-                        1出品あたり10.80円（税込）
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">背景色 :</div>
-                  <div class="col-md-8">
-                    <div class="form-check">
-                      <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="bg-color" v-model="product.highlight">
-                      <label class="form-check-label" for="bg-color">
-                        1出品あたり32.40円（税込）
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">目立ちアイコン :</div>
-                  <div class="col-md-8">
-                    <select class="form-control" v-model="product.gift">
-                      <option v-for="(icon, index) in CONSPICUOUS_ICON" :key="index" :value="icon.value">{{icon.display}}</option>
-                    </select>
-                    1出品あたり21.60円（税込）
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-align-end">贈答品アイコン :</div>
-                  <div class="col-md-8">
-                    <div class="form-check">
-                      <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="gift-icon" v-model="product.wrapping">
-                      <label class="form-check-label" for="gift-icon">
-                        1出品あたり21.60円（税込）
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </transition>
           </div>
-        </div>
-        <div class="row mt-20">
-          <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
-            保存
-          </button>
-          <router-link :to="{name: 'ProductYahooList'}" tag="button" class="btn btn-warning mb-1 mr-1">キャンセル</router-link>
+          <div class="tab-pane fade" id="data-default" role="tabpanel" aria-labelledby="data-default-tab">
+            <div class="form-row mt-20">
+              <div class="col-md-9">
+                <div class="row item-info">
+                  <span @click="isShowProductInfo = !isShowProductInfo">::: 商品情報 :::</span>
+                </div>
+                <transition name="fade">
+                  <div v-show="isShowProductInfo">
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">商品の状態 :</div>
+                      <div class="col-md-8">
+                        <input type="radio" v-model="product.status" class="ml-2" id="second" value="used">
+                        <label for="second">中古</label>
+                        <input type="radio" v-model="product.status" class="ml-2" id="new" value="new">
+                        <label for="new">新品</label>
+                        <input type="radio" v-model="product.status" class="ml-2" id="other" value="other">
+                        <label for="other">その他</label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4"></div>
+                      <div class="col-md-8">
+                        <input type="text" class="form-control" v-model="product.status_comment">
+                        中古・その他を選んだ場合、必ず上記に状態を全角15文字以内で記載して下さい。
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">値下げ交渉 :</div>
+                      <div class="col-md-8">
+                        <select class="form-control" v-model="product.offer">
+                          <option value="no">なし</option>
+                          <option value="yes">あり</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">個数 :</div>
+                      <div class="col-md-8">
+                        <input type="number" :min="1" v-model="product.quantity" class="form-control">
+                        ※IDの評価が10以下の方は1個に固定されます。
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">開催期間 :</div>
+                      <div class="col-md-8">
+                        <select class="form-control" v-model="product.duration">
+                          <option v-for="(period, index) in HOLDING_PERIOD" :key="index" :value="period.value">{{period.display}}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">終了時間 :</div>
+                      <div class="col-md-8">
+                        <select class="form-control" v-model="product.closing_time">
+                          <option v-for="(time, index) in ENDING_TIME" :key="index" :value="time.value">{{time.display}}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">返品の可否 :</div>
+                      <div class="col-md-8">
+                        <input type="radio" v-model="product.retpolicy" class="ml-2" value="no" id="non-return">
+                        <label for="non-return">返品不可</label> 
+                        <input type="radio" v-model="product.retpolicy" class="ml-2" value="yes" id="accept-return">
+                        <label for="accept-return">返品可</label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">返品の備考 :</div>
+                      <div class="col-md-8">
+                        <input type="text" class="form-control" v-model="product.retpolicy_comment">
+                        ※IDの評価が10以下の方は1個に固定されます。
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end"></div>
+                      <div class="col-md-8">返品可の場合、全角30文字以内で必須入力です。</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">入札制限 :</div>
+                      <div class="col-md-8">
+                        <div class="form-check">
+                          <input class="form-check-input" true-value="yes" false-value="no" v-model="product.min_bid_rating" type="checkbox" id="overral-evaluation">
+                          <label class="form-check-label" for="overral-evaluation">
+                            総合評価で制限
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" true-value="yes" false-value="no" v-model="product.bad_rating_ratio" type="checkbox" id="bad-evaluation">
+                          <label class="form-check-label" for="bad-evaluation">
+                            悪い評価の割合で制限 （詳細)
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" true-value="yes" false-value="no" v-model="product.bid_credit_limit" type="checkbox" id="bidder-authen">
+                          <label class="form-check-label" for="bidder-authen">
+                            入札者認証制限あり (詳細)
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">その他 :</div>
+                      <div class="col-md-8">
+                        <div class="form-check d-flex">
+                          <div class="mr-30">
+                            <input class="form-check-input" true-value="yes" false-value="no" v-model="product.auto_extension" type="checkbox" id="automatic-extension">
+                            <label class="form-check-label" for="automatic-extension">
+                              自動延長あり
+                            </label>
+                          </div>
+                          <div>
+                            <input class="form-check-input" true-value="yes" false-value="no" v-model="product.close_early" type="checkbox" id="early-terminate">
+                            <label class="form-check-label" for="early-terminate">
+                              早期終了あり
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">自動再出品 :</div>
+                      <div class="col-md-8 d-flex">
+                        <select class="form-control" v-model="product.num_resubmit">
+                          <option v-for="(n, index) in 4" :key="index" :value="index">{{n}}</option>
+                        </select>
+                        <div class="mt-2 ml-2">回</div>
+                      </div>
+                    </div>
+                  </div>
+                </transition>
+
+                <div class="row item-info">
+                  <span @click="isShowPayment = !isShowPayment">::: 支払い :::</span>
+                </div>
+                <transition name="fade">
+                  <div v-show="isShowPayment">
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">決済方法 :</div>
+                      <div class="col-md-8">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" checked disabled>
+                          <label class="form-check-label">
+                            Yahoo!かんたん決済（詳細）
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">代金先払い、後払い :</div>
+                      <div class="col-md-8">
+                        <div class="form-check">
+                          <input class="form-check-input" v-model="product.ship_time" type="radio" value="after" id="prepaid">
+                          <label class="form-check-label" for="prepaid">
+                            代金先払い（支払い確認後商品を発送）
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" v-model="product.ship_time" type="radio" value="before" id="postpaid">
+                          <label class="form-check-label" for="postpaid">
+                            代金後払い（落札後、支払いの確認をまたずに商品を発送）
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">送料負担 :</div>
+                      <div class="col-md-8">
+                        <div class="form-check">
+                          <input class="form-check-input" v-model="product.shipping" type="radio" value="buyer" id="bidder">
+                          <label class="form-check-label" for="bidder">
+                            落札者
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" v-model="product.shipping" type="radio" value="seller" id="seller">
+                          <label class="form-check-label" for="seller">
+                            出品者（落札者は無料）
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </transition>
+
+                <div class="row item-info">
+                  <span @click="isShowDelivery = !isShowDelivery">::: 配送方法 :::</span>
+                </div>
+                <transition name="fade">
+                  <div v-show="isShowDelivery">
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">商品発送元の地域 :</div>
+                      <div class="col-md-2">
+                        <select class="form-control" v-model="product.location">
+                          <option v-for="(pref, index) in PREFECTURE" :key="index" :value="pref.value">{{pref.display}}</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">市区町村（任意/全角10文字以内）：</div>
+                      <div class="col-md-3">
+                        <input type="text" class="form-control" v-model="product.city">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">送料、配送方法 :</div>
+                      <div class="col-md-8">
+                        <div class="d-flex my-1">
+                          <input type="text" v-model="product.ship_name1" style="width:45%" class="form-control mr-2">
+                          <input type="text" v-model="product.ship_fee1" style="width:45%" class="form-control">
+                          <span class="ml-2 mt-2">円</span>
+                        </div>
+                        <div class="d-flex my-1">
+                          <input type="text" v-model="product.ship_name2" style="width:45%" class="form-control mr-2">
+                          <input type="text" v-model="product.ship_fee2" style="width:45%" class="form-control">
+                          <span class="ml-2 mt-2">円</span>
+                        </div>
+                        <div class="d-flex my-1">
+                          <input type="text" v-model="product.ship_name3" style="width:45%" class="form-control mr-2">
+                          <input type="text" v-model="product.ship_fee3" style="width:45%" class="form-control">
+                          <span class="ml-2 mt-2">円</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">海外発送 :</div>
+                      <div class="col-md-8">
+                        <div class="form-check">
+                          <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="overseas" v-model="product.foreign_check">
+                          <label class="form-check-label" for="overseas">
+                            海外発送にも対応する
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">発送までの日数 :</div>
+                      <div class="col-md-8">
+                        <select class="form-control" v-model="product.ship_schedule">
+                          <option v-for="(ship, index) in SHIP_SCHEDULE" :key="index" :value="ship.value">{{ship.display}}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </transition>
+
+                <div class="row item-info">
+                  <span @click="isShowChargedOption = !isShowChargedOption">::: 有料オプション :::</span>
+                </div>
+                <transition name="fade">
+                  <div v-show="isShowChargedOption">
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">注目のオークション :</div>
+                      <div class="col-md-8">
+                        <input type="text" class="form-control" v-model="product.featured_amount">
+                        円  （半角数字）   1日あたり20円（税込21.60円）～
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">太字テキスト :</div>
+                      <div class="col-md-8">
+                        <div class="form-check">
+                          <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="bold-text" v-model="product.bold">
+                          <label class="form-check-label" for="bold-text">
+                            1出品あたり10.80円（税込）
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">背景色 :</div>
+                      <div class="col-md-8">
+                        <div class="form-check">
+                          <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="bg-color" v-model="product.highlight">
+                          <label class="form-check-label" for="bg-color">
+                            1出品あたり32.40円（税込）
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">目立ちアイコン :</div>
+                      <div class="col-md-8">
+                        <select class="form-control" v-model="product.gift">
+                          <option v-for="(icon, index) in CONSPICUOUS_ICON" :key="index" :value="icon.value">{{icon.display}}</option>
+                        </select>
+                        1出品あたり21.60円（税込）
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 text-align-end">贈答品アイコン :</div>
+                      <div class="col-md-8">
+                        <div class="form-check">
+                          <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="gift-icon" v-model="product.wrapping">
+                          <label class="form-check-label" for="gift-icon">
+                            1出品あたり21.60円（税込）
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </transition>
+              </div>
+            </div>
+            <div class="row mt-20 justify-content-center">
+              <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
+                <i class="fa fa-save (alias)"></i>  保存
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

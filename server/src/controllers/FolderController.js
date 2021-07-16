@@ -18,11 +18,11 @@ export default class FolderController {
         let response = new Response(res);
         try {
             let { name } = req.body
+            let user = req.user
             if (!name) {
                 return response.error400({message: '完全な情報を入力してください。'})
             }
             let folders = await FolderService.get(user._id)
-            let user = req.user
             let data = {
                 user_id: user._id,
                 name,
@@ -30,7 +30,7 @@ export default class FolderController {
             }
             let result = await FolderService.create(data);
             if (result) {
-                response.success200(result);
+                response.success200({folder: result});
             }
         } catch (error) {
             response.error500(error)

@@ -13,7 +13,7 @@ export default class FolderService {
   static async create (data) {
     try {
       let result = await FolderModel.create(data);
-      return result
+      return result._doc
     } catch (error) {
       throw new Error(error.message);
     }

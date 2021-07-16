@@ -30,6 +30,7 @@ export default class AsinAmazonService {
 
   static async delete (id) {
     try {
+      console.log(id);
       let result = await AsinAmazonModel.findById(id);
       if (result) {
         await result.remove()
