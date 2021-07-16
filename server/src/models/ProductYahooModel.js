@@ -175,6 +175,32 @@ var Product = new Schema({
         type: String,
         default: 'no',
     },
+    type: {
+        type: String,
+        enum: ['NEW', 'AUCTION_ENDED'],
+        default: 'NEW',
+    },
+    aID: {
+        type: String,
+    },
+    oldAID: {
+        type: String,
+    },
+    idBuyer: {
+        type: String,
+    },
+    // md5: {
+    //     type: String,
+    // },
+    // crumb: {
+    //     type: String,
+    // },
+    // img_crumb: {
+    //     type: String,
+    // },
+    // tmpClosingTime: {
+    //     type: String,
+    // },
     created: {
         type: Date,
         default: Date.now,

@@ -55,8 +55,19 @@ let initData = async () => {
     // ProxyService.getIpProxy();
     console.log('Server Started.!');
 
+    let proxy = {
+        ip: '178.171.80.121',
+        host: 'zproxy.lum-superproxy.io',
+        port: 22225,
+        username: 'lum-customer-c_84db29ae-zone-zone2-ip-178.171.80.121',
+        password: '7ox35md3j0jm',
+    };
+
     BrightDataService.loadProxyToDB();
 
+    // AuctionYahooService.getProductAuctionEnded(null, proxy);
+    // let result = await AuctionYahooService.sendRating(null, proxy, 'f524250153', 'bacntse2412', 'good', '666666666666');
+    // console.log(result);
     // let check = await ProxyService.checkLiveProxy({
     //     ip: '178.171.80.121',
     //     host: 'zproxy.lum-superproxy.io',
@@ -65,9 +76,6 @@ let initData = async () => {
     //     password: '7ox35md3j0jm',
     // });
     // console.log(check);
-
-    // ProxyService.updateProxy({ _id: '60eefb57a237603e04af38fe', status: 'die' });
-
     // let cookie = await AuctionYahooService.getCookie({ yahoo_id: "exffk72575", password: "hPPofa95hg%" }, {
     //     ip: '176.105.250.169',
     //     host: 'zproxy.lum-superproxy.io',

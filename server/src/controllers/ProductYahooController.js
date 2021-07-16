@@ -134,8 +134,10 @@ export default class ProductYahooController {
                     let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                     if (proxyResult.status === 'SUCCESS') {
                         let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, result, proxyResult.data);
+                        console.log(uploadAuctionResult);
                         result.status = uploadAuctionResult.status;
                         result.statusMessage = uploadAuctionResult.statusMessage;
+                        result.aID = uploadAuctionResult.aID;
                     } else {
                         result.status = proxyResult.status;
                         result.statusMessage = proxyResult.statusMessage;
