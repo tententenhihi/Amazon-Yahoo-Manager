@@ -15,7 +15,7 @@
     <div class="box-content">
       <div class="px-30 py-20">
         <table id="productTable" class="display pt-20 mb-20" style="width: 100%">
-          <thead class="thead-purple">
+          <thead class="thead-purple" :class="{'opacity-0': !isInit}">
             <tr>
               <th scope="col">数</th>
               <th scope="col">画像</th>
@@ -32,7 +32,8 @@
             <tr v-for="(product, index) in products" :key="product._id">
               <th scope="row">{{ index + 1 }}</th>
               <td>
-                <img :src="product.image" alt="">
+                <img v-if="product.images && product.images.length" :src="product.images[0].includes('http') 
+                  ? product.images[0] : SERVER_HOST_UPLOAD + product.images[0]" alt="">
               </td>
               <td>{{ product.name }}</td>
               <td>{{ product.price }}</td>
@@ -62,12 +63,15 @@ export default {
   name: 'ProductList',
   data () {
     return {
-      products: []
+      products: [],
+      isInit: false,
+      SERVER_HOST_UPLOAD: process.env.SERVER_API + 'uploads/'
     }
   },
   async mounted () {
     await this.getListProduct();
     this.createDatatable()
+    this.isInit = true
   },
   methods: {
     async getListProduct() {
@@ -196,7 +200,7 @@ export default {
           '"' + product.delivery + '"',
           '"' + product.type + '"',
           '"' + product.status + '"',
-          '"' + product.image + '"',
+          '"' + product.images + '"',
           '"' + this.$moment(product.created).format("YYYY/MM/DD") + '"',
         ]
         data.push(item)
@@ -208,4 +212,7 @@ export default {
 </script>
 
 <style scoped>
+.opacity-0 {
+  opacity: 0;
+}
 </style>

@@ -98,7 +98,7 @@
                   <li>
                     <router-link :to="{name: 'FolderManagement'}">
                       <i class="fa fa-list-alt"></i>
-                      <span>Folder Management</span>
+                      <span>フォルダ管理</span>
                     </router-link>
                   </li>
                   <li>

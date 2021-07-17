@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-20 mt-60">
+  <div class="mx-20 mt-30">
     <div class="form-group row">
       <label class="font-weight-bold col-md-2 col-sm-6" for="group-id">ASINグループID (*): </label>
       <input type="text" class="form-control col-md-4 col-sm-6" placeholder="ASINグループIDを入力"
@@ -89,6 +89,7 @@ export default {
         let res = await AsinApi.add({ listCode, groupId: this.groupId });
         if (res && res.status === 200) {
           this.asinString = "";
+          this.groupId = "";
           await this.$emit("getListAsin");
           this.$swal.fire({
             icon: "success",

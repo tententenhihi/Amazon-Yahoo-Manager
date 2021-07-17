@@ -21,6 +21,10 @@ var AsinAmazonSchema = new Schema({
         default: 'BLACK',
         enum: ['BLACK', 'WHITE'],
     },
+    reason_for_prohibition: {
+        type: String,
+        default: ''
+    },
     created: {
         type: Date,
         default: Date.now,

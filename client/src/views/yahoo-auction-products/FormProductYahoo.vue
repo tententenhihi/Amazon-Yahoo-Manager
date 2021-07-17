@@ -47,7 +47,7 @@
                   <div class="col-md-4 text-align-end"><font color="red">*</font> フォルダ :</div>
                   <div class="col-md-8">
                     <select class="form-control" id="" v-model="product.folder_id">
-                      <option v-for="(folder, index) in TARGET_FOLDER" :key="index" :value="folder.value">{{ folder.display }}</option>
+                      <option v-for="(folder, index) in folders" :key="index" :value="folder._id">{{ folder.name }}</option>
                     </select>
                   </div>
                 </div>
@@ -428,6 +428,8 @@
 <script>
 import ProductYahooApi from '@/services/ProductYahooApi'
 import ProductInfomationDefaultApi from '@/services/ProductInfomationDefaultApi'
+import FolderApi from '@/services/FolderApi'
+
 const HOLDING_PERIOD = [
   { display: '当日終了', value: 0 },
   { display: '1日間', value: 1 },
@@ -595,25 +597,24 @@ export default {
       SHIP_SCHEDULE,
       TARGET_FOLDER,
       CONSPICUOUS_ICON,
-      TARGET_FOLDER,
       isShowProductInfo: false,
       isShowPayment: false,
       isShowDelivery: false,
       isShowChargedOption: false,
+      folders: []
     }
   },
   async mounted () {
+    await this.getFolders();
     if (this.productId != 0) {
       let result = await ProductYahooApi.show(this.productId)
       if (result && result.status === 200) {
-        console.log(result.data);
         this.product = result.data
         this.images = this.product.images.map(image => {
           return {
             preview_url: process.env.SERVER_API + 'uploads/' + image
           }
         })
-        // this.previewImage = this.product.image
       } else {
         this.$router.push({name: 'ProductYahooList'})
       }
@@ -630,6 +631,12 @@ export default {
     }
   },
   methods: {
+    async getFolders () {
+      let res = await FolderApi.get();
+      if (res && res.status === 200) {
+        this.folders = res.data.folders
+      }
+    },
     onUploadImage (index) {
       let file = null;
       if (index === this.images.length) {

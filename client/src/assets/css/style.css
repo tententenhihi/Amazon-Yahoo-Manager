@@ -647,3 +647,7 @@ ul.pagination li.active a {
 .swal2-title {
   font-size: 24px;
 }
+
+.btn {
+  font-size: 13px;
+}

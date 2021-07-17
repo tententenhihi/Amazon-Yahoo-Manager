@@ -7,6 +7,16 @@ var Product = new Schema({
         ref: 'User',
         required: true,
     },
+    // yahoo_account_id: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'YahooAccount',
+    //     required: true,
+    // },
+    folder_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Folder',
+        required: true,
+    },
     asin: {
         type: String,
         required: true,
@@ -31,8 +41,13 @@ var Product = new Schema({
         type: Number,
         required: true,
     },
-    image: {
+    images: {
+        type: Array,
+        default: []
+    },
+    description: {
         type: String,
+        default: ''
     },
     infoDetail: {
         type: Array,

@@ -1,25 +1,34 @@
 <template>
-  <div class="mx-20 mt-50">
+  <div class="mx-20 mt-30">
     <div class="box-content">
       <div class="">
-        <table id="historyTable" class="display pt-20 mb-20" style="width: 100%">
+        <paginate
+          v-if="pageCount > 1"
+          v-model="page"
+          :page-count="pageCount"
+          :page-range="3"
+          :margin-pages="2"
+          :prev-text="'Prev'"
+          :next-text="'Next'"
+          :container-class="'pagination'"
+          :page-class="'page-item'">
+        </paginate>
+        <table id="historyTable" class="table table-responive table-striped pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
               <th scope="col">数</th>
               <th scope="col">グループID</th>
               <th scope="col">ASIN数</th>
               <th scope="col">商品情報を取得成功したASIN数</th>
-              <th scope="col">で作成された</th>
               <th scope="col">操作</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(group, index) in listAsin" :key="group._id + '-' + index">
+            <tr v-for="(group, index) in tableData" :key="group._id + '-' + index">
               <th scope="row">{{ index + 1 }}</th>
               <td>{{ group.groupId }}</td>
               <td>{{ group.countAsin }}</td>
               <td>{{ group.countAsinGetProductSuccess }}</td>
-              <td>{{ group.created }}</td>
               <td>
                 <button class="btn btn-outline-info mr-2" @click="openDetailGroup(group)">
                   <i class="fa fa-list"></i> 詳細
@@ -62,15 +71,23 @@
 </template>
 
 <script>
+const PAGE_SIZE = 10
 export default {
   name: 'HistoryAsin',
   props: ["listAsin"],
   data () {
     return {
-      selectedGroup: {}
+      selectedGroup: {},
+      page: 1,
     }
   },
-  mounted () {
+  computed: {
+    tableData () {
+      return this.listAsin.slice((this.page - 1) * PAGE_SIZE, this.page * PAGE_SIZE)
+    },
+    pageCount () {
+      return Math.ceil(this.listAsin.length / PAGE_SIZE)
+    },
   },
   methods: {
     openDetailGroup (group) {
@@ -81,12 +98,13 @@ export default {
   watch: {
     listAsin () {
       let self = this;
-      self.$nextTick(() => {
-        if (self.$("#historyTable").DataTable()) {
-          self.$("#historyTable").DataTable().destroy();
-        }
-        self.$("#historyTable").DataTable({});
-      });
+      // self.$nextTick(() => {
+      //   console.log('vao day 123');
+      //   if (self.$("#historyTable").DataTable()) {
+      //     self.$("#historyTable").DataTable().destroy();
+      //   }
+      //   self.$("#historyTable").DataTable({});
+      // });
     }
   }
 }

@@ -9,6 +9,17 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 py-20">
+        <paginate
+          v-if="pageCount > 1"
+          v-model="page"
+          :page-count="pageCount"
+          :page-range="3"
+          :margin-pages="2"
+          :prev-text="'Prev'"
+          :next-text="'Next'"
+          :container-class="'pagination'"
+          :page-class="'page-item'">
+        </paginate>
         <table class="table table-responsive table-striped display pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
@@ -18,7 +29,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(template, index) in templates" :key="template._id">
+            <tr v-for="(template, index) in tableData" :key="template._id">
               <td>{{ template.name }}</td>
               <td style="white-space: pre;">{{ template.content }}</td>
               <td>
@@ -44,11 +55,20 @@ export default {
   name: 'TradeMessageTemplateList',
   data () {
     return {
-      templates: []
+      templates: [],
+      page: 1
     }
   },
   async mounted () {
     await this.getListTradeMessageTemplate();
+  },
+  computed: {
+    tableData () {
+      return this.templates.slice((this.page - 1) * this.$constants.PAGE_SIZE, this.page * this.$constants.PAGE_SIZE)
+    },
+    pageCount () {
+      return Math.ceil(this.templates.length / this.$constants.PAGE_SIZE)
+    },
   },
   methods: {
     async getListTradeMessageTemplate() {
@@ -100,4 +120,10 @@ export default {
 </script>
 
 <style scoped>
+table td {
+  max-width: 500px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 </style>

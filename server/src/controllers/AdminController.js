@@ -197,8 +197,8 @@ class AdminController {
   static async createAsinAmazon (req, res) {
     let response = new Response(res);
     try {
-      let {asin, type} = req.body
-      let data = {asin, type}
+      let {asin, type, reason_for_prohibition } = req.body
+      let data = {asin, type, reason_for_prohibition}
       let result = await AsinAmazonService.create(data)
       return response.success200({asin: result})
     } catch (error) {

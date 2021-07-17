@@ -9,7 +9,7 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-10 py-20">
-        <table id="productTable" class="display pt-20 mb-20" style="width: 100%">
+        <table id="productTable" class="table table-responsive table-striped pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
               <th scope="col">数</th>
@@ -38,14 +38,29 @@
           </thead>
           <tbody>
             <tr v-for="(product, index) in products" :key="product._id">
-              <th scope="row">{{ index + 1 }}</th>
-              <th>{{ product.images[0] }}</th>
-              <th>{{ product.product_yahoo_title }}</th>
-              <th>{{ product.duration }}</th>
-              <th>{{ product.start_price }}</th>
-              <th>{{ product.bid_or_buy_price }}</th>
-              <th>{{ product.shipping }}</th>
-              <th>{{ product.product_yahoo_title }}</th>
+              <td scope="row">{{ index + 1 }}</td>
+              <td><img v-if="product.images && product.images.length" :src="product.images[0].includes('http') 
+                  ? product.images[0] : SERVER_HOST_UPLOAD + product.images[0]" alt=""></td>
+              <td>{{ product.product_yahoo_title }}</td>
+              <td>{{ displayDuration(product) }}</td>
+              <td>{{ product.start_price }}</td>
+              <td>{{ product.bid_or_buy_price }}</td>
+              <td>{{ product.shipping }}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <!-- <th>{{ product.product_yahoo_title }}</th>
               <th>{{ product.product_yahoo_title }}</th>
               <td>
                 {{ displayProductStatus(product) }}
@@ -55,7 +70,7 @@
               <td>{{ displayEndingTime(product) }}</td>
               <td>{{ product.retpolicy }}</td>
               <td>{{ displayLocation(product) }}</td>
-              <td>{{ $moment(product.created).format("YYYY/MM/DD") }}</td>
+              <td>{{ $moment(product.created).format("YYYY/MM/DD") }}</td> -->
               <td>
                 <button class="btn btn-md btn-warning mb-1 mr-1" @click="goToFormProduct(product._id)">
                   <i class="fa fa-edit"></i> 編集
@@ -191,7 +206,8 @@ export default {
       PREFECTURE,
       SHIP_SCHEDULE,
       CONSPICUOUS_ICON,
-      PRODUCT_STATUS
+      PRODUCT_STATUS,
+      SERVER_HOST_UPLOAD: process.env.SERVER_API + 'uploads/'
     }
   },
   async mounted () {

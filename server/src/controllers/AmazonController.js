@@ -31,7 +31,8 @@ export default class AmazonController {
     static async createProduct (req, res) {
         let response = new Response(res);
         try {
-            let { asin, url, name, price, delivery, countProduct, infoDetail, type, status } = JSON.parse(req.body.payload)
+            let { asin, url, name, price, delivery, countProduct, infoDetail, type,
+                status, description, image_length, folder_id } = JSON.parse(req.body.payload)
             let user = req.user
 
             if (!asin) {
@@ -61,8 +62,12 @@ export default class AmazonController {
             if (!ProductAmazonSchema.STATUS.includes(status)) {
                 response.error400({message: 'Status is required'})
             }
+            if (!folder_id) {
+                response.error400({message: 'Folder is required'})
+            }
 
             let data = {
+                images: [],
                 idUser: user._id,
                 asin,
                 name,
@@ -73,12 +78,24 @@ export default class AmazonController {
                 infoDetail,
                 type,
                 status,
+                description,
+                folder_id
             }
 
-            if (req.files && req.files.image) {
-                data.image = await UploadFile(req.files.image, { disk: 'products/' + user._id + '/' })
+            // if (req.files && req.files.image) {
+            //     data.image = await UploadFile(req.files.image, { disk: 'products/' + user._id + '/' })
+            // } else {
+            //     response.error400({message: 'Image is required'})
+            // }
+            if (req.files && image_length) {
+                for (let index = 0; index < image_length; index++) {
+                    const element = req.files[`image-` + index];
+                    if (element) {
+                        data.images[index] = await UploadFile(element, { disk: 'products/' + user._id + '/' });
+                    }
+                }
             } else {
-                response.error400({message: 'Image is required'})
+                return response.error400({message: 'Image is required'})
             }
 
             let result = await ProductAmazonService.create(data);
@@ -94,7 +111,8 @@ export default class AmazonController {
         let response = new Response(res);
         try {
             const {_id} = req.params;
-            let { asin, url, name, price, delivery, countProduct, infoDetail, type, status } = JSON.parse(req.body.payload)
+            let { asin, url, name, price, delivery, countProduct, infoDetail, type, status,
+                description, folder_id, images, image_length } = JSON.parse(req.body.payload)
             let user = req.user
 
             if (!asin) {
@@ -124,8 +142,12 @@ export default class AmazonController {
             if (!ProductAmazonSchema.STATUS.includes(status)) {
                 response.error400({message: 'Status is required'})
             }
+            if (!folder_id) {
+                response.error400({message: 'Folder is required'})
+            }
 
             let data = {
+                images,
                 asin,
                 name,
                 url,
@@ -135,10 +157,23 @@ export default class AmazonController {
                 infoDetail,
                 type,
                 status,
+                description,
+                folder_id
             }
 
             if (req.files && req.files.image) {
                 data.image = await UploadFile(req.files.image, { disk: 'products/' + user._id })
+            }
+
+            if (req.files && image_length) {
+                for (let index = 0; index < image_length; index++) {
+                    const element = req.files[`image-` + index];
+                    if (element) {
+                        data.images[index] = await UploadFile(element, { disk: 'products/' + user._id + '/' });
+                    }
+                }
+            } else if (!data.images.length){
+                return response.error400({message: 'Image is required'})
             }
 
             let result = await ProductAmazonService.update(_id, data);

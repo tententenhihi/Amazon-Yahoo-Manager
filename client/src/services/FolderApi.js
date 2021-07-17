@@ -12,8 +12,8 @@ export default {
   update (data) {
     return Api.post(`${prefix}/update/${data._id}`, data);
   },
-  delete (id) {
-    return Api.post(`${prefix}/delete/${id}`);
+  delete (data) {
+    return Api.post(`${prefix}/delete`, data);
   },
   sort (data) {
     return Api.post(`${prefix}/sort`, data);

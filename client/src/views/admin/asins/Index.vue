@@ -6,11 +6,11 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 pb-20">
-        <div class="row mt-20">
-          <div class="col-md-4">
-            <input type="text" v-model="asin" class="form-control">
-          </div>
-          <button class="btn btn-primary" @click="addAsin">Add Asin</button>
+        <div class="d-flex mt-20">
+          <input type="text" placeholder="asin" v-model="asin" class="form-control" style="width:335px">
+          <input type="text" placeholder="reason for prohibition" v-model="reason_for_prohibition"
+            class="form-control ml-2" style="width:335px">
+          <button class="btn btn-primary ml-2" @click="addAsin">Add Asin</button>
         </div>
         <paginate
           v-if="pageCount > 1"
@@ -28,15 +28,16 @@
             <tr>
               <th scope="col">ID</th>
               <th scope="col">ASIN</th>
-              <th scope="col">Created At</th>
-              <th scope="col">Action</th>
+              <th scope="col">Reason for prohibition</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(item, index) in tableData" :key="index">
               <td>{{ item.asin_id }}</td>
               <td>{{ item.asin }}</td>
-              <td>{{ $moment(item.created).format('YYYY/MM/DD') }}</td>
+              <td>{{ item.reason_for_prohibition }}</td>
+              <!-- <td>{{ $moment(item.created).format('YYYY/MM/DD') }}</td> -->
               <td>
                 <button class="btn btn-warning" @click="deleteAsin(item, index)">Delete</button>
               </td>
@@ -64,6 +65,7 @@ export default {
       STATUS_ASIN,
       page: 1,
       asin: '',
+      reason_for_prohibition: '',
       isInit: false
     }
   },
@@ -95,13 +97,14 @@ export default {
       }
     },
     async addAsin () {
-      let res = await AdminApi.createAsin({asin: this.asin, type: 'BLACK'});
+      let res = await AdminApi.createAsin({asin: this.asin, type: 'BLACK', reason_for_prohibition: this.reason_for_prohibition});
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
           title: "Add black asin successfully",
         });
         this.asin = ''
+        this.reason_for_prohibition = ''
         this.asins.push(res.data.asin)
       }
     },

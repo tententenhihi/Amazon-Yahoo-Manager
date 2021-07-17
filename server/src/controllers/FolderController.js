@@ -61,11 +61,12 @@ export default class FolderController {
     static async delete (req, res) {
         let response = new Response(res);
         try {
-            const {_id} = req.params;
-            let result = await FolderService.delete(_id);
-            if (result) {
-                response.success200({ success: true });
+            const {folders} = req.body;
+            for (let index = 0; index < folders.length; index++) {
+                const element = folders[index];
+                let result = await FolderService.delete(element._id);
             }
+            return response.success200({ success: true });
         } catch (error) {
             response.error500(error)
         }
@@ -74,7 +75,7 @@ export default class FolderController {
     static async sort (req, res) {
         let response = new Response(res);
         try {
-            const {folders} = req.params;
+            const {folders} = req.body;
             let result = await FolderService.sort(folders);
             if (result) {
                 response.success200({ success: true });

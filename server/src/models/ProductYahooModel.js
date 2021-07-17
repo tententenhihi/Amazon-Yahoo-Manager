@@ -11,8 +11,14 @@ var Product = new Schema({
         type: Array,
         default: []
     },
+    // yahoo_account_id: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'YahooAccount',
+    //     required: true,
+    // },
     folder_id: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Folder',
         required: true,
     },
     product_model: {
