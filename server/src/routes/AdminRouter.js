@@ -10,5 +10,11 @@ adminRouter.route('/users/delete/:user_id').post(AdminController.deleteUser);
 adminRouter.route('/proxies').get(AdminController.getProxies);
 adminRouter.route('/yahoo-accounts').get(AdminController.getYahooAccount);
 adminRouter.route('/set-proxy-to-yahoo-account').post(AdminController.setProxyToYahooAccount);
+// asin
+adminRouter.route('/get-white-list-asin').get(AdminController.getWhiteListAsin);
+adminRouter.route('/get-black-list-asin').get(AdminController.getBlackListAsin);
+adminRouter.route('/create-asin').post(AdminController.createAsinAmazon);
+adminRouter.route('/delete-asin/:_id').post(AdminController.deleteAsinAmazon);
+
 
 export default adminRouter;

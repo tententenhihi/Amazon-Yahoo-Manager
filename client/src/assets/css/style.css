@@ -643,3 +643,7 @@ ul.pagination li.active a {
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(128, 127, 127); 
 }
+
+.swal2-title {
+  font-size: 24px;
+}

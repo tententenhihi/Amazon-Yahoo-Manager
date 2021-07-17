@@ -29,13 +29,13 @@
         </div>
         <div class="sidebar-menu">
           <ul>
-            <li class="sidebar-dropdown mt-20">
+            <!-- <li class="sidebar-dropdown">
               <router-link :to="{name: 'Home'}">
                 <i class="fa fa-home"></i>
                 <span>ホームページ</span>
               </router-link>
-            </li>
-            <li class="sidebar-dropdown">
+            </li> -->
+            <li class="sidebar-dropdown mt-20">
               <router-link :to="{name: 'AdminUsers'}">
                 <i class="fa fa-user"></i>
                 <span>ユーザー設定</span>
@@ -51,6 +51,12 @@
               <router-link :to="{name: 'AdminYahooAccounts'}">
                 <i class="fa fa-list"></i>
                 <span>Yahoo Account</span>
+              </router-link>
+            </li>
+            <li class="sidebar-dropdown">
+              <router-link :to="{name: 'AdminAsins'}">
+                <i class="fa fa-star"></i>
+                <span>Blacklist Asin</span>
               </router-link>
             </li>
             <li class="sidebar-dropdown mt-60" @click="onClickLogout">

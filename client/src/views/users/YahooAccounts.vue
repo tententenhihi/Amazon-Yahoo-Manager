@@ -31,7 +31,7 @@
                 <td>{{ account.name }}</td>
                 <td>{{ account.yahoo_id }}</td>
                 <td>
-                  <div v-if="account.cookie.length > 4">
+                  <div v-if="account.cookie">
                     認証
                   </div>
                   <div v-else style="color:red">

@@ -13,6 +13,7 @@ import ProductInfomationDefaultRouter from './ProductInfomationDefaultRouter';
 import TradeMessageTemplateRouter from './TradeMessageTemplateRouter';
 import RatingTemplateRouter from './RatingTemplateRouter';
 import AdminRouter from './AdminRouter';
+import FolderRouter from './FolderRouter';
 
 var router = express.Router();
 
@@ -35,5 +36,6 @@ router.use('/api/v1/trade-message-template', TradeMessageTemplateRouter);
 router.use('/api/v1/rating-template', RatingTemplateRouter);
 router.use('/api/v1/user', UserRouter);
 router.use('/api/v1/admin', AdminRouter);
+router.use('/api/v1/folder', FolderRouter);
 
 export default router;

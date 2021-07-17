@@ -131,6 +131,48 @@ var ProductInfomationDefault = new Schema({
         type: String,
         default: 'no',
     },
+    // caculate profit
+    extra_stock: {
+        type: Number,
+        enum: [0, 1],
+        default: 0,
+    },
+    profit: {
+        type: Number,
+        default: 0,
+    },
+    yahoo_auction_shipping: {
+        type: Number,
+        default: 0,
+    },
+    makeshop_shipping: {
+        type: Number,
+        default: 0,
+    },
+    amazon_shipping: {
+        type: Number,
+        default: 0,
+    },
+    yahoo_auction_fee: {
+        type: Number,
+        default: 0,
+    },
+    yahoo_auction_profit_type: {
+        type: Number,
+        default: 0
+    },
+    yahoo_auction_price_profit: {
+        type: Number,
+        default: 0,
+    },
+    yahoo_auction_static_profit: {
+        type: Number,
+        default: 0,
+    },
+    yahoo_auction_bid_price: {
+        type: Number,
+        default: 0,
+    },
     created: {
         type: Date,
         default: Date.now,

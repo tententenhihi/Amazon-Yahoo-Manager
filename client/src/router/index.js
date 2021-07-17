@@ -36,12 +36,14 @@ const FormTradeMessageTemplate = () => import(/* webpackChunkName: "/static/js/c
 const RatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/rating-template" */ '@/views/rating-template/Index.vue');
 const FormRatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/rating-template" */ '@/views/rating-template/FormInput.vue');
 
+const FolderManagement = () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/FolderManagement.vue');
 
 // admin
 const AdminUsers = () => import(/* webpackChunkName: "/static/js/chunks/admin/users" */ '@/views/admin/users/Users.vue');
 const AdminProxy = () => import(/* webpackChunkName: "/static/js/chunks/admin/proxy" */ '@/views/admin/proxy/Index.vue');
 const AdminYahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/admin/yahoo-accounts" */
   '@/views/admin/yahoo-accounts/Index.vue');
+const AdminAsins = () => import(/* webpackChunkName: "/static/js/chunks/admin/asins" */ '@/views/admin/asins/Index.vue');
 
 Vue.use(Router);
 
@@ -164,6 +166,15 @@ const router = new Router({
       }
     },
     {
+      path: '/folder-management',
+      name: 'FolderManagement',
+      component: FolderManagement,
+      meta: {
+        requiredAuth: true,
+        type: 'config'
+      }
+    },
+    {
       path: '/template-setting',
       name: 'TemplateSetting',
       component: TemplateSetting,
@@ -251,6 +262,16 @@ const router = new Router({
       path: '/admin/yahoo-accounts',
       name: 'AdminYahooAccounts',
       component: AdminYahooAccounts,
+      meta: {
+        requiredAuth: true,
+        layout: 'admin',
+        isAdmin: true
+      }
+    },
+    {
+      path: '/admin/asins',
+      name: 'AdminAsins',
+      component: AdminAsins,
       meta: {
         requiredAuth: true,
         layout: 'admin',

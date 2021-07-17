@@ -96,9 +96,15 @@
               <div class="sidebar-submenu" :class="{'d-block': dropdownOpen == 3}">
                 <ul>
                   <li>
+                    <router-link :to="{name: 'FolderManagement'}">
+                      <i class="fa fa-list-alt"></i>
+                      <span>Folder Management</span>
+                    </router-link>
+                  </li>
+                  <li>
                     <router-link :to="{name: 'ProductInfomationDefault'}">
                       <i class="fa fa-list-alt"></i>
-                      <span>出品データデフォルト値</span>
+                      <span>Y!オーク出品情報管理</span>
                     </router-link>
                   </li>
                   <li>
