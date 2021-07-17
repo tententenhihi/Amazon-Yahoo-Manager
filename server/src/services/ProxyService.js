@@ -60,7 +60,7 @@ export default class ProxyService {
                 await this.dataUpdate({ _id: proxy._id, status: 'die' });
                 return {
                     status: 'ERROR',
-                    statusMessage: 'Proxy is dead',
+                    statusMessage: 'Proxy is died',
                 };
             } else {
                 return {
