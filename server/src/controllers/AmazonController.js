@@ -8,7 +8,8 @@ export default class AmazonController {
         let response = new Response(res);
         try {
             let user = req.user;
-            let listProduct = await ProductAmazonService.get(user._id);
+            let {yahoo_account_id} = req.params
+            let listProduct = await ProductAmazonService.get(user._id, yahoo_account_id);
             return response.success200({ listProduct });
         } catch (error) {
             console.log(error);
@@ -32,7 +33,7 @@ export default class AmazonController {
         let response = new Response(res);
         try {
             let { asin, url, name, price, delivery, countProduct, infoDetail, type,
-                status, description, image_length, folder_id } = JSON.parse(req.body.payload)
+                status, description, image_length, folder_id, yahoo_account_id } = JSON.parse(req.body.payload)
             let user = req.user
 
             if (!asin) {
@@ -79,14 +80,10 @@ export default class AmazonController {
                 type,
                 status,
                 description,
-                folder_id
+                folder_id,
+                yahoo_account_id
             }
 
-            // if (req.files && req.files.image) {
-            //     data.image = await UploadFile(req.files.image, { disk: 'products/' + user._id + '/' })
-            // } else {
-            //     response.error400({message: 'Image is required'})
-            // }
             if (req.files && image_length) {
                 for (let index = 0; index < image_length; index++) {
                     const element = req.files[`image-` + index];

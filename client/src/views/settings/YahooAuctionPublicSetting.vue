@@ -234,6 +234,7 @@
 
 <script>
 import AuctionPublicSettingApi from '@/services/AuctionPublicSettingApi'
+import { mapGetters } from 'vuex'
 
 const DAY_OF_WEEK = [
   { display: '日曜日', value: '1' },
@@ -267,9 +268,17 @@ export default {
   mounted () {
     this.getCurrentSetting()
   },
+  computed: {
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+    yahooAccountId () {
+      return this.selectedYahooAccount._id
+    }
+  },
   methods: {
     async getCurrentSetting () {
-      let res = await AuctionPublicSettingApi.get();
+      let res = await AuctionPublicSettingApi.get(this.yahooAccountId);
       if (res && res.status == 200) {
         this.setting = res.data.setting
         this.setting.target_folder_list = TARGET_FOLDER;
@@ -288,7 +297,6 @@ export default {
       this.isInit = true
     },
     async onUpdateSetting (isChangeAuctionDelete = false) {
-      console.log(isChangeAuctionDelete);
       if (isChangeAuctionDelete) {
         this.setting.auction_delete = !this.setting.auction_delete
       }

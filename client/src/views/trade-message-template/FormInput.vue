@@ -30,6 +30,7 @@
 
 <script>
 import TradeMessageTemplateApi from '@/services/TradeMessageTemplateApi'
+import { mapGetters } from 'vuex'
 export default {
   name: 'FormProduct',
   data () {
@@ -46,6 +47,9 @@ export default {
       let result = await TradeMessageTemplateApi.show(this.templateId)
       if (result && result.status === 200) {
         this.template = result.data
+        if (this.template.yahoo_account_id !== this.yahooAccountId) {
+          this.$router.push({name: 'RatingTemplate'})
+        }
       } else {
         this.$router.push({name: 'TradeMessageTemplate'})
       }
@@ -55,11 +59,18 @@ export default {
   computed: {
     templateId () {
       return this.$route.params.id || 0
+    },
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+    yahooAccountId () {
+      return this.selectedYahooAccount._id
     }
   },
   methods: {
     async onSave () {
       let result = null
+      this.template.yahoo_account_id = this.yahooAccountId
       if (this.templateId == 0) {
         result = await TradeMessageTemplateApi.create(this.template)
       } else {

@@ -5,7 +5,7 @@
     </div>
     <hr />
     <div class="box-content py-20">
-      <div class="image-selected">
+      <div class="image-selected col-12">
         <img :src="`/static/images/template-setting/template${selectedTemplate}.png`" alt="">
       </div>
       <div class="list-template my-30">
@@ -24,6 +24,7 @@
 
 <script>
 import ProductGlobalSettingApi from '@/services/ProductGlobalSettingApi'
+import { mapGetters } from 'vuex'
 export default {
   name: 'TemplateSetting',
   data () {
@@ -35,9 +36,17 @@ export default {
   mounted () {
     this.getCurrentSetting()
   },
+  computed: {
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+    yahooAccountId () {
+      return this.selectedYahooAccount._id
+    }
+  },
   methods: {
     async getCurrentSetting () {
-      let res = await ProductGlobalSettingApi.get();
+      let res = await ProductGlobalSettingApi.get(this.yahooAccountId);
       if (res && res.status == 200) {
         this.setting = res.data.setting
         this.selectedTemplate = this.setting.template

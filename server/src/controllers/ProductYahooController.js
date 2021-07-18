@@ -11,7 +11,8 @@ export default class ProductYahooController {
         let response = new Response(res);
         try {
             let user = req.user;
-            let products = await ProductYahooService.get(user._id);
+            let {yahoo_account_id} = req.params
+            let products = await ProductYahooService.get(user._id, yahoo_account_id);
             return response.success200({ products });
         } catch (error) {
             console.log(error);
@@ -66,6 +67,7 @@ export default class ProductYahooController {
                 gift,
                 wrapping,
                 image_length,
+                yahoo_account_id
             } = JSON.parse(req.body.payload);
 
             if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id || !description || !location || !import_price) {
@@ -116,6 +118,7 @@ export default class ProductYahooController {
                 highlight,
                 gift,
                 wrapping,
+                yahoo_account_id
             };
             if (req.files && image_length) {
                 for (let index = 0; index < image_length; index++) {

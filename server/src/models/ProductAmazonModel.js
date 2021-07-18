@@ -7,11 +7,11 @@ var Product = new Schema({
         ref: 'User',
         required: true,
     },
-    // yahoo_account_id: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'YahooAccount',
-    //     required: true,
-    // },
+    yahoo_account_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'YahooAccount',
+        required: true,
+    },
     folder_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Folder',

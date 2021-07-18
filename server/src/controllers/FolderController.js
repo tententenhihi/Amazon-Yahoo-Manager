@@ -6,7 +6,8 @@ export default class FolderController {
         let response = new Response(res);
         try {
             let user = req.user;
-            let folders = await FolderService.get(user._id);
+            let {yahoo_account_id} = req.params
+            let folders = await FolderService.get(user._id, yahoo_account_id);
             return response.success200({ folders });
         } catch (error) {
             console.log(error);
@@ -17,14 +18,15 @@ export default class FolderController {
     static async create (req, res) {
         let response = new Response(res);
         try {
-            let { name } = req.body
+            let { name, yahoo_account_id } = req.body
             let user = req.user
             if (!name) {
                 return response.error400({message: '完全な情報を入力してください。'})
             }
-            let folders = await FolderService.get(user._id)
+            let folders = await FolderService.get(user._id, yahoo_account_id)
             let data = {
                 user_id: user._id,
+                yahoo_account_id,
                 name,
                 position: folders.length + 1
             }

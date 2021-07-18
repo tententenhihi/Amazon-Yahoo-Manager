@@ -3,7 +3,7 @@ import ProductInfomationDefaultController from '../controllers/ProductInfomation
 
 var ProductInfomationDefaultRouter = express.Router();
 
-ProductInfomationDefaultRouter.route('/').get(ProductInfomationDefaultController.get);
+ProductInfomationDefaultRouter.route('/:yahoo_account_id').get(ProductInfomationDefaultController.get);
 ProductInfomationDefaultRouter.route('/update/:_id').post(ProductInfomationDefaultController.updateProduct);
 ProductInfomationDefaultRouter.route('/delete/:_id').post(ProductInfomationDefaultController.deleteProduct);
 

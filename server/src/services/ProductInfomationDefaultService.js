@@ -1,12 +1,13 @@
 import ProductInfomationDefaultSchema from '../models/ProductInfomationDefaultModel';
 
 export default class ProductInfomationDefaultService {
-    static async get(userId) {
+    static async get(userId, yahoo_account_id) {
         try {
-            let res = await ProductInfomationDefaultSchema.find({user_id: userId}).sort({ _id: -1 }).limit(1);
+            let res = await ProductInfomationDefaultSchema.find({user_id: userId, yahoo_account_id}).sort({ _id: -1 }).limit(1);
             if (!res.length) {
                 res = await ProductInfomationDefaultSchema.create({
-                    user_id: userId
+                    user_id: userId,
+                    yahoo_account_id
                 });
             }
             return Array.isArray(res) ? res[0]._doc : res._doc;

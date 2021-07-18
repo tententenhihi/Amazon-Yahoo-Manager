@@ -5,8 +5,9 @@ export default class AuctionPublicSettingController {
     static async get(req, res) {
         let response = new Response(res);
         let userId = req.user._id
+        let {yahoo_account_id} = req.params
         try {
-            let setting = await AuctionPublicSettingService.get(userId);
+            let setting = await AuctionPublicSettingService.get(userId, yahoo_account_id);
             return response.success200({ setting });
         } catch (error) {
             console.log(error);

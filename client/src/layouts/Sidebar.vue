@@ -1,15 +1,12 @@
 <template>
   <div>
-    <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
-      <i class="fas fa-bars"></i>
-    </a>
     <nav id="sidebar" class="sidebar-wrapper">
       <div class="sidebar-content">
         <div class="sidebar-brand">
           <a href="#">AYM</a>
-          <!-- <div id="close-sidebar">
+          <div id="close-sidebar" @click="$emit('closeSidebar')" >
             <i class="fas fa-times"></i>
-          </div> -->
+          </div>
         </div>
         <div class="sidebar-header">
           <div class="user-pic">
@@ -83,11 +80,27 @@
               </div>
             </li>
             <li class="sidebar-dropdown">
+              <a href="#" @click="showDropdown(4)">
+                <i class="fa fa-list"></i>
+                <span>出品した商品管理</span>
+              </a>
+              <div class="sidebar-submenu" :class="{'d-block': dropdownOpen == 4}">
+                <ul>
+                  <li>
+                    <router-link :to="{name: 'ProductYahooList'}">
+                      <i class="fa fa-calendar"></i>
+                      <span>Y!オーク取扱商品管理</span>
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <!-- <li class="sidebar-dropdown">
               <router-link :to="{name: 'YahooAuctionSelling'}">
                 <i class="fa fa-list"></i>
                 <span>落札商品管理</span>
               </router-link>
-            </li>
+            </li> -->
             <li class="sidebar-dropdown">
               <a href="#" @click="showDropdown(3)">
                 <i class="fa fa-cogs"></i>
@@ -166,7 +179,14 @@ export default {
   data() {
     return {
       dropdownOpen: 0,
+      isShowCloseSidebar: true
     };
+  },
+  created() {
+    window.addEventListener("resize", this.onResize);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.onResize);
   },
   computed: {
     ...mapGetters({
@@ -183,6 +203,14 @@ export default {
         ? (this.dropdownOpen = 0)
         : (this.dropdownOpen = index);
     },
+    onResize (e) {
+      // console.log(window.innerWidth);
+      // if (window.innerWidth < 768) {
+      //   this.isShowCloseSidebar = true
+      // } else {
+      //   this.isShowCloseSidebar = false
+      // }
+    },
   },
   watch: {
     '$route' () {
@@ -196,6 +224,9 @@ export default {
           break;
         case 'config':
           this.dropdownOpen = 3
+          break;
+        case 'product-manager':
+          this.dropdownOpen = 4
           break;
         default:
           this.dropdownOpen = 0

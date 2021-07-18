@@ -49,6 +49,7 @@
 <script>
 import draggable from 'vuedraggable'
 import FolderApi from '@/services/FolderApi'
+import { mapGetters } from 'vuex'
 export default {
   name: 'FolderManagement',
   data () {
@@ -66,23 +67,23 @@ export default {
     this.getFolders();
   },
   computed: {
-    sortFolder () {
-
-    }
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
   },
   beforeDestroy () {
     localStorage.removeItem('folders')
   },
   methods: {
     async getFolders () {
-      let res = await FolderApi.get();
+      let res = await FolderApi.get(this.selectedYahooAccount._id);
       if (res && res.status === 200) {
         this.folders = res.data.folders
         localStorage.setItem('folders', JSON.stringify(this.folders))
       }
     },
     async addFolder () {
-      let res = await FolderApi.create({name: this.name})
+      let res = await FolderApi.create({name: this.name, yahoo_account_id: this.selectedYahooAccount._id})
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",

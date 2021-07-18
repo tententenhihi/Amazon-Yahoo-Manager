@@ -1,9 +1,9 @@
 import RatingTemplateSchema from '../models/RatingTemplateModel';
 
 export default class RatingTemplateService {
-    static async get(idUser) {
+    static async get(idUser, yahoo_account_id) {
         try {
-            let result = await RatingTemplateSchema.find({ user_id: idUser });
+            let result = await RatingTemplateSchema.find({ user_id: idUser, yahoo_account_id });
             return result;
         } catch (error) {
             console.log(error);

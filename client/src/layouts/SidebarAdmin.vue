@@ -1,12 +1,12 @@
 <template>
   <div>
-    <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
-      <i class="fas fa-bars"></i>
-    </a>
     <nav id="sidebar" class="sidebar-wrapper">
       <div class="sidebar-content">
         <div class="sidebar-brand">
           <a href="#">AYM</a>
+          <div id="close-sidebar" @click="$emit('closeSidebar')" >
+            <i class="fas fa-times"></i>
+          </div>
         </div>
         <div class="sidebar-header">
           <div class="user-pic">

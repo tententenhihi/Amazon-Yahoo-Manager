@@ -1,9 +1,9 @@
 import TradeMessageTemplateSchema from '../models/TradeMessageTemplateModel';
 
 export default class TradeMessageTemplateService {
-    static async get(idUser) {
+    static async get(idUser, yahoo_account_id) {
         try {
-            let result = await TradeMessageTemplateSchema.find({ user_id: idUser });
+            let result = await TradeMessageTemplateSchema.find({ user_id: idUser, yahoo_account_id });
             return result;
         } catch (error) {
             console.log(error);

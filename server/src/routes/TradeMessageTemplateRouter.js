@@ -3,7 +3,7 @@ import TradeMessageTemplateController from '../controllers/TradeMessageTemplateC
 
 var TradeMessageTemplateRouter = express.Router();
 
-TradeMessageTemplateRouter.route('/').get(TradeMessageTemplateController.get);
+TradeMessageTemplateRouter.route('/:yahoo_account_id').get(TradeMessageTemplateController.get);
 TradeMessageTemplateRouter.route('/create').post(TradeMessageTemplateController.create);
 TradeMessageTemplateRouter.route('/update/:_id').post(TradeMessageTemplateController.update);
 TradeMessageTemplateRouter.route('/show/:_id').get(TradeMessageTemplateController.show);

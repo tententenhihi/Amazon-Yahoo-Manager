@@ -6,7 +6,8 @@ export default class ProductInfomationDefaultController {
         let response = new Response(res);
         try {
             let user = req.user;
-            let product = await ProductInfomationDefaultService.get(user._id);
+            let {yahoo_account_id} = req.params
+            let product = await ProductInfomationDefaultService.get(user._id, yahoo_account_id);
             return response.success200(product);
         } catch (error) {
             console.log(error);
@@ -59,7 +60,8 @@ export default class ProductInfomationDefaultController {
                 yahoo_auction_profit_type,
                 yahoo_auction_price_profit,
                 yahoo_auction_static_profit,
-                yahoo_auction_bid_price
+                yahoo_auction_bid_price,
+                yahoo_account_id
             } = req.body;
             let user = req.user;
 
@@ -105,7 +107,8 @@ export default class ProductInfomationDefaultController {
                 yahoo_auction_profit_type,
                 yahoo_auction_price_profit,
                 yahoo_auction_static_profit,
-                yahoo_auction_bid_price
+                yahoo_auction_bid_price,
+                yahoo_account_id
             };
 
             let result = await ProductInfomationDefaultService.update(_id, data);

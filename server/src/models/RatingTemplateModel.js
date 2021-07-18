@@ -6,6 +6,11 @@ var RatingTemplate = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
+    yahoo_account_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'YahooAccount',
+        default: '',
+    },
     name: {
         type: String,
         required: true

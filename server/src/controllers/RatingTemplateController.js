@@ -6,7 +6,8 @@ export default class RatingTemplateController {
         let response = new Response(res);
         try {
             let user = req.user;
-            let templates = await RatingTemplateService.get(user._id);
+            let {yahoo_account_id} = req.params
+            let templates = await RatingTemplateService.get(user._id, yahoo_account_id);
             return response.success200({ templates });
         } catch (error) {
             console.log(error);
@@ -17,7 +18,7 @@ export default class RatingTemplateController {
     static async create (req, res) {
         let response = new Response(res);
         try {
-            let { name, content, rating } = req.body
+            let { name, content, rating, yahoo_account_id } = req.body
             if (!name || !content) {
                 return response.error400({message: '完全な情報を入力してください。'})
             }
@@ -26,7 +27,8 @@ export default class RatingTemplateController {
                 user_id: user._id,
                 name,
                 content,
-                rating
+                rating,
+                yahoo_account_id
             }
             let result = await RatingTemplateService.create(data);
             if (result) {

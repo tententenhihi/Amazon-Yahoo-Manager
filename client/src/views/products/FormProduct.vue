@@ -105,6 +105,7 @@
 <script>
 import ProductAmazonApi from '@/services/ProductAmazonApi'
 import FolderApi from '@/services/FolderApi'
+import { mapGetters } from 'vuex';
 export default {
   name: 'FormProduct',
   data () {
@@ -133,6 +134,9 @@ export default {
       let result = await ProductAmazonApi.show({_id: this.productId})
       if (result && result.status === 200) {
         this.product = result.data
+        if (this.product.yahoo_account_id !== this.yahooAccountId) {
+          this.$router.push({name: 'Products'})
+        }
         this.previewImages = this.product.images.map(item => {
           return {
             preview_url: item.includes('http') ? item : process.env.SERVER_API + 'uploads/' + item
@@ -147,11 +151,17 @@ export default {
   computed: {
     productId () {
       return this.$route.params.id || 0
+    },
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+    yahooAccountId () {
+      return this.selectedYahooAccount._id
     }
   },
   methods: {
     async getFolders () {
-      let res = await FolderApi.get();
+      let res = await FolderApi.get(this.yahooAccountId);
       if (res && res.status == 200) {
         this.folders = res.data.folders
       }
@@ -185,9 +195,10 @@ export default {
       this.previewImages.splice(index, 1);
     },
     async onSaveProduct () {
+      this.product.yahoo_account_id = this.selectedYahooAccount._id
+      this.product.image_length = this.previewImages.length
       let formData = new FormData();
       formData.append('payload', JSON.stringify(this.product));
-      this.product.image_length = this.previewImages.length
       for (let index = 0; index < this.product.image_length; index++) {
         formData.append(`image-${index}`, this.previewImages[index].file)
       }

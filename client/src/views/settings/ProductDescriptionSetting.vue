@@ -5,7 +5,7 @@
     </div>
     <hr />
     <div class="box-content">
-      <div class="form-horizontal col-md-7 py-20" style="float: none; margin: 0 auto;">
+      <div class="form-horizontal col-md-10 col-lg-7 py-20" style="float: none; margin: 0 auto;">
         <div class="form-group row mb-40">
           <label for="product-detail" class="col-sm-3 col-form-label">商品詳細 :</label>
           <div class="col-sm-8">
@@ -42,6 +42,8 @@
 
 <script>
 import ProductGlobalSettingApi from '@/services/ProductGlobalSettingApi'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'ProductDescriptionSetting',
   data () {
@@ -52,9 +54,17 @@ export default {
   mounted () {
     this.getCurrentSetting()
   },
+  computed: {
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+    yahooAccountId () {
+      return this.selectedYahooAccount._id
+    }
+  },
   methods: {
     async getCurrentSetting () {
-      let res = await ProductGlobalSettingApi.get();
+      let res = await ProductGlobalSettingApi.get(this.yahooAccountId);
       if (res && res.status == 200) {
         this.setting = res.data.setting
       }

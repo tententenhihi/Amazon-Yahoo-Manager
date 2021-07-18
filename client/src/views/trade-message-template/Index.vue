@@ -20,30 +20,32 @@
           :container-class="'pagination'"
           :page-class="'page-item'">
         </paginate>
-        <table class="table table-responsive table-striped display pt-20 mb-20" style="width: 100%">
-          <thead class="thead-purple">
-            <tr>
-              <th scope="col">テンプレート名</th>
-              <th scope="col">メッセージ内容</th>
-              <th scope="col">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(template, index) in tableData" :key="template._id">
-              <td>{{ template.name }}</td>
-              <td style="white-space: pre;">{{ template.content }}</td>
-              <td>
-                <button class="btn btn-md btn-warning mb-1 mr-1"
-                  @click="goToFormTradeMessageTemplate(template._id)">
-                  <i class="fa fa-edit"></i> 編集
-                </button>
-                <button class="btn btn-md btn-danger mb-1 mr-1" @click="onConfirmDelete(template, index)">
-                  <i class="fa fa-trash"></i> 削除
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-striped display pt-20 mb-20" style="width: 100%">
+            <thead class="thead-purple">
+              <tr>
+                <th scope="col">テンプレート名</th>
+                <th scope="col">メッセージ内容</th>
+                <th scope="col">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(template, index) in tableData" :key="template._id">
+                <td>{{ template.name }}</td>
+                <td style="white-space: pre;">{{ template.content }}</td>
+                <td>
+                  <button class="btn btn-md btn-warning mb-1 mr-1"
+                    @click="goToFormTradeMessageTemplate(template._id)">
+                    <i class="fa fa-edit"></i> 編集
+                  </button>
+                  <button class="btn btn-md btn-danger mb-1 mr-1" @click="onConfirmDelete(template, index)">
+                    <i class="fa fa-trash"></i> 削除
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -51,6 +53,8 @@
 
 <script>
 import TradeMessageTemplateApi from '@/services/TradeMessageTemplateApi'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'TradeMessageTemplateList',
   data () {
@@ -69,11 +73,17 @@ export default {
     pageCount () {
       return Math.ceil(this.templates.length / this.$constants.PAGE_SIZE)
     },
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+    yahooAccountId () {
+      return this.selectedYahooAccount._id
+    }
   },
   methods: {
     async getListTradeMessageTemplate() {
       try {
-        let res = await TradeMessageTemplateApi.get();
+        let res = await TradeMessageTemplateApi.get(this.yahooAccountId);
         if (res && res.status === 200) {
           this.templates = res.data.templates;
         }
@@ -121,7 +131,7 @@ export default {
 
 <style scoped>
 table td {
-  max-width: 500px;
+  max-width: 300px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

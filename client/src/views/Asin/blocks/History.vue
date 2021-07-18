@@ -95,18 +95,6 @@ export default {
       this.$refs.modalDetalGroup.openModal();
     }
   },
-  watch: {
-    listAsin () {
-      let self = this;
-      // self.$nextTick(() => {
-      //   console.log('vao day 123');
-      //   if (self.$("#historyTable").DataTable()) {
-      //     self.$("#historyTable").DataTable().destroy();
-      //   }
-      //   self.$("#historyTable").DataTable({});
-      // });
-    }
-  }
 }
 </script>
 

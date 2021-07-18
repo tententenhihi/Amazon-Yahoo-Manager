@@ -6,6 +6,11 @@ var ProductGlobalSetting = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
+    yahoo_account_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'YahooAccount',
+        default: '',
+    },
     template: {
         type: Number,
         required: true,

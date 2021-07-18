@@ -1,4 +1,5 @@
 import UserModel from '../models/UserModel';
+import YahooAccountModel from '../models/YahooAccount'
 import Response from '../utils/Response';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -102,9 +103,11 @@ class AuthController {
                             userLogin.token = token;
                             userLogin.save();
                         }
+                        let yahooAccount = await YahooAccountModel.find({user_id: userLogin._id});
                         return response.success200({
                             message: 'Authentication successful!',
                             userData: userLogin,
+                            yahooAccount: yahooAccount
                         });
                     }
                 }

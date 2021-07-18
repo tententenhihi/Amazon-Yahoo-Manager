@@ -6,7 +6,8 @@ export default class ProductGlobalSettingController {
         let response = new Response(res);
         try {
             let user = req.user
-            let setting = await ProductGlobalSettingService.get(user._id);
+            let {yahoo_account_id} = req.params
+            let setting = await ProductGlobalSettingService.get(user._id, yahoo_account_id);
             return response.success200({ setting });
         } catch (error) {
             console.log(error);
@@ -17,10 +18,11 @@ export default class ProductGlobalSettingController {
     static async create (req, res) {
         let response = new Response(res);
         try {
-            let { product_detail, payment_detail, delivery_detail, precaution_detail } = req.body
+            let { product_detail, payment_detail, delivery_detail, precaution_detail, yahoo_account_id } = req.body
             let user = req.user
             let data = {
                 user_id: user._id,
+                yahoo_account_id,
                 product_detail,
                 payment_detail,
                 delivery_detail,

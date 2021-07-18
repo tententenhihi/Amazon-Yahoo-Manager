@@ -3,7 +3,7 @@ import AuctionPublicSettingController from '../controllers/AuctionPublicSettingC
 
 var AuctionPublicSettingRouter = express.Router();
 
-AuctionPublicSettingRouter.route('/get').get(AuctionPublicSettingController.get);
+AuctionPublicSettingRouter.route('/get/:yahoo_account_id').get(AuctionPublicSettingController.get);
 AuctionPublicSettingRouter.route('/update').post(AuctionPublicSettingController.update);
 
 export default AuctionPublicSettingRouter;

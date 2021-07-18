@@ -7,15 +7,15 @@
     <div class="box-content">
       <div class="px-30 py-20">
         <div class="form-row">
-          <div class="col-md-9">
+          <div class="col-md-9 col-12">
             <div class="row" v-for="(image, index) in images" :key="index">
-              <div class="col-md-4 text-align-end">
+              <div class="col-4 text-align-end">
                 商品画像 : <br>
                 <small>
                   (商品画像は10枚まで可能/画像は１０００PX 以下にしてください。大きすぎるとアップロードできず、エラーになります。)
                 </small>
               </div>
-              <div class="col-md-8 product-image">
+              <div class="col-8 product-image">
                 <input type="file"  class="ml-2 d-none" :ref="'inputImage-' + index" @change="onUploadImage(index)">
                 <img :src="image.preview_url" :id="`image_${index}_preview`"
                   @click="onClickReUploadImage(index)"
@@ -24,13 +24,13 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-4 text-align-end">
+              <div class="col-4 text-align-end">
                 商品画像 : <br>
                 <small>
                   (商品画像は10枚まで可能/画像は１０００PX 以下にしてください。大きすぎるとアップロードできず、エラーになります。)
                 </small>
               </div>
-              <div class="col-md-8 product-image">
+              <div class="col-8 product-image">
                 <input type="file"  class="ml-2 d-none" :ref="'inputImage-' + images.length" @change="onUploadImage(images.length)">
                 <img src="@/assets/images/no_product.png" name="image_preview" id="image_preview"
                   @click="$refs['inputImage-' + images.length].click()"
@@ -44,16 +44,16 @@
             <transition name="fade">
               <div v-show="isShowProductInfo">
                 <div class="row">
-                  <div class="col-md-4 text-align-end"><font color="red">*</font> フォルダ :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end"><font color="red">*</font> フォルダ :</div>
+                  <div class="col-8">
                     <select class="form-control" id="" v-model="product.folder_id">
                       <option v-for="(folder, index) in folders" :key="index" :value="folder._id">{{ folder.name }}</option>
                     </select>
                   </div>
                 </div>
                 <!-- <div class="row">
-                  <div class="col-md-4 text-align-end">仕入れ元サイト :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">仕入れ元サイト :</div>
+                  <div class="col-8">
                     <select class="form-control" v-model="product.folder">
                       <option v-for="(folder, index) in TARGET_FOLDER" :key="index" :value="folder.value">
                       {{folder.display}}</option>
@@ -61,39 +61,39 @@
                   </div>
                 </div> -->
                 <div class="row">
-                  <div class="col-md-4 text-align-end">仕入れ元ID :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">仕入れ元ID :</div>
+                  <div class="col-8">
                     <input type="text" v-model="product.foreign_key" class="form-control">
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end"><font color="red">*</font> Y！オーク商品名 : <br>
+                  <div class="col-4 text-align-end"><font color="red">*</font> Y！オーク商品名 : <br>
                     <small>(商品名は全角64文字以内)</small>
                   </div>
-                  <div class="col-md-8">
+                  <div class="col-8">
                     <input type="text" v-model="product.product_yahoo_title" class="form-control">
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end"><font color="red">*</font>Yahoo商品のカテゴリー :</div>
+                  <div class="col-4 text-align-end"><font color="red">*</font>Yahoo商品のカテゴリー :</div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end"><font color="red">*</font>Yahoo商品のカテゴリー（ID指定）:
+                  <div class="col-4 text-align-end"><font color="red">*</font>Yahoo商品のカテゴリー（ID指定）:
                   </div>
-                  <div class="col-md-8">
+                  <div class="col-8">
                     <input type="text" class="form-control" v-model="product.yahoo_auction_category_id" id="">
                     入力すると、上記で選択したカテゴリーよりも、こちらの値が優先されます。
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">開始価格 : <br> <small>(JPY)</small></div>
-                  <div class="col-md-4">
+                  <div class="col-4 text-align-end">開始価格 : <br> <small>(JPY)</small></div>
+                  <div class="col-8 col-lg-4">
                     <input type="number" v-model="product.start_price" class="form-control">
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">即決価格 : <br> <small>(JPY)</small></div>
-                  <div class="col-md-4">
+                  <div class="col-4 text-align-end">即決価格 : <br> <small>(JPY)</small></div>
+                  <div class="col-8 col-lg-4">
                     <input type="number" v-model="product.bid_or_buy_price" class="form-control">
                     <p>
                       空欄で自動計算されます。開始価格と同額を設定すると、定額出品となります。入札者がこの価格以上で入札すると、終了時間前でも自動的に落札されます。
@@ -101,14 +101,14 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end"><font color="red">*</font>仕入れ価格 : <br> <small>(JPY)</small></div>
-                  <div class="col-md-4">
+                  <div class="col-4 text-align-end"><font color="red">*</font>仕入れ価格 : <br> <small>(JPY)</small></div>
+                  <div class="col-8 col-lg-4">
                     <input type="number" v-model="product.import_price" class="form-control">
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">商品の状態 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">商品の状態 :</div>
+                  <div class="col-8">
                     <input type="radio" v-model="product.status" class="ml-2" id="second" value="used">
                     <label for="second">中古</label>
                     <input type="radio" v-model="product.status" class="ml-2" id="new" value="new">
@@ -118,15 +118,15 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4"></div>
-                  <div class="col-md-8">
+                  <div class="col-4"></div>
+                  <div class="col-8">
                     <input type="text" class="form-control" v-model="product.status_comment">
                     中古・その他を選んだ場合、必ず上記に状態を全角15文字以内で記載して下さい。
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">値下げ交渉 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">値下げ交渉 :</div>
+                  <div class="col-8">
                     <select class="form-control" v-model="product.offer">
                       <option value="no">なし</option>
                       <option value="yes">あり</option>
@@ -134,31 +134,31 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">個数 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">個数 :</div>
+                  <div class="col-8">
                     <input type="number" :min="1" v-model="product.quantity" class="form-control">
                     ※IDの評価が10以下の方は1個に固定されます。
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">開催期間 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">開催期間 :</div>
+                  <div class="col-8">
                     <select class="form-control" v-model="product.duration">
                       <option v-for="(period, index) in HOLDING_PERIOD" :key="index" :value="period.value">{{period.display}}</option>
                     </select>
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">終了時間 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">終了時間 :</div>
+                  <div class="col-8">
                     <select class="form-control" v-model="product.closing_time">
                       <option v-for="(time, index) in ENDING_TIME" :key="index" :value="time.value">{{time.display}}</option>
                     </select>
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">返品の可否 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">返品の可否 :</div>
+                  <div class="col-8">
                     <input type="radio" v-model="product.retpolicy" class="ml-2" value="no" id="non-return">
                     <label for="non-return">返品不可</label> 
                     <input type="radio" v-model="product.retpolicy" class="ml-2" value="yes" id="accept-return">
@@ -166,19 +166,19 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">返品の備考 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">返品の備考 :</div>
+                  <div class="col-8">
                     <input type="text" class="form-control" v-model="product.retpolicy_comment">
                     ※IDの評価が10以下の方は1個に固定されます。
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end"></div>
-                  <div class="col-md-8">返品可の場合、全角30文字以内で必須入力です。</div>
+                  <div class="col-4 text-align-end"></div>
+                  <div class="col-8">返品可の場合、全角30文字以内で必須入力です。</div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">入札制限 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">入札制限 :</div>
+                  <div class="col-8">
                     <div class="form-check">
                       <input class="form-check-input" v-model="product.min_bid_rating" true-value="yes" false-value="no" type="checkbox" id="overral-evaluation">
                       <label class="form-check-label" for="overral-evaluation">
@@ -200,8 +200,8 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">その他 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">その他 :</div>
+                  <div class="col-8">
                     <div class="form-check d-flex">
                       <div class="mr-30">
                         <input class="form-check-input" v-model="product.auto_extension" true-value="yes" false-value="no" type="checkbox" id="automatic-extension">
@@ -219,8 +219,8 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">自動再出品 :</div>
-                  <div class="col-md-8 d-flex">
+                  <div class="col-4 text-align-end">自動再出品 :</div>
+                  <div class="col-8 d-flex">
                     <select class="form-control" v-model="product.num_resubmit">
                       <option v-for="(n, index) in 4" :key="index" :value="index">{{n}}</option>
                     </select>
@@ -228,15 +228,15 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">最低落札価格  :</div>
-                  <div class="col-md-8 d-flex">
+                  <div class="col-4 text-align-end">最低落札価格  :</div>
+                  <div class="col-8 d-flex">
                     <input type="number" v-model="product.reserve_price" style="width: 180px" class="form-control">
                     <div class="mt-2 ml-2">回（半角数字） ※有料オプション</div>
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end"><font color="red">*</font>商品詳細  :</div>
-                  <div class="col-md-8 d-flex">
+                  <div class="col-4 text-align-end"><font color="red">*</font>商品詳細  :</div>
+                  <div class="col-8 d-flex">
                     <textarea class="form-control" v-model="product.description" cols="30" rows="5"></textarea>
                   </div>
                 </div>
@@ -249,8 +249,8 @@
             <transition name="fade">
               <div v-show="isShowPayment">
                 <div class="row">
-                  <div class="col-md-4 text-align-end">決済方法 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">決済方法 :</div>
+                  <div class="col-8">
                     <div class="form-check">
                       <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" checked disabled>
                       <label class="form-check-label">
@@ -260,8 +260,8 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">代金先払い、後払い :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">代金先払い、後払い :</div>
+                  <div class="col-8">
                     <div class="form-check">
                       <input class="form-check-input" v-model="product.ship_time" type="radio" value="after" id="prepaid">
                       <label class="form-check-label" for="prepaid">
@@ -277,8 +277,8 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">送料負担 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">送料負担 :</div>
+                  <div class="col-8">
                     <div class="form-check">
                       <input class="form-check-input" v-model="product.shipping" type="radio" value="buyer" id="bidder">
                       <label class="form-check-label" for="bidder">
@@ -302,20 +302,22 @@
             <transition name="fade">
               <div v-show="isShowDelivery">
                 <div class="row">
-                  <div class="col-md-4 text-align-end"><font color="red">*</font>商品発送元の地域 :</div>
-                  <div class="col-md-2">
+                  <div class="col-4 text-align-end"><font color="red">*</font>商品発送元の地域 :</div>
+                  <div class="col-4 col-lg-4">
                     <select class="form-control" v-model="product.location">
                       <option v-for="(pref, index) in PREFECTURE" :key="index" :value="pref.value">{{pref.display}}</option>
                     </select>
                   </div>
-                  <div class="col-md-3">市区町村（任意/全角10文字以内）：</div>
-                  <div class="col-md-3">
+                </div>
+                <div class="row">
+                  <div class="col-4 text-align-end">市区町村（任意/全角10文字以内）：</div>
+                  <div class="col-4 col-lg-4">
                     <input type="text" class="form-control" v-model="product.city">
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">送料、配送方法 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">送料、配送方法 :</div>
+                  <div class="col-8">
                     <div class="d-flex my-1">
                       <input type="text" v-model="product.ship_name1" style="width:45%" class="form-control mr-2">
                       <input type="text" v-model="product.ship_fee1" style="width:45%" class="form-control">
@@ -334,8 +336,8 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">海外発送 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">海外発送 :</div>
+                  <div class="col-8">
                     <div class="form-check">
                       <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="overseas" v-model="product.foreign_check">
                       <label class="form-check-label" for="overseas">
@@ -345,8 +347,8 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">発送までの日数 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">発送までの日数 :</div>
+                  <div class="col-8">
                     <select class="form-control" v-model="product.ship_schedule">
                       <option v-for="(ship, index) in SHIP_SCHEDULE" :key="index" :value="ship.value">{{ship.display}}</option>
                     </select>
@@ -361,15 +363,15 @@
             <transition name="fade">
               <div v-show="isShowChargedOption">
                 <div class="row">
-                  <div class="col-md-4 text-align-end">注目のオークション :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">注目のオークション :</div>
+                  <div class="col-8">
                     <input type="text" class="form-control" v-model="product.featured_amount">
                     円  （半角数字）   1日あたり20円（税込21.60円）～
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">太字テキスト :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">太字テキスト :</div>
+                  <div class="col-8">
                     <div class="form-check">
                       <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="bold-text" v-model="product.bold">
                       <label class="form-check-label" for="bold-text">
@@ -379,8 +381,8 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">背景色 :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">背景色 :</div>
+                  <div class="col-8">
                     <div class="form-check">
                       <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="bg-color" v-model="product.highlight">
                       <label class="form-check-label" for="bg-color">
@@ -390,8 +392,8 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">目立ちアイコン :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">目立ちアイコン :</div>
+                  <div class="col-8">
                     <select class="form-control" v-model="product.gift">
                       <option v-for="(icon, index) in CONSPICUOUS_ICON" :key="index" :value="icon.value">{{icon.display}}</option>
                     </select>
@@ -399,8 +401,8 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4 text-align-end">贈答品アイコン :</div>
-                  <div class="col-md-8">
+                  <div class="col-4 text-align-end">贈答品アイコン :</div>
+                  <div class="col-8">
                     <div class="form-check">
                       <input class="form-check-input" true-value="yes" false-value="no" type="checkbox" id="gift-icon" v-model="product.wrapping">
                       <label class="form-check-label" for="gift-icon">
@@ -429,6 +431,7 @@
 import ProductYahooApi from '@/services/ProductYahooApi'
 import ProductInfomationDefaultApi from '@/services/ProductInfomationDefaultApi'
 import FolderApi from '@/services/FolderApi'
+import { mapGetters } from 'vuex'
 
 const HOLDING_PERIOD = [
   { display: '当日終了', value: 0 },
@@ -610,6 +613,9 @@ export default {
       let result = await ProductYahooApi.show(this.productId)
       if (result && result.status === 200) {
         this.product = result.data
+        if (this.product.yahoo_account_id !== this.yahooAccountId) {
+          this.$router.push({name: 'Products'})
+        }
         this.images = this.product.images.map(image => {
           return {
             preview_url: process.env.SERVER_API + 'uploads/' + image
@@ -619,7 +625,7 @@ export default {
         this.$router.push({name: 'ProductYahooList'})
       }
     } else {
-      let result = await ProductInfomationDefaultApi.get()
+      let result = await ProductInfomationDefaultApi.get(this.yahooAccountId)
       if (result && result.status === 200) {
         this.product = {...this.product, ...result.data}
       }
@@ -628,11 +634,17 @@ export default {
   computed: {
     productId () {
       return this.$route.params.id || 0
+    },
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+    yahooAccountId () {
+      return this.selectedYahooAccount._id
     }
   },
   methods: {
     async getFolders () {
-      let res = await FolderApi.get();
+      let res = await FolderApi.get(this.yahooAccountId);
       if (res && res.status === 200) {
         this.folders = res.data.folders
       }
@@ -670,6 +682,7 @@ export default {
     async onSaveProduct () {
       let formData = new FormData();
       this.product.image_length = this.images.length
+      this.product.yahoo_account_id = this.yahooAccountId
       formData.append('payload', JSON.stringify(this.product));
       for (let index = 0; index < this.product.image_length; index++) {
         formData.append(`image-${index}`, this.images[index].file)

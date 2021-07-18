@@ -13,34 +13,47 @@
     </div>
     <hr class="mt-10" />
     <div class="box-content">
-      <div class="px-30 py-20">
-        <table id="productTable" class="display pt-20 mb-20" style="width: 100%">
-          <thead class="thead-purple" :class="{'opacity-0': !isInit}">
+      <div class="px-20 py-20">
+        <paginate
+          v-if="pageCount > 1"
+          v-model="page"
+          :page-count="pageCount"
+          :page-range="3"
+          :margin-pages="2"
+          :prev-text="'Prev'"
+          :next-text="'Next'"
+          :container-class="'pagination'"
+          :page-class="'page-item'">
+        </paginate>
+        <table class="table pt-20 mb-20">
+          <thead class="thead-purple">
             <tr>
               <th scope="col">数</th>
               <th scope="col">画像</th>
-              <th scope="col">名前</th>
-              <th scope="col">価格</th>
-              <th scope="col">配達</th>
-              <th scope="col">カウント</th>
-              <th scope="col">ASIN</th>
-              <th scope="col">で作成された</th>
-              <th scope="col">操作</th>
+              <th scope="col">タイトル</th>
+              <th scope="col">開始価格</th>
+              <th scope="col">想定利益</th>
+              <th scope="col">仕入元の値段</th>
+              <th scope="col">送料</th>
+              <th scope="col">仕入元の <br> 在庫数</th>
+              <th scope="col">取扱に追加</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(product, index) in products" :key="product._id">
+            <tr v-for="(product, index) in tableData" :key="product._id">
               <th scope="row">{{ index + 1 }}</th>
               <td>
                 <img v-if="product.images && product.images.length" :src="product.images[0].includes('http') 
                   ? product.images[0] : SERVER_HOST_UPLOAD + product.images[0]" alt="">
               </td>
-              <td>{{ product.name }}</td>
+              <td>{{ product.name }} <br> ASIN: {{product.asin}}</td>
               <td>{{ product.price }}</td>
-              <td>{{ product.delivery }}</td>
-              <td>{{ product.countProduct }}</td>
-              <td>{{ product.asin }}</td>
-              <td>{{ product.created }}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
               <td>
                 <button class="btn btn-md btn-warning mb-1 mr-1" @click="goToFormProduct(product._id)">
                   <i class="fa fa-edit"></i> 編集
@@ -59,12 +72,15 @@
 
 <script>
 import ProductAmazonApi from '@/services/ProductAmazonApi'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'ProductList',
   data () {
     return {
       products: [],
       isInit: false,
+      page: 1,
       SERVER_HOST_UPLOAD: process.env.SERVER_API + 'uploads/'
     }
   },
@@ -73,10 +89,21 @@ export default {
     this.createDatatable()
     this.isInit = true
   },
+  computed: {
+    tableData () {
+      return this.products.slice((this.page - 1) * this.$constants.PAGE_SIZE, this.page * this.$constants.PAGE_SIZE)
+    },
+    pageCount () {
+      return Math.ceil(this.products.length / this.$constants.PAGE_SIZE)
+    },
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+  },
   methods: {
     async getListProduct() {
       try {
-        let res = await ProductAmazonApi.get();
+        let res = await ProductAmazonApi.get(this.selectedYahooAccount._id);
         if (res && res.status === 200) {
           this.products = res.data.listProduct;
         }

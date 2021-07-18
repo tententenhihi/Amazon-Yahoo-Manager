@@ -13,15 +13,15 @@
       <hr class="mt-10" />
       <div class="box-content">
         <div class="px-30 py-20">
-          <table id="accountTable" class="display pt-20 mb-20" style="width: 100%">
+          <table id="accountTable" class="display pt-20 mb-20">
             <thead class="thead-purple">
               <tr>
                 <th scope="col">No</th>
                 <th scope="col">名前</th>
                 <th scope="col">Yahoo! オークID</th>
                 <th scope="col">ステータス</th>
-                <th scope="col">Status</th>
-                <th scope="col">Status Message</th>
+                <!-- <th scope="col">Status</th> -->
+                <!-- <th scope="col">Status Message</th> -->
                 <th scope="col">変更</th>
               </tr>
             </thead>
@@ -31,7 +31,7 @@
                 <td>{{ account.name }}</td>
                 <td>{{ account.yahoo_id }}</td>
                 <td>
-                  <div v-if="account.cookie">
+                  <div v-if="account.cookie && account.status == 'SUCCESS'">
                     認証
                   </div>
                   <div v-else style="color:red">
@@ -39,8 +39,8 @@
                   </div>
                   <button class="btn btn-sm btn-info" @click="onReAuth(account)">再認証</button>
                 </td>
-                <td>{{ account.status }}</td>
-                <td>{{ account.statusMessage }}</td>
+                <!-- <td>{{ account.status }}</td> -->
+                <!-- <td>{{ account.statusMessage }}</td> -->
                 <td>
                   <button
                     class="btn btn-md btn-warning mb-1"
@@ -161,6 +161,7 @@ export default {
           initComplete: function() {
             $(this.api().table().container()).find('input').parent().wrap('<form>').parent().attr('autocomplete', 'off');
           },
+          responsive: true,
           language: {
             sEmptyTable: "テーブルにデータがありません",
             sInfo: " _TOTAL_ 件中 _START_ から _END_ まで表示",

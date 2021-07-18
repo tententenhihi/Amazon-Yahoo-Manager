@@ -3,8 +3,8 @@ import Api from "./api";
 const prefix = '/api/v1/folder'
 
 export default {
-  get () {
-    return Api.get(`${prefix}/get`);
+  get (yahooAccountId) {
+    return Api.get(`${prefix}/get/${yahooAccountId}`);
   },
   create (data) {
     return Api.post(`${prefix}/create`, data);

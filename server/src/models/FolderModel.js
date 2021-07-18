@@ -8,6 +8,11 @@ var FolderSchema = new Schema({
         ref: 'User',
         required: true,
     },
+    yahoo_account_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'YahooAccount',
+        default: '',
+    },
     name: {
         type: String,
         trim: true,

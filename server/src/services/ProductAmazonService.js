@@ -3,9 +3,9 @@ import ProductAmazonSchema from '../models/ProductAmazonModel';
 import Utils from '../utils/Utils';
 const cheerio = require('cheerio');
 export default class ProductAmazonService {
-    static async get(idUser) {
+    static async get(idUser, yahoo_account_id) {
         try {
-            let result = await ProductAmazonSchema.find({ idUser });
+            let result = await ProductAmazonSchema.find({ idUser, yahoo_account_id });
             return result;
         } catch (error) {
             console.log(error);

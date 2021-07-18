@@ -22,9 +22,11 @@ export default class CodeSearchAmazonController {
         let response = new Response(res);
         try {
             let user = req.user;
+            let {yahoo_account_id} = req.params
             let payload = {
                 ...req.body,
                 idUser: user._id,
+                yahoo_account_id
             };
             let listSearchCode = await CodeSearchAmazonService.get(payload);
             return response.success200({ listSearchCode });
@@ -40,6 +42,7 @@ export default class CodeSearchAmazonController {
             let listCode = req.body.listCode;
             let groupId = req.body.groupId;
             let type = req.body.type;
+            let yahoo_account_id = req.body.yahoo_account_id
             if (!type) {
                 type = 'ASIN';
             }
@@ -47,7 +50,7 @@ export default class CodeSearchAmazonController {
                 let listSearchCodeNew = [];
                 for (let i = 0; i < listCode.length; i++) {
                     const code = listCode[i];
-                    let newSearchCodeData = { code, idUser: user._id, type, groupId };
+                    let newSearchCodeData = { code, idUser: user._id, type, groupId, yahoo_account_id };
                     let newSearchCode = await CodeSearchAmazonService.add(newSearchCodeData);
                     QueueGetProductAmazon.addNew(newSearchCode);
                     listSearchCodeNew.push(newSearchCode);

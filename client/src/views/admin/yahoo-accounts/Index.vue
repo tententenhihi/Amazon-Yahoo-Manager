@@ -34,40 +34,42 @@
           :container-class="'pagination'"
           :page-class="'page-item'">
         </paginate>
-        <table class="table table-responsive table-striped display pt-10 my-20">
-          <thead class="thead-purple">
-            <tr>
-              <th scope="col">User ID</th>
-              <th scope="col">Username</th>
-              <th scope="col">Yahoo ID</th>
-              <th scope="col">Status</th>
-              <th scope="col">Proxy IP</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(account, index) in tableData" :key="index">
-              <td>{{ account.users[0].userId }}</td>
-              <td>{{ account.users[0].username }}</td>
-              <td>{{ account.yahoo_id }}</td>
-              <td>{{ account.status }}</td>
-              <td>
-                <template v-if="account.proxies[0]">
-                  {{account.proxies[0].ip}} <br>
-                  <span>
-                    {{account.proxies[0].status}}
-                  </span>
-                </template>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-warning"
-                  @click="setProxyToAccount(index)">
-                    Change Proxy
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-striped display pt-10 my-20">
+            <thead class="thead-purple">
+              <tr>
+                <th scope="col">User ID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Yahoo ID</th>
+                <th scope="col">Status</th>
+                <th scope="col">Proxy IP</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(account, index) in tableData" :key="index">
+                <td>{{ account.users[0].userId }}</td>
+                <td>{{ account.users[0].username }}</td>
+                <td>{{ account.yahoo_id }}</td>
+                <td>{{ account.status }}</td>
+                <td>
+                  <template v-if="account.proxies[0]">
+                    {{account.proxies[0].ip}} <br>
+                    <span>
+                      {{account.proxies[0].status}}
+                    </span>
+                  </template>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-warning"
+                    @click="setProxyToAccount(index)">
+                      Change Proxy
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
     <modal-component ref="modalProxyAccount">

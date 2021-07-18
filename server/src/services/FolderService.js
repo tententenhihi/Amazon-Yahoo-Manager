@@ -1,9 +1,9 @@
 import FolderModel from '../models/FolderModel'
 
 export default class FolderService {
-  static async get (user_id) {
+  static async get (user_id, yahoo_account_id) {
     try {
-      let result = await FolderModel.find({user_id});
+      let result = await FolderModel.find({user_id, yahoo_account_id});
       result.sort((a, b) => a.position - b.position)
       return result;
     } catch (error) {

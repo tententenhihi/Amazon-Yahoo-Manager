@@ -17,10 +17,8 @@ const AsinManagement = () => import(/* webpackChunkName: "/static/js/chunks/asin
 const ProductList = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/List.vue');
 const FormProduct = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/FormProduct.vue');
 
-const ProductYahooList = () => import(/* webpackChunkName: "/static/js/chunks/yahoo-auction-products" */ '@/views/yahoo-auction-products/ProductYahooList.vue');
-const FormProductYahoo = () => import(/* webpackChunkName: "/static/js/chunks/yahoo-auction-products" */ '@/views/yahoo-auction-products/FormProductYahoo.vue');
-
-const YahooAuctionSelling = () => import(/* webpackChunkName: "/static/js/chunks/products" */ '@/views/products/YahooAuctionSelling.vue');
+const ProductYahooList = () => import(/* webpackChunkName: "/static/js/chunks/products-yahoo" */ '@/views/products-yahoo/ProductYahooList.vue');
+const FormProductYahoo = () => import(/* webpackChunkName: "/static/js/chunks/products-yahoo" */ '@/views/products-yahoo/FormProductYahoo.vue');
 
 const TemplateSetting =
   () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/TemplateSetting.vue');
@@ -144,14 +142,6 @@ const router = new Router({
       path: '/products-yahoo/:id',
       name: 'FormProductYahoo',
       component: FormProductYahoo,
-      meta: {
-        requiredAuth: true
-      }
-    },
-    {
-      path: '/yahoo-auction-selling',
-      name: 'YahooAuctionSelling',
-      component: YahooAuctionSelling,
       meta: {
         requiredAuth: true
       }

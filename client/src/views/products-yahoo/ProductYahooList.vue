@@ -8,8 +8,8 @@
     </div>
     <hr class="mt-10" />
     <div class="box-content">
-      <div class="px-10 py-20">
-        <table id="productTable" class="table table-responsive table-striped pt-20 mb-20" style="width: 100%">
+      <div class="px-10 py-20 table-responsive">
+        <table class="table table-striped pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
               <th scope="col">数</th>
@@ -39,7 +39,7 @@
           <tbody>
             <tr v-for="(product, index) in products" :key="product._id">
               <td scope="row">{{ index + 1 }}</td>
-              <td><img v-if="product.images && product.images.length" :src="product.images[0].includes('http') 
+              <td><img style="max-width: 120px" v-if="product.images && product.images.length" :src="product.images[0].includes('http') 
                   ? product.images[0] : SERVER_HOST_UPLOAD + product.images[0]" alt=""></td>
               <td>{{ product.product_yahoo_title }}</td>
               <td>{{ displayDuration(product) }}</td>
@@ -89,6 +89,8 @@
 
 <script>
 import ProductYahooApi from '@/services/ProductYahooApi'
+import { mapGetters } from 'vuex'
+
 const PRODUCT_STATUS = [
   { display: '中古', value: 'used' },
   { display: '新品', value: 'new' },
@@ -212,12 +214,19 @@ export default {
   },
   async mounted () {
     await this.getListProduct();
-    this.createDatatable()
+  },
+  computed: {
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+    yahooAccountId () {
+      return this.selectedYahooAccount._id
+    }
   },
   methods: {
     async getListProduct() {
       try {
-        let res = await ProductYahooApi.get();
+        let res = await ProductYahooApi.get(this.yahooAccountId);
         if (res && res.status === 200) {
           this.products = res.data.products;
         }
@@ -228,15 +237,6 @@ export default {
           text: error.message
         });
       }
-    },
-    createDatatable () {
-      let self = this;
-      if (self.$("#productTable").DataTable()) {
-        self.$("#productTable").DataTable().destroy();
-      }
-      self.$nextTick(() => {
-        self.$("#productTable").DataTable({});
-      });
     },
     onConfirmDelete(product, index) {
       let self = this;
@@ -256,7 +256,6 @@ export default {
             let res = await ProductYahooApi.delete(product._id);
             if (res && res.status == 200) {
               self.products.splice(index, 1);
-              this.createDatatable()
               self.$swal.fire(
                 "削除しました！",
                 "商品が削除されました。",

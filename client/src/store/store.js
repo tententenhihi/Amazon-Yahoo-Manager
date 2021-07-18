@@ -14,11 +14,19 @@ export default new Vuex.Store({
       location: "Việt Nam",
       lang: "vn"
     },
-    isLoading: false
+    isLoading: false,
+    yahooAccount: [],
+    selectedYahooAccount: null
   },
   getters: {
     getUserInfo (state) {
       return state.user;
+    },
+    getYahooAccount (state) {
+      return state.yahooAccount;
+    },
+    getSelectedYahooAccount (state) {
+      return state.selectedYahooAccount
     }
   },
   mutations: {
@@ -37,6 +45,12 @@ export default new Vuex.Store({
     },
     setLang(state, lang) {
       state.languageCurr = lang
+    },
+    SET_YAHOO_ACCOUNT (state, payload) {
+      state.yahooAccount = payload
+    },
+    SET_SELECTED_YAHOO_ACCOUNT (state, payload) {
+      state.selectedYahooAccount = payload
     }
   },
   actions: {

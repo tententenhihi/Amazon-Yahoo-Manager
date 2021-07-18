@@ -6,10 +6,10 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 pb-20">
-        <div class="d-flex mt-20">
-          <input type="text" placeholder="asin" v-model="asin" class="form-control" style="width:335px">
+        <div class="d-flex mt-20 col-12">
+          <input type="text" placeholder="asin" v-model="asin" class="form-control col-4 col-lg-3">
           <input type="text" placeholder="reason for prohibition" v-model="reason_for_prohibition"
-            class="form-control ml-2" style="width:335px">
+            class="form-control ml-2 col-4 col-lg-3">
           <button class="btn btn-primary ml-2" @click="addAsin">Add Asin</button>
         </div>
         <paginate
@@ -23,27 +23,29 @@
           :container-class="'pagination'"
           :page-class="'page-item'">
         </paginate>
-        <table class="table table-responsive table-striped display pt-10 my-20">
-          <thead class="thead-purple">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">ASIN</th>
-              <th scope="col">Reason for prohibition</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, index) in tableData" :key="index">
-              <td>{{ item.asin_id }}</td>
-              <td>{{ item.asin }}</td>
-              <td>{{ item.reason_for_prohibition }}</td>
-              <!-- <td>{{ $moment(item.created).format('YYYY/MM/DD') }}</td> -->
-              <td>
-                <button class="btn btn-warning" @click="deleteAsin(item, index)">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-striped display pt-10 my-20">
+            <thead class="thead-purple">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">ASIN</th>
+                <th scope="col">Reason for prohibition</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in tableData" :key="index">
+                <td>{{ item.asin_id }}</td>
+                <td>{{ item.asin }}</td>
+                <td>{{ item.reason_for_prohibition }}</td>
+                <!-- <td>{{ $moment(item.created).format('YYYY/MM/DD') }}</td> -->
+                <td>
+                  <button class="btn btn-warning" @click="deleteAsin(item, index)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

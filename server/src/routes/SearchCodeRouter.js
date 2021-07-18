@@ -3,7 +3,7 @@ import SearchCodeAmazonController from '../controllers/SearchCodeAmazonControlle
 
 var SearchCodeRouter = express.Router();
 
-SearchCodeRouter.route('/get').get(SearchCodeAmazonController.get);
+SearchCodeRouter.route('/get/:yahoo_account_id').get(SearchCodeAmazonController.get);
 SearchCodeRouter.route('/get-blacklist').get(SearchCodeAmazonController.getBlackList);
 SearchCodeRouter.route('/add').post(SearchCodeAmazonController.add);
 SearchCodeRouter.route('/update').post(SearchCodeAmazonController.update);

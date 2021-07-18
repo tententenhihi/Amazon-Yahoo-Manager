@@ -29,6 +29,7 @@
 import AsinApi from "../../services/asinApi";
 import ImportAsin from './blocks/ImportAsin.vue'
 import History from './blocks/History.vue'
+import { mapGetters } from 'vuex';
 export default {
   name: 'AsinManagement',
   components: {
@@ -54,11 +55,15 @@ export default {
   mounted() {
     this.getListAsin();
   },
-  computed: {},
+  computed: {
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+  },
   methods: {
     async getListAsin() {
       try {
-        let res = await AsinApi.get();
+        let res = await AsinApi.get(this.selectedYahooAccount._id);
         if (res && res.status === 200) {
           this.listAsin = res.data.listSearchCode;
           this.listAsin = [...this.listAsin]

@@ -36,6 +36,7 @@
 
 <script>
 import RatingTemplateApi from '@/services/RatingTemplateApi'
+import { mapGetters } from 'vuex'
 const RATING_LIST = [
   { value: 'veryGood', display: '非常に良い' },
   { value: 'good', display: '良い' },
@@ -61,6 +62,9 @@ export default {
       let result = await RatingTemplateApi.show(this.templateId)
       if (result && result.status === 200) {
         this.template = result.data
+        if (this.template.yahoo_account_id !== this.yahooAccountId) {
+          this.$router.push({name: 'RatingTemplate'})
+        }
       } else {
         this.$router.push({name: 'RatingTemplate'})
       }
@@ -70,11 +74,18 @@ export default {
   computed: {
     templateId () {
       return this.$route.params.id || 0
+    },
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
+    yahooAccountId () {
+      return this.selectedYahooAccount._id
     }
   },
   methods: {
     async onSave () {
       let result = null
+      this.template.yahoo_account_id = this.yahooAccountId
       if (this.templateId == 0) {
         result = await RatingTemplateApi.create(this.template)
       } else {

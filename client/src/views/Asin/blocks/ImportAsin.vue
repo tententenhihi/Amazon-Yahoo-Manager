@@ -1,14 +1,14 @@
 <template>
   <div class="mx-20 mt-30">
     <div class="form-group row">
-      <label class="font-weight-bold col-md-2 col-sm-6" for="group-id">ASINグループID (*): </label>
-      <input type="text" class="form-control col-md-4 col-sm-6" placeholder="ASINグループIDを入力"
+      <label class="font-weight-bold col-xl-2 col-md-3 col-sm-4 mt-10" for="group-id">ASINグループID (*): </label>
+      <input type="text" class="form-control col-xl-4 col-md-5 col-sm-6" placeholder="ASINグループIDを入力"
         id="group-id" v-model="groupId">
     </div>
     <div class="row my-20">
       <textarea class="form-control col-md-6" id="" cols="30" rows="10"
         placeholder="ASINを入力、一行で一つだけです。" v-model="asinString"></textarea>
-      <div class="col-md-4">
+      <div class="col-md-4 mt-10">
         <button class="btn btn-common btn-info mb-10" @click="$refs.inputCSV.click()">
           CSVインポート
         </button>
@@ -24,6 +24,8 @@
 
 <script>
 import AsinApi from '@/services/asinApi'
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'ImportAsin',
   data() {
@@ -33,6 +35,11 @@ export default {
       isErrorGroupId: false,
       isErrorasinString: false
     };
+  },
+  computed: {
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
   },
   methods: {
     async readFileText(file) {
@@ -86,7 +93,7 @@ export default {
         let listCode = this.asinString
           .split("\n")
           .filter(item => item.trim() != "");
-        let res = await AsinApi.add({ listCode, groupId: this.groupId });
+        let res = await AsinApi.add({ listCode, groupId: this.groupId, yahoo_account_id: this.selectedYahooAccount._id });
         if (res && res.status === 200) {
           this.asinString = "";
           this.groupId = "";

@@ -32,33 +32,35 @@
           :container-class="'pagination'"
           :page-class="'page-item'">
         </paginate>
-        <table class="table table-responsive table-striped display pt-10 my-20">
-          <thead class="thead-purple">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">IP Proxy</th>
-              <th scope="col">Status</th>
-              <th scope="col">Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(proxy, index) in tableData" :key="index">
-              <td>{{ proxy.id }}</td>
-              <td>{{proxy.ip }}</td>
-              <td>{{ proxy.status }}</td>
-              <td>{{ $moment(proxy.created).format('YYYY/MM/DD') }}</td>
-              <!-- <td>
-                <button class="btn btn-md btn-warning mb-1 mr-1"
-                  @click="goToFormRatingproxy(proxy._id)">
-                  <i class="fa fa-edit"></i> 編集
-                </button>
-                <button class="btn btn-md btn-danger mb-1 mr-1" @click="onConfirmDelete(proxy, index)">
-                  <i class="fa fa-trash"></i> 削除
-                </button>
-              </td> -->
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-striped display pt-10 my-20">
+            <thead class="thead-purple">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">IP Proxy</th>
+                <th scope="col">Status</th>
+                <th scope="col">Created At</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(proxy, index) in tableData" :key="index">
+                <td>{{ proxy.proxy_id }}</td>
+                <td>{{ proxy.ip }}</td>
+                <td>{{ proxy.status }}</td>
+                <td>{{ $moment(proxy.created).format('YYYY/MM/DD') }}</td>
+                <!-- <td>
+                  <button class="btn btn-md btn-warning mb-1 mr-1"
+                    @click="goToFormRatingproxy(proxy._id)">
+                    <i class="fa fa-edit"></i> 編集
+                  </button>
+                  <button class="btn btn-md btn-danger mb-1 mr-1" @click="onConfirmDelete(proxy, index)">
+                    <i class="fa fa-trash"></i> 削除
+                  </button>
+                </td> -->
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

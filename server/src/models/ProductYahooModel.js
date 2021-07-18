@@ -11,11 +11,11 @@ var Product = new Schema({
         type: Array,
         default: [],
     },
-    // yahoo_account_id: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'YahooAccount',
-    //     required: true,
-    // },
+    yahoo_account_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'YahooAccount',
+        default: '',
+    },
     folder_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Folder',
@@ -51,7 +51,7 @@ var Product = new Schema({
     },
     status: {
         type: String,
-        default: 'CREATED',
+        default: 'new',
     },
     status_comment: {
         type: String,
@@ -207,6 +207,10 @@ var Product = new Schema({
     // tmpClosingTime: {
     //     type: String,
     // },
+    note: {
+        type: String,
+        default : ''
+    },
     created: {
         type: Date,
         default: Date.now,

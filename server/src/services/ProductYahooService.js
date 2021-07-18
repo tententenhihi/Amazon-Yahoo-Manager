@@ -4,9 +4,9 @@ import axios from 'axios';
 import fs from 'fs';
 
 export default class ProductYahooService {
-    static async get(idUser) {
+    static async get(idUser, yahoo_account_id) {
         try {
-            let result = await ProductYahooSchema.find({ user_id: idUser });
+            let result = await ProductYahooSchema.find({ user_id: idUser, yahoo_account_id });
             return result;
         } catch (error) {
             console.log(error);

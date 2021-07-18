@@ -3,7 +3,7 @@ import RatingTemplateController from '../controllers/RatingTemplateController';
 
 var RatingTemplateRouter = express.Router();
 
-RatingTemplateRouter.route('/').get(RatingTemplateController.get);
+RatingTemplateRouter.route('/:yahoo_account_id').get(RatingTemplateController.get);
 RatingTemplateRouter.route('/create').post(RatingTemplateController.create);
 RatingTemplateRouter.route('/update/:_id').post(RatingTemplateController.update);
 RatingTemplateRouter.route('/show/:_id').get(RatingTemplateController.show);

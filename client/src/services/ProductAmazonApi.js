@@ -1,8 +1,8 @@
 import Api from "./api";
 const prefix = '/api/v1/amazon/product'
 export default {
-  get(credentials) {
-    return Api.get(`${prefix}/get`, credentials);
+  get(yahooAccountId) {
+    return Api.get(`${prefix}/get/${yahooAccountId}`);
   },
   show(credentials) {
     return Api.get(`${prefix}/show/${credentials._id}`, credentials);

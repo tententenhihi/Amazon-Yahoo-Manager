@@ -3,7 +3,7 @@ import ProductGlobalSettingController from '../controllers/ProductGlobalSettingC
 
 var ProductGlobalSettingRouter = express.Router();
 
-ProductGlobalSettingRouter.route('/get').get(ProductGlobalSettingController.get);
+ProductGlobalSettingRouter.route('/get/:yahoo_account_id').get(ProductGlobalSettingController.get);
 ProductGlobalSettingRouter.route('/create').post(ProductGlobalSettingController.create);
 ProductGlobalSettingRouter.route('/update').post(ProductGlobalSettingController.update);
 

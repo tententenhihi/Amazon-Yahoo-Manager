@@ -4,8 +4,8 @@ export default {
   add(credentials) {
     return Api.post("/api/v1/amazon/search-code/add", credentials);
   },
-  get(credentials) {
-    return Api.get("/api/v1/amazon/search-code/get", credentials);
+  get(yahooAccountId) {
+    return Api.get("/api/v1/amazon/search-code/get/" + yahooAccountId);
   },
   getBlackList(credentials) {
     return Api.get("/api/v1/amazon/search-code/get-blacklist", credentials);
