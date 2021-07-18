@@ -86,4 +86,17 @@ export default class FolderController {
             response.error500(error)
         }
     }
+
+    static async move (req, res) {
+        let response = new Response(res);
+        try {
+            const {folder_ids, destination_folder} = req.body;
+            let result = await FolderService.move(folder_ids, destination_folder);
+            if (result) {
+                response.success200({ success: true });
+            }
+        } catch (error) {
+            response.error500(error)
+        }
+    }
 }

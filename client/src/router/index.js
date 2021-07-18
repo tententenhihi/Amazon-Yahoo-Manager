@@ -36,6 +36,11 @@ const FormRatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/
 
 const FolderManagement = () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/FolderManagement.vue');
 
+// product management
+const YahooAuctionTrade = () =>
+  import(/* webpackChunkName: "/static/js/chunks/product-management" */ '@/views/product-management/YahooAuctionTrade.vue');
+
+
 // admin
 const AdminUsers = () => import(/* webpackChunkName: "/static/js/chunks/admin/users" */ '@/views/admin/users/Users.vue');
 const AdminProxy = () => import(/* webpackChunkName: "/static/js/chunks/admin/proxy" */ '@/views/admin/proxy/Index.vue');
@@ -225,6 +230,15 @@ const router = new Router({
       meta: {
         requiredAuth: true,
         type: 'config'
+      }
+    },
+    {
+      path: '/yahoo-auction-trade',
+      name: 'YahooAuctionTrade',
+      component: YahooAuctionTrade,
+      meta: {
+        requiredAuth: true,
+        type: 'product-management'
       }
     },
     // admin

@@ -961,3 +961,35 @@
     padding-right: 50px !important;
   }
 }
+
+/* table */
+.cell-5 {
+  width: 5%;
+}
+.cell-10 {
+  width: 10%;
+}
+.cell-15 {
+  width: 15%;
+}
+.cell-20 {
+  width: 20%;
+}
+.cell-25 {
+  width: 25%;
+}
+.cell-30 {
+  width: 30%;
+}
+.cell-35 {
+  width: 35%;
+}
+.cell-40 {
+  width: 40%;
+}
+.cell-45 {
+  width: 45%;
+}
+.cell-50 {
+  width: 50%;
+}

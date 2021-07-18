@@ -18,4 +18,7 @@ export default {
   sort (data) {
     return Api.post(`${prefix}/sort`, data);
   },
+  move (data) {
+    return Api.post(`${prefix}/move`, data);
+  },
 };

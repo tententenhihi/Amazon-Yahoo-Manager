@@ -8,5 +8,6 @@ FolderRouter.route('/create').post(FolderController.create);
 FolderRouter.route('/update/:_id').post(FolderController.update);
 FolderRouter.route('/delete').post(FolderController.delete);
 FolderRouter.route('/sort').post(FolderController.sort);
+FolderRouter.route('/move').post(FolderController.move);
 
 export default FolderRouter;

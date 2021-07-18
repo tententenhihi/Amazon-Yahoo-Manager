@@ -7,17 +7,17 @@
     <div class="box-content">
       <div class="px-50 py-20">
         <div class="d-flex my-20">
-          <input type="text" v-model="name" class="form-control" style="width:335px">
+          <input type="text" v-model="name" class="form-control col-8 col-lg-4 col-xl-3">
           <button class="btn btn-primary ml-10" @click="addFolder">確認</button>
         </div>
-        <div style="width: 600px">
+        <div style="max-width: 600px; width:100%">
           <ul class="list-group">
             <draggable v-model="folders" class="folder-list" :options="{disabled : disableDraggable}" @end="onEndDragFolder">
               <li class="list-group-item" v-for="(folder, index) in folders" :key="folder._id">
                 <input type="checkbox" :id="folder._id" v-model="selectedFolder" :value="folder">
                 <label :for="folder._id" style="height: 36px; line-height: 36px; font-size: 14px">
                   <span v-if="!folder.isEdit">
-                    {{ folder.name }}
+                    {{ folder.name }} ({{totalProductOfFolder(folder)}})
                   </span>
                   <input v-else type="text" v-model="folder.name" class="form-control" style="padding: 5px">
                 </label>
@@ -31,15 +31,15 @@
               </li>
             </draggable>
           </ul>
-          <div>
+          <div v-if="folders.length">
             選択フォルダの出品予定
-            <select name="" class="form-control" style="display: unset; width: 175px">
-              <option value="1">12</option>
+            <select v-model="destinationFolder" class="form-control" style="display: unset; width: 175px">
+              <option v-for="(folder, index) in folders" :value="folder._id" :key="index">{{folder.name}}</option>
             </select>
             に
-            <button class="btn btn-info mb-1">移動</button>
+            <button class="btn btn-info mb-1" @click="moveProductToFolder">移動</button>
           </div>
-          <button class="btn btn-danger mb-1" @click="onDeleteFolder">削除</button>
+          <button v-if="folders.length" class="btn btn-danger mb-1" @click="onDeleteFolder">削除</button>
         </div>
       </div>
     </div>
@@ -58,6 +58,7 @@ export default {
       folders: [],
       disableDraggable: false,
       selectedFolder: [],
+      destinationFolder: ''
     }
   },
   components: {
@@ -110,7 +111,8 @@ export default {
     async onSaveFolder (folder, index) {
       let res = await FolderApi.update(folder)
       if (res && res.status === 200) {
-        this.folders[index] = res.data;
+        this.folders[index] = {...this.folders[index], ...res.data};
+        this.folders[index].isEdit = false
         this.folders = [...this.folders]
       }
       this.disableDraggable = false
@@ -148,6 +150,26 @@ export default {
           this.selectedFolder = []
         }
       }
+    },
+    totalProductOfFolder (folder) {
+      return folder.productamazons.length + folder.productyahoos.length;
+    },
+    async moveProductToFolder () {
+      let params = {
+        folder_ids: this.selectedFolder.map(item => item._id),
+        destination_folder: this.destinationFolder
+      }
+      let res = await FolderApi.move(params)
+      if (res && res.status == 200) {
+        this.$swal.fire({
+          icon: "success",
+          title: "Move data in folder successfully",
+          timer: 500,
+          showConfirmButton: false,
+          position: 'top-end'
+        });
+        this.getFolders()
+      }
     }
   }
 }
@@ -156,8 +178,9 @@ export default {
 <style scoped>
 .folder-list {
   margin: 10px 0;
-  width: 400px;
-  height: 400px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 400px;
   overflow: auto;
 }
 .group-button {

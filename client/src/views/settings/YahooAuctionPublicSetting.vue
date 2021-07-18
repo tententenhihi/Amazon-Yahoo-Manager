@@ -22,28 +22,28 @@
           </div>
           <hr />
           <div class="box-content">
-            <div class="form-horizontal col-md-7 py-20" style="float: none; margin: 0 auto;">
+            <div class="form-horizontal col-10 col-lg-6 py-20" style="float: none; margin: 0 auto;">
               <div class="form-group row">
-                <div class="col-md-3 col-form-label">自動新規出品設定 :</div>
-                <div class="col-md-9">
+                <div class="col-3 col-form-label">自動新規出品設定 :</div>
+                <div class="col-9">
                   <div class="form-check mt-2">
                     <input class="form-check-input" type="checkbox" v-model="setting.new_list_auto">
                   </div>
                 </div>
               </div>
               <div class="form-group row">
-                <label for="target-folder" class="col-md-3 col-form-label">対象フォルダ :</label>
-                <div class="col-md-9">
+                <label for="target-folder" class="col-3 col-form-label">対象フォルダ :</label>
+                <div class="col-9">
                   <select class="custom-select" multiple v-model="setting.new_list_target_folder">
                     <option v-for="(folder, index) in setting.target_folder_list" :key="index" :value="folder.value">{{folder.display}}</option>
                   </select>
                 </div>
               </div>
               <div class="form-group row">
-                <label for="" class="col-md-3 col-form-label">初回出品開始時間(時) :
+                <label for="" class="col-3 col-form-label">初回出品開始時間(時) :
                   <br><small>(24時間表記:0~23)</small>
                 </label>
-                <div class="col-md-9">
+                <div class="col-9">
                   <select class="form-control" id="" v-model="setting.new_list_start_time_hour">
                     <option v-for="(n, index) in 24" :value="index" :key="n">{{index}}</option>
                   </select>
@@ -51,8 +51,8 @@
               </div>
 
               <div class="form-group row">
-                <label for="" class="col-md-3 col-form-label">初回出品開始時間(分) :</label>
-                <div class="col-md-9">
+                <label for="" class="col-3 col-form-label">初回出品開始時間(分) :</label>
+                <div class="col-9">
                   <select class="form-control" id="" v-model="setting.new_list_start_time_minute">
                     <option v-for="(n) in START_MINUTE" :value="n" :key="n">{{n}}</option>
                   </select>
@@ -60,32 +60,32 @@
               </div>
 
               <div class="form-group row">
-                <label for="" class="col-md-3 col-form-label">自動新規出品間隔 :
+                <label for="" class="col-3 col-form-label">自動新規出品間隔 :
                 <br><small>(単位:日)</small>
                 </label>
-                <div class="col-md-8">
+                <div class="col-8">
                   <input type="text" class="form-control" readonly :value="1">
                 </div>
-                <div class="col-sm-1">
+                <div class="col-1">
                   <input type="radio" class="mt-2" :value="true" id="" v-model="setting.new_list_interval_per_day">
                 </div>
               </div>
 
               <div class="form-group row">
-                <label for="" class="col-md-3 col-form-label">自動新規出品曜日ごと設定 :</label>
-                <div class="col-md-8">
+                <label for="" class="col-3 col-form-label">自動新規出品曜日ごと設定 :</label>
+                <div class="col-8">
                   <select class="form-control" id="" v-model="setting.new_list_day_of_week">
                     <option v-for="(n, index) in DAY_OF_WEEK" :value="n.value" :key="index">{{n.display}}</option>
                   </select>
                 </div>
-                <div class="col-sm-1">
+                <div class="col-1">
                   <input type="radio" class="mt-2" :value="false" id="" v-model="setting.new_list_interval_per_day">
                 </div>
               </div>
 
               <div class="form-group row">
-                <label for="" class="col-md-3 col-form-label">スキップされた商品の処理 :</label>
-                <div class="col-md-9">
+                <label for="" class="col-3 col-form-label">スキップされた商品の処理 :</label>
+                <div class="col-9">
                   <select class="form-control" id="" v-model="setting.new_list_process_of_skipped_items">
                     <option value="1">以降、24時間経過した時点で出品する</option>
                     <option value="0">しない</option>
@@ -119,10 +119,10 @@
               </p>
             </div>
             <hr>
-            <div class="form-horizontal col-md-7 py-20" style="float: none; margin: 0 auto;">
+            <div class="form-horizontal col-7 py-20" style="float: none; margin: 0 auto;">
               <div class="form-group row">
-                <div class="col-md-3 col-form-label">自動再出品設定 :</div>
-                <div class="col-md-9">
+                <div class="col-3 col-form-label">自動再出品設定 :</div>
+                <div class="col-9">
                   <div class="form-check mt-2">
                     <input class="form-check-input" type="checkbox" v-model="setting.relist_auto">
                   </div>
@@ -130,10 +130,10 @@
               </div>
               
               <div class="form-group row">
-                <label for="" class="col-md-3 col-form-label">再出品開始時間(時) :
+                <label for="" class="col-3 col-form-label">再出品開始時間(時) :
                   <br><small>(24時間表記:0~23)</small>
                 </label>
-                <div class="col-md-9">
+                <div class="col-9">
                   <select class="form-control" id="" v-model="setting.relist_start_time_hour">
                     <option v-for="(n, index) in 24" :value="index" :key="n">{{index}}</option>
                   </select>
@@ -141,8 +141,8 @@
               </div>
 
               <div class="form-group row">
-                <label for="" class="col-md-3 col-form-label">再出品開始時間(分) :</label>
-                <div class="col-md-9">
+                <label for="" class="col-3 col-form-label">再出品開始時間(分) :</label>
+                <div class="col-9">
                   <select class="form-control" id="" v-model="setting.relist_start_time_minute">
                     <option v-for="(n) in START_MINUTE" :value="n" :key="n">{{n}}</option>
                   </select>
@@ -174,10 +174,10 @@
               </p>
             </div>
             <hr>
-            <div class="form-horizontal col-md-7 py-20" style="float: none; margin: 0 auto;">
+            <div class="form-horizontal col-7 py-20" style="float: none; margin: 0 auto;">
               <div class="form-group row">
-                <div class="col-md-3 col-form-label">カレンダー出品設定 :</div>
-                <div class="col-md-9">
+                <div class="col-3 col-form-label">カレンダー出品設定 :</div>
+                <div class="col-9">
                   <div class="form-check mt-2">
                     <input class="form-check-input" type="checkbox" v-model="setting.calendar_list_setting">
                   </div>
@@ -185,8 +185,8 @@
               </div>
               <template v-for="(n, i) in 31">
                 <div class="form-group row" :key="n">
-                  <label for="" class="col-md-3 col-form-label">{{n}}日目 :</label>
-                  <div class="col-md-9">
+                  <label for="" class="col-3 col-form-label">{{n}}日目 :</label>
+                  <div class="col-9">
                     <select class="form-control" id="" v-model="setting.calendar_target_folder[i]">
                       <option v-for="(folder, index) in setting.target_folder_list" :key="index" :value="folder.value">
                         {{folder.display}}

@@ -37,6 +37,10 @@ var Product = new Schema({
     price: {
         type: String,
     },
+    shipping: {
+        type: Number,
+        default: 0
+    },
     delivery: {
         type: String,
         default: 'free',
@@ -57,6 +61,10 @@ var Product = new Schema({
         type: Array,
         require: true,
         trim: true,
+    },
+    is_convert_yahoo: {
+        type: Boolean,
+        default: false
     },
     type: {
         type: String,
