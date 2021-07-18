@@ -181,9 +181,8 @@ var Product = new Schema({
         type: String,
         default: 'no',
     },
-    type: {
+    status: {
         type: String,
-        enum: ['NEW', 'AUCTION_ENDED'],
         default: 'NEW',
     },
     aID: {
@@ -195,21 +194,26 @@ var Product = new Schema({
     idBuyer: {
         type: String,
     },
-    // md5: {
-    //     type: String,
-    // },
-    // crumb: {
-    //     type: String,
-    // },
-    // img_crumb: {
-    //     type: String,
-    // },
-    // tmpClosingTime: {
-    //     type: String,
-    // },
     note: {
         type: String,
-        default : ''
+        default: '',
+    },
+    asin_amazon: {
+        type: String,
+    },
+    id_category_amazon: {
+        type: String,
+    },
+    count_product: {
+        type: Number,
+        default: 3,
+    },
+    profit: {
+        type: String,
+    },
+    status: {
+        type: String,
+        enum: ['NEW', 'UPLOADED'],
     },
     created: {
         type: Date,

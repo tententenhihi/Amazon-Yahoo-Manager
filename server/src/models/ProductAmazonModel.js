@@ -68,7 +68,7 @@ var Product = new Schema({
         type: String,
         require: true,
         default: 'CREATED',
-        enum: ['CREATED', 'ERROR', 'SUCCESS'],
+        enum: ['CREATED'],
     },
     statusMessage: {
         type: String,

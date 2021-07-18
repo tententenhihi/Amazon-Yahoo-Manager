@@ -137,6 +137,12 @@ export default class ProductAmazonService {
                                     price = Math.ceil(price);
                                     profit = Math.ceil(profit);
                                 }
+
+                                let description = '';
+                                productInfo.map((item) => {
+                                    description += item.name + ': ' + item.value + '\n';
+                                });
+
                                 let product = {
                                     url,
                                     asin,
@@ -146,7 +152,7 @@ export default class ProductAmazonService {
                                     price,
                                     delivery,
                                     images: [imageProduct],
-                                    infoDetail: productInfo,
+                                    description,
                                     countProduct: 1,
                                 };
                                 listProductResult.push(product);
@@ -178,6 +184,15 @@ export default class ProductAmazonService {
         try {
             let product = await ProductAmazonSchema.create(data);
             return product._doc;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error:' + error.message);
+        }
+    }
+    static async findOne(data) {
+        try {
+            let product = await ProductAmazonSchema.findOne(data);
+            return product;
         } catch (error) {
             console.log(error);
             throw new Error('Error:' + error.message);
