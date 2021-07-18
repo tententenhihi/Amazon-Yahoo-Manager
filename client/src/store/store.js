@@ -2,6 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate";
 import * as Cookies from "js-cookie";
+import YahooAccountApi from "@/services/YahooAccountApi";
+
 
 Vue.use(Vuex);
 export default new Vuex.Store({
@@ -16,7 +18,7 @@ export default new Vuex.Store({
     },
     isLoading: false,
     yahooAccount: [],
-    selectedYahooAccount: null
+    selectedYahooAccount: {}
   },
   getters: {
     getUserInfo (state) {
@@ -51,6 +53,13 @@ export default new Vuex.Store({
     },
     SET_SELECTED_YAHOO_ACCOUNT (state, payload) {
       state.selectedYahooAccount = payload
+    },
+    async GET_YAHOO_ACCOUNT (state) {
+      let result = await YahooAccountApi.get();
+      if (result && result.status === 200) {
+        let accounts = result.data.accounts || [];
+        state.yahooAccount = accounts
+      }
     }
   },
   actions: {
@@ -59,6 +68,9 @@ export default new Vuex.Store({
     },
     setLang({ commit }, lang) {
       commit('setLang', lang)
+    },
+    getYahooAccount ({commit}) {
+      commit('GET_YAHOO_ACCOUNT')
     }
   },
   plugins: [

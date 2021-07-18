@@ -44,6 +44,13 @@ export default {
     onShowLoading(value) {
       this.isLoading = value;
     }
+  },
+  watch: {
+    '$route' () {
+      if (this.isUserLoggedIn) {
+        this.$store.dispatch('getYahooAccount')
+      }
+    }
   }
 };
 </script>

@@ -91,7 +91,6 @@ export default {
         title: "アクティベーションに成功しました。 ここでログイン！",
       });
       }
-      console.log(res);
     },
     async onSubmit () {
       let result = await this.$refs.formLogin.validate();

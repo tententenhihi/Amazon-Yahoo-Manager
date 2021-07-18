@@ -221,7 +221,8 @@ export default {
           let index = this.accounts.findIndex(
             (account) => account._id === result.data._id
           );
-          this.accounts[index] = result.data;
+          this.$set(this.accounts, index, result.data)
+          this.$store.commit('SET_YAHOO_ACCOUNT', this.accounts)
           this.createDatatable()
         }
       } else {
@@ -229,6 +230,7 @@ export default {
         if (result && result.status === 200) {
           this.onCloseModal();
           this.accounts.push(result.data);
+          this.$store.commit('SET_YAHOO_ACCOUNT', this.accounts)
           this.createDatatable()
         }
       }
@@ -251,7 +253,8 @@ export default {
             let res = await YahooAccountApi.delete(account);
             if (res && res.status == 200) {
               self.accounts.splice(index, 1);
-              this.createDatatable()
+              self.$store.commit('SET_YAHOO_ACCOUNT', self.accounts)
+              self.createDatatable()
               self.$swal.fire(
                 "Deleted!",
                 "Your account has been deleted.",
