@@ -243,4 +243,19 @@ export default class ProductAmazonService {
             throw new Error('Error:' + error.message);
         }
     }
+    static async setShippingProduct(_id, shipping) {
+        try {
+            let product = await ProductAmazonSchema.findById(_id);
+            if (!product) {
+                throw new Error('Error: Product not found');
+            } else {
+                product.shipping= shipping
+                await product.save();
+                return product;
+            }
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error:' + error.message);
+        }
+    }
 }

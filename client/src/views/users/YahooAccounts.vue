@@ -124,6 +124,7 @@
 
 <script>
 import YahooAccountApi from "@/services/YahooAccountApi";
+import { mapGetters } from 'vuex';
 export default {
   name: "YahooAccounts",
   data() {
@@ -149,6 +150,9 @@ export default {
     qtyAccount() {
       return this.accounts.length;
     },
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    }),
   },
   methods: {
     createDatatable () {
@@ -230,6 +234,9 @@ export default {
         if (result && result.status === 200) {
           this.onCloseModal();
           this.accounts.push(result.data);
+          if (this.accounts.length == 1) {
+            this.$store.commit('SET_SELECTED_YAHOO_ACCOUNT', this.accounts[0])
+          }
           this.$store.commit('SET_YAHOO_ACCOUNT', this.accounts)
           this.createDatatable()
         }
@@ -254,6 +261,9 @@ export default {
             if (res && res.status == 200) {
               self.accounts.splice(index, 1);
               self.$store.commit('SET_YAHOO_ACCOUNT', self.accounts)
+              if (this.selectedYahooAccount._id === account._id) {
+                this.$store.commit('SET_SELECTED_YAHOO_ACCOUNT', this.accounts[0] || {})
+              }
               self.createDatatable()
               self.$swal.fire(
                 "Deleted!",

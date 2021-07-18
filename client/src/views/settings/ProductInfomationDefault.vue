@@ -21,8 +21,8 @@
                 <transition name="fade">
                   <div>
                     <div class="row">
-                      <div class="col-4 text-align-end mt-2">残り在庫 :</div>
-                      <div class="col-4">
+                      <div class="col-5 text-align-end mt-2">残り在庫 :</div>
+                      <div class="col-3">
                         <input type="text" pattern="\d*" class="form-control" :maxlength="1" :min="0" :max="1" v-model="product.extra_stock">
                       </div>
                       <div class="col-4">
@@ -35,8 +35,8 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-4 text-align-end mt-2">利益 <small>(円)</small> :</div>
-                      <div class="col-4">
+                      <div class="col-5 text-align-end mt-2">利益 <small>(円)</small> :</div>
+                      <div class="col-3">
                         <input type="number" class="form-control" v-model="product.profit">
                       </div>
                       <div class="col-4 mt-2">
@@ -44,35 +44,37 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-4 text-align-end mt-2">ヤフオクで設定する　送料一律 <small>(円)</small> :</div>
-                      <div class="col-4">
+                      <div class="col-5 text-align-end mt-2">ヤフオクで設定する　送料一律 <small>(円)</small> :</div>
+                      <div class="col-3">
                         <input type="number" class="form-control" v-model="product.yahoo_auction_shipping">
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-4 text-align-end mt-2">MakeShopで設定する　送料一律 <small>(円)</small> :</div>
-                      <div class="col-4">
+                      <div class="col-5 text-align-end mt-2">MakeShopで設定する　送料一律 <small>(円)</small> :</div>
+                      <div class="col-3">
                         <input type="number" class="form-control" v-model="product.makeshop_shipping">
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-4 text-align-end mt-2">Amazonで設定する　送料一律 <small>(円)</small> :</div>
-                      <div class="col-4">
+                      <div class="col-5 text-align-end mt-2">Amazonで設定する　送料一律 <small>(円)</small> :</div>
+                      <div class="col-3">
                         <input type="number" class="form-control" v-model="product.amazon_shipping">
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-4 text-align-end mt-2">ヤフオク手数料 <small>(%)</small> :</div>
-                      <div class="col-4">
+                      <div class="col-5 text-align-end mt-2">ヤフオク手数料 <small>(%)</small> :</div>
+                      <div class="col-3">
                         <input type="number" class="form-control" v-model="product.yahoo_auction_fee">
                       </div>
                     </div>
                     <div class="row">
+                      <div class="col-1 text-align-end">
+                        <input type="radio" class="ml-2 mt-2" v-model="product.yahoo_auction_profit_type" id="price-profit" :value="0">
+                      </div>
                       <div class="col-4 text-align-end mt-2">
-                        <input type="radio" class="ml-2" v-model="product.yahoo_auction_profit_type" id="price-profit" :value="0">
                         <label class="ml-20" for="price-profit">ヤフオクの販売価格設定する　利益率 <small>(%)</small> :</label>
                       </div>
-                      <div class="col-4">
+                      <div class="col-3">
                         <input type="number" class="form-control" v-model="product.yahoo_auction_price_profit">
                       </div>
                       <div class="col-4 mt-2">
@@ -80,11 +82,13 @@
                       </div>
                     </div>
                     <div class="row">
+                      <div class="col-1 text-align-end">
+                        <input type="radio" class="ml-2 mt-2" v-model="product.yahoo_auction_profit_type" id="static-profit" :value="1">
+                      </div>
                       <div class="col-4 text-align-end mt-2">
-                        <input type="radio" class="ml-2" v-model="product.yahoo_auction_profit_type" id="static-profit" :value="1">
                         <label class="ml-20" for="static-profit">ヤフオクの販売価格設定する　利益金額 <small>(円)</small> :</label>
                       </div>
-                      <div class="col-4">
+                      <div class="col-3">
                         <input type="number" class="form-control" v-model="product.yahoo_auction_static_profit">
                       </div>
                       <div class="col-4 mt-2">
@@ -92,8 +96,8 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-4 text-align-end mt-2">ヤフオクの即決価格 販売価格から <small>(円)</small> :</div>
-                      <div class="col-4">
+                      <div class="col-5 text-align-end mt-2">ヤフオクの即決価格 販売価格から <small>(円)</small> :</div>
+                      <div class="col-3">
                         <input type="number" class="form-control" v-model="product.yahoo_auction_bid_price">
                       </div>
                       <div class="col-4 mt-2">

@@ -234,42 +234,60 @@ export default class AmazonController {
         let response = new Response(res);
         try {
             const user = req.user;
-            const { amazon_product_id, folder_id } = req.body;
+            const { amazon_product_ids, folder_id } = req.body;
 
-            let productAmazon = await ProductAmazonService.findOne({ _id: amazon_product_id });
-            if (!productAmazon) {
-                return response.error400({ message: 'Not found amazon product.!' });
+            for (let index = 0; index < amazon_product_ids.length; index++) {
+                let amazon_product_id = amazon_product_ids[index];
+                let productAmazon = await ProductAmazonService.findOne({ _id: amazon_product_id });
+                if (!productAmazon) {
+                    return response.error400({ message: 'Not found amazon product.!' });
+                }
+                productAmazon.folder_id = folder_id;
+                productAmazon.is_convert_yahoo = true;
+                await productAmazon.save();
+    
+                let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id: productAmazon.yahoo_account_id, user_id: user._id });
+    
+                let cate_yahoo = '0';
+                //Dùng cate amazon Check xem có trong mapping k
+                let productYahoo = {
+                    ...defaultSetting,
+                    asin_amazon: productAmazon.asin,
+                    images: productAmazon.images,
+                    user_id: productAmazon.idUser,
+                    foreign_key: productAmazon._id,
+                    product_yahoo_title: productAmazon.name,
+                    yahoo_account_id: productAmazon.yahoo_account_id,
+                    start_price: productAmazon.price,
+                    import_price: productAmazon.basecost,
+                    profit: productAmazon.profit,
+                    description: productAmazon.description,
+                    folder_id,
+                    product_model: 'AMAZON',
+                    yahoo_auction_category_id: cate_yahoo,
+                    bid_or_buy_price: 0,
+                    created: Date.now(),
+                };
+                await ProductYahooService.create(productYahoo);
             }
-            productAmazon.folder_id = folder_id;
-            await productAmazon.save();
 
-            let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id: productAmazon.yahoo_account_id, user_id: user._id });
-
-            let cate_yahoo = '0';
-            //Dùng cate amazon Check xem có trong mapping k
-            let productYahoo = {
-                ...defaultSetting,
-                asin_amazon: productAmazon.asin,
-                images: productAmazon.images,
-                user_id: productAmazon.idUser,
-                foreign_key: productAmazon._id,
-                product_yahoo_title: productAmazon.name,
-                yahoo_account_id: productAmazon.yahoo_account_id,
-                start_price: productAmazon.price,
-                import_price: productAmazon.basecost,
-                profit: productAmazon.profit,
-                description: productAmazon.description,
-                folder_id,
-                product_model: 'AMAZON',
-                yahoo_auction_category_id: cate_yahoo,
-                bid_or_buy_price: 0,
-                created: Date.now(),
-            };
-            let product_amazon = await ProductYahooService.create(productYahoo);
-            return response.success200({ product_amazon });
+            return response.success200({ sucess: true });
         } catch (error) {
             console.log(' #### AmazonController -> convertToYahooProduct: ', error);
             response.error500(error);
+        }
+    }
+    static async setShippingProduct (req, res) {
+        let response = new Response(res);
+        try {
+            let {shipping} = req.body
+            let {_id} = req.params
+            let product = await ProductAmazonService.setShippingProduct(_id, shipping);
+            if (product) {
+                response.success200({product});
+            }
+        } catch (error) {
+            response.error500(error)
         }
     }
 }

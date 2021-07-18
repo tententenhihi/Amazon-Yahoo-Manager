@@ -87,7 +87,7 @@
               <div class="sidebar-submenu" :class="{'d-block': dropdownOpen == 4}">
                 <ul>
                   <li>
-                    <router-link :to="{name: 'ProductYahooList'}">
+                    <router-link :to="{name: 'YahooAuctionTrade'}">
                       <i class="fa fa-calendar"></i>
                       <span>Y!オーク取扱商品管理</span>
                     </router-link>
@@ -195,7 +195,7 @@ export default {
   },
   methods: {
     onClickLogout() {
-      this.$store.dispatch("setUser", null);
+      this.$store.dispatch("logout");
       this.$router.push({ name: "Login" });
     },
     showDropdown(index) {
@@ -225,7 +225,7 @@ export default {
         case 'config':
           this.dropdownOpen = 3
           break;
-        case 'product-manager':
+        case 'product-management':
           this.dropdownOpen = 4
           break;
         default:

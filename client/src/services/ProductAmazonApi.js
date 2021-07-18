@@ -22,5 +22,11 @@ export default {
   },
   createByCsv(data) {
     return Api.post(`${prefix}/create-by-csv`, data);
+  },
+  setShippingProduct (id, data) {
+    return Api.post(`${prefix}/set-shipping-product/` + id, data)
+  },
+  convertYahooProduct (data) {
+    return Api.post(`${prefix}/convert-yahoo-product/`, data)
   }
 };

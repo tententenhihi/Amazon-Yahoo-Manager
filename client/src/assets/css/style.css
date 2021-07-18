@@ -656,3 +656,6 @@ ul.pagination li.active a {
   padding-right: 10px;
   padding-left: 10px;
 }
+.input-group-text {
+  background-color: #ffffff;
+}

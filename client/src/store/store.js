@@ -60,6 +60,13 @@ export default new Vuex.Store({
         let accounts = result.data.accounts || [];
         state.yahooAccount = accounts
       }
+    },
+    CLEAR_DATA (state) {
+      state.user = null,
+      state.token = null;
+      state.isUserLoggedIn = false;
+      state.yahooAccount = [],
+      state.selectedYahooAccount = {}
     }
   },
   actions: {
@@ -71,6 +78,9 @@ export default new Vuex.Store({
     },
     getYahooAccount ({commit}) {
       commit('GET_YAHOO_ACCOUNT')
+    },
+    logout({commit}) {
+      commit('CLEAR_DATA')
     }
   },
   plugins: [

@@ -105,7 +105,9 @@ export default {
         if (response && response.status === 200) {
           this.$store.dispatch("setUser", response.data.userData);
           this.$store.commit('SET_YAHOO_ACCOUNT', response.data.yahooAccount)
-          this.$store.commit('SET_SELECTED_YAHOO_ACCOUNT', response.data.yahooAccount[0] || {})
+          if (response.data.yahooAccount.length) {
+            this.$store.commit('SET_SELECTED_YAHOO_ACCOUNT', response.data.yahooAccount[0])
+          }
           if (response.data.userData.type === 'admin') {
             this.$router.push({name: 'AdminUsers'});
           } else {

@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import NormalLayout from "./layouts/NormalLayout.vue";
 import AdminLayout from "./layouts/AdminLayout.vue";
 import Loading from "vue-loading-overlay";
@@ -32,10 +32,19 @@ export default {
     ...mapState(["isUserLoggedIn"]),
     layout() {
       return (this.$route.meta.layout || "normal") + "-layout";
-    }
+    },
+    ...mapGetters({
+      selectedYahooAccount: 'getSelectedYahooAccount'
+    })
   },
   created() {
     this.$eventBus.$on("showLoading", this.onShowLoading);
+  },
+  async mounted () {
+    if (this.isUserLoggedIn) {
+      await this.$store.dispatch('getYahooAccount')
+      this.checkExistYahooAccount()
+    }
   },
   beforeDestroy() {
     this.$eventBus.$off("showLoading", this.onShowLoading);
@@ -43,13 +52,26 @@ export default {
   methods: {
     onShowLoading(value) {
       this.isLoading = value;
+    },
+    checkExistYahooAccount () {
+      const NO_NEED_VALIDATE_ROUTER = ['YahooAccounts', 'ChangePassword']
+      if (this.isUserLoggedIn && !this.selectedYahooAccount._id) {
+        if (!NO_NEED_VALIDATE_ROUTER.includes(this.$route.name)) {
+          this.$router.push({name: 'YahooAccounts'})
+          this.$swal.fire({
+            icon: "warning",
+            title: "Please add yahoo account",
+            timer: 500,
+            showConfirmButton: false,
+            position: 'top-end'
+          });
+        }
+      }
     }
   },
   watch: {
     '$route' () {
-      if (this.isUserLoggedIn) {
-        this.$store.dispatch('getYahooAccount')
-      }
+      this.checkExistYahooAccount()
     }
   }
 };
