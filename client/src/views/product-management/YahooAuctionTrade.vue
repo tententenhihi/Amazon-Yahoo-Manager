@@ -54,10 +54,10 @@
               <td></td>
               <td></td>
               <td>
-                <button class="btn btn-md btn-info mb-1 mr-1">
+                <button class="btn btn-md btn-info mb-1 mr-1" @click="addMessage(product)">
                   取引連絡
                 </button>
-                <button class="btn btn-md btn-warning mb-1 mr-1" >
+                <button class="btn btn-md btn-warning mb-1 mr-1" @click="addRating(product)">
                   評価
                 </button>
               </td>
@@ -109,31 +109,36 @@ export default {
     },
     onConfirmDelete(product, index) {
       let self = this;
-      self.$swal
-        .fire({
-          title: "削除",
-          text: "この製品を本当に削除しますか？",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#00a65a",
-          cancelButtonColor: "#f39c12",
-          confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  番号',
-        })
-        .then(async (result) => {
-          if (result.isConfirmed) {
-            let res = await ProductYahooApi.delete(product._id);
-            if (res && res.status == 200) {
-              self.products.splice(index, 1);
-              self.$swal.fire(
-                "削除しました！",
-                "商品が削除されました。",
-                "success"
-              );
-            }
+      self.$swal.fire({
+        title: "削除",
+        text: "この製品を本当に削除しますか？",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#00a65a",
+        cancelButtonColor: "#f39c12",
+        confirmButtonText: '<i class="fa fa-check-square"></i> はい',
+        cancelButtonText: '<i class="fa fa-times"></i>  番号',
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          let res = await ProductYahooApi.delete(product._id);
+          if (res && res.status == 200) {
+            self.products.splice(index, 1);
+            self.$swal.fire(
+              "削除しました！",
+              "商品が削除されました。",
+              "success"
+            );
           }
-        });
+        }
+      });
     },
+    addRating (product) {
+      this.$router.push({name: 'YahooAuctionTradeRating', params: {id: 123}})
+    },
+    addMessage (product) {
+      this.$router.push({name: 'YahooAuctionTradeMessage', params: {id: 123}})
+    }
   }
 }
 </script>

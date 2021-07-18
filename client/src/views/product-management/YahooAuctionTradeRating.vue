@@ -1,88 +1,93 @@
 <template>
   <div class="wrapper-content">
     <div class="box-header">
-      <i class="fa fa-list mr-2"></i>Y!オーク取扱商品管理
+      <i class="fa fa-list mr-2"></i>Y!オーク 評価
     </div>
     <hr class="mt-10" />
     <div class="box-content">
-      <div class="px-10 py-20 table-responsive">
-        <table class="table table-striped pt-20 mb-20" style="width: 100%">
-          <thead class="thead-purple">
-            <tr>
-              <th scope="col">
-                <input type="checkbox" name="" id="">
-              </th>
-              <th scope="col">オークションID</th>
-              <th scope="col">出品画像</th>
-              <th scope="col">取り扱い画像</th>
-              <th scope="col">Y！オーク商品の名前</th>
-              <th scope="col">落札価格</th>
-              <th scope="col">落札個数</th>
-              <th scope="col">落札者情報</th>
-              <th scope="col">終了日時</th>
-              <th scope="col">状態</th>
-              <th scope="col">メモ</th>
-              <th scope="col">発送先</th>
-              <th scope="col">仕入れ価格</th>
-              <th scope="col">想定利益</th>
-              <th scope="col">落札手数料</th>
-              <th scope="col">利益率</th>
-              <th scope="col">予定送料</th>
-              <th scope="col"></th>
-              
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(product, index) in products" :key="index">
-              <td>
-                <input type="checkbox" name="" id="">
-              </td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>
-                <button class="btn btn-md btn-info mb-1 mr-1">
-                  取引連絡
-                </button>
-                <button class="btn btn-md btn-warning mb-1 mr-1" >
-                  評価
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="px-30 pb-20 table-responsive">
+        <template v-if="postedRate.length">
+          <div class="title">
+            投稿した評価
+          </div>
+          <table class="table table-striped pt-20 mb-30" style="width: 100%">
+            <thead class="thead-purple">
+              <tr>
+                <th scope="col">評価</th>
+                <th scope="col">コメント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(product, index) in postedRate" :key="index">
+                <td>非常に良い</td>
+                <td>スムーズに取引できました。ありがとうございました。</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+
+        <div style="font-size:16px; margin: 5px 0">
+          このオークションの取引について、落札者への満足度を採点してください。 <br>
+          評価の内容は、今後の取引にあたっての参考として、落札者の評価一覧ページに公開されます。
+        </div>
+        <div>
+          <div class="input-group mb-2">
+            <select v-model="selectedTemplate" id="" class="form-control">
+              <option :value="selectedTemplate" selected>テンプレートを選択</option>
+              <option :key="index" v-for="(template, index) in templates" :value="template">{{template.name}}</option>
+            </select>
+            <div class="input-group-prepend">
+              <div class="input-group-btn">
+                <router-link tag="button" class="btn btn-primary btn-management" :to="{name: 'RatingTemplate'}">管理</router-link>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="evaluation">評価</label>
+            <select class="form-control" v-model="selectedTemplate.rating" id="">
+              <option v-for="(rate,index) in RATING_LIST" :key="index" :value="rate.value">{{rate.display}}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="comment">コメント</label>
+            <textarea class="form-control" v-model="selectedTemplate.content" id="" cols="30" rows="5"></textarea>
+          </div>
+          <p>
+            ※名前やメールアドレスなど、個人情報の入力は禁止です（評価は公開されます）。Y!オクの注意事項をよく読みご投稿ください。
+          </p>
+          <button class="btn btn-primary mt-20">評価を送信</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import ProductYahooApi from '@/services/ProductYahooApi'
 import { mapGetters } from 'vuex'
-
+import RatingTemplateApi from '@/services/RatingTemplateApi'
+const RATING_LIST = [
+  { value: 'veryGood', display: '非常に良い' },
+  { value: 'good', display: '良い' },
+  { value: 'normal', display: 'どちらでもない' },
+  { value: 'bad', display: '悪い' },
+  { value: 'veryBad', display: '非常に悪い' },
+]
 export default {
-  name: 'YahooAuctionTrade',
+  name: 'YahooAuctionTradeRating',
   data () {
     return {
-      products: [{}],
-      SERVER_HOST_UPLOAD: process.env.SERVER_API + 'uploads/'
+      postedRate: [1],
+      RATING_LIST,
+      templates: [],
+      selectedTemplate: {
+        rating: RATING_LIST[0],
+        content: ''
+      },
     }
   },
   async mounted () {
-    // await this.getListProduct();
+    this.getListRatingTemplate()
   },
   computed: {
     ...mapGetters({
@@ -93,11 +98,14 @@ export default {
     }
   },
   methods: {
-    async getListProduct() {
+    displayRating (rating) {
+      return this.RATING_LIST.find(item => item.value === rating).display
+    },
+    async getListRatingTemplate() {
       try {
-        let res = await ProductYahooApi.get(this.yahooAccountId);
+        let res = await RatingTemplateApi.get(this.yahooAccountId);
         if (res && res.status === 200) {
-          this.products = res.data.products;
+          this.templates = res.data.templates;
         }
       } catch (error) {
         this.$swal.fire({
@@ -107,36 +115,18 @@ export default {
         });
       }
     },
-    onConfirmDelete(product, index) {
-      let self = this;
-      self.$swal
-        .fire({
-          title: "削除",
-          text: "この製品を本当に削除しますか？",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#00a65a",
-          cancelButtonColor: "#f39c12",
-          confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  番号',
-        })
-        .then(async (result) => {
-          if (result.isConfirmed) {
-            let res = await ProductYahooApi.delete(product._id);
-            if (res && res.status == 200) {
-              self.products.splice(index, 1);
-              self.$swal.fire(
-                "削除しました！",
-                "商品が削除されました。",
-                "success"
-              );
-            }
-          }
-        });
-    },
   }
 }
 </script>
 
 <style scoped>
+.btn-management {
+  height: calc(2.25rem + 2px);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.title {
+  font-size: 20px;
+  margin: 10px 0;
+}
 </style>
