@@ -6,14 +6,15 @@ import SearchCodeAmazonService from '../services/SearchCodeAmazonService';
 let queueGetInfoProduct = null;
 const getProductByAsin = async (inputData, cb) => {
     try {
-        console.log(' ==== Start getProductByAsin ====');
-        let resultGetProduct = await ProductAmazonService.getProductByAsin(inputData.code);
-        if (resultGetProduct.type === 'success') {
+        console.log(' ==== Start getProductByAsin ==== ');
+        let resultGetProduct = await ProductAmazonService.getProductByAsin(inputData);
+        if (resultGetProduct.type === 'SUCCESS') {
             let listProduct = resultGetProduct.data;
             for (let i = 0; i < listProduct.length; i++) {
                 let product = listProduct[i];
                 try {
                     product.idUser = inputData.idUser;
+                    product.yahoo_account_id = inputData.yahoo_account_id
                     let newProduct = ProductAmazonSchema(product);
                     await newProduct.save();
                     if (product.asin === inputData.code) {

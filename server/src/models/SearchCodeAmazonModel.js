@@ -20,7 +20,7 @@ var SearchCode = new Schema({
     yahoo_account_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'YahooAccount',
-        default: '',
+        require: true,
     },
     isProductGeted: {
         type: Boolean,

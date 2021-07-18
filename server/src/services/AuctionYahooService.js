@@ -33,7 +33,6 @@ export default class AuctionYahooService {
                     password: proxy.password,
                 },
             };
-            console.log(proxyConfig);
             const getKeys = async (cookie) => {
                 try {
                     const configs = {
@@ -211,7 +210,6 @@ export default class AuctionYahooService {
                 WrappingIconCharge: productData.wrapping,
             };
             let payload = Qs.stringify(previewParams);
-            console.log(previewParams);
             headers = {
                 ...headers,
                 referer: 'https://auctions.yahoo.co.jp/sell/jp/show/submit',
@@ -329,9 +327,8 @@ export default class AuctionYahooService {
                 const aID = listProduct[i].aID;
                 let productYahooExist = await ProductYahooService.findOne({ aID });
                 if (productYahooExist) {
-                    console.log(listProduct[i]);
-                    if (productYahooExist.status !== 'AUCTION_ENDED') {
-                        productYahooExist.status = 'AUCTION_ENDED';
+                    if (productYahooExist.type !== 'AUCTION_ENDED') {
+                        productYahooExist.type = 'AUCTION_ENDED';
                         productYahooExist.idBuyer = listProduct[i].idBuyer;
                         await productYahooExist.save();
                     }
@@ -534,11 +531,9 @@ export default class AuctionYahooService {
                 listProductID.push(id);
             }
         }
-        console.log(listProductID);
         let listProductDATA = [];
 
         for (const productID of listProductID) {
-            console.log(productID);
             let resProduct = await axios.get(`https://auctions.yahoo.co.jp/sell/jp/show/updateauction?aID=${productID}`, {
                 headers: {
                     cookie,
@@ -848,7 +843,6 @@ export default class AuctionYahooService {
             };
         }
     }
-
     static async sendMessage(cookie, proxy, aID, usernameYahoo, idBuyer, message) {
         try {
             let headers = {
@@ -913,7 +907,6 @@ export default class AuctionYahooService {
             };
         }
     }
-
     static async sendRating(cookie, proxy, aID, idBuyer, rating, message) {
         try {
             let headers = {

@@ -1,7 +1,9 @@
 import Axios from 'axios';
 import ProductAmazonSchema from '../models/ProductAmazonModel';
+import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
 import Utils from '../utils/Utils';
 const cheerio = require('cheerio');
+
 export default class ProductAmazonService {
     static async get(idUser, yahoo_account_id) {
         try {
@@ -12,7 +14,7 @@ export default class ProductAmazonService {
             throw new Error(' Error ProductAmazonService-get: ' + error.message);
         }
     }
-    static async getProductByAsin(asin) {
+    static async getProductByAsin(asinModel) {
         try {
             let headers = {
                 Connection: 'keep-alive',
@@ -28,7 +30,7 @@ export default class ProductAmazonService {
                 origin: 'https://www.amazon.co.jp',
                 referer: 'https://www.amazon.co.jp/',
             };
-            let requestAmazon = await Axios.get(`https://www.amazon.co.jp/s?k=${asin}`, { headers });
+            let requestAmazon = await Axios.get(`https://www.amazon.co.jp/s?k=${asinModel.code}`, { headers });
             if (requestAmazon && requestAmazon.status === 200) {
                 let html = requestAmazon.data;
                 let $ = cheerio.load(html);
@@ -62,7 +64,7 @@ export default class ProductAmazonService {
                                 if (!priceProduct) {
                                     priceProduct = $('#priceblock_dealprice').text().trim();
                                 }
-                                let delivery = $($('#mir-layout-DELIVERY_BLOCK-slot-DELIVERY_MESSAGE')['0']).text().replace(/\n/g,"").trim();
+                                let delivery = $($('#mir-layout-DELIVERY_BLOCK-slot-DELIVERY_MESSAGE')['0']).text().replace(/\n/g, '').trim();
                                 if (!delivery) {
                                     // delivery = $('#x').text().trim();
                                 }
@@ -110,15 +112,42 @@ export default class ProductAmazonService {
                                         }
                                     }
                                 }
+
+                                if (!asin) {
+                                    asin = asinModel.code;
+                                }
+
+                                let infomationDefault = await ProductInfomationDefaultService.findOne({ yahoo_account_id: asinModel.yahoo_account_id });
+
+                                priceProduct = priceProduct.replace(/\D+/g, '').trim();
+                                // giá gốc
+                                let basecost = parseFloat(priceProduct);
+                                let profit = 0;
+                                let price = 0;
+
+                                if (infomationDefault) {
+                                    if (infomationDefault.yahoo_auction_profit_type == 0) {
+                                        profit = (basecost * infomationDefault.yahoo_auction_price_profit) / 100;
+                                    } else {
+                                        profit = infomationDefault.yahoo_auction_static_profit;
+                                    }
+
+                                    price = basecost + profit + infomationDefault.yahoo_auction_shipping + infomationDefault.amazon_shipping;
+                                    price = price / (1 - infomationDefault.yahoo_auction_fee / 100);
+                                    price = Math.ceil(price);
+                                    profit = Math.ceil(profit);
+                                }
                                 let product = {
                                     url,
                                     asin,
                                     name: nameProduct,
-                                    price: priceProduct,
+                                    basecost,
+                                    profit,
+                                    price,
                                     delivery,
-                                    image: imageProduct,
+                                    images: [imageProduct],
                                     infoDetail: productInfo,
-                                    countProduct: 0
+                                    countProduct: 1,
                                 };
                                 listProductResult.push(product);
                             }
@@ -127,17 +156,17 @@ export default class ProductAmazonService {
                 }
                 if (!listProductResult || listProductResult.length == 0) {
                     return {
-                        type: 'error',
+                        type: 'ERROR',
                         message: 'Not found any product',
                     };
                 }
                 return {
-                    type: 'success',
+                    type: 'SUCCESS',
                     data: listProductResult,
                 };
             } else {
                 return {
-                    type: 'error',
+                    type: 'ERROR',
                     message: 'Lỗi không load được Amazon: ' + requestAmazon,
                 };
             }
@@ -145,7 +174,7 @@ export default class ProductAmazonService {
             throw 'Error ProductAmazonService.getProductByAsin: ' + error.message;
         }
     }
-    static async create (data) {
+    static async create(data) {
         try {
             let product = await ProductAmazonSchema.create(data);
             return product._doc;
@@ -154,7 +183,7 @@ export default class ProductAmazonService {
             throw new Error('Error:' + error.message);
         }
     }
-    static async update (_id, data) {
+    static async update(_id, data) {
         try {
             let product = await ProductAmazonSchema.findOneAndUpdate({ _id: _id }, data, { new: true });
             return product._doc;
@@ -163,7 +192,7 @@ export default class ProductAmazonService {
             throw new Error('Error:' + error.message);
         }
     }
-    static async show (productId) {
+    static async show(productId) {
         try {
             let product = await ProductAmazonSchema.findById(productId);
             if (!product) {
@@ -176,7 +205,7 @@ export default class ProductAmazonService {
             throw new Error('Error:' + error.message);
         }
     }
-    static async delete (productId) {
+    static async delete(productId) {
         try {
             let product = await ProductAmazonSchema.findById(productId);
             if (!product) {
@@ -190,7 +219,7 @@ export default class ProductAmazonService {
             throw new Error('Error:' + error.message);
         }
     }
-    static async createByCsv (data) {
+    static async createByCsv(data) {
         try {
             let result = await ProductAmazonSchema.insertMany(data);
             return result;

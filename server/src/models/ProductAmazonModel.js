@@ -15,7 +15,6 @@ var Product = new Schema({
     folder_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Folder',
-        required: true,
     },
     asin: {
         type: String,
@@ -29,9 +28,14 @@ var Product = new Schema({
         type: String,
         required: true,
     },
+    basecost: {
+        type: String,
+    },
+    profit: {
+        type: String,
+    },
     price: {
         type: String,
-        required: true,
     },
     delivery: {
         type: String,
@@ -43,11 +47,11 @@ var Product = new Schema({
     },
     images: {
         type: Array,
-        default: []
+        default: [],
     },
     description: {
         type: String,
-        default: ''
+        default: '',
     },
     infoDetail: {
         type: Array,
@@ -75,8 +79,8 @@ var Product = new Schema({
     },
 });
 
-Product.statics.TYPE = ['AMAZON', 'YAHOO']
-Product.statics.STATUS = ['CREATED', 'ERROR', 'SUCCESS']
+Product.statics.TYPE = ['AMAZON', 'YAHOO'];
+Product.statics.STATUS = ['CREATED', 'ERROR', 'SUCCESS'];
 
 var ProductAmazonSchema = mongoose.model('ProductAmazon', Product);
 module.exports = ProductAmazonSchema;
