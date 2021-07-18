@@ -2,6 +2,8 @@ import Axios from 'axios';
 import ProductAmazonSchema from '../models/ProductAmazonModel';
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
 import Utils from '../utils/Utils';
+import Path from 'path';
+
 const cheerio = require('cheerio');
 
 export default class ProductAmazonService {
@@ -37,7 +39,6 @@ export default class ProductAmazonService {
                 let listItemProduct = $(
                     '#search > div.s-desktop-width-max.s-opposite-dir > div > div.s-matching-dir.sg-col-16-of-20.sg-col.sg-col-8-of-12.sg-col-12-of-16 > div > span:nth-child(4) > div.s-main-slot.s-result-list.s-search-results.sg-row > div'
                 );
-
                 if (!listItemProduct || listItemProduct.length == 0) {
                     return {
                         type: 'error',
@@ -68,8 +69,23 @@ export default class ProductAmazonService {
                                 if (!delivery) {
                                     // delivery = $('#x').text().trim();
                                 }
+                                //#main-image-container > ul > li.image.item.itemNo1.maintain-height.selected > span > span > div > img
+                                let imageProduct = [];
+                                let images = $('.item');
 
-                                let imageProduct = $('#landingImage').attr('src');
+                                if (images && images.length > 0) {
+                                    for (const image of images) {
+                                        let url = $(image).find('img').attr('src');
+                                        let base_name = Path.basename(url).split('.')[0];
+                                        let ext = Path.extname(url);
+                                        url = url.split('/images/I/')[0];
+                                        url += '/images/I/' + base_name + ext;
+                                        if (url && url.trim !== '') {
+                                            imageProduct.push(url);
+                                        }
+                                    }
+                                }
+
                                 let containerProductInfo = $('#prodDetails');
                                 let listTableInfo = containerProductInfo.find('table');
                                 let asin = null;
@@ -101,7 +117,6 @@ export default class ProductAmazonService {
                                             }
                                             if (title || value) {
                                                 if (Utils.toString(title.toLowerCase()) == 'asin') {
-                                                    console.log(' =============================');
                                                     asin = value;
                                                 }
                                                 productInfo.push({
@@ -151,7 +166,7 @@ export default class ProductAmazonService {
                                     profit,
                                     price,
                                     delivery,
-                                    images: [imageProduct],
+                                    images: imageProduct,
                                     description,
                                     countProduct: 1,
                                 };

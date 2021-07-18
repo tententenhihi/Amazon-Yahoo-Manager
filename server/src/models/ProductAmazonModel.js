@@ -39,7 +39,7 @@ var Product = new Schema({
     },
     delivery: {
         type: String,
-        required: true,
+        default: 'free',
     },
     countProduct: {
         type: Number,
