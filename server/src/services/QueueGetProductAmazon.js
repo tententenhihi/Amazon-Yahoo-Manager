@@ -33,6 +33,7 @@ const getProductByAsin = async (inputData, cb) => {
                 }
             }
         } else {
+            
             await SearchCodeAmazonService.update(inputData._id, inputData.idUser, {
                 isProductGeted: false,
                 status: 'ERROR',

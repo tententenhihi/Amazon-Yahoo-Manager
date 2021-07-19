@@ -129,26 +129,6 @@ export default class ProductYahooController {
                 return response.error400({ message: 'Image is required' });
             }
             let result = await ProductYahooService.create(data);
-
-            setTimeout(async () => {
-                //Upload product
-                let yahooAccount = await AccountYahooService.findOne({ yahoo_id: 'exffk72575' });
-                if (yahooAccount) {
-                    let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
-                    if (proxyResult.status === 'SUCCESS') {
-                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, result, proxyResult.data);
-                        console.log(uploadAuctionResult);
-                        result.status = uploadAuctionResult.status;
-                        result.statusMessage = uploadAuctionResult.statusMessage;
-                        result.aID = uploadAuctionResult.aID;
-                    } else {
-                        result.status = proxyResult.status;
-                        result.statusMessage = proxyResult.statusMessage;
-                    }
-                    await result.save();
-                }
-            }, 1);
-
             response.success200({ result });
         } catch (error) {
             console.log(error);

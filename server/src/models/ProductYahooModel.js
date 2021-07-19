@@ -211,6 +211,14 @@ var Product = new Schema({
         type: String,
         enum: ['NEW', 'UPLOADED'],
     },
+    upload_status: {
+        type: String,
+        enum: ['NEW', 'ERROR', 'SUCCESS'],
+        defaul: 'NEW',
+    },
+    upload_status_message: {
+        type: String,
+    },
     created: {
         type: Date,
         default: Date.now,

@@ -1,9 +1,16 @@
 import ProductYahooSchema from '../models/ProductYahooModel';
-import FormData from 'form-data';
-import axios from 'axios';
 import fs from 'fs';
 
 export default class ProductYahooService {
+    static async find(data) {
+        try {
+            let result = await ProductYahooSchema.find(data);
+            return result;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Product Yahoo Service-get: ' + error.message);
+        }
+    }
     static async get(idUser, yahoo_account_id) {
         try {
             let result = await ProductYahooSchema.find({ user_id: idUser, yahoo_account_id });
