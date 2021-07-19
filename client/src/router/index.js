@@ -39,7 +39,10 @@ const FolderManagement = () => import(/* webpackChunkName: "/static/js/chunks/se
 // product management
 const YahooAuctionTrade = () =>
   import(/* webpackChunkName: "/static/js/chunks/product-management" */ '@/views/product-management/YahooAuctionTrade.vue');
-
+const YahooAuctionTradeRating = () =>
+  import(/* webpackChunkName: "/static/js/chunks/product-management" */ '@/views/product-management/YahooAuctionTradeRating.vue');
+const YahooAuctionTradeMessage = () =>
+  import(/* webpackChunkName: "/static/js/chunks/product-management" */ '@/views/product-management/YahooAuctionTradeMessage.vue');
 
 // admin
 const AdminUsers = () => import(/* webpackChunkName: "/static/js/chunks/admin/users" */ '@/views/admin/users/Users.vue');
@@ -241,6 +244,25 @@ const router = new Router({
         type: 'product-management'
       }
     },
+    {
+      path: '/yahoo-auction-trade-rating/:id',
+      name: 'YahooAuctionTradeRating',
+      component: YahooAuctionTradeRating,
+      meta: {
+        requiredAuth: true,
+        type: 'product-management'
+      }
+    },
+    {
+      path: '/yahoo-auction-trade-message/:id',
+      name: 'YahooAuctionTradeMessage',
+      component: YahooAuctionTradeMessage,
+      meta: {
+        requiredAuth: true,
+        type: 'product-management'
+      }
+    },
+    
     // admin
     {
       path: '/admin/users',
