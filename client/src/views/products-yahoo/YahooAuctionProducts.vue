@@ -13,6 +13,30 @@
           Y!オークに出品される商品一覧
         </div>
         <hr>
+        <div class="account-infomation">
+          <div class="info-title">
+            <i class="fa fa-user mr-2"></i>現在のアカウント情報
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped pt-20">
+              <tbody>
+                <tr>
+                  <td class="title-col">あなたのユーザ識別番号</td>
+                  <td>{{ userInfo.userId }}</td>
+                </tr>
+                <tr>
+                  <td class="title-col">現在のアカウント識別番号	</td>
+                  <td>{{ selectedYahooAccount.accountId }}</td>
+                </tr>
+                <tr>
+                  <td class="title-col">現在のアカウントYahoo!ID	</td>
+                  <td>{{ selectedYahooAccount.yahoo_id }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mb-10">管理者/運営者へのご連絡の際には必ず上記をお知らせ下さい。</p>
+        </div>
         <div class="form-search">
           <div class="form-row">
             <div class="form-group col-sm-4">
@@ -29,8 +53,8 @@
               <input type="text" class="form-control" v-model="searchObj.queryString" id="queryString" placeholder="キーワード / 仕入元・オークションID">
             </div>
             <div class="form-group col-sm-4">
-              <label for="asin">出品ステータス</label>
-              <select id="folder" class="form-control" v-model="searchObj.listingStatus">
+              <label for="listingStatus">出品ステータス</label>
+              <select id="listingStatus" class="form-control" v-model="searchObj.listingStatus">
                 <option :value="null" selected>すべて</option>
                 <option v-for="(status, index) in LISTING_STATUS" :key="index" :value="status.value">
                   {{ status.display }}
@@ -38,7 +62,36 @@
               </select>
             </div>
           </div>
-          
+
+          <div class="form-row">
+            <div class="form-group col-sm-4">
+              <label for="inventory">在庫監視</label>
+              <select id="inventory" class="form-control" v-model="searchObj.inventory">
+                <option :value="null" selected>すべて</option>
+                <option v-for="(option, index) in SWITCH_OPTION" :key="index" :value="option.value">
+                  {{ option.display }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group col-sm-4">
+              <label for="profit">利益監視</label>
+              <select id="profit" class="form-control" v-model="searchObj.profit">
+                <option :value="null" selected>すべて</option>
+                <option v-for="(option, index) in SWITCH_OPTION" :key="index" :value="option.value">
+                  {{ option.display }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group col-sm-4">
+              <label for="prime">プライムのみ監視</label>
+              <select id="prime" class="form-control" v-model="searchObj.prime">
+                <option :value="null" selected>すべて</option>
+                <option v-for="(option, index) in SWITCH_OPTION" :key="index" :value="option.value">
+                  {{ option.display }}
+                </option>
+              </select>
+            </div>
+          </div>
           
           <button type="submit" class="btn btn-primary" @click="onSearchProduct">検索</button>
           <button type="submit" class="btn btn-default" @click="clearSearchProduct">リセット</button>
@@ -100,7 +153,7 @@
                 />
               </td>
 
-              <td>{{ product.product_yahoo_title }}</td>
+              <td style="word-break: break-all;">{{ product.product_yahoo_title }}</td>
               <td>{{ displayDuration(product) }}</td>
               <td>{{ product.start_price }}</td>
               <td>{{ product.bid_or_buy_price }}</td>
@@ -108,7 +161,7 @@
               <td>{{ product.count_product }}</td>
               <td>{{ product.import_price }}</td>
               <td>{{ 0 }}</td>
-              <td>{{ product.status }}</td>
+              <td>{{ product.listing_status }}</td>
               <td>{{ "ON" }}</td>
               <td>{{ "ON" }}</td>
               <td>{{ "OF" }}</td>
@@ -117,17 +170,8 @@
               <td>{{ product.yahoo_auction_category_id }}</td>
               <td>{{ product.asin_amazon }}</td>
               <td>{{ product.note }}</td>
-              <!-- <th>{{ product.product_yahoo_title }}</th>
-              <th>{{ product.product_yahoo_title }}</th>
-              <td>
-                {{ displayProductStatus(product) }}
-              </td>
-              <td>{{ product.quantity }}</td>
-              <td>{{ product.yahoo_auction_category_id }}</td>
-              <td>{{ displayEndingTime(product) }}</td>
-              <td>{{ product.retpolicy }}</td>
-              <td>{{ displayLocation(product) }}</td>
-              <td>{{ $moment(product.created).format("YYYY/MM/DD") }}</td> -->
+              <td></td>
+              <td></td>
               <td>
                 <button
                   class="btn btn-md btn-warning mb-1 mr-1"
@@ -263,12 +307,17 @@ const CONSPICUOUS_ICON = [
   { display: "産地直送", value: 8 }
 ];
 const LISTING_STATUS = [
-  { display: "未出品", value: 0 },
-  { display: "出品中", value: 1 },
+  { display: "未出品", value: 'NOT_LISTED' },
+  { display: "出品中", value: 'UNDER_EXHIBITION' },
+];
+
+const SWITCH_OPTION = [
+  { display: "OFF", value: 0 },
+  { display: "ON", value: 1 }
 ];
 
 export default {
-  name: "ProductYahooList",
+  name: "YahooAuctionProducts",
   data() {
     return {
       products: [],
@@ -285,9 +334,13 @@ export default {
         folder: null,
         queryString: '',
         listingStatus: null,
+        inventory: null,
+        prime: null,
+        profit: null
       },
       folders: [],
-      LISTING_STATUS
+      LISTING_STATUS,
+      SWITCH_OPTION
     };
   },
   async mounted() {
@@ -296,7 +349,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
+      userInfo: "getUserInfo",
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
@@ -390,16 +444,13 @@ export default {
       this.searchProducts = this.products.filter(product => {
         let condition = true;
         if (this.searchObj.folder) {
-          condition = condition && product.folder_id === this.searchProducts.folder
+          condition = condition && product.folder_id === this.searchObj.folder
         }
         if (this.searchObj.queryString) {
-          condition = condition && (product.name.includes(this.searchObj.queryString) || product.asin.includes(this.searchObj.queryString))
+          condition = condition && (product.product_yahoo_title.includes(this.searchObj.queryString))
         }
-        if (this.searchObj.minPrice) {
-          condition = condition && (parseInt(product.basecost) > parseInt(this.searchObj.minPrice))
-        }
-        if (this.searchObj.maxPrice) {
-          condition = condition && parseInt(product.basecost) < parseInt(this.searchObj.maxPrice)
+        if (this.searchObj.listingStatus) {
+          condition = condition && product.listing_status === this.searchObj.listingStatus
         }
         if (condition) {
           return product;
@@ -410,9 +461,12 @@ export default {
       this.searchObj = {
         folder: null,
         queryString: '',
-        minPrice: '',
-        maxPrice: ''
+        listingStatus: null,
+        inventory: null,
+        prime: null,
+        profit: null
       }
+      this.searchProducts = [...this.products]
     },
   }
 };
@@ -421,5 +475,16 @@ export default {
 <style scoped>
 .form-search {
   padding: 20px 0;
+}
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.info-title {
+  font-size: 20px;
+  margin: 20px 0 5px;
+}
+.title-col {
+  width: 200px;
 }
 </style>

@@ -66,9 +66,10 @@
             <label for="image">画像</label>
             <input type="file" class="form-control" id="image" multiple ref="imageProduct" @change="onUploadImage">
           </div>
-          <div class="row mb-20 images">
+          <div class="col-md-6"></div>
+          <div class="col-md-12 d-flex mb-20 images">
             <template v-for="(image, index) in previewImages">
-              <div class="col-md-3 image-item" :key="index">
+              <div class="col-3 image-item" :key="index">
                 <img :src="image.preview_url" alt="">
                 <i class="fa fa-times image_icon_remove" @click="onRemoveImage(index)"></i>
               </div>
@@ -233,8 +234,8 @@ export default {
 
 .image_icon_remove {
   position: absolute;
-  top: 0;
-  right: 30px;
+  top: 10px;
+  right: 20px;
   font-size: 22px;
 }
 </style>

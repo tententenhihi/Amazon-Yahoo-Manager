@@ -209,8 +209,8 @@ var Product = new Schema({
     },
     listing_status: {
         type: String,
-        enum: ['NEW', 'UPLOADED'],
-        default: 'NEW',
+        enum: ['NOT_LISTED', 'UNDER_EXHIBITION'],
+        default: 'NOT_LISTED',
     },
     upload_status: {
         type: String,

@@ -419,7 +419,7 @@
           <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
             保存
           </button>
-          <router-link :to="{name: 'ProductYahooList'}" tag="button" class="btn btn-warning mb-1">
+          <router-link :to="{name: 'YahooAuctionProducts'}" tag="button" class="btn btn-warning mb-1">
             キャンセル</router-link>
         </div>
       </div>
@@ -623,7 +623,7 @@ export default {
           }
         })
       } else {
-        this.$router.push({name: 'ProductYahooList'})
+        this.$router.push({name: 'YahooAuctionProducts'})
       }
     } else {
       let result = await ProductInfomationDefaultApi.get(this.yahooAccountId)
@@ -700,7 +700,7 @@ export default {
           "製品が更新されました。",
           "success"
         );
-        this.$router.push({name: 'ProductYahooList'})
+        this.$router.push({name: 'YahooAuctionProducts'})
       }
     }
   }

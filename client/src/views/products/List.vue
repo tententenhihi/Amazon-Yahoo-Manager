@@ -104,7 +104,7 @@
                 <input type="checkbox" :id="product._id" v-model="selectedProduct" :value="product">
               </td>
               <td>
-                <img v-if="product.images && product.images.length" :src="product.images[0].includes('http') 
+                <img style="max-height: 180px" v-if="product.images && product.images.length" :src="product.images[0].includes('http') 
                   ? product.images[0] : SERVER_HOST_UPLOAD + product.images[0]" alt="">
               </td>
               <td class="cell-10">{{ product.name }} <br> ASIN: {{product.asin}}</td>
@@ -195,7 +195,6 @@ export default {
   async mounted () {
     await this.getListProduct();
     this.getFolders();
-    this.createDatatable()
     this.isInit = true
   },
   computed: {
@@ -234,15 +233,6 @@ export default {
         });
       }
     },
-    createDatatable () {
-      let self = this;
-      if (self.$("#productTable").DataTable()) {
-        self.$("#productTable").DataTable().destroy();
-      }
-      self.$nextTick(() => {
-        self.$("#productTable").DataTable({});
-      });
-    },
     onConfirmDelete(product, index) {
       let self = this;
       self.$swal
@@ -261,7 +251,6 @@ export default {
             let res = await ProductAmazonApi.delete(product._id);
             if (res && res.status == 200) {
               self.products.splice(index, 1);
-              this.createDatatable()
               self.$swal.fire(
                 "削除しました！",
                 "商品が削除されました。",
@@ -307,7 +296,6 @@ export default {
               "success"
             );
             self.products = self.products.concat(result.data.products)
-            self.createDatatable()
           }
         };
         reader.readAsText(file);
@@ -369,7 +357,7 @@ export default {
       this.searchProducts = this.products.filter(product => {
         let condition = true;
         if (this.searchObj.folder) {
-          condition = condition && product.folder_id === this.searchProducts.folder
+          condition = condition && product.folder_id === this.searchObj.folder
         }
         if (this.searchObj.asinKeyword) {
           condition = condition && (product.name.includes(this.searchObj.asinKeyword) || product.asin.includes(this.searchObj.asinKeyword))

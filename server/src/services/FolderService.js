@@ -13,7 +13,6 @@ export default class FolderService {
         { $lookup: { from: 'productamazons', localField: '_id', foreignField: 'folder_id', as: 'productamazons'}},
       ]);
       result.sort((a, b) => a.position - b.position)
-      console.log(123);
       return result;
     } catch (error) {
       throw new Error(error.message);
