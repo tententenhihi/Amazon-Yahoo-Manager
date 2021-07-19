@@ -71,7 +71,7 @@
               <div class="sidebar-submenu" :class="{'d-block': dropdownOpen == 2}">
                 <ul>
                   <li>
-                    <router-link :to="{name: 'ProductYahooList'}">
+                    <router-link :to="{name: 'YahooAuctionProducts'}">
                       <i class="fa fa-calendar"></i>
                       <span>Y!オーク取扱商品管理</span>
                     </router-link>
@@ -153,13 +153,13 @@
                 </ul>
               </div>
             </li>
-            <li class="sidebar-dropdown mt-100" v-if="userInfo.type == 'admin'">
+            <!-- <li class="sidebar-dropdown mt-100" v-if="userInfo.type == 'admin'">
               <router-link :to="{name: 'AdminUsers'}">
                 <i class="fa fa-home"></i>
                 <span>管理ページ</span>
               </router-link>
-            </li>
-            <li class="sidebar-dropdown" :class="{'mt-100': userInfo.type == 'member'}" @click="onClickLogout">
+            </li> -->
+            <li class="sidebar-dropdown mt-100" :class="{'mt-100': userInfo.type == 'member'}" @click="onClickLogout">
               <a style="cursor: pointer">
                 <i class="fa fa-power-off"></i>
                 <span>ログアウト</span>
@@ -182,12 +182,6 @@ export default {
       isShowCloseSidebar: true
     };
   },
-  created() {
-    window.addEventListener("resize", this.onResize);
-  },
-  destroyed() {
-    window.removeEventListener("resize", this.onResize);
-  },
   computed: {
     ...mapGetters({
       userInfo: 'getUserInfo'
@@ -202,14 +196,6 @@ export default {
       this.dropdownOpen == index
         ? (this.dropdownOpen = 0)
         : (this.dropdownOpen = index);
-    },
-    onResize (e) {
-      // console.log(window.innerWidth);
-      // if (window.innerWidth < 768) {
-      //   this.isShowCloseSidebar = true
-      // } else {
-      //   this.isShowCloseSidebar = false
-      // }
     },
   },
   watch: {
