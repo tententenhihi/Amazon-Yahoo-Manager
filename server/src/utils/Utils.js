@@ -33,9 +33,6 @@ const downloadFile = async (url, saveFile, onProgress, idVideo) => {
     while (url.includes('\\')) {
         url = url.replace('\\', '/');
     }
-    if (url.includes(SERVER_MAIN_FILE)) {
-        url = url.replace('/file', '');
-    }
     if (!isUrlEndcoded(url)) {
         url = encodeURI(url);
     }

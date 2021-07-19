@@ -29,13 +29,13 @@ var Product = new Schema({
         required: true,
     },
     basecost: {
-        type: String,
+        type: Number,
     },
     profit: {
-        type: String,
+        type: Number,
     },
     price: {
-        type: String,
+        type: Number,
     },
     shipping: {
         type: Number,

@@ -13,9 +13,29 @@ import ProductYahooService from './ProductYahooService';
 export default class AuctionYahooService {
     static async uploadNewProduct(cookie, productData, proxy) {
         try {
-            let listImage = productData.images.map((item) => {
-                return 'uploads/' + item;
-            });
+            let listImage = [];
+            console.log(' =============== uploadNewProduct ================= ');
+            if (productData.images[0].startsWith('http')) {
+                let folderSaveImage = 'uploads/yahoo-products/' + productData._id;
+                if (!Fs.existsSync(folderSaveImage)) {
+                    Fs.mkdirSync(folderSaveImage);
+                }
+                for (let i = 0; i < productData.images.length; i++) {
+                    const urlImage = productData.images[i];
+                    let saveImage = folderSaveImage + '/image_' + i + '.jpg';
+                    let chekDownload = await Utils.downloadFile(urlImage, saveImage);
+                    if (chekDownload) {
+                        listImage.push(saveImage);
+                    }
+                }
+            } else {
+                listImage = productData.images.map((item) => {
+                    return 'uploads/' + item;
+                });
+            }
+            if (listImage.length === 0) {
+                throw new Error('Image not found.!');
+            }
             let headers = {
                 cookie,
                 'user-agent':
@@ -166,7 +186,7 @@ export default class AuctionYahooService {
                 category: productData.yahoo_auction_category_id,
                 salesmode: productData.sales_mode,
                 StartPrice: productData.start_price,
-                BidOrBuyPrice: productData.bid_or_buy_price,
+                BidOrBuyPrice: productData.bid_or_buy_price != '0' ? productData.bid_or_buy_price : '',
                 istatus: productData.status,
                 istatus_comment: productData.status_comment,
                 Quantity: productData.quantity,
@@ -219,13 +239,13 @@ export default class AuctionYahooService {
                 headers,
                 proxy: proxyConfig,
             });
-
+            // Fs.writeFileSync('preview.html', resPreview.data);
             let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
             if (mgc == null) {
                 let $Preview = cheerio.load(resPreview.data);
                 let message = $Preview('strong').text();
                 return {
-                    status: 'UPLOAD_ERROR',
+                    status: 'ERROR',
                     statusMessage: message,
                 };
             }
@@ -262,6 +282,7 @@ export default class AuctionYahooService {
                 headers,
                 proxy: proxyConfig,
             });
+            // Fs.writeFileSync('submit.html', resSubmit.data);
 
             console.log(' =========== Upload Product Auction DONE ============= ');
             let $ = cheerio.load(resSubmit.data);
@@ -271,13 +292,13 @@ export default class AuctionYahooService {
                 let href = aTag.attr('href');
                 let aID = href.split('/')[href.split('/').length - 1];
                 return {
-                    status: 'UPLOAD_SUCCESS',
+                    status: 'SUCCESS',
                     aID,
                 };
             } else {
                 let message = $('strong').text();
                 return {
-                    status: 'UPLOAD_ERROR',
+                    status: 'ERROR',
                     statusMessage: message,
                 };
             }
@@ -285,7 +306,7 @@ export default class AuctionYahooService {
             console.log(' =========== Upload Product Auction Error ============= ');
             console.log(error);
             return {
-                status: 'UPLOAD_ERROR',
+                status: 'ERROR',
                 statusMessage: error.message,
             };
         }
@@ -315,26 +336,27 @@ export default class AuctionYahooService {
             for (const row of rowTable) {
                 let aID = $(row).find('td:nth-child(2)').text().trim();
                 let idBuyer = $(row).find('td:nth-child(6)').text().trim();
-
+                let time_end = $(row).find('td:nth-child(5)').text().trim();
+                let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '');
                 if (aID && aID !== '商品ID' && aID.trim() !== '') {
-                    listProduct.push({ aID, idBuyer });
+                    listProduct.push({ aID, idBuyer, time_end, price_end });
                 }
             }
-
-            // Check Product Exist in DB;
-            let listProductExist = [];
-            for (let i = 0; i < listProduct.length; i++) {
-                const aID = listProduct[i].aID;
-                let productYahooExist = await ProductYahooService.findOne({ aID });
-                if (productYahooExist) {
-                    if (productYahooExist.type !== 'AUCTION_ENDED') {
-                        productYahooExist.type = 'AUCTION_ENDED';
-                        productYahooExist.idBuyer = listProduct[i].idBuyer;
-                        await productYahooExist.save();
-                    }
-                    listProductExist.push(listProduct[i]);
-                }
-            }
+            return listProduct;
+            // // Check Product Exist in DB;
+            // let listProductExist = [];
+            // for (let i = 0; i < listProduct.length; i++) {
+            //     const aID = listProduct[i].aID;
+            //     let productYahooExist = await ProductYahooService.findOne({ aID });
+            //     if (productYahooExist) {
+            //         if (productYahooExist.type !== 'AUCTION_ENDED') {
+            //             productYahooExist.type = 'AUCTION_ENDED';
+            //             productYahooExist.idBuyer = listProduct[i].idBuyer;
+            //             await productYahooExist.save();
+            //         }
+            //         listProductExist.push(listProduct[i]);
+            //     }
+            // }
 
             // listProductID = listProductID.filter((item) => !listProductExist.includes(item));
             // for (const productID of listProductID) {
@@ -802,7 +824,7 @@ export default class AuctionYahooService {
             let payloadPreview = Qs.stringify(dataPreview);
             let resPreview = await axios.post('https://auctions.yahoo.co.jp/jp/show/remove_winner', payloadPreview, { headers, proxy: proxyConfig });
 
-            Fs.writeFileSync('preview.html', resPreview.data);
+            // Fs.writeFileSync('preview.html', resPreview.data);
             let $ = cheerio.load(resPreview.data);
             let crumb = $('input[name="crumb"]').val();
             if (crumb && crumb.trim() !== '') {

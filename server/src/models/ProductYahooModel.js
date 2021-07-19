@@ -38,15 +38,15 @@ var Product = new Schema({
         required: true,
     },
     start_price: {
-        type: String,
+        type: Number,
         required: false,
     },
     bid_or_buy_price: {
-        type: String,
+        type: Number,
         required: false,
     },
     import_price: {
-        type: String,
+        type: Number,
         required: false,
     },
     status: {
@@ -210,11 +210,12 @@ var Product = new Schema({
     listing_status: {
         type: String,
         enum: ['NEW', 'UPLOADED'],
+        default: 'NEW',
     },
     upload_status: {
         type: String,
         enum: ['NEW', 'ERROR', 'SUCCESS'],
-        defaul: 'NEW',
+        default: 'NEW',
     },
     upload_status_message: {
         type: String,

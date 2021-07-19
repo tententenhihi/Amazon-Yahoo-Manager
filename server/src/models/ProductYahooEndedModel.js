@@ -11,7 +11,12 @@ var Product = new Schema({
     },
     idBuyer: {
         type: String,
-        required: true,
+    },
+    time_end: {
+        type: String,
+    },
+    price_end: {
+        type: Number,
     },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -192,11 +197,6 @@ var Product = new Schema({
         type: String,
         default: 'no',
     },
-    status: {
-        type: String,
-        default: 'NEW',
-    },
-
     note: {
         type: String,
         default: '',
@@ -214,9 +214,10 @@ var Product = new Schema({
     profit: {
         type: String,
     },
-    status: {
+    auction_status: {
         type: String,
-        enum: ['NEW', 'UPLOADED'],
+        enum: ['ENDED', 'FINISH'],
+        default: 'ENDED',
     },
     created: {
         type: Date,
@@ -224,5 +225,5 @@ var Product = new Schema({
     },
 });
 
-var ProductYahooSchema = mongoose.model('ProductYahoo', Product);
-module.exports = ProductYahooSchema;
+var ProductYahooEndedModel = mongoose.model('ProductYahooEnded', Product);
+module.exports = ProductYahooEndedModel;

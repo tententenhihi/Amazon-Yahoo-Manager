@@ -223,6 +223,15 @@ export default class ProductAmazonService {
             throw new Error('Error:' + error.message);
         }
     }
+    static async find(data) {
+        try {
+            let products = await ProductAmazonSchema.find(data);
+            return products;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error:' + error.message);
+        }
+    }
     static async update(_id, data) {
         try {
             let product = await ProductAmazonSchema.findOneAndUpdate({ _id: _id }, data, { new: true });

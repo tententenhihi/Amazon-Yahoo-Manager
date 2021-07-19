@@ -15,6 +15,8 @@ import upload from 'express-fileupload';
 import BrightDataService from './services/BrightDataService';
 import AuctionYahooService from './services/AuctionYahooService';
 import ProductYahooService from './services/ProductYahooService';
+import AccountYahooService from './services/AccountYahooService';
+import ProductYahooEndedService from './services/ProductYahooEndedService';
 
 require('dotenv').config();
 
@@ -63,26 +65,61 @@ let initData = async () => {
         username: 'lum-customer-c_84db29ae-zone-zone2-ip-178.171.80.121',
         password: '7ox35md3j0jm',
     };
+    // //// get Product yahoo ended
 
+    // let listAccountYahoo = await AccountYahooService.find({});
+    // for (let i = 0; i < listAccountYahoo.length; i++) {
+    //     const accountYahoo = listAccountYahoo[i];
+    //     let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
+    //     console.log(proxyResult);
+    //     if (proxyResult.status === 'SUCCESS') {
+    //         let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.cookie, proxyResult.data);
+    //         for (let j = 0; j < listProductEnded.length; j++) {
+    //             const product = listProductEnded[j];
+    //             let productYahoo = await ProductYahooService.findOne({ aID: product.aID });
+    //             if (productYahoo) {
+    //                 let newProductYahooEnded = {
+    //                     ...productYahoo._doc,
+    //                     ...product,
+    //                     _id: null,
+    //                 };
+    //                 newProductYahooEnded = await ProductYahooEndedService.create(newProductYahooEnded);
+    //                 console.log(newProductYahooEnded);
+    //             }
+    //         }
+    //     }
+    // }
+    // AuctionYahooService.getProductAuctionEnded();
+
+    //// Upload Product Yahoo
     // let listProduct = await ProductYahooService.find({ upload_status: 'NEW' });
+    // // console.log(listProduct);
     // for (let i = 0; i < listProduct.length; i++) {
     //     let product = listProduct[i];
-    //     console.log(product);
-    //     //Upload product
-    //     let yahooAccount = await AccountYahooService.findOne({ yahoo_id: product.yahoo_account_id });
-    //     if (yahooAccount) {
-    //         let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
-    //         if (proxyResult.status === 'SUCCESS') {
-    //             let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, product, proxyResult.data);
-    //             console.log(uploadAuctionResult);
-    //             product.upload_status = uploadAuctionResult.status;
-    //             product.upload_status_message = uploadAuctionResult.statusMessage;
-    //             product.aID = uploadAuctionResult.aID;
-    //         } else {
-    //             product.upload_status = proxyResult.status;
-    //             product.upload_status_message = proxyResult.statusMessage;
+    //     console.log(product.yahoo_auction_category_id);
+
+    //     if (product.yahoo_auction_category_id && product.yahoo_auction_category_id != 0) {
+    //         console.log(product);
+    //         //Upload product
+    //         let yahooAccount = await AccountYahooService.findOne({ _id: product.yahoo_account_id });
+    //         console.log(' ######## yahooAccount ', yahooAccount);
+    //         if (yahooAccount) {
+    //             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+    //             console.log(proxyResult);
+    //             let dataUpdate = {};
+    //             if (proxyResult.status === 'SUCCESS') {
+    //                 let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, product, proxyResult.data);
+    //                 console.log(uploadAuctionResult);
+    //                 dataUpdate.listing_status = 'UPLOADED';
+    //                 dataUpdate.upload_status = uploadAuctionResult.status;
+    //                 dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
+    //                 dataUpdate.aID = uploadAuctionResult.aID;
+    //             } else {
+    //                 dataUpdate.upload_status = proxyResult.status;
+    //                 dataUpdate.upload_status_message = proxyResult.statusMessage;
+    //             }
+    //             await ProductYahooService.update(product._id, dataUpdate);
     //         }
-    //         await product.save();
     //     }
     // }
 
