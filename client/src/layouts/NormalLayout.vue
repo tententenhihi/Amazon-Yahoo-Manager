@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="page-wrapper chiller-theme toggled">
-      <span id="show-sidebar" class="btn btn-sm btn-dark" @click="isShowSidebar = true">
+      <span id="show-sidebar" class="btn btn-sm btn-dark" v-if="isUserLoggedIn" @click="isShowSidebar = true">
         <i class="fas fa-bars"></i>
       </span>
       <Sidebar v-if="isUserLoggedIn && isShowSidebar" :currentRouter="currentRouter" @closeSidebar="closeSidebar()" />

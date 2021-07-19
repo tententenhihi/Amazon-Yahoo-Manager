@@ -214,7 +214,9 @@ export default {
       let res = await FolderApi.get(this.selectedYahooAccount._id);
       if (res && res.status === 200) {
         this.folders = res.data.folders;
-        this.selectedFolder = this.folders[0]._id
+        if (this.folders.length) {
+          this.selectedFolder = this.folders[0]._id
+        }
       }
     },
     async getListProduct() {

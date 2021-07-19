@@ -604,7 +604,8 @@ export default {
       isShowPayment: false,
       isShowDelivery: false,
       isShowChargedOption: false,
-      folders: []
+      folders: [],
+      SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/",
     }
   },
   async mounted () {
@@ -618,7 +619,7 @@ export default {
         }
         this.images = this.product.images.map(image => {
           return {
-            preview_url: process.env.SERVER_API + 'uploads/' + image
+            preview_url: image.includes('http') ? image : this.SERVER_HOST_UPLOAD + image
           }
         })
       } else {
