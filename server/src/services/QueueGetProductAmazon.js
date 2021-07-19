@@ -7,33 +7,17 @@ let queueGetInfoProduct = null;
 const getProductByAsin = async (inputData, cb) => {
     try {
         console.log(' ==== Start getProductByAsin ==== ');
+        // console.log(inputData);
         let resultGetProduct = await ProductAmazonService.getProductByAsin(inputData);
-        console.log(' ### resultGetProduct: ', resultGetProduct);
+        // console.log(' ### resultGetProduct: ', resultGetProduct);
         if (resultGetProduct.type === 'SUCCESS') {
-            let listProduct = resultGetProduct.data;
-            for (let i = 0; i < listProduct.length; i++) {
-                let product = listProduct[i];
-                try {
-                    product.idUser = inputData.idUser;
-                    product.yahoo_account_id = inputData.yahoo_account_id;
-                    let newProduct = ProductAmazonSchema(product);
-                    await newProduct.save();
-                    if (product.asin === inputData.code) {
-                        await SearchCodeAmazonService.update(inputData._id, inputData.idUser, { isProductGeted: true, status: 'SUCCESS' });
-                    }
-                } catch (error) {
-                    console.log(' #### getProductByAsin error: ', error);
-                    if (product.asin === inputData.code) {
-                        await SearchCodeAmazonService.update(inputData._id, inputData.idUser, {
-                            isProductGeted: false,
-                            status: 'ERROR',
-                            statusMessage: 'Lỗi: ' + error.message,
-                        });
-                    }
-                }
-            }
+            let product = resultGetProduct.data;
+            product.idUser = inputData.idUser;
+            product.yahoo_account_id = inputData.yahoo_account_id;
+            let newProduct = ProductAmazonSchema(product);
+            await newProduct.save();
+            await SearchCodeAmazonService.update(inputData._id, inputData.idUser, { isProductGeted: true, status: 'SUCCESS' });
         } else {
-            
             await SearchCodeAmazonService.update(inputData._id, inputData.idUser, {
                 isProductGeted: false,
                 status: 'ERROR',

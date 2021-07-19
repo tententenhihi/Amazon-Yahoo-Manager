@@ -17,6 +17,8 @@ import AuctionYahooService from './services/AuctionYahooService';
 import ProductYahooService from './services/ProductYahooService';
 import AccountYahooService from './services/AccountYahooService';
 import ProductYahooEndedService from './services/ProductYahooEndedService';
+import ProductAmazonSchema from './models/ProductAmazonModel';
+import SearchCodeSchema from './models/SearchCodeAmazonModel';
 
 require('dotenv').config();
 
@@ -65,6 +67,18 @@ let initData = async () => {
         username: 'lum-customer-c_84db29ae-zone-zone2-ip-178.171.80.121',
         password: '7ox35md3j0jm',
     };
+
+    // let l2 = await SearchCodeSchema.find({});
+    // for (const iterator of l2) {
+    //     await iterator.remove();
+    // }
+    // console.log(l2.length);
+
+    // let l = await ProductAmazonSchema.find({});
+    // for (const iterator of l) {
+    //     await iterator.remove();
+    // }
+    // console.log(l.length);
     // //// get Product yahoo ended
 
     // let listAccountYahoo = await AccountYahooService.find({});

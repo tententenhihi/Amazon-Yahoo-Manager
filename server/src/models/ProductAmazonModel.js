@@ -28,6 +28,9 @@ var Product = new Schema({
         type: String,
         required: true,
     },
+    category_id: {
+        type: String,
+    },
     basecost: {
         type: Number,
     },
@@ -39,7 +42,7 @@ var Product = new Schema({
     },
     shipping: {
         type: Number,
-        default: 0
+        default: 0,
     },
     delivery: {
         type: String,
@@ -64,13 +67,7 @@ var Product = new Schema({
     },
     is_convert_yahoo: {
         type: Boolean,
-        default: false
-    },
-    type: {
-        type: String,
-        require: true,
-        default: 'AMAZON',
-        enum: ['AMAZON', 'YAHOO'],
+        default: false,
     },
     status: {
         type: String,
@@ -87,7 +84,6 @@ var Product = new Schema({
     },
 });
 
-Product.statics.TYPE = ['AMAZON', 'YAHOO'];
 Product.statics.STATUS = ['CREATED', 'ERROR', 'SUCCESS'];
 
 var ProductAmazonSchema = mongoose.model('ProductAmazon', Product);
