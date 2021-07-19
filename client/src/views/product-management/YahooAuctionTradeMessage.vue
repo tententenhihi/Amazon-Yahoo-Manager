@@ -81,7 +81,8 @@
         <div class="alert alert-success">
           この商品は発送が完了しています。
         </div>
-        <button class="btn btn-default mt-20">評価済</button> <br>
+        <router-link tag="button" class="btn btn-default mt-20"
+          :to="{name: 'YahooAuctionTradeRating', params: {id: product._id}}">評価済</router-link> <br>
         <button class="btn btn-danger mt-20" :disabled="true">取引中止</button> <br>
         <button class="btn btn-danger my-20">落札者削除</button> <br>
         <hr>
@@ -133,15 +134,17 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import ProductYahooEndedApi from '@/services/ProductYahooEndedApi'
 
 export default {
   name: 'YahooAuctionTradeMessage',
   data () {
     return {
-     
+      product: {}
     }
   },
   async mounted () {
+    this.getProduct();
   },
   computed: {
     ...mapGetters({
@@ -149,10 +152,20 @@ export default {
     }),
     yahooAccountId () {
       return this.selectedYahooAccount._id
+    },
+    productId () {
+      return this.$route.params.id
     }
   },
   methods: {
-    
+    async getProduct () {
+      let res = await ProductYahooEndedApi.show(this.productId);
+      if (res && res.status === 200) {
+        this.product = res.data.product
+      } else {
+        this.$router.push({name: 'YahooAuctionTrade'})
+      }
+    },
   }
 }
 </script>

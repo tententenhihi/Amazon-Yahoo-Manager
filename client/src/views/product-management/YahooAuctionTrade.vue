@@ -37,22 +37,32 @@
               <td>
                 <input type="checkbox" name="" id="">
               </td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>{{ product.aID }}</td>
+              <td>
+                <img style="max-height: 50px; max-width: 50px" v-if="product.images && product.images.length" :src="product.images[0].includes('http') 
+                  ? product.images[0] : SERVER_HOST_UPLOAD + product.images[0]" alt="">
+              </td>
+              <td>
+                <img style="max-height: 50px; max-width: 50px" v-if="product.images && product.images.length" :src="product.images[0].includes('http') 
+                  ? product.images[0] : SERVER_HOST_UPLOAD + product.images[0]" alt="">
+              </td>
+              <td>{{ product.product_yahoo_title }}</td>
+              <td>{{ product.reserve_price }}</td>
+              <td>{{ 0 }}</td>
+              <td>{{ product.idBuyer }}</td>
+              <td>{{ product.time_end }}</td>
+              <td>{{ product.auction_status }}</td>
+              <td>
+                <button class="btn btn-info" @click="onOpenModalNote(product)">
+                  <i class="fa fa-edit" aria-hidden="true"></i> 編集
+                </button>
+              </td>
+              <td>{{ 0 }}</td>
+              <td>{{ 0 }}</td>
+              <td>{{ product.import_price }}</td>
+              <td>{{ 0 }}</td>
+              <td>{{ product.profit }}</td>
+              <td>{{ 0 }}</td>
               <td>
                 <button class="btn btn-md btn-info mb-1 mr-1" @click="addMessage(product)">
                   取引連絡
@@ -66,23 +76,40 @@
         </table>
       </div>
     </div>
+    <modal-component ref="modalNote">
+      <template v-slot:header>
+        メモ: {{ selectedEdiNote.product_yahoo_title }}
+      </template>
+      <template>
+        <textarea v-model="selectedEdiNote.note" class="form-control" id="" cols="30" rows="5"></textarea>
+      </template>
+      <template v-slot:button>
+        <button class="btn btn-primary" @click="onSaveNote">
+          保存
+        </button>
+        <button class="btn btn-default" @click="oncloseModal()">
+          キャンセル
+        </button>
+      </template>
+    </modal-component>
   </div>
 </template>
 
 <script>
-import ProductYahooApi from '@/services/ProductYahooApi'
+import ProductYahooEndedApi from '@/services/ProductYahooEndedApi'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'YahooAuctionTrade',
   data () {
     return {
-      products: [{}],
-      SERVER_HOST_UPLOAD: process.env.SERVER_API + 'uploads/'
+      products: [],
+      SERVER_HOST_UPLOAD: process.env.SERVER_API + 'uploads/',
+      selectedEdiNote: {}
     }
   },
   async mounted () {
-    // await this.getListProduct();
+    await this.getListProduct();
   },
   computed: {
     ...mapGetters({
@@ -95,7 +122,7 @@ export default {
   methods: {
     async getListProduct() {
       try {
-        let res = await ProductYahooApi.get(this.yahooAccountId);
+        let res = await ProductYahooEndedApi.get(this.yahooAccountId);
         if (res && res.status === 200) {
           this.products = res.data.products;
         }
@@ -121,7 +148,7 @@ export default {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
-          let res = await ProductYahooApi.delete(product._id);
+          let res = await ProductYahooEndedApi.delete(product._id);
           if (res && res.status == 200) {
             self.products.splice(index, 1);
             self.$swal.fire(
@@ -134,10 +161,31 @@ export default {
       });
     },
     addRating (product) {
-      this.$router.push({name: 'YahooAuctionTradeRating', params: {id: 123}})
+      this.$router.push({name: 'YahooAuctionTradeRating', params: {id: product._id}})
     },
     addMessage (product) {
-      this.$router.push({name: 'YahooAuctionTradeMessage', params: {id: 123}})
+      this.$router.push({name: 'YahooAuctionTradeMessage', params: {id: product._id}})
+    },
+    onOpenModalNote (product) {
+      this.selectedEdiNote = product;
+      this.$refs.modalNote.openModal()
+    },
+    async onSaveNote () {
+      let res = await ProductYahooEndedApi.update(this.selectedEdiNote._id, this.selectedEdiNote);
+      if (res && res.status === 200) {
+        this.$swal.fire({
+          icon: "success",
+          title: "Add note successfully",
+          timer: 500,
+          showConfirmButton: false,
+          position: 'top-end'
+        });
+        this.oncloseModal()
+      }
+    },
+    oncloseModal () {
+      this.selectedEdiNote = {}
+      this.$refs.modalNote.closeModal()
     }
   }
 }
