@@ -93,7 +93,7 @@ export default {
           showConfirmButton: false,
           position: 'top-end'
         });
-        this.folders.push(res.data.folder)
+        this.folders.push({...res.data.folder, productamazons: [], productyahoos: []})
         localStorage.setItem('folders', JSON.stringify(this.folders))
         this.name = ''
       }
@@ -146,6 +146,7 @@ export default {
             const element = this.selectedFolder[index];
             let findIndex = this.folders.findIndex(item => item._id === element._id)
             this.folders.splice(findIndex, 1)
+            localStorage.setItem('folders', JSON.stringify(this.folders))
           }
           this.selectedFolder = []
         }

@@ -181,10 +181,6 @@ var Product = new Schema({
         type: String,
         default: 'no',
     },
-    status: {
-        type: String,
-        default: 'NEW',
-    },
     aID: {
         type: String,
     },
@@ -211,7 +207,7 @@ var Product = new Schema({
     profit: {
         type: String,
     },
-    status: {
+    listing_status: {
         type: String,
         enum: ['NEW', 'UPLOADED'],
     },

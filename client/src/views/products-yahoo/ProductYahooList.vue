@@ -8,7 +8,55 @@
     </div>
     <hr class="mt-10" />
     <div class="box-content">
+      <div class="mx-30">
+        <div class="py-2">
+          Y!オークに出品される商品一覧
+        </div>
+        <hr>
+        <div class="form-search">
+          <div class="form-row">
+            <div class="form-group col-sm-4">
+              <label for="folder">出品フォルダ</label>
+              <select id="folder" class="form-control" v-model="searchObj.folder">
+                <option :value="null" selected>すべて</option>
+                <option v-for="(folder, index) in folders" :key="index" :value="folder._id">
+                  {{ folder.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group col-sm-4">
+              <label for="queryString">検索クエリー</label>
+              <input type="text" class="form-control" v-model="searchObj.queryString" id="queryString" placeholder="キーワード / 仕入元・オークションID">
+            </div>
+            <div class="form-group col-sm-4">
+              <label for="asin">出品ステータス</label>
+              <select id="folder" class="form-control" v-model="searchObj.listingStatus">
+                <option :value="null" selected>すべて</option>
+                <option v-for="(status, index) in LISTING_STATUS" :key="index" :value="status.value">
+                  {{ status.display }}
+                </option>
+              </select>
+            </div>
+          </div>
+          
+          
+          <button type="submit" class="btn btn-primary" @click="onSearchProduct">検索</button>
+          <button type="submit" class="btn btn-default" @click="clearSearchProduct">リセット</button>
+        </div>
+        <hr>
+      </div>
       <div class="px-10 py-20 table-responsive">
+        <paginate
+          v-if="pageCount > 1"
+          v-model="page"
+          :page-count="pageCount"
+          :page-range="3"
+          :margin-pages="2"
+          :prev-text="'Prev'"
+          :next-text="'Next'"
+          :container-class="'pagination'"
+          :page-class="'page-item'">
+        </paginate>
         <table class="table table-striped pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
@@ -37,7 +85,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(product, index) in products" :key="product._id">
+            <tr v-for="(product, index) in tableData" :key="product._id">
               <td scope="row">{{ index + 1 }}</td>
               <td>
                 <img
@@ -104,6 +152,7 @@
 
 <script>
 import ProductYahooApi from "@/services/ProductYahooApi";
+import FolderApi from '@/services/FolderApi'
 import { mapGetters } from "vuex";
 
 const PRODUCT_STATUS = [
@@ -213,6 +262,11 @@ const CONSPICUOUS_ICON = [
   { display: "正規店購入", value: 7 },
   { display: "産地直送", value: 8 }
 ];
+const LISTING_STATUS = [
+  { display: "未出品", value: 0 },
+  { display: "出品中", value: 1 },
+];
+
 export default {
   name: "ProductYahooList",
   data() {
@@ -224,11 +278,21 @@ export default {
       SHIP_SCHEDULE,
       CONSPICUOUS_ICON,
       PRODUCT_STATUS,
-      SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/"
+      SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/",
+      page: 1,
+      searchProducts: [],
+      searchObj: {
+        folder: null,
+        queryString: '',
+        listingStatus: null,
+      },
+      folders: [],
+      LISTING_STATUS
     };
   },
   async mounted() {
     await this.getListProduct();
+    this.getFolders();
   },
   computed: {
     ...mapGetters({
@@ -236,14 +300,30 @@ export default {
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
-    }
+    },
+    tableData () {
+      return this.searchProducts.slice((this.page - 1) * this.$constants.PAGE_SIZE, this.page * this.$constants.PAGE_SIZE)
+    },
+    pageCount () {
+      return Math.ceil(this.searchProducts.length / this.$constants.PAGE_SIZE)
+    },
   },
   methods: {
+    async getFolders () {
+      let res = await FolderApi.get(this.selectedYahooAccount._id);
+      if (res && res.status === 200) {
+        this.folders = res.data.folders;
+        if (this.folders.length) {
+          this.selectedFolder = this.folders[0]._id
+        }
+      }
+    },
     async getListProduct() {
       try {
         let res = await ProductYahooApi.get(this.yahooAccountId);
         if (res && res.status === 200) {
           this.products = res.data.products;
+          this.searchProducts = this.products
         }
       } catch (error) {
         this.$swal.fire({
@@ -305,9 +385,41 @@ export default {
       return this.PREFECTURE.find(item => item.value === product.location)
         ? this.PREFECTURE.find(item => item.value === product.location).display
         : "";
-    }
+    },
+    onSearchProduct () {
+      this.searchProducts = this.products.filter(product => {
+        let condition = true;
+        if (this.searchObj.folder) {
+          condition = condition && product.folder_id === this.searchProducts.folder
+        }
+        if (this.searchObj.queryString) {
+          condition = condition && (product.name.includes(this.searchObj.queryString) || product.asin.includes(this.searchObj.queryString))
+        }
+        if (this.searchObj.minPrice) {
+          condition = condition && (parseInt(product.basecost) > parseInt(this.searchObj.minPrice))
+        }
+        if (this.searchObj.maxPrice) {
+          condition = condition && parseInt(product.basecost) < parseInt(this.searchObj.maxPrice)
+        }
+        if (condition) {
+          return product;
+        }
+      })
+    },
+    clearSearchProduct () {
+      this.searchObj = {
+        folder: null,
+        queryString: '',
+        minPrice: '',
+        maxPrice: ''
+      }
+    },
   }
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.form-search {
+  padding: 20px 0;
+}
+</style>
