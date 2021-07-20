@@ -2,6 +2,7 @@ import Queue from 'better-queue';
 import ProductAmazonSchema from '../models/ProductAmazonModel';
 import ProductAmazonService from '../services/ProductAmazonService';
 import SearchCodeAmazonService from '../services/SearchCodeAmazonService';
+import KeepaService from './KeepaService';
 
 let queueGetInfoProduct = null;
 const getProductByAsin = async (inputData, cb) => {
@@ -14,15 +15,26 @@ const getProductByAsin = async (inputData, cb) => {
             let product = resultGetProduct.data;
             product.idUser = inputData.idUser;
             product.yahoo_account_id = inputData.yahoo_account_id;
-            let newProduct = ProductAmazonSchema(product);
-            await newProduct.save();
+            await ProductAmazonService.create(product);
             await SearchCodeAmazonService.update(inputData._id, inputData.idUser, { isProductGeted: true, status: 'SUCCESS' });
         } else {
-            await SearchCodeAmazonService.update(inputData._id, inputData.idUser, {
-                isProductGeted: false,
-                status: 'ERROR',
-                statusMessage: 'Lỗi: ' + resultGetProduct.message,
-            });
+            console.log(' #### resultGetProduct: ', resultGetProduct);
+            let resultKeep = await KeepaService.findProduct(inputData.code, inputData.idUser);
+            console.log(' #### resultKeep: ', resultKeep);
+            if (resultKeep.status === 'SUCCESS') {
+                let newProduct = resultKeep.data;
+                newProduct.yahoo_account_id = inputData.yahoo_account_id;
+                newProduct.idUser = inputData.idUser;
+                newProduct.countProduct = 0;
+                await ProductAmazonService.create(resultKeep.data);
+                await SearchCodeAmazonService.update(inputData._id, inputData.idUser, { isProductGeted: true, status: 'SUCCESS', statusMessage: 'keepa' });
+            } else {
+                await SearchCodeAmazonService.update(inputData._id, inputData.idUser, {
+                    isProductGeted: false,
+                    status: 'ERROR',
+                    statusMessage: 'Lỗi: ' + resultGetProduct.message,
+                });
+            }
         }
         console.log(' ==== End ====');
         cb(null, inputData);
