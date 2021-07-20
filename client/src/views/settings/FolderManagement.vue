@@ -127,6 +127,7 @@ export default {
             timer: 500,
             showConfirmButton: false,
           });
+          localStorage.setItem('folders', JSON.stringify(this.folders))
         }
       }
     },
