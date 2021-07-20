@@ -14,6 +14,7 @@ import TradeMessageTemplateRouter from './TradeMessageTemplateRouter';
 import RatingTemplateRouter from './RatingTemplateRouter';
 import AdminRouter from './AdminRouter';
 import FolderRouter from './FolderRouter';
+import ProductYahooEndedRouter from './ProductYahooEndedRouter';
 
 var router = express.Router();
 
@@ -31,6 +32,7 @@ router.use('/api/v1/yahoo-account', YahooAccountRouter);
 router.use('/api/v1/product-global-setting', ProductGlobalSettingRouter);
 router.use('/api/v1/auction-global-setting', AuctionPublicSettingRouter);
 router.use('/api/v1/product-yahoo', ProductYahooRouter);
+router.use('/api/v1/product-yahoo-ended', ProductYahooEndedRouter);
 router.use('/api/v1/product-info-default', ProductInfomationDefaultRouter);
 router.use('/api/v1/trade-message-template', TradeMessageTemplateRouter);
 router.use('/api/v1/rating-template', RatingTemplateRouter);

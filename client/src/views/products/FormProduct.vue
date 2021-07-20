@@ -67,14 +67,14 @@
             <input type="file" class="form-control" id="image" multiple ref="imageProduct" @change="onUploadImage">
           </div>
           <div class="col-md-6"></div>
-          <div class="col-md-12 d-flex mb-20 images">
-            <template v-for="(image, index) in previewImages">
-              <div class="col-3 image-item" :key="index">
-                <img :src="image.preview_url" alt="">
-                <i class="fa fa-times image_icon_remove" @click="onRemoveImage(index)"></i>
-              </div>
-            </template>
-          </div>
+        </div>
+        <div class="row mb-20 images">
+          <template v-for="(image, index) in previewImages">
+            <div class="col-sm-3 image-item" :key="index">
+              <img :src="image.preview_url" alt="">
+              <i class="fa fa-times image_icon_remove" @click="onRemoveImage(index)"></i>
+            </div>
+          </template>
         </div>
         <!-- <label for="name" class="form-row">
           情報詳細 <button class="btn btn-primary btn-add-info ml-2 mb-2" @click="addNewInfoDetail()">+</button>
@@ -179,7 +179,6 @@ export default {
     onUploadImage (e) {
       let self = this;
       const images = e.target.files;
-      console.log(images);
       for (let index = 0; index < images.length; index++) {
         const ele = images[index];
         let reader = new FileReader();
@@ -235,7 +234,16 @@ export default {
 .image_icon_remove {
   position: absolute;
   top: 10px;
-  right: 20px;
+  right: 10px;
   font-size: 22px;
+}
+.image-item {
+  display: grid;
+  margin-top: 5px;
+  border: 1px solid gainsboro;
+}
+.image-item img {
+  max-height: 200px;
+  margin: 0 auto;
 }
 </style>

@@ -219,6 +219,14 @@ var Product = new Schema({
         enum: ['ENDED', 'FINISH'],
         default: 'ENDED',
     },
+    message_list: {
+        type: Array,
+        default: []
+    },
+    rating_list: {
+        type: Array,
+        default: []
+    },
     created: {
         type: Date,
         default: Date.now,
