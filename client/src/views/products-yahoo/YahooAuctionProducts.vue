@@ -256,6 +256,7 @@
               </td>
               <td width="120">
                 <img
+                  v-if="product.images && product.images.length"
                   :src="
                     product.images[0].includes('http')
                       ? product.images[0]
@@ -357,7 +358,8 @@
               </td>
               <td class="text-center">
                 {{
-                  product.yahoo_auction_category_id
+                  product.yahoo_auction_category_id &&
+                  product.yahoo_auction_category_id != 0
                     ? product.yahoo_auction_category_id
                     : "-"
                 }}

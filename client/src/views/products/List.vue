@@ -7,32 +7,60 @@
       </button>
     </div>
     <div class="csv-button ml-20">
-      <button class="btn btn-outline-info mr-1 mb-1" @click="$refs.importCSV.click()">CSVインポート</button>
-      <input type="file" hidden ref="importCSV" accept=".csv" name="" @change="onChangeFileCSV">
-      <button class="btn btn-outline-primary mb-1" @click="onClickExportCSV">CSVエスポルト</button>
+      <button
+        class="btn btn-outline-info mr-1 mb-1"
+        @click="$refs.importCSV.click()"
+      >
+        CSVインポート
+      </button>
+      <input
+        type="file"
+        hidden
+        ref="importCSV"
+        accept=".csv"
+        name=""
+        @change="onChangeFileCSV"
+      />
+      <button class="btn btn-outline-primary mb-1" @click="onClickExportCSV">
+        CSVエスポルト
+      </button>
     </div>
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-20 py-20">
         <div>
-          <div class="py-2">
-            Amazon商品一覧
-          </div>
-          <hr>
+          <div class="py-2">Amazon商品一覧</div>
+          <hr />
           <div class="form-search">
             <div class="form-row">
               <div class="form-group col-sm-6">
                 <label for="folder">出品フォルダ</label>
-                <select id="folder" class="form-control" v-model="searchObj.folder">
-                  <option :value="null" selected>--------------- ★全商品リスト★ ---------------</option>
-                  <option v-for="(folder, index) in folders" :key="index" :value="folder._id">
+                <select
+                  id="folder"
+                  class="form-control"
+                  v-model="searchObj.folder"
+                >
+                  <option :value="null" selected
+                    >--------------- ★全商品リスト★ ---------------</option
+                  >
+                  <option
+                    v-for="(folder, index) in folders"
+                    :key="index"
+                    :value="folder._id"
+                  >
                     {{ folder.name }}
                   </option>
                 </select>
               </div>
               <div class="form-group col-sm-6">
                 <label for="asin">検索クエリー</label>
-                <input type="text" class="form-control" v-model="searchObj.asinKeyword" id="asin" placeholder="ASIN / キーワード">
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="searchObj.asinKeyword"
+                  id="asin"
+                  placeholder="ASIN / キーワード"
+                />
               </div>
             </div>
 
@@ -40,7 +68,12 @@
               <div class="form-group col-sm-6">
                 <label for="price-more">仕入元の値段</label>
                 <div class="input-group">
-                  <input type="number" class="form-control" v-model="searchObj.minPrice" id="price-more">
+                  <input
+                    type="number"
+                    class="form-control"
+                    v-model="searchObj.minPrice"
+                    id="price-more"
+                  />
                   <div class="input-group-prepend">
                     <div class="input-group-text">円以上</div>
                   </div>
@@ -49,14 +82,19 @@
               <div class="form-group col-sm-6">
                 <label for="price-below">仕入元の値段</label>
                 <div class="input-group">
-                  <input type="number" class="form-control" v-model="searchObj.maxPrice" id="price-more">
+                  <input
+                    type="number"
+                    class="form-control"
+                    v-model="searchObj.maxPrice"
+                    id="price-more"
+                  />
                   <div class="input-group-prepend">
                     <div class="input-group-text">円以下</div>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <!-- <div class="form-row">
               <div class="form-group col-sm-6">
                 <label for="inputCity">プライム</label>
@@ -66,10 +104,22 @@
                 </select>
               </div>
             </div> -->
-            <button type="submit" class="btn btn-primary" @click="onSearchProduct">検索</button>
-            <button type="submit" class="btn btn-default" @click="clearSearchProduct">リセット</button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              @click="onSearchProduct"
+            >
+              検索
+            </button>
+            <button
+              type="submit"
+              class="btn btn-default"
+              @click="clearSearchProduct"
+            >
+              リセット
+            </button>
           </div>
-          <hr>
+          <hr />
         </div>
         <paginate
           v-if="pageCount > 1"
@@ -80,12 +130,35 @@
           :prev-text="'«'"
           :next-text="'»'"
           :container-class="'pagination'"
-          :page-class="'page-item'">
+          :page-class="'page-item'"
+        >
         </paginate>
-        <button type="submit" :disabled="!selectedProduct.length" class="btn btn-primary my-10" @click="convertYahooProduct">取扱いに追加</button>
-        <table class="table pt-20 my-20">
+        <button
+          type="submit"
+          :disabled="!selectedProduct.length"
+          class="btn btn-primary my-10"
+          @click="convertYahooProduct"
+        >
+          取扱いに追加
+        </button>
+        <table class="table pt-20 my-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
+              <th>
+                <input class="checkall" type="checkbox" />
+              </th>
+              <th class="text-center">画像</th>
+              <th>タイトル</th>
+              <th class="text-center" width="100">開始価格</th>
+              <th class="text-center" width="100">想定利益</th>
+              <th class="text-center" width="100">仕入元の値段<br /></th>
+              <th class="text-center" width="200">送料<br /></th>
+              <th class="text-center" width="100">
+                仕入元の<br />在庫数<br />
+              </th>
+              <th width="120">取扱に追加</th>
+              <th width="140">&nbsp;</th>
+              <!--               
               <th class="cell-5"></th>
               <th class="cell-10">画像</th>
               <th class="cell-20">タイトル</th>
@@ -93,43 +166,93 @@
               <th class="cell-5">想定利益</th>
               <th class="cell-10">仕入元の値段</th>
               <th class="cell-15">送料</th>
-              <th class="cell-10">仕入元の <br> 在庫数</th>
+              <th class="cell-10">
+                仕入元の <br />
+                在庫数
+              </th>
               <th class="cell-10">取扱に追加</th>
-              <th class="cell-10"></th>
+              <th class="cell-10"></th> -->
             </tr>
           </thead>
           <tbody>
             <tr v-for="(product, index) in tableData" :key="product._id">
-              <td scope="row">
-                <input type="checkbox" :id="product._id" v-model="selectedProduct" :value="product">
+              <td width="50">
+                <input
+                  type="checkbox"
+                  :id="product._id"
+                  v-model="selectedProduct"
+                  :value="product"
+                />
+              </td>
+              <td width="120">
+                <img
+                  v-if="product.images && product.images.length"
+                  :src="
+                    product.images[0].includes('http')
+                      ? product.images[0]
+                      : SERVER_HOST_UPLOAD + product.images[0]
+                  "
+                  style="min-width: 50px;"
+                />
               </td>
               <td>
-                <img style="max-height: 180px" v-if="product.images && product.images.length" :src="product.images[0].includes('http') 
-                  ? product.images[0] : SERVER_HOST_UPLOAD + product.images[0]" alt="">
+                <a
+                  :href="`https://www.amazon.co.jp/dp/${product.asin}`"
+                  target="_blank"
+                  >{{ product.name }} <br
+                /></a>
+                <br />ASIN:
+                <a
+                  :href="`https://www.amazon.co.jp/dp/${product.asin}`"
+                  target="_blank"
+                >
+                  {{ product.asin }}
+                </a>
               </td>
-              <td class="cell-10">{{ product.name }} <br> ASIN: {{product.asin}}</td>
-              <td>{{ product.price }}</td>
-              <td>{{ product.profit }}</td>
-              <td>{{ product.basecost }}</td>
-              <td>
+              <td class="text-center">{{ product.price }}</td>
+              <td class="text-center">{{ product.profit }}</td>
+              <td class="text-center">{{ product.basecost }}</td>
+              <td class="text-center">
                 <div class="input-group">
-                  <input type="number" class="form-control" v-model="product.shipping">
+                  <input
+                    type="number"
+                    class="form-control"
+                    v-model="product.shipping"
+                  />
                   <div class="input-group-prepend">
                     <span class="input-group-text">円</span>
-                    <button class="btn btn-primary btn-setup" @click="onSetupShipping(product)">設定</button>
+                    <button
+                      class="btn btn-primary btn-setup"
+                      @click="onSetupShipping(product)"
+                    >
+                      設定
+                    </button>
                   </div>
                 </div>
               </td>
-              <td>{{ product.countProduct }}</td>
+              <td class="text-center">{{ product.countProduct }}</td>
               <td>
-                <div v-if="product.is_convert_yahoo" class="mypage-item-status bold awaiting">追加済み</div>
-                <div v-else class="mypage-item-status bold action-required">追加ない</div>
+                <div
+                  v-if="product.is_convert_yahoo"
+                  class="mypage-item-status bold awaiting"
+                >
+                  追加済み
+                </div>
+                <div v-else class="mypage-item-status bold action-required">
+                  追加ない
+                </div>
               </td>
               <td>
-                <button class="btn btn-md btn-warning mb-1 mr-1" @click="goToFormProduct(product._id)">
+                <button
+                  class="btn btn-md btn-warning mb-1 mr-1"
+                  @click="goToFormProduct(product._id)"
+                >
                   <i class="fa fa-edit"></i> 編集
                 </button>
-                <button class="btn btn-md btn-danger mb-1 mr-1" @click="onConfirmDelete(product, index)">
+                <button
+                  class="btn btn-md btn-danger mb-1 mr-1"
+                  @click="onConfirmDelete(product, index)"
+                >
                   <i class="fa fa-trash"></i> 削除
                 </button>
               </td>
@@ -147,7 +270,12 @@
           <label class="col-sm-4 control-label">選択フォルダの出品予定</label>
           <div class="col-sm-7">
             <select class="form-control" v-model="selectedFolder">
-              <option v-for="(folder, index) in folders" :value="folder._id" :key="index">{{folder.name}}</option>
+              <option
+                v-for="(folder, index) in folders"
+                :value="folder._id"
+                :key="index"
+                >{{ folder.name }}</option
+              >
             </select>
           </div>
           に
@@ -168,13 +296,13 @@
 </template>
 
 <script>
-import ProductAmazonApi from '@/services/ProductAmazonApi'
-import FolderApi from '@/services/FolderApi'
-import { mapGetters } from 'vuex'
+import ProductAmazonApi from "@/services/ProductAmazonApi";
+import FolderApi from "@/services/FolderApi";
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'ProductList',
-  data () {
+  name: "ProductList",
+  data() {
     return {
       products: [],
       isInit: false,
@@ -182,39 +310,42 @@ export default {
       folders: [],
       searchObj: {
         folder: null,
-        asinKeyword: '',
-        minPrice: '',
-        maxPrice: ''
+        asinKeyword: "",
+        minPrice: "",
+        maxPrice: ""
       },
       searchProducts: [],
       selectedProduct: [],
       selectedFolder: null,
-      SERVER_HOST_UPLOAD: process.env.SERVER_API + 'uploads/'
-    }
+      SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/"
+    };
   },
-  async mounted () {
+  async mounted() {
     await this.getListProduct();
     this.getFolders();
-    this.isInit = true
+    this.isInit = true;
   },
   computed: {
-    tableData () {
-      return this.searchProducts.slice((this.page - 1) * this.$constants.PAGE_SIZE, this.page * this.$constants.PAGE_SIZE)
+    tableData() {
+      return this.searchProducts.slice(
+        (this.page - 1) * this.$constants.PAGE_SIZE,
+        this.page * this.$constants.PAGE_SIZE
+      );
     },
-    pageCount () {
-      return Math.ceil(this.searchProducts.length / this.$constants.PAGE_SIZE)
+    pageCount() {
+      return Math.ceil(this.searchProducts.length / this.$constants.PAGE_SIZE);
     },
     ...mapGetters({
-      selectedYahooAccount: 'getSelectedYahooAccount'
-    }),
+      selectedYahooAccount: "getSelectedYahooAccount"
+    })
   },
   methods: {
-    async getFolders () {
+    async getFolders() {
       let res = await FolderApi.get(this.selectedYahooAccount._id);
       if (res && res.status === 200) {
         this.folders = res.data.folders;
         if (this.folders.length) {
-          this.selectedFolder = this.folders[0]._id
+          this.selectedFolder = this.folders[0]._id;
         }
       }
     },
@@ -223,7 +354,7 @@ export default {
         let res = await ProductAmazonApi.get(this.selectedYahooAccount._id);
         if (res && res.status === 200) {
           this.products = res.data.listProduct;
-          this.searchProducts = this.products
+          this.searchProducts = this.products;
         }
       } catch (error) {
         this.$swal.fire({
@@ -244,9 +375,9 @@ export default {
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
           confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  番号',
+          cancelButtonText: '<i class="fa fa-times"></i>  番号'
         })
-        .then(async (result) => {
+        .then(async result => {
           if (result.isConfirmed) {
             let res = await ProductAmazonApi.delete(product._id);
             if (res && res.status == 200) {
@@ -260,20 +391,26 @@ export default {
           }
         });
     },
-    goToFormProduct (id) {
-      this.$router.push({name: 'FormProduct', params: {id} })
+    goToFormProduct(id) {
+      this.$router.push({ name: "FormProduct", params: { id } });
     },
-    onChangeFileCSV (event) {
+    onChangeFileCSV(event) {
       try {
         let file = event.target.files[0];
         let reader = new FileReader();
-        let self = this
+        let self = this;
         reader.onload = async function(e) {
-          let arrLines = e.target.result.split('\n');
-          let contentCsv = arrLines.slice(1, arrLines.length)
+          let arrLines = e.target.result.split("\n");
+          let contentCsv = arrLines.slice(1, arrLines.length);
           let productList = [];
           contentCsv.forEach(line => {
-            if (line.trim().replaceAll(',', '').replace('\r', '').replace('\n', '')) {
+            if (
+              line
+                .trim()
+                .replaceAll(",", "")
+                .replace("\r", "")
+                .replace("\n", "")
+            ) {
               let pros = line.trim().split('","');
               productList.push({
                 asin: pros[0],
@@ -284,18 +421,14 @@ export default {
                 delivery: pros[5],
                 type: pros[6],
                 status: pros[7],
-                image: pros[8],
-              })
+                image: pros[8]
+              });
             }
           });
           let result = await ProductAmazonApi.createByCsv(productList);
           if (result && result.status === 200) {
-            self.$swal.fire(
-              "成功",
-              "製品が更新されました。",
-              "success"
-            );
-            self.products = self.products.concat(result.data.products)
+            self.$swal.fire("成功", "製品が更新されました。", "success");
+            self.products = self.products.concat(result.data.products);
           }
         };
         reader.readAsText(file);
@@ -309,8 +442,8 @@ export default {
         });
       }
     },
-    onClickExportCSV () {
-      let data = []
+    onClickExportCSV() {
+      let data = [];
       data.push([
         'Asin"',
         '"名前"',
@@ -321,10 +454,10 @@ export default {
         '"タイプ"',
         '"状態"',
         '"画像"',
-        '"で作成"',
-      ])
-      
-      this.products.map((product) => {
+        '"で作成"'
+      ]);
+
+      this.products.map(product => {
         let item = [
           product.asin + '"',
           '"' + product.name + '"',
@@ -335,78 +468,87 @@ export default {
           '"' + product.type + '"',
           '"' + product.status + '"',
           '"' + product.images + '"',
-          '"' + this.$moment(product.created).format("YYYY/MM/DD") + '"',
-        ]
-        data.push(item)
-      })
-      this.$helpers.exportToCSV(data)
+          '"' + this.$moment(product.created).format("YYYY/MM/DD") + '"'
+        ];
+        data.push(item);
+      });
+      this.$helpers.exportToCSV(data);
     },
-    async onSetupShipping (product) {
-      let res = await ProductAmazonApi.setShippingProduct(product._id, {shipping: product.shipping})
+    async onSetupShipping(product) {
+      let res = await ProductAmazonApi.setShippingProduct(product._id, {
+        shipping: product.shipping
+      });
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
           title: "Set shipping successfully",
           timer: 500,
-          showConfirmButton: false,
+          showConfirmButton: false
         });
       }
     },
-    onSearchProduct () {
+    onSearchProduct() {
       this.searchProducts = this.products.filter(product => {
         let condition = true;
         if (this.searchObj.folder) {
-          condition = condition && product.folder_id === this.searchObj.folder
+          condition = condition && product.folder_id === this.searchObj.folder;
         }
         if (this.searchObj.asinKeyword) {
-          condition = condition && (product.name.includes(this.searchObj.asinKeyword) || product.asin.includes(this.searchObj.asinKeyword))
+          condition =
+            condition &&
+            (product.name.includes(this.searchObj.asinKeyword) ||
+              product.asin.includes(this.searchObj.asinKeyword));
         }
         if (this.searchObj.minPrice) {
-          condition = condition && (parseInt(product.basecost) > parseInt(this.searchObj.minPrice))
+          condition =
+            condition &&
+            parseInt(product.basecost) > parseInt(this.searchObj.minPrice);
         }
         if (this.searchObj.maxPrice) {
-          condition = condition && parseInt(product.basecost) < parseInt(this.searchObj.maxPrice)
+          condition =
+            condition &&
+            parseInt(product.basecost) < parseInt(this.searchObj.maxPrice);
         }
         if (condition) {
           return product;
         }
-      })
+      });
     },
-    clearSearchProduct () {
+    clearSearchProduct() {
       this.searchObj = {
         folder: null,
-        asinKeyword: '',
-        minPrice: '',
-        maxPrice: ''
-      }
+        asinKeyword: "",
+        minPrice: "",
+        maxPrice: ""
+      };
     },
-    convertYahooProduct () {
-      this.$refs.modalSelectFolder.openModal()
+    convertYahooProduct() {
+      this.$refs.modalSelectFolder.openModal();
     },
-    onCloseModal () {
-      this.$refs.modalSelectFolder.closeModal()
+    onCloseModal() {
+      this.$refs.modalSelectFolder.closeModal();
     },
-    async onConvertYahooProduct () {
+    async onConvertYahooProduct() {
       let params = {
         amazon_product_ids: this.selectedProduct.map(product => product._id),
         folder_id: this.selectedFolder
-      }
+      };
       let res = await ProductAmazonApi.convertYahooProduct(params);
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
           title: "Update successfully",
           timer: 500,
-          showConfirmButton: false,
+          showConfirmButton: false
         });
         this.selectedFolder = null;
-        this.selectedProduct = []
-        this.onCloseModal()
-        this.getListProduct()
+        this.selectedProduct = [];
+        this.onCloseModal();
+        this.getListProduct();
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

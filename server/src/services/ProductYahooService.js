@@ -122,4 +122,14 @@ export default class ProductYahooService {
             throw new Error(error.message);
         }
     }
+
+    static async startUploadProductInListFolderId(user_id, yahoo_account_id, new_list_target_folder) {
+        console.log(' ######### Start Cron job: startUploadProductInListFolderId ');
+    }
+    static async startReSubmitProduct(user_id, yahoo_account_id) {
+        console.log(' ######### Start Cron job: startReSubmitProduct ');
+    }
+    static async startUploadProductByCalendar(user_id, yahoo_account_id, calendar_target_folder) {
+        console.log(' ######### Start Cron job: startUploadProductByCalendar ');
+    }
 }

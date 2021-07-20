@@ -12,10 +12,8 @@ import QueueGetProductAmazon from './services/QueueGetProductAmazon';
 import QueueLoginYahooAuction from './services/QueueLoginYahooAuction';
 import upload from 'express-fileupload';
 import BrightDataService from './services/BrightDataService';
-
+import AuctionPublicSettingService from './services/AuctionPublicSettingService';
 import CronJobService from './crons/CronJobService';
-
-
 require('dotenv').config();
 
 const app = express();
@@ -54,9 +52,11 @@ let initData = async () => {
     new QueueLoginYahooAuction();
     BrightDataService.loadProxyToDB();
     new CronJobService();
+    AuctionPublicSettingService.startSchedule();
 
     console.log('Server Started.!');
 
+    
     // let l2 = await SearchCodeSchema.find({});
     // for (const iterator of l2) {
     //     await iterator.remove();
