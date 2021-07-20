@@ -12,75 +12,71 @@
         <table class="table table-striped pt-20 mb-30" style="width: 100%">
           <tbody>
             <tr>
-              <td>非常に良い</td>
-              <td>Φ6mm Φ8mm クワ型端子 C型端子 クワガタ端子 クワ型圧着端子 ギボシ端子 アース用端子 ターミナル端子 丸型端子 配線</td>
+              <td width="130px">商品タイトル</td>
+              <td>{{ product.product_yahoo_title }}</td>
             </tr>
             <tr>
-              <td>落札価格</td>
-              <td>127円</td>
+              <td width="130px">落札価格</td>
+              <td>{{product.price_end}}円</td>
             </tr>
             <tr>
-              <td>落札個数</td>
-              <td>2</td>
+              <td width="130px">落札個数</td>
+              <td>{{ product.buyer_count }}</td>
             </tr>
             <tr>
-              <td>仕入れ価格</td>
-              <td>999</td>
+              <td width="130px">仕入れ価格</td>
+              <td>{{ product.import_price }}</td>
             </tr>
             <tr>
-              <td>想定利益</td>
-              <td>857</td>
+              <td width="130px">想定利益</td>
+              <td>{{ product.profit }}</td>
             </tr>
             <tr>
-              <td>落札手数料</td>
-              <td>25.4</td>
-            </tr>
-            <tr>
-              <td>利益率</td>
-              <td>64%</td>
-            </tr>
-            <tr>
-              <td>予定送料</td>
-              <td>1,300</td>
-            </tr>
-            <tr>
-              <td>購入先</td>
+              <td width="130px">落札手数料</td>
               <td></td>
             </tr>
             <tr>
-              <td>決済方法</td>
-              <td>Yahoo!かんたん決済</td>
+              <td width="130px">利益率</td>
+              <td></td>
             </tr>
             <tr>
-              <td>予定受取金額</td>
-              <td>2,654円</td>
+              <td width="130px">予定送料</td>
+              <td></td>
             </tr>
             <tr>
-              <td>お届け方法</td>
-              <td>ヤマト運輸または郵便局</td>
+              <td width="130px">購入先</td>
+              <td></td>
             </tr>
             <tr>
-              <td>お届け先住所</td>
+              <td width="130px">決済方法</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td width="130px">予定受取金額</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td width="130px">お届け方法</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td width="130px">お届け先住所</td>
               <td>
-                〒3420035 <br>
-                埼玉県吉川市高久1-22-2 <br>
-                0489845155 <br>
-                有限会社 エスガレージ <br>
               </td>
             </tr>
             <tr>
-              <td>送料</td>
-              <td>2,400円</td>
+              <td width="130px">送料</td>
+              <td></td>
             </tr>
             <tr>
-              <td>合計金額</td>
-              <td>2,654円</td>
+              <td width="130px">合計金額</td>
+              <td></td>
             </tr>
           </tbody>
         </table>
-        <div class="alert alert-success">
+        <!-- <div class="alert alert-success">
           この商品は発送が完了しています。
-        </div>
+        </div> -->
         <router-link tag="button" class="btn btn-default mt-20"
           :to="{name: 'YahooAuctionTradeRating', params: {id: product._id}}">評価済</router-link> <br>
         <button class="btn btn-danger mt-20" :disabled="true">取引中止</button> <br>
@@ -89,43 +85,58 @@
         <div class="my-20">
           取引で困ったことなどがあったら、落札者に質問してみよう！
         </div>
-        <div class="form-group">
-          <label for="comment">コメント</label>
-          <textarea class="form-control" id="" cols="30" rows="5"></textarea>
-        </div>
-        <div>
-          <button class="btn btn-primary">メッセージを送信</button>
-        </div>
+        <ValidationObserver tag="div" ref="formMessage">
+          <ValidationProvider name="コメント" rules="required" v-slot="{ errors }" tag="div" class="form-group">
+            <label for="comment">コメント</label>
+            <textarea class="form-control" v-model="comment" id="" cols="30" rows="5"></textarea>
+            <div class="error-message" v-if="errors.length">{{errors[0]}}</div>
+          </ValidationProvider>
+          <div>
+            <button class="btn btn-primary" @click="addMessage">メッセージを送信</button>
+          </div>
+        </ValidationObserver>
         <hr class="my-20">
         <div class="message-list">
-          <div class="message-item">
-            <div class="message-info d-block">
-              <span class="created-at float-left">
-                2020年11月30日 11時09分
-              </span>
-              <span class="created-at float-right">
-                その他: iwaac11
-              </span>
+          <template v-for="message in product.message_list">
+
+            <div class="message-item" :key="message.created_at">
+              <template v-if="message.type === 'seller'">
+                <div class="message-info d-block">
+                  <span class="created-at float-left">
+                    {{ $moment(message.created_at).format("YYYY年MM月DD日 HH時mm分") }}
+                  </span>
+                  <span class="user float-right">
+                    その他:  {{message.yahoo_id}}
+                  </span>
+                </div>
+                <div style="clear:both" class="my-10"></div>
+                <img class="message-img seller" src="https://dummyimage.com/100x100/000000/FFFFFF.png&text=S" alt="Seller">
+                <div class="message-text seller">
+                  <p style="white-space: pre-line">
+                    {{message.comment}}
+                  </p>
+                </div>
+              </template>
+              <template v-else>
+                <div class="message-info d-block">
+                  <span class="created-at float-right">
+                    {{ $moment(message.created_at).format("YYYY年MM月DD日 HH時mm分") }}
+                  </span>
+                  <span class="user float-left">
+                    {{message.yahoo_id}}: その他
+                  </span>
+                </div>
+                <div style="clear:both" class="my-10"></div>
+                <img class="message-img buyer" src="https://dummyimage.com/100x100/000000/FFFFFF.png&text=B" alt="Seller">
+                <div class="message-text buyer">
+                  <p style="white-space: pre-line">
+                    {{message.comment}}
+                  </p>
+                </div>
+              </template>
             </div>
-            <div style="clear:both" class="my-10"></div>
-            <img class="message-img" src="https://dummyimage.com/100x100/000000/FFFFFF.png&text=S" alt="Seller">
-            <div class="message-text">
-              <p>
-                商品発送いたしました。
-                到着までしばらくお待ちください。 <br>
-                届きましたら、評価よりご連絡ください。<br>
-                <br>
-                なお、作業円滑化のため、追跡番号連絡や時間指定はできませんのでご了承ください。<br>
-                1週間過ぎても商品が届かない場合はご連絡ください。<br>
-                以上、ありがとうございました。<br>
-                <br>
-                私から製品を購入していただきました方限定で、毎月3万～100万のお小遣いを得る丸秘術を無料でメール配信しております。<br>
-                https://december-ex.com/rg/5218/1/<br>
-                <br>
-                LINE@:https://line.me/ti/p/%40zno5557o<br>
-              </p>
-            </div>
-          </div>
+          </template>
+
         </div>
       </div>
     </div>
@@ -140,7 +151,8 @@ export default {
   name: 'YahooAuctionTradeMessage',
   data () {
     return {
-      product: {}
+      product: {},
+      comment: '',
     }
   },
   async mounted () {
@@ -166,6 +178,32 @@ export default {
         this.$router.push({name: 'YahooAuctionTrade'})
       }
     },
+    async addMessage () {
+      let newComment = {
+        yahoo_id: this.selectedYahooAccount.yahoo_id,
+        comment: this.comment,
+        created_at: new Date().getTime(),
+        type: 'seller'
+      }
+      let result = await this.$refs.formMessage.validate();
+      if (result) {
+        let params = {
+          ...this.product,
+          message_list: [newComment].concat(this.product.message_list)
+        }
+        let res = await ProductYahooEndedApi.update(this.product._id, params);
+        if (res && res.status === 200) {
+          this.$swal.fire({
+            icon: "success",
+            title: "Add message successfully",
+            timer: 500,
+            showConfirmButton: false,
+          });
+          this.product = res.data.product
+          this.comment = ''
+        }
+      }
+    }
   }
 }
 </script>
@@ -181,24 +219,24 @@ export default {
 .message-info {
   padding-bottom: 15px;
 }
-.message-img {
+.message-img.seller {
   border-radius: 50%;
   float: right;
   width: 40px;
   height: 40px;
 }
-.message-text {
+.message-text.seller {
   background: #00a65a;
   border-color: #00a65a;
   color: #ffffff;
   margin-right: 50px;
   margin-left: 0;
-  padding: 15px;
+  padding: 0 15px 15px;
   border-radius: 5px;
   position: relative;
   border: 1px solid #d2d6de;
 }
-.message-text::before {
+.message-text.seller::before {
   right: auto;
   left: 100%;
   position: absolute;
@@ -210,5 +248,44 @@ export default {
   height: 0;
   width: 0;
   pointer-events: none;
+}
+.message-img.buyer {
+  border-radius: 50%;
+  float: left;
+  width: 40px;
+  height: 40px;
+}
+.message-text.buyer {
+  background: #d2d6de;
+  border-color: #d2d6de;
+  color: #000;
+  margin-left: 50px;
+  margin-right: 0;
+  padding: 0 15px 15px;
+  border-radius: 5px;
+  position: relative;
+  border: 1px solid #d2d6de;
+}
+.message-text.buyer::before {
+  left: auto;
+  right: 100%;
+  position: absolute;
+  top: 12px;
+  border-right: 8px solid #d2d6de;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  content: ' ';
+  height: 0;
+  width: 0;
+  pointer-events: none;
+}
+.message-item {
+  margin: 15px 0;
+}
+.created-at {
+ color: #999; 
+}
+.user {
+  font-weight: bold;
 }
 </style>

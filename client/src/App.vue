@@ -35,7 +35,8 @@ export default {
       return (this.$route.meta.layout || "normal") + "-layout";
     },
     ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
+      userInfo: "getUserInfo"
     })
   },
   created() {
@@ -66,7 +67,7 @@ export default {
     },
     checkExistYahooAccount() {
       const NO_NEED_VALIDATE_ROUTER = ["YahooAccounts", "ChangePassword"];
-      if (this.isUserLoggedIn && !this.selectedYahooAccount._id) {
+      if (this.isUserLoggedIn && this.userInfo.type !== "admin" && !this.selectedYahooAccount._id) {
         if (!NO_NEED_VALIDATE_ROUTER.includes(this.$route.name)) {
           this.$router.push({ name: "YahooAccounts" });
           this.$swal.fire({

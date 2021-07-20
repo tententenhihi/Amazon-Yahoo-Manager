@@ -59,12 +59,12 @@ export default class AmazonController {
             if (!infoDetail) {
                 response.error400({ message: 'Info detail is required' });
             }
-            if (!ProductAmazonSchema.TYPE.includes(type)) {
-                response.error400({ message: 'Type is required' });
-            }
-            if (!ProductAmazonSchema.STATUS.includes(status)) {
-                response.error400({ message: 'Status is required' });
-            }
+            // if (!ProductAmazonSchema.TYPE.includes(type)) {
+            //     response.error400({ message: 'Type is required' });
+            // }
+            // if (!ProductAmazonSchema.STATUS.includes(status)) {
+            //     response.error400({ message: 'Status is required' });
+            // }
             if (!folder_id) {
                 response.error400({ message: 'Folder is required' });
             }
@@ -136,12 +136,12 @@ export default class AmazonController {
             if (!infoDetail) {
                 response.error400({ message: 'Info detail is required' });
             }
-            if (!ProductAmazonSchema.TYPE.includes(type)) {
-                response.error400({ message: 'Type is required' });
-            }
-            if (!ProductAmazonSchema.STATUS.includes(status)) {
-                response.error400({ message: 'Status is required' });
-            }
+            // if (!ProductAmazonSchema.TYPE.includes(type)) {
+            //     response.error400({ message: 'Type is required' });
+            // }
+            // if (!ProductAmazonSchema.STATUS.includes(status)) {
+            //     response.error400({ message: 'Status is required' });
+            // }
             if (!folder_id) {
                 response.error400({ message: 'Folder is required' });
             }

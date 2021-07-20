@@ -18,7 +18,7 @@
           </div>
           <div class="user-info">
             <span class="user-name">
-              <strong>Admin</strong>
+              <strong>{{ this.userInfo.username }}</strong>
             </span>
             <span class="user-role">Administrator</span>
             <span class="user-status">
@@ -73,7 +73,13 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
+  computed: {
+    ...mapGetters({
+      userInfo: "getUserInfo"
+    })
+  },
   methods: {
     onClickLogout() {
       this.$store.dispatch("setUser", null);

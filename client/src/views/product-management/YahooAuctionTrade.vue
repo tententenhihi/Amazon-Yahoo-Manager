@@ -90,7 +90,7 @@
               <td>{{ product.time_end }}</td>
               <td>{{ product.auction_status }}</td>
               <td>
-                <div>
+                <div style="word-break: break-all;">
                   {{ product.note }}
                 </div>
                 <button class="btn btn-info" @click="onOpenModalNote(product)">
@@ -128,11 +128,12 @@
       </template>
       <template>
         <textarea
-          v-model="selectedEdiNote.note"
+          :value="selectedEdiNote.note"
           class="form-control"
           id=""
           cols="30"
           rows="5"
+          ref="textareaNote"
         ></textarea>
       </template>
       <template v-slot:button>
@@ -232,7 +233,7 @@ export default {
     async onSaveNote() {
       let res = await ProductYahooEndedApi.update(
         this.selectedEdiNote._id,
-        this.selectedEdiNote
+        {...this.selectedEdiNote, note: this.$refs.textareaNote.value}
       );
       if (res && res.status === 200) {
         this.$swal.fire({
@@ -241,6 +242,7 @@ export default {
           timer: 500,
           showConfirmButton: false,
         });
+        this.selectedEdiNote.note = this.$refs.textareaNote.value;
         this.oncloseModal();
       }
     },
