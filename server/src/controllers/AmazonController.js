@@ -237,44 +237,57 @@ export default class AmazonController {
             const { amazon_product_ids, folder_id } = req.body;
 
             for (let index = 0; index < amazon_product_ids.length; index++) {
-                let amazon_product_id = amazon_product_ids[index];
-                let productAmazon = await ProductAmazonService.findOne({ _id: amazon_product_id });
+                let product_amazon_id = amazon_product_ids[index];
+                let productAmazon = await ProductAmazonService.findOne({ _id: product_amazon_id });
                 if (!productAmazon) {
                     return response.error400({ message: 'Not found amazon product.!' });
                 }
                 productAmazon.folder_id = folder_id;
                 productAmazon.is_convert_yahoo = true;
+
+                productAmazon.basecost = parseInt(productAmazon.basecost) || 0;
+                productAmazon.profit = parseInt(productAmazon.profit) || 0;
+                productAmazon.price = parseInt(productAmazon.price) || 0;
+                productAmazon.shipping = parseInt(productAmazon.shipping) || 0;
+
                 await productAmazon.save();
-
-                let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id: productAmazon.yahoo_account_id, user_id: user._id });
-
-                let cate_yahoo = '0';
-                //Dùng cate amazon Check xem có trong mapping k
-                let productYahoo = {
-                    ...defaultSetting,
-                    id_category_amazon: productAmazon.category_id,
-                    ship_fee1: defaultSetting.yahoo_auction_shipping,
-                    extra_stock: defaultSetting.extra_stock,
-                    asin_amazon: productAmazon.asin,
-                    images: productAmazon.images,
-                    user_id: productAmazon.idUser,
-                    foreign_key: productAmazon._id,
-                    product_yahoo_title: productAmazon.name,
-                    yahoo_account_id: productAmazon.yahoo_account_id,
-                    start_price: productAmazon.price,
-                    import_price: productAmazon.basecost,
-                    profit: productAmazon.profit,
-                    description: productAmazon.description,
-                    folder_id,
-                    product_model: 'AMAZON',
-                    yahoo_auction_category_id: cate_yahoo,
-                    bid_or_buy_price: 0,
-                    created: Date.now(),
-                };
-                await ProductYahooService.create(productYahoo);
+                let existProductYahoo = await ProductYahooService.findOne({product_amazon_id})
+                if (existProductYahoo) {
+                    existProductYahoo.folder_id = folder_id;
+                    existProductYahoo.yahoo_account_id = productAmazon.yahoo_account_id
+                    await existProductYahoo.save();
+                } else {
+                    let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id: productAmazon.yahoo_account_id, user_id: user._id });
+    
+                    let cate_yahoo = '0';
+                    //Dùng cate amazon Check xem có trong mapping k
+                    let productYahoo = {
+                        ...defaultSetting,
+                        id_category_amazon: productAmazon.category_id,
+                        ship_fee1: defaultSetting.yahoo_auction_shipping,
+                        extra_stock: defaultSetting.extra_stock,
+                        asin_amazon: productAmazon.asin,
+                        images: productAmazon.images,
+                        user_id: productAmazon.idUser,
+                        foreign_key: productAmazon._id,
+                        product_yahoo_title: productAmazon.name,
+                        yahoo_account_id: productAmazon.yahoo_account_id,
+                        start_price: parseInt(productAmazon.price) || 0,
+                        import_price: parseInt(productAmazon.basecost) || 0,
+                        profit: productAmazon.profit,
+                        description: productAmazon.description,
+                        folder_id,
+                        product_model: 'AMAZON',
+                        yahoo_auction_category_id: cate_yahoo,
+                        bid_or_buy_price: 0,
+                        product_amazon_id: productAmazon._id,
+                        created: Date.now(),
+                    };
+                    await ProductYahooService.create(productYahoo);
+                }
             }
 
-            return response.success200({ sucess: true });
+            return response.success200({ success: true });
         } catch (error) {
             console.log(' #### AmazonController -> convertToYahooProduct: ', error);
             response.error500(error);

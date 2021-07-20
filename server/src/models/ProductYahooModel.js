@@ -21,6 +21,10 @@ var Product = new Schema({
         ref: 'Folder',
         required: true,
     },
+    product_amazon_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ProductAmazon',
+    },
     product_model: {
         type: String,
         default: '',

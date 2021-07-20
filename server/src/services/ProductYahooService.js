@@ -1,4 +1,5 @@
 import ProductYahooSchema from '../models/ProductYahooModel';
+import ProductAmazonSchema from '../models/ProductAmazonModel';
 import fs from 'fs';
 import mongoose from 'mongoose';
 export default class ProductYahooService {
@@ -66,8 +67,18 @@ export default class ProductYahooService {
             if (!product) {
                 throw new Error('Product not found');
             } else {
+                if (product.product_amazon_id) {
+                    let productAmazon = await ProductAmazonSchema.findById(product.product_amazon_id)
+                    if (!product) {
+                        throw new Error('Product amazon not found');
+                    } else {
+                        productAmazon.folder_id = ''
+                        productAmazon.is_convert_yahoo = false
+                        await productAmazon.save()
+                    }
+                }
                 await product.remove();
-                for (let index = 0; index < product.images.length; index++) {
+                for (let index = 0; index < product.imageslength; index++) {
                     const element = product.images[index];
                     try {
                         fs.unlinkSync('uploads/' + element);
