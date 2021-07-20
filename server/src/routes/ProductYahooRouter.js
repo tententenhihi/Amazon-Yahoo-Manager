@@ -11,5 +11,8 @@ ProductYahooRouter.route('/delete/:_id').post(ProductYahooController.deleteProdu
 ProductYahooRouter.route('/stop-transition/:_id').post(ProductYahooController.stopTransaction);
 ProductYahooRouter.route('/send-message/:_id').post(ProductYahooController.sendMessage);
 ProductYahooRouter.route('/send-rating/:_id').post(ProductYahooController.sendRating);
+ProductYahooRouter.route('/switch-watch-option').post(ProductYahooController.switchWatchOption);
+ProductYahooRouter.route('/change-product-folder').post(ProductYahooController.changeProductFolder);
+ProductYahooRouter.route('/delete-multiple-product').post(ProductYahooController.deleteMultipleProduct);
 
 export default ProductYahooRouter;

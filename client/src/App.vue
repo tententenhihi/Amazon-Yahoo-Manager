@@ -61,9 +61,6 @@ export default {
           this.$swal.fire({
             icon: "warning",
             title: "Please add yahoo account",
-            timer: 500,
-            showConfirmButton: false,
-            position: 'top-end'
           });
         }
       }

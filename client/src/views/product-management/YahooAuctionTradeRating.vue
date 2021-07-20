@@ -144,7 +144,6 @@ export default {
             title: "Add rating successfully",
             timer: 500,
             showConfirmButton: false,
-            position: 'top-end'
           });
           this.product = res.data.product
           this.selectedTemplate = {

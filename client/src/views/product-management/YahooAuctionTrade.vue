@@ -178,7 +178,6 @@ export default {
           title: "Add note successfully",
           timer: 500,
           showConfirmButton: false,
-          position: 'top-end'
         });
         this.oncloseModal()
       }

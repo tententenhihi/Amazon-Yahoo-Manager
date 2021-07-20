@@ -349,4 +349,47 @@ export default class ProductYahooController {
             response.error500(error);
         }
     }
+    static async switchWatchOption (req, res) {
+        let response = new Response(res);
+        try {
+            const { ids, type, value } = req.body;
+            const TYPES = ['watch_stock', 'watch_profit', 'watch_only_prime'];
+            const VALUES = ['0', '1'];
+            if (!TYPES.includes(type) || !VALUES.includes(value) ) {
+                return response.error400('Data not correct!')
+            }
+            let res = await ProductYahooService.switchWatchOption(ids, type, value);
+            if (res) {
+                return response.success200({success: res})
+            }
+        } catch (error) {
+            response.error500(error);
+        }
+    }
+    static async changeProductFolder (req, res) {
+        let response = new Response(res);
+        try {
+            const { ids, folder_id } = req.body;
+            let res = await ProductYahooService.changeProductFolder(ids, folder_id);
+            if (res) {
+                return response.success200({success: res})
+            }
+        } catch (error) {
+            response.error500(error);
+        }
+    }
+
+    static async deleteMultipleProduct(req, res) {
+        let response = new Response(res);
+        try {
+            const { ids } = req.body;
+            for (let index = 0; index < ids.length; index++) {
+                const _id = ids[index];
+                await ProductYahooService.delete(_id);
+            }
+            return response.success200({ success: true });
+        } catch (error) {
+            response.error500(error);
+        }
+    }
 }
