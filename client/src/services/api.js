@@ -76,11 +76,10 @@ export default class Api {
     try {
       EventBus.$emit('showLoading', true)
       res = await Axios.post(url, data, newConfig);
-      EventBus.$emit('showLoading', false)
     } catch (err) {
-      EventBus.$emit('showLoading', false)
       res = err.response;
     }
+    EventBus.$emit('showLoading', false)
 
     if (
       !res ||
@@ -119,11 +118,10 @@ export default class Api {
     try {
       EventBus.$emit('showLoading', true)
       res = await Axios.get(url, newConfig);
-      EventBus.$emit('showLoading', false)
     } catch (err) {
       res = err.response;
     }
-
+    EventBus.$emit('showLoading', false)
     // Check network error
     if (
       !res ||

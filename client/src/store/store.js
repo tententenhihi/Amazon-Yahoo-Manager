@@ -79,6 +79,9 @@ export default new Vuex.Store({
     getYahooAccount ({commit}) {
       commit('GET_YAHOO_ACCOUNT')
     },
+    setYahooAccount({ commit }, data) {
+      commit('SET_YAHOO_ACCOUNT', data)
+    },
     logout({commit}) {
       commit('CLEAR_DATA')
     }

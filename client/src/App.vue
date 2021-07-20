@@ -15,6 +15,7 @@ import NormalLayout from "./layouts/NormalLayout.vue";
 import AdminLayout from "./layouts/AdminLayout.vue";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
+import YahooAccountApi from "@/services/YahooAccountApi";
 
 export default {
   name: "App",
@@ -34,44 +35,54 @@ export default {
       return (this.$route.meta.layout || "normal") + "-layout";
     },
     ...mapGetters({
-      selectedYahooAccount: 'getSelectedYahooAccount'
+      selectedYahooAccount: "getSelectedYahooAccount"
     })
   },
   created() {
     this.$eventBus.$on("showLoading", this.onShowLoading);
   },
-  async mounted () {
+  async mounted() {
     if (this.isUserLoggedIn) {
-      await this.$store.dispatch('getYahooAccount')
-      this.checkExistYahooAccount()
+      await this.getListAccount();
+      this.checkExistYahooAccount();
     }
   },
   beforeDestroy() {
     this.$eventBus.$off("showLoading", this.onShowLoading);
   },
   methods: {
+    async getListAccount() {
+      let result = await YahooAccountApi.get();
+      if (result && result.status === 200) {
+        let accounts = result.data.accounts || [];
+        await this.$store.dispatch("setYahooAccount", accounts);
+      } else if (result.status === 401) {
+        await this.$store.dispatch("setUser", null);
+        this.$router.push({ name: "Login" });
+      }
+    },
     onShowLoading(value) {
       this.isLoading = value;
     },
-    checkExistYahooAccount () {
-      const NO_NEED_VALIDATE_ROUTER = ['YahooAccounts', 'ChangePassword']
+    checkExistYahooAccount() {
+      const NO_NEED_VALIDATE_ROUTER = ["YahooAccounts", "ChangePassword"];
       if (this.isUserLoggedIn && !this.selectedYahooAccount._id) {
         if (!NO_NEED_VALIDATE_ROUTER.includes(this.$route.name)) {
-          this.$router.push({name: 'YahooAccounts'})
+          this.$router.push({ name: "YahooAccounts" });
           this.$swal.fire({
             icon: "warning",
             title: "Please add yahoo account",
             timer: 500,
             showConfirmButton: false,
-            position: 'top-end'
+            position: "top-end"
           });
         }
       }
     }
   },
   watch: {
-    '$route' () {
-      this.checkExistYahooAccount()
+    $route() {
+      this.checkExistYahooAccount();
     }
   }
 };
@@ -81,6 +92,11 @@ export default {
 <style src="@/assets/css/style.css"></style>
 
 <style>
+.btn-xs {
+  padding: 1px 5px !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+}
 .vld-overlay.is-full-page {
   z-index: 9999 !important;
 }

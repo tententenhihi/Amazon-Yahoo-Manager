@@ -18,6 +18,10 @@ var Product = new Schema({
     price_end: {
         type: Number,
     },
+    buyer_count: {
+        type: Number,
+        default: 0,
+    },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -121,10 +125,6 @@ var Product = new Schema({
         type: Number,
         default: 0,
     },
-    reserve_price: {
-        type: Number,
-        defaul: 0,
-    },
     description: {
         type: String,
         default: '',
@@ -221,11 +221,11 @@ var Product = new Schema({
     },
     message_list: {
         type: Array,
-        default: []
+        default: [],
     },
     rating_list: {
         type: Array,
-        default: []
+        default: [],
     },
     created: {
         type: Date,

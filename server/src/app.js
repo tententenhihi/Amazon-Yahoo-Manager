@@ -7,18 +7,14 @@ import indexRouter from './routes/index';
 import MongoDB from './services/MongoDB';
 import PassportService from './services/PassportService';
 import UserService from './services/UserService';
-import ProxyService from './services/ProxyService';
 import Path from 'path';
 import QueueGetProductAmazon from './services/QueueGetProductAmazon';
 import QueueLoginYahooAuction from './services/QueueLoginYahooAuction';
 import upload from 'express-fileupload';
 import BrightDataService from './services/BrightDataService';
-import AuctionYahooService from './services/AuctionYahooService';
-import ProductYahooService from './services/ProductYahooService';
-import AccountYahooService from './services/AccountYahooService';
-import ProductYahooEndedService from './services/ProductYahooEndedService';
-import ProductAmazonSchema from './models/ProductAmazonModel';
-import SearchCodeSchema from './models/SearchCodeAmazonModel';
+
+import CronJobService from './crons/CronJobService';
+
 
 require('dotenv').config();
 
@@ -57,16 +53,9 @@ let initData = async () => {
     new QueueGetProductAmazon();
     new QueueLoginYahooAuction();
     BrightDataService.loadProxyToDB();
+    new CronJobService();
 
     console.log('Server Started.!');
-
-    let proxy = {
-        ip: '178.171.80.121',
-        host: 'zproxy.lum-superproxy.io',
-        port: 22225,
-        username: 'lum-customer-c_84db29ae-zone-zone2-ip-178.171.80.121',
-        password: '7ox35md3j0jm',
-    };
 
     // let l2 = await SearchCodeSchema.find({});
     // for (const iterator of l2) {
@@ -79,31 +68,9 @@ let initData = async () => {
     //     await iterator.remove();
     // }
     // console.log(l.length);
-    // //// get Product yahoo ended
+    //// get Product yahoo ended
 
-    // let listAccountYahoo = await AccountYahooService.find({});
-    // for (let i = 0; i < listAccountYahoo.length; i++) {
-    //     const accountYahoo = listAccountYahoo[i];
-    //     let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
-    //     console.log(proxyResult);
-    //     if (proxyResult.status === 'SUCCESS') {
-    //         let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.cookie, proxyResult.data);
-    //         for (let j = 0; j < listProductEnded.length; j++) {
-    //             const product = listProductEnded[j];
-    //             let productYahoo = await ProductYahooService.findOne({ aID: product.aID });
-    //             if (productYahoo) {
-    //                 let newProductYahooEnded = {
-    //                     ...productYahoo._doc,
-    //                     ...product,
-    //                     _id: null,
-    //                 };
-    //                 newProductYahooEnded = await ProductYahooEndedService.create(newProductYahooEnded);
-    //                 console.log(newProductYahooEnded);
-    //             }
-    //         }
-    //     }
-    // }
-    // AuctionYahooService.getProductAuctionEnded();
+    
 
     //// Upload Product Yahoo
     // let listProduct = await ProductYahooService.find({ upload_status: 'NEW' });

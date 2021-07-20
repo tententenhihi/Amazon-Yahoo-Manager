@@ -3,8 +3,12 @@
     <nav id="sidebar" class="sidebar-wrapper">
       <div class="sidebar-content">
         <div class="sidebar-brand">
-          <a href="#">AYM</a>
-          <div id="close-sidebar" @click="$emit('closeSidebar')" >
+          <a
+            href="#"
+            style="font-size: 16px; font-weight: bold; color: white; text-align: center;"
+            >ヤフプロ</a
+          >
+          <div id="close-sidebar" @click="$emit('closeSidebar')">
             <i class="fas fa-times"></i>
           </div>
         </div>
@@ -18,9 +22,8 @@
           </div>
           <div class="user-info">
             <span class="user-name">
-              <strong>Admin</strong>
+              <strong>{{ this.userInfo.username }}</strong>
             </span>
-            <span class="user-role">Administrator</span>
             <span class="user-status">
               <i class="fa fa-circle"></i>
               <span>Online</span>
@@ -34,16 +37,19 @@
                 <i class="fa fa-user"></i>
                 <span>アカウント設定</span>
               </a>
-              <div class="sidebar-submenu" :class="{'d-block': dropdownOpen == 1}">
+              <div
+                class="sidebar-submenu"
+                :class="{ 'd-block': dropdownOpen == 1 }"
+              >
                 <ul>
                   <li>
-                    <router-link :to="{name: 'YahooAccounts'}">
+                    <router-link :to="{ name: 'YahooAccounts' }">
                       <i class="fa fa-user"></i>
                       <span>アカウント設定</span>
                     </router-link>
                   </li>
                   <li>
-                    <router-link :to="{name: 'ChangePassword'}">
+                    <router-link :to="{ name: 'ChangePassword' }">
                       <i class="fa fa-lock"></i>
                       <span>パスワード変更</span>
                     </router-link>
@@ -52,13 +58,13 @@
               </div>
             </li>
             <li class="sidebar-dropdown">
-              <router-link :to="{name: 'AsinManagement'}">
+              <router-link :to="{ name: 'AsinManagement' }">
                 <i class="fa fa-list"></i>
                 <span>ASIN管理</span>
               </router-link>
             </li>
             <li class="sidebar-dropdown">
-              <router-link :to="{name: 'Products'}">
+              <router-link :to="{ name: 'Products' }">
                 <i class="fa fa-calendar"></i>
                 <span>AMAZON製品</span>
               </router-link>
@@ -68,10 +74,13 @@
                 <i class="fa fa-check-square"></i>
                 <span>出品管理</span>
               </a>
-              <div class="sidebar-submenu" :class="{'d-block': dropdownOpen == 2}">
+              <div
+                class="sidebar-submenu"
+                :class="{ 'd-block': dropdownOpen == 2 }"
+              >
                 <ul>
                   <li>
-                    <router-link :to="{name: 'YahooAuctionProducts'}">
+                    <router-link :to="{ name: 'YahooAuctionProducts' }">
                       <i class="fa fa-calendar"></i>
                       <span>Y!オーク取扱商品管理</span>
                     </router-link>
@@ -84,10 +93,13 @@
                 <i class="fa fa-list"></i>
                 <span>出品した商品管理</span>
               </a>
-              <div class="sidebar-submenu" :class="{'d-block': dropdownOpen == 4}">
+              <div
+                class="sidebar-submenu"
+                :class="{ 'd-block': dropdownOpen == 4 }"
+              >
                 <ul>
                   <li>
-                    <router-link :to="{name: 'YahooAuctionTrade'}">
+                    <router-link :to="{ name: 'YahooAuctionTrade' }">
                       <i class="fa fa-calendar"></i>
                       <span>Y!オーク取扱商品管理</span>
                     </router-link>
@@ -106,46 +118,49 @@
                 <i class="fa fa-cogs"></i>
                 <span>出品設定</span>
               </a>
-              <div class="sidebar-submenu" :class="{'d-block': dropdownOpen == 3}">
+              <div
+                class="sidebar-submenu"
+                :class="{ 'd-block': dropdownOpen == 3 }"
+              >
                 <ul>
                   <li>
-                    <router-link :to="{name: 'FolderManagement'}">
+                    <router-link :to="{ name: 'FolderManagement' }">
                       <i class="fa fa-list-alt"></i>
                       <span>フォルダ管理</span>
                     </router-link>
                   </li>
                   <li>
-                    <router-link :to="{name: 'ProductInfomationDefault'}">
+                    <router-link :to="{ name: 'ProductInfomationDefault' }">
                       <i class="fa fa-list-alt"></i>
                       <span>Y!オーク出品情報管理</span>
                     </router-link>
                   </li>
                   <li>
-                    <router-link :to="{name: 'TemplateSetting'}">
+                    <router-link :to="{ name: 'TemplateSetting' }">
                       <i class="fa fa-list-alt"></i>
                       <span>テンプレート</span>
                     </router-link>
                   </li>
                   <li>
-                    <router-link :to="{name: 'ProductDescriptionSetting'}">
+                    <router-link :to="{ name: 'ProductDescriptionSetting' }">
                       <i class="fa fa-edit"></i>
                       <span>説明文</span>
                     </router-link>
                   </li>
                   <li>
-                    <router-link :to="{name: 'TradeMessageTemplate'}">
+                    <router-link :to="{ name: 'TradeMessageTemplate' }">
                       <i class="fa fa-book"></i>
                       <span>取引ナビテンプレート管理</span>
                     </router-link>
                   </li>
                   <li>
-                    <router-link :to="{name: 'RatingTemplate'}">
+                    <router-link :to="{ name: 'RatingTemplate' }">
                       <i class="fa fa-book"></i>
                       <span>評価テンプレート管理</span>
                     </router-link>
                   </li>
                   <li>
-                    <router-link :to="{name: 'YahooAuctionPublicSetting'}">
+                    <router-link :to="{ name: 'YahooAuctionPublicSetting' }">
                       <i class="fa fa-tasks"></i>
                       <span>自動出品設定</span>
                     </router-link>
@@ -159,7 +174,11 @@
                 <span>管理ページ</span>
               </router-link>
             </li> -->
-            <li class="sidebar-dropdown mt-100" :class="{'mt-100': userInfo.type == 'member'}" @click="onClickLogout">
+            <li
+              class="sidebar-dropdown mt-100"
+              :class="{ 'mt-100': userInfo.type == 'member' }"
+              @click="onClickLogout"
+            >
               <a style="cursor: pointer">
                 <i class="fa fa-power-off"></i>
                 <span>ログアウト</span>
@@ -173,9 +192,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 export default {
-  props: ['currentRouter'],
+  props: ["currentRouter"],
   data() {
     return {
       dropdownOpen: 0,
@@ -184,7 +203,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      userInfo: 'getUserInfo'
+      userInfo: "getUserInfo"
     })
   },
   methods: {
@@ -196,26 +215,26 @@ export default {
       this.dropdownOpen == index
         ? (this.dropdownOpen = 0)
         : (this.dropdownOpen = index);
-    },
+    }
   },
   watch: {
-    '$route' () {
-      let type = this.$route.meta.type
+    $route() {
+      let type = this.$route.meta.type;
       switch (type) {
-        case 'user':
-          this.dropdownOpen = 1
+        case "user":
+          this.dropdownOpen = 1;
           break;
-        case 'product':
-          this.dropdownOpen = 2
+        case "product":
+          this.dropdownOpen = 2;
           break;
-        case 'config':
-          this.dropdownOpen = 3
+        case "config":
+          this.dropdownOpen = 3;
           break;
-        case 'product-management':
-          this.dropdownOpen = 4
+        case "product-management":
+          this.dropdownOpen = 4;
           break;
         default:
-          this.dropdownOpen = 0
+          this.dropdownOpen = 0;
           break;
       }
     }
@@ -224,4 +243,7 @@ export default {
 </script>
 
 <style scoped>
+li {
+  white-space: nowrap;
+}
 </style>
