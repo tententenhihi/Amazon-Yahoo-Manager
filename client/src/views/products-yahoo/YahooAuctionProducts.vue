@@ -65,8 +65,8 @@
 
           <div class="form-row">
             <div class="form-group col-sm-4">
-              <label for="inventory">在庫監視</label>
-              <select id="inventory" class="form-control" v-model="searchObj.inventory">
+              <label for="stock">在庫監視</label>
+              <select id="stock" class="form-control" v-model="searchObj.watch_stock">
                 <option :value="null" selected>すべて</option>
                 <option v-for="(option, index) in SWITCH_OPTION" :key="index" :value="option.value">
                   {{ option.display }}
@@ -75,7 +75,7 @@
             </div>
             <div class="form-group col-sm-4">
               <label for="profit">利益監視</label>
-              <select id="profit" class="form-control" v-model="searchObj.profit">
+              <select id="profit" class="form-control" v-model="searchObj.watch_profit">
                 <option :value="null" selected>すべて</option>
                 <option v-for="(option, index) in SWITCH_OPTION" :key="index" :value="option.value">
                   {{ option.display }}
@@ -84,7 +84,7 @@
             </div>
             <div class="form-group col-sm-4">
               <label for="prime">プライムのみ監視</label>
-              <select id="prime" class="form-control" v-model="searchObj.prime">
+              <select id="prime" class="form-control" v-model="searchObj.watch_only_prime">
                 <option :value="null" selected>すべて</option>
                 <option v-for="(option, index) in SWITCH_OPTION" :key="index" :value="option.value">
                   {{ option.display }}
@@ -93,27 +93,41 @@
             </div>
           </div>
           
-          <button type="submit" class="btn btn-primary" @click="onSearchProduct">検索</button>
-          <button type="submit" class="btn btn-default" @click="clearSearchProduct">リセット</button>
+          <button class="btn btn-primary" @click="onSearchProduct">検索</button>
+          <button class="btn btn-default" @click="clearSearchProduct">リセット</button>
         </div>
         <hr>
       </div>
-      <div class="px-10 py-20 table-responsive">
+      <div class="group-button px-10 py-20">
+        <button :disabled="!selectedProducts.length" @click="$refs.modalSelectFolder.openModal()"
+          class="btn btn-primary">フォルダ移動</button>
+        <button :disabled="!selectedProducts.length" @click="$refs.modalDeleteProduct.openModal()"
+          class="btn btn-danger mx-10">削除</button>
+        <button :disabled="!selectedProducts.length" @click="onOpenModalWitchOption('watch_stock')"
+          class="btn btn-info">在庫監視ON/OFF</button>
+        <button :disabled="!selectedProducts.length" @click="onOpenModalWitchOption('watch_profit')"
+          class="btn btn-info">利益監視ON/OFF</button>
+        <button :disabled="!selectedProducts.length" @click="onOpenModalWitchOption('watch_only_prime')"
+          class="btn btn-info">プライムのみ監視ON/OFF</button>
+      </div>
+      <div class="px-10 table-responsive">
         <paginate
           v-if="pageCount > 1"
           v-model="page"
           :page-count="pageCount"
           :page-range="3"
           :margin-pages="2"
-          :prev-text="'Prev'"
-          :next-text="'Next'"
+          :prev-text="'«'"
+          :next-text="'»'"
           :container-class="'pagination'"
           :page-class="'page-item'">
         </paginate>
         <table class="table table-striped pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
-              <th scope="col">数</th>
+              <th scope="col">
+                <input type="checkbox" v-model="isCheckAllProduct">
+              </th>
               <th scope="col">画像</th>
               <th scope="col">Y！オーク商品の名前</th>
               <th scope="col">期間(日)</th>
@@ -139,7 +153,9 @@
           </thead>
           <tbody>
             <tr v-for="(product, index) in tableData" :key="product._id">
-              <td scope="row">{{ index + 1 }}</td>
+              <td scope="row">
+                <input type="checkbox" v-model="selectedProducts" :value="product" :id="product._id">
+              </td>
               <td>
                 <img
                   style="max-width: 120px"
@@ -161,10 +177,22 @@
               <td>{{ product.count_product }}</td>
               <td>{{ product.import_price }}</td>
               <td>{{ 0 }}</td>
-              <td>{{ product.listing_status }}</td>
-              <td>{{ "ON" }}</td>
-              <td>{{ "ON" }}</td>
-              <td>{{ "OF" }}</td>
+              <td>
+                <span v-if="product.listing_status === 'UNDER_EXHIBITION'" class="label label-info">出品済み</span>
+                <span v-else class="label label-danger">未出品</span>
+              </td>
+              <td>
+                <span v-if="product.watch_stock === '1'" class="label label-success">ON</span>
+                <span v-else class="label label-danger">OFF</span>
+              </td>
+              <td>
+                <span v-if="product.watch_profit === '1'" class="label label-success">ON</span>
+                <span v-else class="label label-danger">OFF</span>
+              </td>
+              <td>
+                <span v-if="product.watch_only_prime === '1'" class="label label-success">ON</span>
+                <span v-else class="label label-danger">OFF</span>
+              </td>
               <td>{{ "No" }}</td>
               <td>{{ product.id_category_amazon }}</td>
               <td>{{ product.yahoo_auction_category_id }}</td>
@@ -191,6 +219,72 @@
         </table>
       </div>
     </div>
+    <modal-component ref="modalSwitchOption">
+      <template v-slot:header>
+        <h5>選択された商品にどの操作を適用しますか？</h5>
+      </template>
+      <template>
+        <div>
+          適用する操作のボタンを下記より選んで押して下さい。キャンセルする場合、キャンセルボタンを押して下さい。
+        </div>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button class="btn btn-success mr-1" @click="switchOption('1')">
+            {{ SWITCH_TYPE[selectedTypeWitch] }}ON
+          </button>
+          <button class="btn btn-danger mr-1" @click="switchOption('0')">
+            {{ SWITCH_TYPE[selectedTypeWitch] }}OFF
+          </button>
+          <button class="btn btn-default" @click="onCloseModal">
+            キャンセル
+          </button>
+        </div>
+      </template>
+    </modal-component>
+
+    <modal-component ref="modalSelectFolder">
+      <template v-slot:header>
+        <h5><i class="fa fa-file"></i> フォルダ管理</h5>
+      </template>
+      <template>
+        <div class="form-group form-line">
+          <label class="col-sm-4 control-label">選択フォルダの出品予定</label>
+          <div class="col-sm-7">
+            <select class="form-control" v-model="selectedFolder">
+              <option v-for="(folder, index) in folders" :value="folder._id" :key="index">{{folder.name}}</option>
+            </select>
+          </div>
+          に
+        </div>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button class="btn btn-success mr-1" @click="onMoveProductToFolder">
+            移動
+          </button>
+          <button class="btn btn-default" @click="onCloseModal">
+            キャンセル
+          </button>
+        </div>
+      </template>
+    </modal-component>
+
+    <modal-component ref="modalDeleteProduct" :isModalBody="false">
+      <template v-slot:header>
+        <h5>選択された商品を取扱商品から除外しますか？</h5>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button class="btn btn-success mr-1" @click="onDeleteMultipleProduct">
+            移動
+          </button>
+          <button class="btn btn-default" @click="onCloseModal">
+            キャンセル
+          </button>
+        </div>
+      </template>
+    </modal-component>
   </div>
 </template>
 
@@ -310,11 +404,15 @@ const LISTING_STATUS = [
   { display: "未出品", value: 'NOT_LISTED' },
   { display: "出品中", value: 'UNDER_EXHIBITION' },
 ];
-
 const SWITCH_OPTION = [
-  { display: "OFF", value: 0 },
-  { display: "ON", value: 1 }
+  { display: "OFF", value: '0' },
+  { display: "ON", value: '1' }
 ];
+const SWITCH_TYPE = {
+  watch_stock: '在庫監視',
+  watch_profit: '利益監視',
+  watch_only_prime: 'プライムのみ監視'
+}
 
 export default {
   name: "YahooAuctionProducts",
@@ -334,13 +432,18 @@ export default {
         folder: null,
         queryString: '',
         listingStatus: null,
-        inventory: null,
-        prime: null,
-        profit: null
+        watch_stock: null,
+        watch_profit: null,
+        watch_only_prime: null,
       },
       folders: [],
       LISTING_STATUS,
-      SWITCH_OPTION
+      SWITCH_OPTION,
+      selectedProducts: [],
+      isCheckAllProduct: false,
+      selectedTypeWitch: '',
+      SWITCH_TYPE,
+      selectedFolder: null,
     };
   },
   async mounted() {
@@ -452,6 +555,15 @@ export default {
         if (this.searchObj.listingStatus) {
           condition = condition && product.listing_status === this.searchObj.listingStatus
         }
+        if (Number.isInteger(parseInt(this.searchObj.watch_stock))) {
+          condition = condition && product.watch_stock === this.searchObj.watch_stock
+        }
+        if (Number.isInteger(parseInt(this.searchObj.watch_profit))) {
+          condition = condition && product.watch_profit === this.searchObj.watch_profit
+        }
+        if (Number.isInteger(parseInt(this.searchObj.watch_only_prime))) {
+          condition = condition && product.watch_only_prime === this.searchObj.watch_only_prime
+        }
         if (condition) {
           return product;
         }
@@ -462,12 +574,111 @@ export default {
         folder: null,
         queryString: '',
         listingStatus: null,
-        inventory: null,
-        prime: null,
-        profit: null
+        watch_stock: null,
+        watch_profit: null,
+        watch_only_prime: null,
       }
       this.searchProducts = [...this.products]
     },
+    onOpenModalWitchOption (type) {
+      this.selectedTypeWitch = type
+      this.$refs.modalSwitchOption.openModal()
+    },
+    async switchOption (value) {
+      let params = {
+        ids: this.selectedProducts.map(item => item._id),
+        type: this.selectedTypeWitch,
+        value
+      }
+      let res = await ProductYahooApi.switchWatchOption(params);
+      if (res && res.status === 200) {
+        let title = ''
+        switch (this.selectedTypeWitch) {
+          case 'watch_stock':
+            title = '選択された商品の在庫監視設定を変更しました。'
+            break;
+          case 'watch_profit':
+            title = '選択された商品の利益監視設定を変更しました。'
+            break;
+          case 'watch_only_prime':
+            title = '選択された商品のプライムのみ監視設定を変更しました。'
+            break;
+          default:
+            break;
+        }
+        this.selectedProducts = this.selectedProducts.map(item => {
+          item[this.selectedTypeWitch] = value;
+          return item;
+        })
+        this.isCheckAllProduct = false
+        this.onCloseModal();
+        this.$swal.fire({
+          icon: "success",
+          title: title,
+        });
+      }
+    },
+    onCloseModal () {
+      this.$refs.modalSwitchOption.closeModal()
+      this.$refs.modalSelectFolder.closeModal()
+      this.$refs.modalDeleteProduct.closeModal()
+    },
+    async onMoveProductToFolder () {
+      let params = {
+        ids: this.selectedProducts.map(item => item._id),
+        folder_id: this.selectedFolder,
+      }
+      let res = await ProductYahooApi.changeProductFolder(params);
+      if (res && res.status === 200) {
+        this.selectedProducts = this.selectedProducts.map(item => {
+          item.folder_id = this.selectedFolder;
+          return item;
+        })
+        this.onCloseModal();
+        this.$swal.fire({
+          icon: "success",
+          title: '取扱商品フォルダの設定を行いました。',
+        });
+      }
+    },
+    async onDeleteMultipleProduct () {
+      let params = {
+        ids: this.selectedProducts.map(item => item._id),
+      }
+      let res = await ProductYahooApi.deleteMultipleProduct(params);
+      if (res && res.status === 200) {
+        this.selectedProducts.forEach(item => {
+          let index = this.products.findIndex(product => product._id === item._id)
+          this.products.splice(index, 1)
+        })
+        this.isCheckAllProduct = false
+        this.onCloseModal();
+        this.$swal.fire({
+          icon: "success",
+          title: '取扱商品フォルダの設定を行いました。',
+        });
+      }
+    },
+  },
+  watch: {
+    isCheckAllProduct () {
+      if (this.isCheckAllProduct) {
+        this.selectedProducts = [...this.tableData]
+      } else {
+        this.selectedProducts = []
+      }
+    },
+    selectedProducts () {
+      if ( this.selectedProducts.length && this.selectedProducts.length == this.tableData.length ) {
+        this.isCheckAllProduct = true
+      } else {
+        this.isCheckAllProduct = false
+      }
+    },
+    page () {
+      this.isCheckAllProduct = false;
+      this.selectedProducts = []
+    }
   }
 };
 </script>

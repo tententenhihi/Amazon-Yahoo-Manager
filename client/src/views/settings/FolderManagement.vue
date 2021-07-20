@@ -91,7 +91,6 @@ export default {
           title: "Add folder successfully",
           timer: 500,
           showConfirmButton: false,
-          position: 'top-end'
         });
         this.folders.push({...res.data.folder, productamazons: [], productyahoos: []})
         localStorage.setItem('folders', JSON.stringify(this.folders))
@@ -126,7 +125,6 @@ export default {
             title: "Sort folder successfully",
             timer: 500,
             showConfirmButton: false,
-            position: 'top-end'
           });
         }
       }
@@ -140,7 +138,6 @@ export default {
             title: "Delete folder successfully",
             timer: 500,
             showConfirmButton: false,
-            position: 'top-end'
           });
           for (let index = 0; index < this.selectedFolder.length; index++) {
             const element = this.selectedFolder[index];
@@ -167,9 +164,9 @@ export default {
           title: "Move data in folder successfully",
           timer: 500,
           showConfirmButton: false,
-          position: 'top-end'
         });
         this.getFolders()
+        this.selectedFolder = []
       }
     }
   }

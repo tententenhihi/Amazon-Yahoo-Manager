@@ -16,4 +16,13 @@ export default {
   delete(id) {
     return Api.post(`${prefix}/delete/${id}`);
   },
+  switchWatchOption(data) {
+    return Api.post(`${prefix}/switch-watch-option`, data);
+  },
+  changeProductFolder(data) {
+    return Api.post(`${prefix}/change-product-folder`, data);
+  },
+  deleteMultipleProduct(data) {
+    return Api.post(`${prefix}/delete-multiple-product`, data);
+  },
 };

@@ -71,10 +71,7 @@ export default {
           this.$router.push({ name: "YahooAccounts" });
           this.$swal.fire({
             icon: "warning",
-            title: "Please add yahoo account",
-            timer: 500,
-            showConfirmButton: false,
-            position: "top-end"
+            title: "Please add yahoo account"
           });
         }
       }

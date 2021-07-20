@@ -77,8 +77,8 @@
           :page-count="pageCount"
           :page-range="3"
           :margin-pages="2"
-          :prev-text="'Prev'"
-          :next-text="'Next'"
+          :prev-text="'«'"
+          :next-text="'»'"
           :container-class="'pagination'"
           :page-class="'page-item'">
         </paginate>
@@ -349,7 +349,6 @@ export default {
           title: "Set shipping successfully",
           timer: 500,
           showConfirmButton: false,
-          position: 'top-end'
         });
       }
     },
@@ -399,7 +398,6 @@ export default {
           title: "Update successfully",
           timer: 500,
           showConfirmButton: false,
-          position: 'top-end'
         });
         this.selectedFolder = null;
         this.selectedProduct = []

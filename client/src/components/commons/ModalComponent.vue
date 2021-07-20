@@ -7,7 +7,7 @@
             <slot name="header"></slot>
           </div>
         </div>
-        <div class="modal-body py-20">
+        <div class="modal-body py-20" v-if="isModalBody">
           <slot></slot>
         </div>
         <div class="modal-footer pt-10">
@@ -33,6 +33,10 @@ export default {
       type: Boolean,
       default: true
     },
+    isModalBody: {
+      type: Boolean,
+      default: true
+    }
   },
   data () {
     return {

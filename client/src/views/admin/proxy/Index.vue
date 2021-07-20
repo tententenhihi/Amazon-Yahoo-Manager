@@ -27,8 +27,8 @@
           :page-count="pageCount"
           :page-range="3"
           :margin-pages="2"
-          :prev-text="'Prev'"
-          :next-text="'Next'"
+          :prev-text="'«'"
+          :next-text="'»'"
           :container-class="'pagination'"
           :page-class="'page-item'">
         </paginate>

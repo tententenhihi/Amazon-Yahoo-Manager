@@ -220,6 +220,21 @@ var Product = new Schema({
     upload_status_message: {
         type: String,
     },
+    watch_stock: {
+        type: String,
+        enum: ['0', '1'],
+        default: '0',
+    },
+    watch_profit: {
+        type: String,
+        enum: ['0', '1'],
+        default: '0',
+    },
+    watch_only_prime: {
+        type: String,
+        enum: ['0', '1'],
+        default: '0',
+    },
     created: {
         type: Date,
         default: Date.now,
