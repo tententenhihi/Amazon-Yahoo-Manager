@@ -1,17 +1,24 @@
 <template>
   <div class="wrapper-content" v-if="isInit">
     <div class="box-header">
-      BLACKLIST ASIN
+      禁止ASIN一覧
     </div>
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 pb-20">
-        <div class="d-flex mt-20 col-12">
-          <input type="text" placeholder="asin" v-model="asin" class="form-control col-4 col-lg-3">
-          <input type="text" placeholder="reason for prohibition" v-model="reason_for_prohibition"
-            class="form-control ml-2 col-4 col-lg-3">
-          <button class="btn btn-primary ml-2" @click="addAsin">Add Asin</button>
-        </div>
+        <ValidationObserver tag="div" class="d-flex my-20 col-12" ref="formAsin">
+          <ValidationProvider rules="required" name="ASIN" v-slot="{ errors }" tag="div" class="col-4 col-lg-3">
+            <input type="text" placeholder="ASIN" v-model="asin" class="form-control">
+            <div class="error-message" v-if="errors.length">{{errors[0]}}</div>
+          </ValidationProvider>
+          <ValidationProvider rules="required" name="禁止理由" v-slot="{ errors }" tag="div" class="col-4 col-lg-3">
+            <input type="text" placeholder="禁止理由" v-model="reason_for_prohibition" class="form-control">
+            <div class="error-message" v-if="errors.length">{{errors[0]}}</div>
+          </ValidationProvider>
+          <div>
+            <button class="btn btn-primary ml-2" style="height: 100%;" @click="addAsin">追加</button>
+          </div>
+        </ValidationObserver>
         <paginate
           v-if="pageCount > 1"
           v-model="page"
@@ -24,12 +31,12 @@
           :page-class="'page-item'">
         </paginate>
         <div class="table-responsive">
-          <table class="table table-striped display pt-10 my-20">
+          <table class="table table-striped display pt-10 my-10">
             <thead class="thead-purple">
               <tr>
                 <th scope="col">ID</th>
                 <th scope="col">ASIN</th>
-                <th scope="col">Reason for prohibition</th>
+                <th scope="col">禁止理由</th>
                 <th scope="col"></th>
               </tr>
             </thead>
@@ -38,9 +45,8 @@
                 <td>{{ item.asin_id }}</td>
                 <td>{{ item.asin }}</td>
                 <td>{{ item.reason_for_prohibition }}</td>
-                <!-- <td>{{ $moment(item.created).format('YYYY/MM/DD') }}</td> -->
                 <td>
-                  <button class="btn btn-warning" @click="deleteAsin(item, index)">Delete</button>
+                  <button class="btn btn-warning" @click="deleteAsin(item, index)">削除</button>
                 </td>
               </tr>
             </tbody>
@@ -99,15 +105,20 @@ export default {
       }
     },
     async addAsin () {
-      let res = await AdminApi.createAsin({asin: this.asin, type: 'BLACK', reason_for_prohibition: this.reason_for_prohibition});
-      if (res && res.status === 200) {
-        this.$swal.fire({
-          icon: "success",
-          title: "Add black asin successfully",
-        });
-        this.asin = ''
-        this.reason_for_prohibition = ''
-        this.asins.push(res.data.asin)
+      let validate = await this.$refs.formAsin.validate();
+      if (validate) {
+        let res = await AdminApi.createAsin({asin: this.asin, type: 'BLACK', reason_for_prohibition: this.reason_for_prohibition});
+        if (res && res.status === 200) {
+          this.$swal.fire({
+            icon: "success",
+            title: "Add black asin successfully",
+            timer: 500,
+            showConfirmButton: false,
+          });
+          this.asin = ''
+          this.reason_for_prohibition = ''
+          this.asins.push(res.data.asin)
+        }
       }
     },
     async deleteAsin (item, index) {
@@ -116,6 +127,8 @@ export default {
         this.$swal.fire({
           icon: "success",
           title: "Delete black asin successfully",
+          timer: 500,
+          showConfirmButton: false,
         });
         this.asins.splice(index, 1)
       }

@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper-content" v-if="isInit">
     <div class="box-header">
-      <i class="fa fa-edit mr-2"></i>{{ productId ? 'Edit product' : 'Add new product'}}
+      <i class="fa fa-edit mr-2"></i>{{ productId ? '製品の編集' : '新製品を追加する'}}
     </div>
     <hr />
     <div class="box-content">
@@ -9,30 +9,30 @@
         <div class="form-row">
           <div class="form-group col-md-6">
             <label for="asin">ASIN</label>
-            <input type="text" class="form-control" id="asin" v-model="product.asin" placeholder="Asin">
+            <input type="text" class="form-control" id="asin" v-model="product.asin" placeholder="ASIN">
           </div>
           <div class="form-group col-md-6">
             <label for="name">名前</label>
-            <input type="text" class="form-control" id="name" v-model="product.name" placeholder="Name">
+            <input type="text" class="form-control" id="name" v-model="product.name" placeholder="名前">
           </div>
           <div class="form-group col-md-6">
             <label for="url">URL</label>
-            <input type="text" class="form-control" id="url" v-model="product.url" placeholder="Url">
+            <input type="text" class="form-control" id="url" v-model="product.url" placeholder="URL">
           </div>
           <div class="form-group col-md-6">
             <label for="price">価格(¥)</label>
-            <input type="number" class="form-control" id="price" v-model="product.price" placeholder="Price">
+            <input type="number" class="form-control" id="price" v-model="product.price" placeholder="価格(¥)">
           </div>
           <div class="form-group col-md-6">
             <label for="countProduct">製品を数える</label>
-            <input type="number" class="form-control" id="countProduct" v-model="product.countProduct" placeholder="Count product">
+            <input type="number" class="form-control" id="countProduct" v-model="product.countProduct" placeholder="製品を数える">
           </div>
           <div class="form-group col-md-6">
             <label for="delivery">配達</label>
-            <input type="text" class="form-control" id="delivery" v-model="product.delivery" placeholder="Delivery">
+            <input type="text" class="form-control" id="delivery" v-model="product.delivery" placeholder="配達">
           </div>
           <div class="form-group col-md-6">
-            <label for="type">Folder</label>
+            <label for="type">フォルダ</label>
             <select id="type" class="form-control" v-model="product.folder_id">
               <template v-for="(folder, index) in folders">
                 <option :value="folder._id" :key="index">{{folder.name}}</option>
@@ -58,7 +58,7 @@
             </select>
           </div> -->
           <div class="form-group col-md-6">
-            <label for="status">Description</label>
+            <label for="status">説明</label>
             <textarea v-model="product.description" class="form-control" cols="30" rows="5"></textarea>
           </div>
           <div class="col-md-6"></div>

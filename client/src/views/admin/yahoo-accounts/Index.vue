@@ -169,7 +169,9 @@ export default {
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
-          title: "Success",
+          title: "Set proxy to account successfully",
+          timer: 500,
+          showConfirmButton: false,
         });
         await this.getYahooAccounts();
         this.selectedProxy = null

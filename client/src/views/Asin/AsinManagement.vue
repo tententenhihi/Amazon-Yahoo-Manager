@@ -19,7 +19,9 @@
         <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
           <History :listAsin="listAsin" />
         </div>
-        <div class="tab-pane fade" id="black-list" role="tabpanel" aria-labelledby="black-list-tab">...</div>
+        <div class="tab-pane fade" id="black-list" role="tabpanel" aria-labelledby="black-list-tab">
+          <BlackList :blackList="blackList" />
+        </div>
       </div>
     </div>
   </div>
@@ -29,17 +31,20 @@
 import AsinApi from "../../services/asinApi";
 import ImportAsin from './blocks/ImportAsin.vue'
 import History from './blocks/History.vue'
+import BlackList from './blocks/BlackList.vue'
 import { mapGetters } from 'vuex';
 export default {
   name: 'AsinManagement',
   components: {
     ImportAsin,
-    History
+    History,
+    BlackList
   },
   data() {
     return {
       isLoading: false,
       listAsin: [],
+      blackList: [],
       search: "",
       headers: [
         {
@@ -67,6 +72,8 @@ export default {
         if (res && res.status === 200) {
           this.listAsin = res.data.listSearchCode;
           this.listAsin = [...this.listAsin]
+          this.blackList = res.data.black_list
+          this.blackList = [...this.blackList]
         }
       } catch (error) {
         this.$swal.fire({

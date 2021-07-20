@@ -1,5 +1,6 @@
 import QueueGetProductAmazon from '../services/QueueGetProductAmazon';
 import CodeSearchAmazonService from '../services/SearchCodeAmazonService';
+import AsinAmazonService from '../services/AsinAmazonService';
 import Response from '../utils/Response';
 
 export default class CodeSearchAmazonController {
@@ -29,7 +30,8 @@ export default class CodeSearchAmazonController {
                 yahoo_account_id
             };
             let listSearchCode = await CodeSearchAmazonService.get(payload);
-            return response.success200({ listSearchCode });
+            let getBackList = await AsinAmazonService.getBlackList()
+            return response.success200({ listSearchCode, black_list: getBackList });
         } catch (error) {
             console.log(error);
             return response.error500(error);

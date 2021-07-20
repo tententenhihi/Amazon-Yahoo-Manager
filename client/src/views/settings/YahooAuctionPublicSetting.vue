@@ -35,7 +35,7 @@
                 <label for="target-folder" class="col-3 col-form-label">対象フォルダ :</label>
                 <div class="col-9">
                   <select class="custom-select" multiple v-model="setting.new_list_target_folder">
-                    <option v-for="(folder, index) in setting.target_folder_list" :key="index" :value="folder.value">{{folder.display}}</option>
+                    <option v-for="(folder, index) in folders" :key="index" :value="folder._id">{{folder.name}}</option>
                   </select>
                 </div>
               </div>
@@ -188,8 +188,8 @@
                   <label for="" class="col-3 col-form-label">{{n}}日目 :</label>
                   <div class="col-9">
                     <select class="form-control" id="" v-model="setting.calendar_target_folder[i]">
-                      <option v-for="(folder, index) in setting.target_folder_list" :key="index" :value="folder.value">
-                        {{folder.display}}
+                      <option v-for="(folder, index) in folders" :key="index" :value="folder._id">
+                        {{folder.name}}
                       </option>
                     </select>
                   </div>
@@ -234,6 +234,7 @@
 
 <script>
 import AuctionPublicSettingApi from '@/services/AuctionPublicSettingApi'
+import FolderApi from '@/services/FolderApi'
 import { mapGetters } from 'vuex'
 
 const DAY_OF_WEEK = [
@@ -262,11 +263,13 @@ export default {
       DAY_OF_WEEK,
       START_MINUTE,
       setting: {},
+      folders: [],
       isInit: false
     }
   },
   mounted () {
     this.getCurrentSetting()
+    this.getFolders()
   },
   computed: {
     ...mapGetters({
@@ -281,20 +284,17 @@ export default {
       let res = await AuctionPublicSettingApi.get(this.yahooAccountId);
       if (res && res.status == 200) {
         this.setting = res.data.setting
-        this.setting.target_folder_list = TARGET_FOLDER;
-        if (this.setting.new_list_target_folder.length == 0) {
-          this.setting.new_list_target_folder.push(TARGET_FOLDER[0].value)
-        }
         if (this.setting.new_list_process_of_skipped_items == null) {
           this.setting.new_list_process_of_skipped_items = 1;
         }
-        if (this.setting.calendar_target_folder.length == 0) {
-          for (let index = 0; index < 31; index++) {
-            this.setting.calendar_target_folder.push(0)
-          }
-        }
       }
       this.isInit = true
+    },
+    async getFolders () {
+      let res = await FolderApi.get(this.selectedYahooAccount._id);
+      if (res && res.status === 200) {
+        this.folders = res.data.folders
+      }
     },
     async onUpdateSetting (isChangeAuctionDelete = false) {
       if (isChangeAuctionDelete) {

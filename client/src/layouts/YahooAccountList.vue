@@ -37,7 +37,7 @@ export default {
 
 <style scoped>
 .list-yahoo-account {
-  padding-left: 280px;
+  padding-left: 220px;
   background-color: #31353D;
   height: 50px;
   line-height: 40px;
