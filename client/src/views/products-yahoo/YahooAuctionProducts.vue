@@ -12,7 +12,7 @@
         <div class="py-2">
           Y!オークに出品される商品一覧
         </div>
-        <hr>
+        <hr />
         <div class="account-infomation">
           <div class="info-title">
             <i class="fa fa-user mr-2"></i>現在のアカウント情報
@@ -25,38 +25,62 @@
                   <td>{{ userInfo.userId }}</td>
                 </tr>
                 <tr>
-                  <td class="title-col">現在のアカウント識別番号	</td>
+                  <td class="title-col">現在のアカウント識別番号</td>
                   <td>{{ selectedYahooAccount.accountId }}</td>
                 </tr>
                 <tr>
-                  <td class="title-col">現在のアカウントYahoo!ID	</td>
+                  <td class="title-col">現在のアカウントYahoo!ID</td>
                   <td>{{ selectedYahooAccount.yahoo_id }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <p class="mb-10">管理者/運営者へのご連絡の際には必ず上記をお知らせ下さい。</p>
+          <p class="mb-10">
+            管理者/運営者へのご連絡の際には必ず上記をお知らせ下さい。
+          </p>
         </div>
         <div class="form-search">
           <div class="form-row">
             <div class="form-group col-sm-4">
               <label for="folder">出品フォルダ</label>
-              <select id="folder" class="form-control" v-model="searchObj.folder">
+              <select
+                id="folder"
+                class="form-control"
+                v-model="searchObj.folder"
+              >
                 <option :value="null" selected>すべて</option>
-                <option v-for="(folder, index) in folders" :key="index" :value="folder._id">
+                <option
+                  v-for="(folder, index) in folders"
+                  :key="index"
+                  :value="folder._id"
+                >
                   {{ folder.name }}
                 </option>
               </select>
             </div>
             <div class="form-group col-sm-4">
               <label for="queryString">検索クエリー</label>
-              <input type="text" class="form-control" v-model="searchObj.queryString" id="queryString" placeholder="キーワード / 仕入元・オークションID">
+              <input
+                type="text"
+                class="form-control"
+                v-model="searchObj.queryString"
+                id="queryString"
+                placeholder="キーワード / 仕入元・オークションID"
+              />
             </div>
             <div class="form-group col-sm-4">
               <label for="listingStatus">出品ステータス</label>
-              <select id="listingStatus" class="form-control" v-model="searchObj.listingStatus">
+              <select
+                id="listingStatus"
+                class="form-control"
+                v-model="searchObj.listingStatus"
+              >
                 <option :value="null" selected>すべて</option>
-                <option v-for="(status, index) in LISTING_STATUS" :key="index" :value="status.value">
+                <option
+                  v-for="(status, index) in LISTING_STATUS"
+                  :key="index"
+                  :value="status.value"
+                >
                   {{ status.display }}
                 </option>
               </select>
@@ -66,49 +90,100 @@
           <div class="form-row">
             <div class="form-group col-sm-4">
               <label for="stock">在庫監視</label>
-              <select id="stock" class="form-control" v-model="searchObj.watch_stock">
+              <select
+                id="stock"
+                class="form-control"
+                v-model="searchObj.watch_stock"
+              >
                 <option :value="null" selected>すべて</option>
-                <option v-for="(option, index) in SWITCH_OPTION" :key="index" :value="option.value">
+                <option
+                  v-for="(option, index) in SWITCH_OPTION"
+                  :key="index"
+                  :value="option.value"
+                >
                   {{ option.display }}
                 </option>
               </select>
             </div>
             <div class="form-group col-sm-4">
               <label for="profit">利益監視</label>
-              <select id="profit" class="form-control" v-model="searchObj.watch_profit">
+              <select
+                id="profit"
+                class="form-control"
+                v-model="searchObj.watch_profit"
+              >
                 <option :value="null" selected>すべて</option>
-                <option v-for="(option, index) in SWITCH_OPTION" :key="index" :value="option.value">
+                <option
+                  v-for="(option, index) in SWITCH_OPTION"
+                  :key="index"
+                  :value="option.value"
+                >
                   {{ option.display }}
                 </option>
               </select>
             </div>
             <div class="form-group col-sm-4">
               <label for="prime">プライムのみ監視</label>
-              <select id="prime" class="form-control" v-model="searchObj.watch_only_prime">
+              <select
+                id="prime"
+                class="form-control"
+                v-model="searchObj.watch_only_prime"
+              >
                 <option :value="null" selected>すべて</option>
-                <option v-for="(option, index) in SWITCH_OPTION" :key="index" :value="option.value">
+                <option
+                  v-for="(option, index) in SWITCH_OPTION"
+                  :key="index"
+                  :value="option.value"
+                >
                   {{ option.display }}
                 </option>
               </select>
             </div>
           </div>
-          
+
           <button class="btn btn-primary" @click="onSearchProduct">検索</button>
-          <button class="btn btn-default" @click="clearSearchProduct">リセット</button>
+          <button class="btn btn-default" @click="clearSearchProduct">
+            リセット
+          </button>
         </div>
-        <hr>
+        <hr />
       </div>
       <div class="group-button px-10 py-20">
-        <button :disabled="!selectedProducts.length" @click="$refs.modalSelectFolder.openModal()"
-          class="btn btn-primary">フォルダ移動</button>
-        <button :disabled="!selectedProducts.length" @click="$refs.modalDeleteProduct.openModal()"
-          class="btn btn-danger mx-10">削除</button>
-        <button :disabled="!selectedProducts.length" @click="onOpenModalWitchOption('watch_stock')"
-          class="btn btn-info">在庫監視ON/OFF</button>
-        <button :disabled="!selectedProducts.length" @click="onOpenModalWitchOption('watch_profit')"
-          class="btn btn-info">利益監視ON/OFF</button>
-        <button :disabled="!selectedProducts.length" @click="onOpenModalWitchOption('watch_only_prime')"
-          class="btn btn-info">プライムのみ監視ON/OFF</button>
+        <button
+          :disabled="!selectedProducts.length"
+          @click="$refs.modalSelectFolder.openModal()"
+          class="btn btn-primary"
+        >
+          フォルダ移動
+        </button>
+        <button
+          :disabled="!selectedProducts.length"
+          @click="$refs.modalDeleteProduct.openModal()"
+          class="btn btn-danger mx-10"
+        >
+          削除
+        </button>
+        <button
+          :disabled="!selectedProducts.length"
+          @click="onOpenModalWitchOption('watch_stock')"
+          class="btn btn-info"
+        >
+          在庫監視ON/OFF
+        </button>
+        <button
+          :disabled="!selectedProducts.length"
+          @click="onOpenModalWitchOption('watch_profit')"
+          class="btn btn-info"
+        >
+          利益監視ON/OFF
+        </button>
+        <button
+          :disabled="!selectedProducts.length"
+          @click="onOpenModalWitchOption('watch_only_prime')"
+          class="btn btn-info"
+        >
+          プライムのみ監視ON/OFF
+        </button>
       </div>
       <div class="px-10 table-responsive">
         <paginate
@@ -120,87 +195,176 @@
           :prev-text="'«'"
           :next-text="'»'"
           :container-class="'pagination'"
-          :page-class="'page-item'">
+          :page-class="'page-item'"
+        >
         </paginate>
-        <table class="table table-striped pt-20 mb-20" style="width: 100%">
+        <table class="table  table-hover" style="width: 100%">
           <thead class="thead-purple">
             <tr>
-              <th scope="col">
-                <input type="checkbox" v-model="isCheckAllProduct">
+              <th>
+                <input type="checkbox" v-model="isCheckAllProduct" />
               </th>
-              <th scope="col">画像</th>
-              <th scope="col">Y！オーク商品の名前</th>
-              <th scope="col">期間(日)</th>
-              <th scope="col">開始価格</th>
-              <th scope="col">即決価格</th>
-              <th scope="col">送料</th>
-              <th scope="col">出品停止在庫数</th>
-              <th scope="col">数量</th>
-              <th scope="col">仕入元の値段</th>
-              <th scope="col">想定利益</th>
-              <th scope="col">仕入元の在庫数</th>
-              <th scope="col">出品中</th>
-              <th scope="col">在庫 監視</th>
-              <th scope="col">利益 監視</th>
-              <th scope="col">プライムのみ監視</th>
-              <th scope="col">画像挿入</th>
-              <th scope="col">Amazon カテゴリ ID</th>
-              <th scope="col">ヤフー カテゴリ ID (出品予定)</th>
-              <th scope="col">紐付け情報</th>
-              <th scope="col">備考</th>
-              <th scope="col">備考</th>
+              <th class="text-center">画像</th>
+              <th>Y！オーク商品の名前</th>
+              <th class="text-center" width="60">期間<br />(日)<br /></th>
+              <th class="text-center" width="100">開始価格<br /></th>
+              <th class="text-center" width="100">即決価格<br /></th>
+              <th class="text-center" width="70">送料<br /></th>
+              <th class="text-center" width="70">出品停止<br />在庫数<br /></th>
+              <th class="text-center" width="60">数量<br /></th>
+              <th class="text-center" width="70">仕入元の<br />値段</th>
+              <th class="text-center" width="100">
+                想定利益
+              </th>
+              <th class="text-center" width="70">仕入元の<br />在庫数</th>
+              <th class="text-center" width="80">出品中<br /></th>
+              <th class="text-center" width="60">在庫<br />監視<br /></th>
+              <th class="text-center" width="60">利益<br />監視<br /></th>
+              <th class="text-center" width="70">
+                プライム<br />のみ監視<br />
+              </th>
+              <th class="text-center" width="70">
+                画像挿入
+              </th>
+              <th class="text-center" width="70">
+                Amazon<br />カテゴリ<br />ID
+              </th>
+              <th class="text-center" width="70">
+                ヤフー<br />カテゴリ<br />ID<br />(出品予定)
+              </th>
+              <th width="120">
+                紐付け情報
+              </th>
+              <th width="120">
+                備考
+              </th>
+              <th width="120">
+                備考
+              </th>
             </tr>
           </thead>
+
           <tbody>
             <tr v-for="(product, index) in tableData" :key="product._id">
-              <td scope="row">
-                <input type="checkbox" v-model="selectedProducts" :value="product" :id="product._id">
+              <td class="text-center" width="50">
+                <input
+                  type="checkbox"
+                  v-model="selectedProducts"
+                  :value="product"
+                  :id="product._id"
+                />
               </td>
-              <td>
+              <td width="120">
                 <img
-                  style="max-width: 120px"
-                  v-if="product.images && product.images.length"
                   :src="
                     product.images[0].includes('http')
                       ? product.images[0]
                       : SERVER_HOST_UPLOAD + product.images[0]
                   "
-                  alt=""
+                  style="min-width: 50px;"
                 />
               </td>
-
-              <td style="word-break: break-all;">{{ product.product_yahoo_title }}</td>
-              <td>{{ displayDuration(product) }}</td>
-              <td>{{ product.start_price }}</td>
-              <td>{{ product.bid_or_buy_price }}</td>
-              <td>{{ product.shipping }}</td>
-              <td>{{ product.count_product }}</td>
-              <td>{{ product.import_price }}</td>
-              <td>{{ 0 }}</td>
               <td>
-                <span v-if="product.listing_status === 'UNDER_EXHIBITION'" class="label label-info">出品済み</span>
+                <a :href="`/yahoo-auction-products/${product._id}`">{{
+                  product.product_yahoo_title
+                }}</a>
+              </td>
+              <td class="text-center">fix-0</td>
+              <td class="text-center">
+                {{
+                  product.start_price
+                    ? product.start_price.toLocaleString("ja-JP")
+                    : 0
+                }}
+                {{ product.start_price ? "円" : "" }}
+              </td>
+              <td class="text-center">
+                {{
+                  product.bid_or_buy_price
+                    ? product.bid_or_buy_price.toLocaleString("ja-JP")
+                    : 0
+                }}{{ product.bid_or_buy_price ? "円" : "" }}
+              </td>
+              <td class="text-center">
+                {{
+                  product.ship_fee1
+                    ? product.ship_fee1.toLocaleString("ja-JP")
+                    : 0
+                }}{{ product.ship_fee1 ? "円" : "" }}
+              </td>
+              <td class="text-center">{{ product.extra_stock }}</td>
+              <td class="text-center">{{ product.count_product }}</td>
+              <td class="text-center">
+                {{
+                  product.import_price
+                    ? product.import_price.toLocaleString("ja-JP")
+                    : 0
+                }}{{ product.import_price ? "円" : "" }}
+                <div>
+                  <a
+                    class="btn btn-xs btn-warning text-white"
+                    :href="`https://www.amazon.co.jp/dp/${product.asin_amazon}`"
+                    target="_blank"
+                  >
+                    購入元
+                  </a>
+                </div>
+              </td>
+              <td class="text-center">
+                {{ product.profit ? product.profit.toLocaleString("ja-JP") : 0
+                }}{{ product.profit ? "円" : "" }}
+              </td>
+              <td class="text-center">fix-1</td>
+              <td class="text-center">
+                <span
+                  v-if="product.listing_status === 'UNDER_EXHIBITION'"
+                  class="label label-info"
+                  >出品済み</span
+                >
                 <span v-else class="label label-danger">未出品</span>
               </td>
-              <td>
-                <span v-if="product.watch_stock === '1'" class="label label-success">ON</span>
+              <td class="text-center">
+                <span
+                  v-if="product.watch_stock === '1'"
+                  class="label label-success"
+                  >ON</span
+                >
                 <span v-else class="label label-danger">OFF</span>
               </td>
-              <td>
-                <span v-if="product.watch_profit === '1'" class="label label-success">ON</span>
+              <td class="text-center">
+                <span
+                  v-if="product.watch_profit === '1'"
+                  class="label label-success"
+                  >ON</span
+                >
                 <span v-else class="label label-danger">OFF</span>
               </td>
-              <td>
-                <span v-if="product.watch_only_prime === '1'" class="label label-success">ON</span>
+              <td class="text-center">
+                <span
+                  v-if="product.watch_only_prime === '1'"
+                  class="label label-success"
+                  >ON</span
+                >
                 <span v-else class="label label-danger">OFF</span>
               </td>
-              <td>{{ "No" }}</td>
-              <td>{{ product.id_category_amazon }}</td>
-              <td>{{ product.yahoo_auction_category_id }}</td>
-              <td>{{ product.asin_amazon }}</td>
-              <td>{{ product.note }}</td>
-              <td></td>
-              <td></td>
-              <td>
+              <td class="text-center">
+                <span class="label label-danger">Fix-なし</span>
+              </td>
+              <td class="text-center">
+                {{
+                  product.id_category_amazon ? product.id_category_amazon : "-"
+                }}
+              </td>
+              <td class="text-center">
+                {{
+                  product.yahoo_auction_category_id
+                    ? product.yahoo_auction_category_id
+                    : "-"
+                }}
+              </td>
+              <td class="text-center">{{ product.asin_amazon }}</td>
+              <td class="text-center">{{ product.note }}</td>
+              <td class="text-center">
                 <button
                   class="btn btn-md btn-warning mb-1 mr-1"
                   @click="goToFormProduct(product._id)"
@@ -252,7 +416,12 @@
           <label class="col-sm-4 control-label">選択フォルダの出品予定</label>
           <div class="col-sm-7">
             <select class="form-control" v-model="selectedFolder">
-              <option v-for="(folder, index) in folders" :value="folder._id" :key="index">{{folder.name}}</option>
+              <option
+                v-for="(folder, index) in folders"
+                :value="folder._id"
+                :key="index"
+                >{{ folder.name }}</option
+              >
             </select>
           </div>
           に
@@ -290,7 +459,7 @@
 
 <script>
 import ProductYahooApi from "@/services/ProductYahooApi";
-import FolderApi from '@/services/FolderApi'
+import FolderApi from "@/services/FolderApi";
 import { mapGetters } from "vuex";
 
 const PRODUCT_STATUS = [
@@ -401,18 +570,18 @@ const CONSPICUOUS_ICON = [
   { display: "産地直送", value: 8 }
 ];
 const LISTING_STATUS = [
-  { display: "未出品", value: 'NOT_LISTED' },
-  { display: "出品中", value: 'UNDER_EXHIBITION' },
+  { display: "未出品", value: "NOT_LISTED" },
+  { display: "出品中", value: "UNDER_EXHIBITION" }
 ];
 const SWITCH_OPTION = [
-  { display: "OFF", value: '0' },
-  { display: "ON", value: '1' }
+  { display: "OFF", value: "0" },
+  { display: "ON", value: "1" }
 ];
 const SWITCH_TYPE = {
-  watch_stock: '在庫監視',
-  watch_profit: '利益監視',
-  watch_only_prime: 'プライムのみ監視'
-}
+  watch_stock: "在庫監視",
+  watch_profit: "利益監視",
+  watch_only_prime: "プライムのみ監視"
+};
 
 export default {
   name: "YahooAuctionProducts",
@@ -430,20 +599,20 @@ export default {
       searchProducts: [],
       searchObj: {
         folder: null,
-        queryString: '',
+        queryString: "",
         listingStatus: null,
         watch_stock: null,
         watch_profit: null,
-        watch_only_prime: null,
+        watch_only_prime: null
       },
       folders: [],
       LISTING_STATUS,
       SWITCH_OPTION,
       selectedProducts: [],
       isCheckAllProduct: false,
-      selectedTypeWitch: '',
+      selectedTypeWitch: "",
       SWITCH_TYPE,
-      selectedFolder: null,
+      selectedFolder: null
     };
   },
   async mounted() {
@@ -453,25 +622,28 @@ export default {
   computed: {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
-      userInfo: "getUserInfo",
+      userInfo: "getUserInfo"
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
     },
-    tableData () {
-      return this.searchProducts.slice((this.page - 1) * this.$constants.PAGE_SIZE, this.page * this.$constants.PAGE_SIZE)
+    tableData() {
+      return this.searchProducts.slice(
+        (this.page - 1) * this.$constants.PAGE_SIZE,
+        this.page * this.$constants.PAGE_SIZE
+      );
     },
-    pageCount () {
-      return Math.ceil(this.searchProducts.length / this.$constants.PAGE_SIZE)
-    },
+    pageCount() {
+      return Math.ceil(this.searchProducts.length / this.$constants.PAGE_SIZE);
+    }
   },
   methods: {
-    async getFolders () {
+    async getFolders() {
       let res = await FolderApi.get(this.selectedYahooAccount._id);
       if (res && res.status === 200) {
         this.folders = res.data.folders;
         if (this.folders.length) {
-          this.selectedFolder = this.folders[0]._id
+          this.selectedFolder = this.folders[0]._id;
         }
       }
     },
@@ -480,7 +652,7 @@ export default {
         let res = await ProductYahooApi.get(this.yahooAccountId);
         if (res && res.status === 200) {
           this.products = res.data.products;
-          this.searchProducts = this.products
+          this.searchProducts = this.products;
         }
       } catch (error) {
         this.$swal.fire({
@@ -543,65 +715,73 @@ export default {
         ? this.PREFECTURE.find(item => item.value === product.location).display
         : "";
     },
-    onSearchProduct () {
+    onSearchProduct() {
       this.searchProducts = this.products.filter(product => {
         let condition = true;
         if (this.searchObj.folder) {
-          condition = condition && product.folder_id === this.searchObj.folder
+          condition = condition && product.folder_id === this.searchObj.folder;
         }
         if (this.searchObj.queryString) {
-          condition = condition && (product.product_yahoo_title.includes(this.searchObj.queryString))
+          condition =
+            condition &&
+            product.product_yahoo_title.includes(this.searchObj.queryString);
         }
         if (this.searchObj.listingStatus) {
-          condition = condition && product.listing_status === this.searchObj.listingStatus
+          condition =
+            condition &&
+            product.listing_status === this.searchObj.listingStatus;
         }
         if (Number.isInteger(parseInt(this.searchObj.watch_stock))) {
-          condition = condition && product.watch_stock === this.searchObj.watch_stock
+          condition =
+            condition && product.watch_stock === this.searchObj.watch_stock;
         }
         if (Number.isInteger(parseInt(this.searchObj.watch_profit))) {
-          condition = condition && product.watch_profit === this.searchObj.watch_profit
+          condition =
+            condition && product.watch_profit === this.searchObj.watch_profit;
         }
         if (Number.isInteger(parseInt(this.searchObj.watch_only_prime))) {
-          condition = condition && product.watch_only_prime === this.searchObj.watch_only_prime
+          condition =
+            condition &&
+            product.watch_only_prime === this.searchObj.watch_only_prime;
         }
         if (condition) {
           return product;
         }
-      })
+      });
     },
-    clearSearchProduct () {
+    clearSearchProduct() {
       this.searchObj = {
         folder: null,
-        queryString: '',
+        queryString: "",
         listingStatus: null,
         watch_stock: null,
         watch_profit: null,
-        watch_only_prime: null,
-      }
-      this.searchProducts = [...this.products]
+        watch_only_prime: null
+      };
+      this.searchProducts = [...this.products];
     },
-    onOpenModalWitchOption (type) {
-      this.selectedTypeWitch = type
-      this.$refs.modalSwitchOption.openModal()
+    onOpenModalWitchOption(type) {
+      this.selectedTypeWitch = type;
+      this.$refs.modalSwitchOption.openModal();
     },
-    async switchOption (value) {
+    async switchOption(value) {
       let params = {
         ids: this.selectedProducts.map(item => item._id),
         type: this.selectedTypeWitch,
         value
-      }
+      };
       let res = await ProductYahooApi.switchWatchOption(params);
       if (res && res.status === 200) {
-        let title = ''
+        let title = "";
         switch (this.selectedTypeWitch) {
-          case 'watch_stock':
-            title = '選択された商品の在庫監視設定を変更しました。'
+          case "watch_stock":
+            title = "選択された商品の在庫監視設定を変更しました。";
             break;
-          case 'watch_profit':
-            title = '選択された商品の利益監視設定を変更しました。'
+          case "watch_profit":
+            title = "選択された商品の利益監視設定を変更しました。";
             break;
-          case 'watch_only_prime':
-            title = '選択された商品のプライムのみ監視設定を変更しました。'
+          case "watch_only_prime":
+            title = "選択された商品のプライムのみ監視設定を変更しました。";
             break;
           default:
             break;
@@ -609,75 +789,80 @@ export default {
         this.selectedProducts = this.selectedProducts.map(item => {
           item[this.selectedTypeWitch] = value;
           return item;
-        })
-        this.isCheckAllProduct = false
+        });
+        this.isCheckAllProduct = false;
         this.onCloseModal();
         this.$swal.fire({
           icon: "success",
-          title: title,
+          title: title
         });
       }
     },
-    onCloseModal () {
-      this.$refs.modalSwitchOption.closeModal()
-      this.$refs.modalSelectFolder.closeModal()
-      this.$refs.modalDeleteProduct.closeModal()
+    onCloseModal() {
+      this.$refs.modalSwitchOption.closeModal();
+      this.$refs.modalSelectFolder.closeModal();
+      this.$refs.modalDeleteProduct.closeModal();
     },
-    async onMoveProductToFolder () {
+    async onMoveProductToFolder() {
       let params = {
         ids: this.selectedProducts.map(item => item._id),
-        folder_id: this.selectedFolder,
-      }
+        folder_id: this.selectedFolder
+      };
       let res = await ProductYahooApi.changeProductFolder(params);
       if (res && res.status === 200) {
         this.selectedProducts = this.selectedProducts.map(item => {
           item.folder_id = this.selectedFolder;
           return item;
-        })
+        });
         this.onCloseModal();
         this.$swal.fire({
           icon: "success",
-          title: '取扱商品フォルダの設定を行いました。',
+          title: "取扱商品フォルダの設定を行いました。"
         });
       }
     },
-    async onDeleteMultipleProduct () {
+    async onDeleteMultipleProduct() {
       let params = {
-        ids: this.selectedProducts.map(item => item._id),
-      }
+        ids: this.selectedProducts.map(item => item._id)
+      };
       let res = await ProductYahooApi.deleteMultipleProduct(params);
       if (res && res.status === 200) {
         this.selectedProducts.forEach(item => {
-          let index = this.products.findIndex(product => product._id === item._id)
-          this.products.splice(index, 1)
-        })
-        this.isCheckAllProduct = false
+          let index = this.products.findIndex(
+            product => product._id === item._id
+          );
+          this.products.splice(index, 1);
+        });
+        this.isCheckAllProduct = false;
         this.onCloseModal();
         this.$swal.fire({
           icon: "success",
-          title: '取扱商品フォルダの設定を行いました。',
+          title: "取扱商品フォルダの設定を行いました。"
         });
       }
-    },
+    }
   },
   watch: {
-    isCheckAllProduct () {
+    isCheckAllProduct() {
       if (this.isCheckAllProduct) {
-        this.selectedProducts = [...this.tableData]
+        this.selectedProducts = [...this.tableData];
       } else {
-        this.selectedProducts = []
+        this.selectedProducts = [];
       }
     },
-    selectedProducts () {
-      if ( this.selectedProducts.length && this.selectedProducts.length == this.tableData.length ) {
-        this.isCheckAllProduct = true
+    selectedProducts() {
+      if (
+        this.selectedProducts.length &&
+        this.selectedProducts.length == this.tableData.length
+      ) {
+        this.isCheckAllProduct = true;
       } else {
-        this.isCheckAllProduct = false
+        this.isCheckAllProduct = false;
       }
     },
-    page () {
+    page() {
       this.isCheckAllProduct = false;
-      this.selectedProducts = []
+      this.selectedProducts = [];
     }
   }
 };
