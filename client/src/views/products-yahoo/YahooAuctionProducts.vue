@@ -836,6 +836,7 @@ export default {
           this.products.splice(index, 1);
         });
         this.isCheckAllProduct = false;
+        this.selectedProducts = [];
         this.onCloseModal();
         this.$swal.fire({
           icon: "success",

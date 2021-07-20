@@ -10,7 +10,6 @@ export default class FolderService {
       let result = await FolderModel.aggregate([
         { $match: { user_id: userId, yahoo_account_id: yahooAccountId }},
         { $lookup: { from: 'productyahoos', localField: '_id', foreignField: 'folder_id', as: 'productyahoos'}},
-        { $lookup: { from: 'productamazons', localField: '_id', foreignField: 'folder_id', as: 'productamazons'}},
       ]);
       result.sort((a, b) => a.position - b.position)
       return result;

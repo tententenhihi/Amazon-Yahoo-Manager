@@ -13,8 +13,7 @@ var Product = new Schema({
         required: true,
     },
     folder_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Folder',
+        type: String,
     },
     asin: {
         type: String,

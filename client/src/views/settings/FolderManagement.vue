@@ -34,6 +34,7 @@
           <div v-if="folders.length">
             選択フォルダの出品予定
             <select v-model="destinationFolder" class="form-control" style="display: unset; width: 175px">
+              <option value="">フォルダーを選択</option>
               <option v-for="(folder, index) in folders" :value="folder._id" :key="index">{{folder.name}}</option>
             </select>
             に
@@ -126,6 +127,7 @@ export default {
             timer: 500,
             showConfirmButton: false,
           });
+          localStorage.setItem('folders', JSON.stringify(this.folders))
         }
       }
     },
@@ -150,23 +152,30 @@ export default {
       }
     },
     totalProductOfFolder (folder) {
-      return folder.productamazons.length + folder.productyahoos.length;
+      return folder.productyahoos.length;
     },
     async moveProductToFolder () {
-      let params = {
-        folder_ids: this.selectedFolder.map(item => item._id),
-        destination_folder: this.destinationFolder
-      }
-      let res = await FolderApi.move(params)
-      if (res && res.status == 200) {
+      if (this.selectedFolder.length === 0 || !this.destinationFolder) {
         this.$swal.fire({
-          icon: "success",
-          title: "Move data in folder successfully",
-          timer: 500,
-          showConfirmButton: false,
+          icon: "warning",
+          title: "Please select folder and destination folder",
         });
-        this.getFolders()
-        this.selectedFolder = []
+      } else {
+        let params = {
+          folder_ids: this.selectedFolder.map(item => item._id),
+          destination_folder: this.destinationFolder
+        }
+        let res = await FolderApi.move(params)
+        if (res && res.status == 200) {
+          this.$swal.fire({
+            icon: "success",
+            title: "Move data in folder successfully",
+            timer: 500,
+            showConfirmButton: false,
+          });
+          this.getFolders()
+          this.selectedFolder = []
+        }
       }
     }
   }
