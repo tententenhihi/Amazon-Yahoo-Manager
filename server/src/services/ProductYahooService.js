@@ -1,6 +1,6 @@
 import ProductYahooSchema from '../models/ProductYahooModel';
 import fs from 'fs';
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 export default class ProductYahooService {
     static async find(data) {
         try {
@@ -66,15 +66,15 @@ export default class ProductYahooService {
             if (!product) {
                 throw new Error('Product not found');
             } else {
-                // await product.remove();
-                // for (let index = 0; index < product.images.length; index++) {
-                //     const element = product.images[index];
-                //     try {
-                //         fs.unlinkSync('uploads/' + element);
-                //     } catch (error) {
-                //         console.log(error);
-                //     }
-                // }
+                await product.remove();
+                for (let index = 0; index < product.images.length; index++) {
+                    const element = product.images[index];
+                    try {
+                        fs.unlinkSync('uploads/' + element);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
                 return true;
             }
         } catch (error) {
@@ -92,8 +92,8 @@ export default class ProductYahooService {
                     throw new Error('Product not found');
                 } else {
                     product[type] = value;
-                    product.yahoo_account_id = mongoose.Types.ObjectId(product.yahoo_account_id)
-                    await product.save()
+                    product.yahoo_account_id = mongoose.Types.ObjectId(product.yahoo_account_id);
+                    await product.save();
                 }
             }
             return true;
@@ -112,8 +112,8 @@ export default class ProductYahooService {
                     throw new Error('Product not found');
                 } else {
                     product.folder_id = mongoose.Types.ObjectId(folder_id);
-                    product.yahoo_account_id = mongoose.Types.ObjectId(product.yahoo_account_id)
-                    await product.save()
+                    product.yahoo_account_id = mongoose.Types.ObjectId(product.yahoo_account_id);
+                    await product.save();
                 }
             }
             return true;

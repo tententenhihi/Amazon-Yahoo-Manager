@@ -245,13 +245,16 @@ export default class AmazonController {
                 productAmazon.folder_id = folder_id;
                 productAmazon.is_convert_yahoo = true;
                 await productAmazon.save();
-    
+
                 let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id: productAmazon.yahoo_account_id, user_id: user._id });
-    
+
                 let cate_yahoo = '0';
                 //Dùng cate amazon Check xem có trong mapping k
                 let productYahoo = {
                     ...defaultSetting,
+                    id_category_amazon: productAmazon.category_id,
+                    ship_fee1: defaultSetting.yahoo_auction_shipping,
+                    extra_stock: defaultSetting.extra_stock,
                     asin_amazon: productAmazon.asin,
                     images: productAmazon.images,
                     user_id: productAmazon.idUser,
@@ -277,17 +280,17 @@ export default class AmazonController {
             response.error500(error);
         }
     }
-    static async setShippingProduct (req, res) {
+    static async setShippingProduct(req, res) {
         let response = new Response(res);
         try {
-            let {shipping} = req.body
-            let {_id} = req.params
+            let { shipping } = req.body;
+            let { _id } = req.params;
             let product = await ProductAmazonService.setShippingProduct(_id, shipping);
             if (product) {
-                response.success200({product});
+                response.success200({ product });
             }
         } catch (error) {
-            response.error500(error)
+            response.error500(error);
         }
     }
 }

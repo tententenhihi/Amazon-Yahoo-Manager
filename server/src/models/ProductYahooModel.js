@@ -235,6 +235,11 @@ var Product = new Schema({
         enum: ['0', '1'],
         default: '0',
     },
+    extra_stock: {
+        type: Number,
+        enum: [0, 1],
+        default: 0,
+    },
     created: {
         type: Date,
         default: Date.now,

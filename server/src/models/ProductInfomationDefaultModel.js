@@ -18,11 +18,11 @@ var ProductInfomationDefault = new Schema({
     },
     status_comment: {
         type: String,
-        default: ''
+        default: '',
     },
     offer: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     quantity: {
         type: Number,
@@ -30,7 +30,7 @@ var ProductInfomationDefault = new Schema({
     },
     duration: {
         type: Number,
-        default: 0
+        default: 0,
     },
     closing_time: {
         type: Number,
@@ -38,31 +38,31 @@ var ProductInfomationDefault = new Schema({
     },
     retpolicy: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     retpolicy_comment: {
         type: String,
-        default: ''
+        default: '',
     },
     min_bid_rating: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     bad_rating_ratio: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     bid_credit_limit: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     auto_extension: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     close_early: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     num_resubmit: {
         type: Number,
@@ -70,51 +70,51 @@ var ProductInfomationDefault = new Schema({
     },
     ship_time: {
         type: String,
-        default: 'after'
+        default: 'after',
     },
     shipping: {
         type: String,
-        default: 'buyer'
+        default: 'buyer',
     },
     location: {
         type: String,
-        default: ''
+        default: '',
     },
     city: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_name1: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_fee1: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_name2: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_fee2: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_name3: {
         type: String,
-        default: ''
+        default: '',
     },
     ship_fee3: {
         type: String,
-        default: ''
+        default: '',
     },
     foreign_check: {
         type: String,
-        default: 'no'
+        default: 'no',
     },
     ship_schedule: {
         type: Number,
-        default: 1
+        default: 1,
     },
     featured_amount: {
         type: String,
@@ -130,7 +130,7 @@ var ProductInfomationDefault = new Schema({
     },
     gift: {
         type: Number,
-        default: 0
+        default: 0,
     },
     wrapping: {
         type: String,
@@ -164,7 +164,7 @@ var ProductInfomationDefault = new Schema({
     },
     yahoo_auction_profit_type: {
         type: Number,
-        default: 0
+        default: 0,
     },
     yahoo_auction_price_profit: {
         type: Number,
@@ -183,7 +183,6 @@ var ProductInfomationDefault = new Schema({
         default: Date.now,
     },
 });
-
 
 var ProductInfomationDefaultSchema = mongoose.model('ProductInfomationDefault', ProductInfomationDefault);
 module.exports = ProductInfomationDefaultSchema;
