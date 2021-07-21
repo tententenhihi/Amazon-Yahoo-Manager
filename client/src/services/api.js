@@ -63,7 +63,7 @@ export default class Api {
       headers: {
         Authorization: "Bearer " + store.state.token
       },
-      timeout: 10000
+      timeout: 60000
     };
     var newConfig = { ...config, ...exConfig };
     newConfig.headers = {
@@ -110,7 +110,7 @@ export default class Api {
       headers: {
         Authorization: "Bearer " + store.state.token
       },
-      timeout: 10000
+      timeout: 60000
     };
     var newConfig = { ...config, ...exConfig };
 

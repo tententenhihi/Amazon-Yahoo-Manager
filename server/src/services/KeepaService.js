@@ -9,13 +9,17 @@ export default class KeepaService {
             if (res && res.status === 200 && res.data.products.length > 0) {
                 let listProduct = res.data.products;
                 let productData = listProduct[0];
+                let description = '';
+                productData.features.map((item) => {
+                    description += item + '\n';
+                });
                 productData = {
                     asin,
                     url: `https://www.amazon.co.jp/dp/${asin}`,
                     name: productData.title,
                     category_id: productData.categories[0],
                     images: productData.imagesCSV.split(',').map((item) => 'https://images-na.ssl-images-amazon.com/images/I/' + item),
-                    description: productData.features,
+                    description: description,
                     basecost: 0,
                     profit: 0,
                     price: 0,

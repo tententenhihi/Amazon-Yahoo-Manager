@@ -7,17 +7,17 @@ export default class SearchCodeAmazonService {
             let listSearchCode = await SearchCodeSchema.find(filter);
             //group
             let listGroup = _.groupBy(listSearchCode, function (item) {
-                return item.groupId;
+                return item.query_key;
             });
             let newList = [];
             for (const key in listGroup) {
                 let item = {
-                    groupId: key,
                     countAsin: 0,
                     countAsinGetProductSuccess: 0,
                 };
                 if (Object.hasOwnProperty.call(listGroup, key)) {
                     const element = listGroup[key];
+                    item.groupId = element[0].groupId
                     item.asins = element;
                     item.countAsin = element.length;
                     for (const ele of element) {

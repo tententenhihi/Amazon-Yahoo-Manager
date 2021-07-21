@@ -615,7 +615,7 @@ export default {
       if (result && result.status === 200) {
         this.product = result.data
         if (this.product.yahoo_account_id !== this.yahooAccountId) {
-          this.$router.push({name: 'Products'})
+          this.$router.push({name: 'YahooAuctionProducts'})
         }
         this.images = this.product.images.map(image => {
           return {

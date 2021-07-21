@@ -123,11 +123,12 @@ const router = new Router({
       }
     },
     {
-      path: '/products',
-      name: 'Products',
+      path: '/amazon-products',
+      name: 'AmazonProducts',
       component: ProductList,
       meta: {
-        requiredAuth: true
+        requiredAuth: true,
+        type: 'product'
       }
     },
     {

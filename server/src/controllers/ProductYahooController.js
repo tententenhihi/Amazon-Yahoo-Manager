@@ -200,11 +200,13 @@ export default class ProductYahooController {
                 gift,
                 wrapping,
                 image_length,
+                quantity_check,
+                note
             } = JSON.parse(req.body.payload);
 
-            if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id || !description || !location || !import_price) {
-                return response.error400({ message: '必須フィールドをすべて入力してください' });
-            }
+            // if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id || !description || !location || !import_price) {
+            //     return response.error400({ message: '必須フィールドをすべて入力してください' });
+            // }
 
             let data = {
                 user_id: user._id,
@@ -250,6 +252,8 @@ export default class ProductYahooController {
                 highlight,
                 gift,
                 wrapping,
+                quantity_check,
+                note
             };
             if (req.files && image_length) {
                 for (let index = 0; index < image_length; index++) {

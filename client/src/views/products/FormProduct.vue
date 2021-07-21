@@ -96,7 +96,7 @@
           <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
             セーブ
           </button>
-          <router-link :to="{name: 'Products'}" tag="button" class="btn btn-warning mb-1">キャンセル</router-link>
+          <router-link :to="{name: 'AmazonProducts'}" tag="button" class="btn btn-warning mb-1">キャンセル</router-link>
         </div>
       </div>
     </div>
@@ -136,7 +136,7 @@ export default {
       if (result && result.status === 200) {
         this.product = result.data
         if (this.product.yahoo_account_id !== this.yahooAccountId) {
-          this.$router.push({name: 'Products'})
+          this.$router.push({name: 'AmazonProducts'})
         }
         this.previewImages = this.product.images.map(item => {
           return {
@@ -144,7 +144,7 @@ export default {
           }
         })
       } else {
-        this.$router.push({name: 'Products'})
+        this.$router.push({name: 'AmazonProducts'})
       }
     }
     this.isInit = true
@@ -214,7 +214,7 @@ export default {
           "製品が更新されました。",
           "success"
         );
-        this.$router.push({name: 'Products'})
+        this.$router.push({name: 'AmazonProducts'})
       }
     }
   }
