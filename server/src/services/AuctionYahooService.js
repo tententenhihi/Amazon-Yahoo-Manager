@@ -8,7 +8,6 @@ import constants from '../constants';
 import puppeteer from 'puppeteer';
 import proxyChain from 'proxy-chain';
 import Utils from '../utils/Utils';
-import ProductYahooService from './ProductYahooService';
 
 export default class AuctionYahooService {
     static async uploadNewProduct(cookie, productData, proxy) {

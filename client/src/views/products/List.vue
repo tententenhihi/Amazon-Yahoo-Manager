@@ -141,7 +141,7 @@
         >
           取扱いに追加
         </button>
-        <table class="table pt-20 my-20" style="width: 100%">
+        <table class="table table-hover pt-20 my-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
               <th>

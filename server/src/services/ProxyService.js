@@ -55,6 +55,18 @@ export default class ProxyService {
                 statusMessage: 'Proxy not found!',
             };
         } else {
+            if (proxy.status === 'die') {
+                return {
+                    status: 'ERROR',
+                    statusMessage: 'Proxy is died',
+                };
+            }
+            if (proxy.status === 'lock') {
+                return {
+                    status: 'ERROR',
+                    statusMessage: 'Proxy is locked',
+                };
+            }
             let checkLive = await this.checkLiveProxy(proxy);
             if (!checkLive) {
                 await this.dataUpdate({ _id: proxy._id, status: 'die' });

@@ -1,7 +1,11 @@
 import ProductYahooSchema from '../models/ProductYahooModel';
 import ProductAmazonSchema from '../models/ProductAmazonModel';
+import AccountYahooService from '../services/AccountYahooService';
+import ProxyService from '../services/ProxyService';
+import AuctionYahooService from '../services/AuctionYahooService';
 import fs from 'fs';
 import mongoose from 'mongoose';
+
 export default class ProductYahooService {
     static async find(data) {
         try {
@@ -68,13 +72,13 @@ export default class ProductYahooService {
                 throw new Error('Product not found');
             } else {
                 if (product.product_amazon_id) {
-                    let productAmazon = await ProductAmazonSchema.findById(product.product_amazon_id)
+                    let productAmazon = await ProductAmazonSchema.findById(product.product_amazon_id);
                     if (!product) {
                         throw new Error('Product amazon not found');
                     } else {
-                        productAmazon.folder_id = ''
-                        productAmazon.is_convert_yahoo = false
-                        await productAmazon.save()
+                        productAmazon.folder_id = '';
+                        productAmazon.is_convert_yahoo = false;
+                        await productAmazon.save();
                     }
                 }
                 await product.remove();
@@ -136,11 +140,62 @@ export default class ProductYahooService {
 
     static async startUploadProductInListFolderId(user_id, yahoo_account_id, new_list_target_folder) {
         console.log(' ######### Start Cron job: startUploadProductInListFolderId ');
+        let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
+        if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+            let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+            if (proxyResult.status === 'SUCCESS') {
+                for (const folder_id of new_list_target_folder) {
+                    let listProduct = await ProductYahooSchema.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
+                    for (let index = 0; index < listProduct.length; index++) {
+                        const productYahooData = listProduct[index];
+                        let dataUpdate = {};
+                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data);
+                        console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
+                        dataUpdate.listing_status = 'UPLOADED';
+                        dataUpdate.upload_status = uploadAuctionResult.status;
+                        dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
+                        dataUpdate.aID = uploadAuctionResult.aID;
+                        await ProductYahooService.update(productYahooData._id, dataUpdate);
+                    }
+                }
+            }
+        }
     }
+
     static async startReSubmitProduct(user_id, yahoo_account_id) {
         console.log(' ######### Start Cron job: startReSubmitProduct ');
     }
     static async startUploadProductByCalendar(user_id, yahoo_account_id, calendar_target_folder) {
+        console.log(' ######### Start Cron job: startUploadProductByCalendar ');
+
+        //Get day of month
+        let today = new Date();
+        today = today.getDate();
+
+        if (calendar_target_folder.length >= today) {
+            let folder_id = calendar_target_folder[today - 1];
+            if (folder_id) {
+                let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
+                if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+                    let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+                    if (proxyResult.status === 'SUCCESS') {
+                        let listProduct = await ProductYahooSchema.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
+                        for (let index = 0; index < listProduct.length; index++) {
+                            const productYahooData = listProduct[index];
+                            let dataUpdate = {};
+                            let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data);
+                            console.log(' ### startUploadProductByCalendar uploadAuctionResult: ', uploadAuctionResult);
+                            dataUpdate.listing_status = 'UPLOADED';
+                            dataUpdate.upload_status = uploadAuctionResult.status;
+                            dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
+                            dataUpdate.aID = uploadAuctionResult.aID;
+                            await ProductYahooService.update(productYahooData._id, dataUpdate);
+                        }
+                    }
+                }
+            }
+        }
+
         console.log(' ######### Start Cron job: startUploadProductByCalendar ');
     }
 }
