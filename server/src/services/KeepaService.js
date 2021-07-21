@@ -10,9 +10,13 @@ export default class KeepaService {
                 let listProduct = res.data.products;
                 let productData = listProduct[0];
                 let description = '';
-                productData.features.map((item) => {
-                    description += item + '\n';
-                });
+                if (Array.isArray(productData.features)) {
+                    productData.features.map((item) => {
+                        description += item + '\n';
+                    });
+                } else {
+                    description = productData.features
+                }
                 productData = {
                     asin,
                     url: `https://www.amazon.co.jp/dp/${asin}`,

@@ -174,6 +174,12 @@
                 <span>カテゴリ管理</span>
               </router-link>
             </li>
+            <li class="sidebar-dropdown">
+              <router-link :to="{ name: 'Logs' }">
+                <i class="fa fa-archive"></i>
+                <span>出品ログ</span>
+              </router-link>
+            </li>
             <!-- <li class="sidebar-dropdown mt-100" v-if="userInfo.type == 'admin'">
               <router-link :to="{name: 'AdminUsers'}">
                 <i class="fa fa-home"></i>

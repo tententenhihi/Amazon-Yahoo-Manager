@@ -34,8 +34,11 @@ const FormTradeMessageTemplate = () => import(/* webpackChunkName: "/static/js/c
 const RatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/rating-template" */ '@/views/rating-template/Index.vue');
 const FormRatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/rating-template" */ '@/views/rating-template/FormInput.vue');
 
-const FolderManagement = () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/FolderManagement.vue');
+const FolderManagement = () => import(/* webpackChunkName: "/static/js/chunks/folders" */ '@/views/settings/FolderManagement.vue');
 const Categories = () => import(/* webpackChunkName: "/static/js/chunks/categories" */ '@/views/categories/Index.vue');
+
+const Logs = () => import(/* webpackChunkName: "/static/js/chunks/logs" */ '@/views/logs/Index.vue');
+const LogDetail = () => import(/* webpackChunkName: "/static/js/chunks/logs" */ '@/views/logs/Detail.vue');
 
 // product management
 const YahooAuctionTrade = () =>
@@ -243,6 +246,22 @@ const router = new Router({
       meta: {
         requiredAuth: true,
         type: 'config'
+      }
+    },
+    {
+      path: '/logs',
+      name: 'Logs',
+      component: Logs,
+      meta: {
+        requiredAuth: true,
+      }
+    },
+    {
+      path: '/logs/view/:id',
+      name: 'LogDetail',
+      component: LogDetail,
+      meta: {
+        requiredAuth: true,
       }
     },
     {
