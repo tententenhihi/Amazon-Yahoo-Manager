@@ -3,6 +3,7 @@ import ProductAmazonService from '../services/ProductAmazonService';
 import ProductAmazonSchema from '../models/ProductAmazonModel';
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
 import ProductYahooService from '../services/ProductYahooService';
+import CategoryService from '../services/CategoryService'
 const UploadFile = require('../helpers/UploadFile');
 
 export default class AmazonController {
@@ -258,8 +259,15 @@ export default class AmazonController {
                     await existProductYahoo.save();
                 } else {
                     let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id: productAmazon.yahoo_account_id, user_id: user._id });
-    
-                    let cate_yahoo = '0';
+                    let cateAmazon = await CategoryService.findOne({amazon_cate_id: productAmazon.category_id})
+                    if (!cateAmazon) {
+                        cateAmazon = await CategoryService.create({
+                            user_id: user._id,
+                            amazon_cate_id: productAmazon.category_id,
+                            asin: productAmazon.asin
+                        })
+                    }
+                    let cate_yahoo = cateAmazon.yahoo_cate_id || '0';
                     //Dùng cate amazon Check xem có trong mapping k
                     let productYahoo = {
                         ...defaultSetting,

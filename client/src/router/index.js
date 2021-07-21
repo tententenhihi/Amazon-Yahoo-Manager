@@ -35,6 +35,7 @@ const RatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/rati
 const FormRatingTemplate = () => import(/* webpackChunkName: "/static/js/chunks/rating-template" */ '@/views/rating-template/FormInput.vue');
 
 const FolderManagement = () => import(/* webpackChunkName: "/static/js/chunks/settings" */ '@/views/settings/FolderManagement.vue');
+const Categories = () => import(/* webpackChunkName: "/static/js/chunks/categories" */ '@/views/categories/Index.vue');
 
 // product management
 const YahooAuctionTrade = () =>
@@ -170,6 +171,14 @@ const router = new Router({
       meta: {
         requiredAuth: true,
         type: 'config'
+      }
+    },
+    {
+      path: '/categories',
+      name: 'Categories',
+      component: Categories,
+      meta: {
+        requiredAuth: true,
       }
     },
     {

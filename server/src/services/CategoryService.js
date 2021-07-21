@@ -1,4 +1,4 @@
-import Category from "../models/CateroryModel";
+import Category from "../models/CategoryModel";
 import ProductYahooSchema from "../models/ProductYahooModel";
 export default class CategoryService {
   static async get (userId) {
@@ -21,24 +21,24 @@ export default class CategoryService {
   }
   static async create (data) {
     try {
-        let cate = await Category.create(data);
-        return cate._doc;
+      let cate = await Category.create(data);
+      return cate._doc;
     } catch (error) {
-        console.log(error);
-        throw new Error(error.message);
+      console.log(error);
+      throw new Error(error.message);
     }
 }
   static async update (_id, data) {
     try {
-        let cate = await Category.findOneAndUpdate({ _id: _id }, data, { new: true });
-        let yahooCateId = cate.yahoo_cate_id;
-        let amazonCateId = cate.amazon_cate_id;
-        await ProductYahooSchema.updateMany({user_id: cate.user_id, id_category_amazon: amazonCateId},
-          {yahoo_auction_category_id: yahooCateId})
-        return cate._doc;
+      let cate = await Category.findOneAndUpdate({ _id: _id }, data, { new: true });
+      let yahooCateId = cate.yahoo_cate_id;
+      let amazonCateId = cate.amazon_cate_id;
+      await ProductYahooSchema.updateMany({user_id: cate.user_id, id_category_amazon: amazonCateId},
+        {yahoo_auction_category_id: yahooCateId})
+      return cate._doc;
     } catch (error) {
-        console.log(error);
-        throw new Error(error.message);
+      console.log(error);
+      throw new Error(error.message);
     }
   }
 }

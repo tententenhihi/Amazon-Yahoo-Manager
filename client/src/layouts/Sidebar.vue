@@ -168,6 +168,12 @@
                 </ul>
               </div>
             </li>
+            <li class="sidebar-dropdown">
+              <router-link :to="{ name: 'Categories' }">
+                <i class="fa fa-folder"></i>
+                <span>カテゴリ管理</span>
+              </router-link>
+            </li>
             <!-- <li class="sidebar-dropdown mt-100" v-if="userInfo.type == 'admin'">
               <router-link :to="{name: 'AdminUsers'}">
                 <i class="fa fa-home"></i>
