@@ -1,9 +1,18 @@
 import Category from "../models/CateroryModel";
-
+import ProductYahooSchema from "../models/ProductYahooModel";
 export default class CategoryService {
   static async get (userId) {
     try {
       let result = await Category.find({user_id: userId});
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error.message);
+    }
+  }
+  static async findOne (data) {
+    try {
+      let result = await Category.findOne(data);
       return result;
     } catch (error) {
       console.log(error);
@@ -19,15 +28,17 @@ export default class CategoryService {
         throw new Error(error.message);
     }
 }
-static async update (_id, data) {
+  static async update (_id, data) {
     try {
         let cate = await Category.findOneAndUpdate({ _id: _id }, data, { new: true });
         let yahooCateId = cate.yahoo_cate_id;
-        let 
+        let amazonCateId = cate.amazon_cate_id;
+        await ProductYahooSchema.updateMany({user_id: cate.user_id, id_category_amazon: amazonCateId},
+          {yahoo_auction_category_id: yahooCateId})
         return cate._doc;
     } catch (error) {
         console.log(error);
         throw new Error(error.message);
     }
-}
+  }
 }
