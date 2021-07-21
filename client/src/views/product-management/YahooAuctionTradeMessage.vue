@@ -1,8 +1,6 @@
 <template>
   <div class="wrapper-content">
-    <div class="box-header">
-      <i class="fa fa-list mr-2"></i>Y!オーク 評価
-    </div>
+    <div class="box-header"><i class="fa fa-list mr-2"></i>Y!オーク 評価</div>
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 pb-20 table-responsive">
@@ -17,7 +15,7 @@
             </tr>
             <tr>
               <td width="130px">落札価格</td>
-              <td>{{product.price_end}}円</td>
+              <td>{{ product.price_end }}円</td>
             </tr>
             <tr>
               <td width="130px">落札個数</td>
@@ -61,8 +59,7 @@
             </tr>
             <tr>
               <td width="130px">お届け先住所</td>
-              <td>
-              </td>
+              <td></td>
             </tr>
             <tr>
               <td width="130px">送料</td>
@@ -77,66 +74,102 @@
         <!-- <div class="alert alert-success">
           この商品は発送が完了しています。
         </div> -->
-        <router-link tag="button" class="btn btn-default mt-20"
-          :to="{name: 'YahooAuctionTradeRating', params: {id: product._id}}">評価済</router-link> <br>
-        <button class="btn btn-danger mt-20" :disabled="true">取引中止</button> <br>
-        <button class="btn btn-danger my-20">落札者削除</button> <br>
-        <hr>
+        <router-link
+          tag="button"
+          class="btn btn-default mt-20"
+          :to="{ name: 'YahooAuctionTradeRating', params: { id: product._id } }"
+          >評価済</router-link
+        >
+        <br />
+        <button class="btn btn-danger mt-20" :disabled="true">取引中止</button>
+        <br />
+        <button class="btn btn-danger my-20">落札者削除</button> <br />
+        <hr />
         <div class="my-20">
           取引で困ったことなどがあったら、落札者に質問してみよう！
         </div>
         <ValidationObserver tag="div" ref="formMessage">
-          <ValidationProvider name="コメント" rules="required" v-slot="{ errors }" tag="div" class="form-group">
+          <ValidationProvider
+            name="コメント"
+            rules="required"
+            v-slot="{ errors }"
+            tag="div"
+            class="form-group"
+          >
             <label for="comment">コメント</label>
-            <textarea class="form-control" v-model="comment" id="" cols="30" rows="5"></textarea>
-            <div class="error-message" v-if="errors.length">{{errors[0]}}</div>
+            <textarea
+              class="form-control"
+              v-model="comment"
+              id=""
+              cols="30"
+              rows="5"
+            ></textarea>
+            <div class="error-message" v-if="errors.length">
+              {{ errors[0] }}
+            </div>
           </ValidationProvider>
           <div>
-            <button class="btn btn-primary" @click="addMessage">メッセージを送信</button>
+            <button class="btn btn-primary" @click="addMessage">
+              メッセージを送信
+            </button>
           </div>
         </ValidationObserver>
-        <hr class="my-20">
+        <hr class="my-20" />
         <div class="message-list">
           <template v-for="message in product.message_list">
-
             <div class="message-item" :key="message.created_at">
               <template v-if="message.type === 'seller'">
                 <div class="message-info d-block">
                   <span class="created-at float-left">
-                    {{ $moment(message.created_at).format("YYYY年MM月DD日 HH時mm分") }}
+                    {{
+                      $moment(message.created_at).format(
+                        "YYYY年MM月DD日 HH時mm分"
+                      )
+                    }}
                   </span>
                   <span class="user float-right">
-                    その他:  {{message.yahoo_id}}
+                    その他: {{ message.yahoo_id }}
                   </span>
                 </div>
                 <div style="clear:both" class="my-10"></div>
-                <img class="message-img seller" src="https://dummyimage.com/100x100/000000/FFFFFF.png&text=S" alt="Seller">
+                <img
+                  class="message-img seller"
+                  src="https://dummyimage.com/100x100/000000/FFFFFF.png&text=S"
+                  alt="Seller"
+                />
                 <div class="message-text seller">
                   <p style="white-space: pre-line">
-                    {{message.comment}}
+                    {{ message.comment }}
                   </p>
                 </div>
               </template>
               <template v-else>
                 <div class="message-info d-block">
                   <span class="created-at float-right">
-                    {{ $moment(message.created_at).format("YYYY年MM月DD日 HH時mm分") }}
+                    {{
+                      $moment(message.created_at).format(
+                        "YYYY年MM月DD日 HH時mm分"
+                      )
+                    }}
                   </span>
                   <span class="user float-left">
-                    {{message.yahoo_id}}: その他
+                    {{ message.yahoo_id }}: その他
                   </span>
                 </div>
                 <div style="clear:both" class="my-10"></div>
-                <img class="message-img buyer" src="https://dummyimage.com/100x100/000000/FFFFFF.png&text=B" alt="Seller">
+                <img
+                  class="message-img buyer"
+                  src="https://dummyimage.com/100x100/000000/FFFFFF.png&text=B"
+                  alt="Seller"
+                />
                 <div class="message-text buyer">
                   <p style="white-space: pre-line">
-                    {{message.comment}}
+                    {{ message.comment }}
                   </p>
                 </div>
               </template>
             </div>
           </template>
-
         </div>
       </div>
     </div>
@@ -144,68 +177,69 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import ProductYahooEndedApi from '@/services/ProductYahooEndedApi'
+import { mapGetters } from "vuex";
+import ProductYahooEndedApi from "@/services/ProductYahooEndedApi";
 
 export default {
-  name: 'YahooAuctionTradeMessage',
-  data () {
+  name: "YahooAuctionTradeMessage",
+  data() {
     return {
       product: {},
-      comment: '',
-    }
+      comment: ""
+    };
   },
-  async mounted () {
+  async mounted() {
     this.getProduct();
   },
   computed: {
     ...mapGetters({
-      selectedYahooAccount: 'getSelectedYahooAccount'
+      selectedYahooAccount: "getSelectedYahooAccount"
     }),
-    yahooAccountId () {
-      return this.selectedYahooAccount._id
+    yahooAccountId() {
+      return this.selectedYahooAccount._id;
     },
-    productId () {
-      return this.$route.params.id
+    productId() {
+      return this.$route.params.id;
     }
   },
   methods: {
-    async getProduct () {
+    async getProduct() {
       let res = await ProductYahooEndedApi.show(this.productId);
       if (res && res.status === 200) {
-        this.product = res.data.product
+        this.product = res.data.product;
       } else {
-        this.$router.push({name: 'YahooAuctionTrade'})
+        this.$router.push({ name: "YahooAuctionTrade" });
       }
     },
-    async addMessage () {
+    async addMessage() {
       let newComment = {
         yahoo_id: this.selectedYahooAccount.yahoo_id,
         comment: this.comment,
         created_at: new Date().getTime(),
-        type: 'seller'
-      }
+        type: "seller"
+      };
       let result = await this.$refs.formMessage.validate();
       if (result) {
         let params = {
           ...this.product,
-          message_list: [newComment].concat(this.product.message_list)
-        }
+          message_list: [newComment].concat(this.product.message_list),
+          newComment
+        };
         let res = await ProductYahooEndedApi.update(this.product._id, params);
         if (res && res.status === 200) {
           this.$swal.fire({
             icon: "success",
             title: "Add message successfully",
             timer: 500,
-            showConfirmButton: false,
+            showConfirmButton: false
           });
-          this.product = res.data.product
-          this.comment = ''
+          this.product = res.data.product;
+          this.comment = "";
         }
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -213,7 +247,8 @@ export default {
   font-size: 20px;
   margin: 10px 0;
 }
-.table td, .table th {
+.table td,
+.table th {
   padding: 10px;
 }
 .message-info {
@@ -244,7 +279,7 @@ export default {
   border-left: 8px solid #00a65a;
   border-top: 8px solid transparent;
   border-bottom: 8px solid transparent;
-  content: ' ';
+  content: " ";
   height: 0;
   width: 0;
   pointer-events: none;
@@ -274,7 +309,7 @@ export default {
   border-right: 8px solid #d2d6de;
   border-top: 8px solid transparent;
   border-bottom: 8px solid transparent;
-  content: ' ';
+  content: " ";
   height: 0;
   width: 0;
   pointer-events: none;
@@ -283,7 +318,7 @@ export default {
   margin: 15px 0;
 }
 .created-at {
- color: #999; 
+  color: #999;
 }
 .user {
   font-weight: bold;

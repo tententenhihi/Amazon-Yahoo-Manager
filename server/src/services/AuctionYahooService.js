@@ -885,7 +885,8 @@ export default class AuctionYahooService {
                     password: proxy.password,
                 },
             };
-            let urlPreview = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${aID}&syid=${usernameYahoo}&bid=${idBuyer}&oid=60525715-0026432516-6467599`;
+
+            let urlPreview = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${aID}&syid=${usernameYahoo}&bid=${idBuyer}`;
             let resPreview = await axios.get(urlPreview, { headers, proxy: proxyConfig });
             let $ = cheerio.load(resPreview.data);
             let oid = $('#oid').val();
