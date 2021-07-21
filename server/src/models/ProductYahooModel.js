@@ -69,6 +69,10 @@ var Product = new Schema({
         type: Number,
         default: 1,
     },
+    quantity_check: {
+        type: Number,
+        default: 0,
+    },
     duration: {
         type: Number,
         default: 0,

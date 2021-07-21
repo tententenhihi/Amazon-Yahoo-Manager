@@ -42,6 +42,10 @@ var SearchCode = new Schema({
     statusMessage: {
         type: String,
     },
+    query_key: {
+        type: String,
+        default: ''
+    },
     created: {
         type: Date,
         default: Date.now,

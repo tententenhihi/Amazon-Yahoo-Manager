@@ -2,6 +2,7 @@ import QueueGetProductAmazon from '../services/QueueGetProductAmazon';
 import CodeSearchAmazonService from '../services/SearchCodeAmazonService';
 import AsinAmazonService from '../services/AsinAmazonService';
 import Response from '../utils/Response';
+import Utils from '../utils/Utils'
 
 export default class CodeSearchAmazonController {
     static async getBlackList(req, res) {
@@ -50,9 +51,10 @@ export default class CodeSearchAmazonController {
             }
             if (listCode && listCode.length > 0 && groupId) {
                 let listSearchCodeNew = [];
+                let queryKey = Utils.generateKey()
                 for (let i = 0; i < listCode.length; i++) {
                     const code = listCode[i];
-                    let newSearchCodeData = { code, idUser: user._id, type, groupId, yahoo_account_id };
+                    let newSearchCodeData = { code, idUser: user._id, type, groupId, yahoo_account_id, query_key: queryKey };
                     let newSearchCode = await CodeSearchAmazonService.add(newSearchCodeData);
                     QueueGetProductAmazon.addNew(newSearchCode);
                     listSearchCodeNew.push(newSearchCode);

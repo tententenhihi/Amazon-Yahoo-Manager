@@ -64,12 +64,6 @@
               </router-link>
             </li>
             <li class="sidebar-dropdown">
-              <router-link :to="{ name: 'Products' }">
-                <i class="fa fa-calendar"></i>
-                <span>AMAZON製品</span>
-              </router-link>
-            </li>
-            <li class="sidebar-dropdown">
               <a href="#" @click="showDropdown(2)">
                 <i class="fa fa-check-square"></i>
                 <span>出品管理</span>
@@ -79,6 +73,12 @@
                 :class="{ 'd-block': dropdownOpen == 2 }"
               >
                 <ul>
+                  <li>
+                    <router-link :to="{ name: 'AmazonProducts' }">
+                      <i class="fa fa-calendar"></i>
+                      <span>Amazon商品一覧</span>
+                    </router-link>
+                  </li>
                   <li>
                     <router-link :to="{ name: 'YahooAuctionProducts' }">
                       <i class="fa fa-calendar"></i>
@@ -172,6 +172,12 @@
               <router-link :to="{ name: 'Categories' }">
                 <i class="fa fa-folder"></i>
                 <span>カテゴリ管理</span>
+              </router-link>
+            </li>
+            <li class="sidebar-dropdown">
+              <router-link :to="{ name: 'Logs' }">
+                <i class="fa fa-archive"></i>
+                <span>出品ログ</span>
               </router-link>
             </li>
             <!-- <li class="sidebar-dropdown mt-100" v-if="userInfo.type == 'admin'">
