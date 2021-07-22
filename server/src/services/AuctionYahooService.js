@@ -757,6 +757,7 @@ export default class AuctionYahooService {
         console.log(' =========== Done =============== ');
         return listProductDATA;
     }
+
     static async getCookie(account, proxy) {
         console.log(' ==== Start login Yahoo ====');
 
@@ -789,28 +790,46 @@ export default class AuctionYahooService {
         let timeout = 5 * 60 * 1000;
         // urlLogin = 'http://lumtest.com/myip.json';
         await page.goto(urlLogin, { waitUntil: 'load', timeout: timeout });
+
         page.setDefaultNavigationTimeout(0);
-        await page.waitForNavigation({ timeout: timeout });
-        await Utils.sleep(3000);
-        await page.type('#username', account.yahoo_id);
-        await Utils.sleep(3000);
-        await page.waitForNavigation({ timeout: timeout });
-        await page.click('#btnNext');
-        await page.waitForNavigation({ timeout: timeout });
-        await page.type('#passwd', account.password);
-        await Utils.sleep(3000);
-        await page.click('#btnSubmit');
-        await page.waitForNavigation({ timeout: timeout });
+        await Utils.sleep(1000);
+
+        console.log(' ### username ');
+        const username = await page.waitForSelector('#username');
+        await username.type(account.yahoo_id);
+        await Utils.sleep(1000);
+
+        async function waitAndClick(selector) {
+            await page.evaluate((selector) => document.querySelector(selector).click(), selector);
+        }
+
+        console.log(' ##### btnNext ');
+        await waitAndClick('#btnNext');
+
+        // await page.click('#btnNext');
+        await Utils.sleep(1000);
+
+        console.log(' ### password');
+        const password = await page.waitForSelector('#passwd');
+        await password.type('#passwd');
+        await Utils.sleep(1000);
+
+        console.log(' #### Submit');
+        await waitAndClick('#btnSubmit');
+        await Utils.sleep(10000);
+
         const cookies = await page.cookies();
-        console.log(cookies);
         browser.close();
         if (cookies.length > 4) {
+            console.log(' ======== SUCCESS ======= ');
+
             return cookies
                 .map(function (c) {
                     return `${c.name}=${c.value}`;
                 })
                 .join('; ');
         } else {
+            console.log(' ======== Failse ======= ');
             throw new Error('Can not get cookies:', page.url());
         }
     }
