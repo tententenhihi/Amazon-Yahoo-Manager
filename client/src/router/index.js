@@ -351,6 +351,8 @@ const waitForStorageToBeReady = async (to, from, next) => {
     } else {
       next({name: 'Home'})
     }
+  } else if (!to.meta.isAdmin && authUser && user.type == 'admin') {
+    next({name: 'AdminUsers'})
   } else {
     if ((to.name === null || to.name === 'Login') && authUser) {
       next({name: 'Home'})
