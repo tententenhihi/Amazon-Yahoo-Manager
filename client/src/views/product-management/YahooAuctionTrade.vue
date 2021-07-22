@@ -231,16 +231,16 @@ export default {
       this.$refs.modalNote.openModal();
     },
     async onSaveNote() {
-      let res = await ProductYahooEndedApi.update(
-        this.selectedEdiNote._id,
-        {...this.selectedEdiNote, note: this.$refs.textareaNote.value}
-      );
+      let res = await ProductYahooEndedApi.setNote({
+        product_id: this.selectedEdiNote._id,
+        note: this.$refs.textareaNote.value
+      });
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
           title: "Add note successfully",
           timer: 500,
-          showConfirmButton: false,
+          showConfirmButton: false
         });
         this.selectedEdiNote.note = this.$refs.textareaNote.value;
         this.oncloseModal();

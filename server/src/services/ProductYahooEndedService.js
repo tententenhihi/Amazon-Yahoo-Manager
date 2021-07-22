@@ -29,6 +29,15 @@ export default class ProductYahooService {
             throw new Error(error.message);
         }
     }
+    static async findById(id) {
+        try {
+            let product = await ProductYahooEndedModel.findById(id);
+            return product;
+        } catch (error) {
+            console.log(error);
+            throw new Error(error.message);
+        }
+    }
     static async findOne(data) {
         try {
             let product = await ProductYahooEndedModel.findOne(data);

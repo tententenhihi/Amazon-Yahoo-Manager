@@ -77,8 +77,18 @@
         <router-link
           tag="button"
           class="btn btn-default mt-20"
+          :class="{
+            'btn-warning':
+              !product ||
+              !product.rating_list ||
+              product.rating_list.length == 0
+          }"
           :to="{ name: 'YahooAuctionTradeRating', params: { id: product._id } }"
-          >評価済</router-link
+          >{{
+            product && product.rating_list && product.rating_list.length > 0
+              ? "評価済"
+              : "評価"
+          }}</router-link
         >
         <br />
         <button class="btn btn-danger mt-20" :disabled="true">取引中止</button>
@@ -212,29 +222,23 @@ export default {
       }
     },
     async addMessage() {
-      let newComment = {
-        yahoo_id: this.selectedYahooAccount.yahoo_id,
-        comment: this.comment,
-        created_at: new Date().getTime(),
-        type: "seller"
-      };
       let result = await this.$refs.formMessage.validate();
-      if (result) {
-        let params = {
-          ...this.product,
-          message_list: [newComment].concat(this.product.message_list),
-          newComment
+      if (result && this.comment.trim() != "") {
+        let payload = {
+          message: this.comment,
+          product_id: this.product._id
         };
-        let res = await ProductYahooEndedApi.update(this.product._id, params);
+
+        let res = await ProductYahooEndedApi.sendMessage(payload);
         if (res && res.status === 200) {
+          this.product = res.data.product;
+          this.comment = "";
           this.$swal.fire({
             icon: "success",
             title: "Add message successfully",
             timer: 500,
             showConfirmButton: false
           });
-          this.product = res.data.product;
-          this.comment = "";
         }
       }
     }

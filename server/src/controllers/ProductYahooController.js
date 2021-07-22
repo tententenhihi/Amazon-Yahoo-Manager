@@ -286,73 +286,7 @@ export default class ProductYahooController {
         }
     }
 
-    static async stopTransaction(req, res) {
-        let response = new Response(res);
-        try {
-            const { idYahoo, idProduct, idBuyer, reason } = req.params;
-            let accountYahoo = await AccountYahooService.findById(idYahoo);
-            const cookie = accountYahoo.cookie;
-            const idProxy = accountYahoo.proxy_id;
-            const resultCheckProxy = await ProxyService.findByIdAndCheckLive(idProxy);
-            if (resultCheckProxy.status === 'SUCCESS') {
-                let result = await AuctionYahooService.stopTransaction(cookie, resultCheckProxy.data, idProduct, idBuyer, reason);
-                if (result.status === 'SUCCESS') {
-                    return response.success200(result);
-                } else {
-                    return response.error400(result);
-                }
-            } else {
-                return response.error400(resultCheckProxy);
-            }
-        } catch (error) {
-            response.error500(error);
-        }
-    }
 
-    static async sendMessage(req, res) {
-        let response = new Response(res);
-        try {
-            const { idYahoo, idProduct, idBuyer, message } = req.params;
-            let accountYahoo = await AccountYahooService.findById(idYahoo);
-            const cookie = accountYahoo.cookie;
-            const idProxy = accountYahoo.proxy_id;
-            const resultCheckProxy = await ProxyService.findByIdAndCheckLive(idProxy);
-            if (resultCheckProxy.status === 'SUCCESS') {
-                let result = await AuctionYahooService.sendMessage(cookie, resultCheckProxy.data, idProduct, accountYahoo.username, idBuyer, message);
-                if (result.status === 'SUCCESS') {
-                    return response.success200(result);
-                } else {
-                    return response.error400(result);
-                }
-            } else {
-                return response.error400(resultCheckProxy);
-            }
-        } catch (error) {
-            response.error500(error);
-        }
-    }
-    static async sendRating(req, res) {
-        let response = new Response(res);
-        try {
-            const { idYahoo, idProduct, idBuyer, rating, message } = req.params;
-            let accountYahoo = await AccountYahooService.findById(idYahoo);
-            const cookie = accountYahoo.cookie;
-            const idProxy = accountYahoo.proxy_id;
-            const resultCheckProxy = await ProxyService.findByIdAndCheckLive(idProxy);
-            if (resultCheckProxy.status === 'SUCCESS') {
-                let result = await AuctionYahooService.sendRating(cookie, resultCheckProxy.data, idProduct, idBuyer, rating, message);
-                if (result.status === 'SUCCESS') {
-                    return response.success200(result);
-                } else {
-                    return response.error400(result);
-                }
-            } else {
-                return response.error400(resultCheckProxy);
-            }
-        } catch (error) {
-            response.error500(error);
-        }
-    }
     static async switchWatchOption (req, res) {
         let response = new Response(res);
         try {

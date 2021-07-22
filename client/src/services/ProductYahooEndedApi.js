@@ -12,6 +12,26 @@ export default {
       timeout: 60 * 1000
     });
   },
+  stopTransaction(credentials) {
+    return Api.post(`${prefix}/stop-transition`, credentials, {
+      timeout: 60 * 1000
+    });
+  },
+  sendMessage(credentials) {
+    return Api.post(`${prefix}/send-message`, credentials, {
+      timeout: 60 * 1000
+    });
+  },
+  sendRating(credentials) {
+    return Api.post(`${prefix}/send-rating`, credentials, {
+      timeout: 60 * 1000
+    });
+  },
+  setNote(credentials) {
+    return Api.post(`${prefix}/set-note`, credentials, {
+      timeout: 60 * 1000
+    });
+  },
   delete(id) {
     return Api.post(`${prefix}/delete/${id}`);
   }

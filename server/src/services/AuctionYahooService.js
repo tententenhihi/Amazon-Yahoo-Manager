@@ -911,6 +911,13 @@ export default class AuctionYahooService {
     }
     static async sendMessage(cookie, proxy, aID, usernameYahoo, idBuyer, message) {
         try {
+            // console.log('### cookie: ', cookie);
+            // console.log('### proxy: ', proxy);
+            // console.log('### aID: ', aID);
+            // console.log('### usernameYahoo: ', usernameYahoo);
+            // console.log('### idBuyer: ', idBuyer);
+            // console.log('### message: ', message);
+
             let headers = {
                 cookie,
                 'User-Agent':
@@ -974,7 +981,7 @@ export default class AuctionYahooService {
             };
         }
     }
-    static async sendRating(cookie, proxy, aID, idBuyer, rating, message) {
+    static async sendRating(cookie, proxy, aID, idBuyer, ratingData) {
         try {
             let headers = {
                 cookie,
@@ -1008,8 +1015,8 @@ export default class AuctionYahooService {
                     own: '',
                     isResponse: '',
                     isRevision: '',
-                    rating: rating,
-                    formComment: message,
+                    rating: ratingData.rating,
+                    formComment: ratingData.content,
                 };
                 let payloadPreview = Qs.stringify(dataPreview);
                 let resPreview = await axios.post('https://auctions.yahoo.co.jp/jp/preview/leavefeedback', payloadPreview, {
@@ -1021,8 +1028,8 @@ export default class AuctionYahooService {
                         t: idBuyer,
                         u: '',
                         aID: aID,
-                        previewComment: message,
-                        rating,
+                        previewComment: ratingData.content,
+                        rating: ratingData.rating,
                         isRevison: '',
                         isResponse: '',
                         own: '',

@@ -3,7 +3,6 @@ import Router from "vue-router";
 import Home from "../views/Home";
 import store from "../store/store";
 import Asin from "../views/Asin/index.vue";
-import ProductAmazon from "../views/ProductAmazon";
 
 const Login = () => import(/* webpackChunkName: "/static/js/chunks/auth" */ '@/views/auth/Login.vue');
 const ForgotPassword = () => import(/* webpackChunkName: "/static/js/chunks/auth" */ '@/views/auth/ForgotPassword.vue');
@@ -87,14 +86,6 @@ const router = new Router({
       path: "/asin",
       name: "asin",
       component: Asin,
-      meta: {
-        requiredAuth: true
-      }
-    },
-    {
-      path: "/product",
-      name: "product",
-      component: ProductAmazon,
       meta: {
         requiredAuth: true
       }
