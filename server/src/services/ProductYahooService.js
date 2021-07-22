@@ -140,6 +140,10 @@ export default class ProductYahooService {
 
     static async startUploadProductInListFolderId(user_id, yahoo_account_id, new_list_target_folder) {
         console.log(' ######### Start Cron job: startUploadProductInListFolderId ');
+        console.log(' ### yahoo_account_id: ', yahoo_account_id);
+        console.log(' ### new_list_target_folder: ', new_list_target_folder);
+
+        let result = [];
         let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
         if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
@@ -151,15 +155,31 @@ export default class ProductYahooService {
                         let dataUpdate = {};
                         let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data);
                         console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
-                        dataUpdate.listing_status = 'UPLOADED';
+                        if (uploadAuctionResult.status === 'SUCCESS') {
+                            dataUpdate.listing_status = 'UNDER_EXHIBITION';
+                        }
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                         dataUpdate.aID = uploadAuctionResult.aID;
                         await ProductYahooService.update(productYahooData._id, dataUpdate);
+                        let message = '出品に成功しました';
+                        if (uploadAuctionResult.status === 'ERROR') {
+                            message = uploadAuctionResult.statusMessage;
+                        }
+                        let newResult = {
+                            product_created: productYahooData.created,
+                            product_id: productYahooData._id,
+                            product_aID: uploadAuctionResult.aID,
+                            message,
+                            created: Date.now(),
+                            success: uploadAuctionResult.status === 'SUCCESS',
+                        };
+                        result.push(newResult);
                     }
                 }
             }
         }
+        return result;
     }
 
     static async startReSubmitProduct(user_id, yahoo_account_id) {
@@ -167,7 +187,8 @@ export default class ProductYahooService {
     }
     static async startUploadProductByCalendar(user_id, yahoo_account_id, calendar_target_folder) {
         console.log(' ######### Start Cron job: startUploadProductByCalendar ');
-
+        
+        let result = [];
         //Get day of month
         let today = new Date();
         today = today.getDate();
@@ -185,17 +206,31 @@ export default class ProductYahooService {
                             let dataUpdate = {};
                             let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data);
                             console.log(' ### startUploadProductByCalendar uploadAuctionResult: ', uploadAuctionResult);
-                            dataUpdate.listing_status = 'UPLOADED';
+                            if (uploadAuctionResult.status === 'SUCCESS') {
+                                dataUpdate.listing_status = 'UNDER_EXHIBITION';
+                            }
                             dataUpdate.upload_status = uploadAuctionResult.status;
                             dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                             dataUpdate.aID = uploadAuctionResult.aID;
                             await ProductYahooService.update(productYahooData._id, dataUpdate);
+                            let message = '出品に成功しました';
+                            if (uploadAuctionResult.status === 'ERROR') {
+                                message = uploadAuctionResult.statusMessage;
+                            }
+                            let newResult = {
+                                product_created: productYahooData.created,
+                                product_id: productYahooData._id,
+                                product_aID: uploadAuctionResult.aID,
+                                message,
+                                created: Date.now(),
+                                success: uploadAuctionResult.status === 'SUCCESS',
+                            };
+                            result.push(newResult);
                         }
                     }
                 }
             }
         }
-
-        console.log(' ######### Start Cron job: startUploadProductByCalendar ');
+        return result;
     }
 }

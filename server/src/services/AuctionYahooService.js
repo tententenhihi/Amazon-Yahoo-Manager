@@ -130,7 +130,7 @@ export default class AuctionYahooService {
             now.setDate(now.getDate() + productData.duration);
             let tmpClosingYMD = moment(now).format('yyyy-MM-DD');
 
-            let location = constants.PREFECTURE.find((x) => x.value == productData.location);
+            let location = constants.PREFECTURE.find((x) => x.value === productData.location);
             if (!location) {
                 location = '';
             } else {
@@ -143,7 +143,10 @@ export default class AuctionYahooService {
             productData.sales_mode = 'auction';
 
             //p861707070
-
+            let productTitle = productData.product_yahoo_title;
+            if (productTitle.length > 74) {
+                productTitle = productTitle.substring(0,74)
+            }
             // PREVIEW
             let previewParams = {
                 aID: '',
@@ -171,7 +174,7 @@ export default class AuctionYahooService {
                 shippinginput: 'now',
                 is_yahuneko_nekoposu_ship: 'yes',
                 is_yahuneko_taqbin_ship: 'no',
-                is_jp_yupacket_official_ship: 'yes',
+                is_jp_yupacket_official_ship: 'no',
                 submitUnixtime: Date.now(),
                 markdown_ratio: 0,
                 promoteCtoOfficial_shipMethod: 'クリックポスト',
@@ -181,7 +184,7 @@ export default class AuctionYahooService {
                 promoteNon_STANDARDtoOfficial_shipMethod: '定形外郵便',
 
                 ...payloadImage,
-                Title: productData.product_yahoo_title,
+                Title: productTitle,
                 category: productData.yahoo_auction_category_id,
                 salesmode: productData.sales_mode,
                 StartPrice: productData.start_price,
@@ -238,6 +241,7 @@ export default class AuctionYahooService {
                 headers,
                 proxy: proxyConfig,
             });
+
             // Fs.writeFileSync('preview.html', resPreview.data);
             let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
             if (mgc == null) {

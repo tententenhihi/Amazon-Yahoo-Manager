@@ -1,7 +1,8 @@
 <template>
   <div class="wrapper-content">
     <div class="box-header">
-      <i class="fa fa-list"></i> 日別一覧 <small><i>更新をして最新情報を確認してください</i></small>
+      <i class="fa fa-list"></i> 日別一覧
+      <small><i>更新をして最新情報を確認してください</i></small>
       <button class="btn btn-add-account" @click="getLogs()">
         更新
       </button>
@@ -18,10 +19,14 @@
           :prev-text="'«'"
           :next-text="'»'"
           :container-class="'pagination'"
-          :page-class="'page-item'">
+          :page-class="'page-item'"
+        >
         </paginate>
         <div class="table-responsive">
-          <table class="table table-striped display pt-20 mb-20" style="width: 100%">
+          <table
+            class="table table-striped display pt-20 mb-20"
+            style="width: 100%"
+          >
             <thead class="thead-purple">
               <tr>
                 <th scope="col">日付</th>
@@ -32,11 +37,14 @@
             </thead>
             <tbody>
               <tr v-for="(log, index) in tableData" :key="index">
-                <td>3123123</td>
-                <td>213</td>
-                <td>213</td>
+                <td>{{ $moment(log.created).format("DD/MM/YYYY - HH:mm") }}</td>
+                <td>{{ log.success_count }}</td>
+                <td>{{ log.error_count }}</td>
                 <td>
-                  <router-link :to="{name: 'LogDetail', params: {id: log._id}}">ログを確認する</router-link>
+                  <router-link
+                    :to="{ name: 'LogDetail', params: { data: log.detail } }"
+                    >ログを確認する</router-link
+                  >
                 </td>
               </tr>
             </tbody>
@@ -48,54 +56,56 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
+import CronHistoryApi from "../../services/CronHistoryApi";
 
 export default {
-  name: 'LogPublish',
-  data () {
+  name: "LogPublish",
+  data() {
     return {
-      logs: [
-        {
-          _id: 123
-        }
-      ],
+      logs: [],
       page: 1
-    }
+    };
   },
-  async mounted () {
+  async mounted() {
     await this.getLogs();
   },
   computed: {
-    tableData () {
-      return this.logs.slice((this.page - 1) * this.$constants.PAGE_SIZE, this.page * this.$constants.PAGE_SIZE)
+    tableData() {
+      return this.logs.slice(
+        (this.page - 1) * this.$constants.PAGE_SIZE,
+        this.page * this.$constants.PAGE_SIZE
+      );
     },
-    pageCount () {
-      return Math.ceil(this.logs.length / this.$constants.PAGE_SIZE)
+    pageCount() {
+      return Math.ceil(this.logs.length / this.$constants.PAGE_SIZE);
     },
     ...mapGetters({
-      selectedYahooAccount: 'getSelectedYahooAccount'
+      selectedYahooAccount: "getSelectedYahooAccount"
     }),
-    yahooAccountId () {
-      return this.selectedYahooAccount._id
+    yahooAccountId() {
+      return this.selectedYahooAccount._id;
     }
   },
   methods: {
     async getLogs() {
-    //   try {
-    //     let res = await LogApi.get(this.yahooAccountId);
-    //     if (res && res.status === 200) {
-    //       this.logs = res.data.logs;
-    //     }
-    //   } catch (error) {
-    //     this.$swal.fire({
-    //       icon: "error",
-    //       title: "エラー",
-    //       text: error.message
-    //     });
-    //   }
-    },
+      try {
+        let res = await CronHistoryApi.get({
+          yahoo_account_id: this.yahooAccountId
+        });
+        if (res && res.status === 200) {
+          this.logs = res.data.crons;
+        }
+      } catch (error) {
+        this.$swal.fire({
+          icon: "error",
+          title: "エラー",
+          text: error.message
+        });
+      }
+    }
   }
-}
+};
 </script>
 
 <style scoped>

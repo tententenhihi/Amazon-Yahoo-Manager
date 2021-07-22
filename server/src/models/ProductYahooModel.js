@@ -130,8 +130,8 @@ var Product = new Schema({
         default: 'buyer',
     },
     location: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 18,
     },
     city: {
         type: String,

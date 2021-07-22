@@ -5,6 +5,7 @@ import AccountYahooService from '../services/AccountYahooService';
 import ProductYahooEndedService from '../services/ProductYahooEndedService';
 import ProxyService from '../services/ProxyService';
 import AuctionPublicSettingModel from '../models/AuctionPublicSettingModel';
+import CronHistoryModel from '../models/CronHistoryModel';
 let listCronJob = [];
 const CronJob = require('cron').CronJob;
 const CronTime = require('cron').CronTime;
@@ -16,36 +17,56 @@ export default class CronJobService {
     }
     static async startGetProductYahooEnded() {
         console.log(' ====== START Get Product yahoo ended every 5 minute ======');
-        cron.schedule('*/5 * * * *', async () => {
-            let listAccountYahoo = await AccountYahooService.find({});
-            for (let i = 0; i < listAccountYahoo.length; i++) {
-                const accountYahoo = listAccountYahoo[i];
-                if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
-                    let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
-                    if (proxyResult.status === 'SUCCESS') {
-                        let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.cookie, proxyResult.data);
-                        console.log(listProductEnded);
-                        for (let j = 0; j < listProductEnded.length; j++) {
-                            const product = listProductEnded[j];
-                            let checkExistProductInDB = await ProductYahooEndedService.findOne({ aID: product.aID });
-                            if (!checkExistProductInDB) {
-                                let productYahoo = await ProductYahooService.findOne({ aID: product.aID });
-                                if (productYahoo) {
-                                    let newProductYahooEnded = {
-                                        ...productYahoo._doc,
-                                        ...product,
-                                        _id: null,
-                                    };
-                                    newProductYahooEnded = await ProductYahooEndedService.create(newProductYahooEnded);
-                                }
+        // cron.schedule('*/5 * * * *', async () => {
+        let listAccountYahoo = await AccountYahooService.find({});
+        for (let i = 0; i < listAccountYahoo.length; i++) {
+            const accountYahoo = listAccountYahoo[i];
+            if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
+                let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
+                if (proxyResult.status === 'SUCCESS') {
+                    let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.cookie, proxyResult.data);
+                    let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
+
+                    // tạo , update product
+                    for (let j = 0; j < listProductEnded.length; j++) {
+                        const product = listProductEnded[j];
+                        //Check Xem có trong db chưa.
+                        let productExisted = listProductEndedInDB.find((item) => item.aID === product.aID);
+                        //chưa có thì tạo mới.
+                        if (!productExisted) {
+                            let productYahoo = await ProductYahooService.findOne({ aID: product.aID });
+                            if (productYahoo) {
+                                let newProductYahooEnded = {
+                                    ...productYahoo._doc,
+                                    ...product,
+                                    _id: null,
+                                };
+                                newProductYahooEnded = await ProductYahooEndedService.create(newProductYahooEnded);
+                            }
+                        } else {
+                            await ProductYahooEndedService.update(productExisted._id, product);
+                        }
+                    }
+                    // xóa product
+                    for (const productDB of listProductEndedInDB) {
+                        let checkDelete = true;
+                        for (const productYAHOO of listProductEnded) {
+                            if (productDB.aID === productYAHOO.aID) {
+                                checkDelete = false;
+                                break;
                             }
                         }
-                    } else {
-                        console.log(proxyResult);
+                        if (checkDelete) {
+                            console.log(productDB.aID);
+                            ProductYahooEndedService.delete(productDB._id);
+                        }
                     }
+                } else {
+                    console.log(proxyResult);
                 }
             }
-        });
+        }
+        // });
     }
 
     static async startUploadProductYahoo() {
@@ -92,8 +113,20 @@ export default class CronJobService {
                 if (!cronNewList) {
                     cronNewList = new CronJob(
                         timeCron,
-                        function () {
-                            ProductYahooService.startUploadProductInListFolderId(schedule.user_id, schedule.yahoo_account_id, schedule.new_list_target_folder);
+                        async function () {
+                            let results = await ProductYahooService.startUploadProductInListFolderId(
+                                schedule.user_id,
+                                schedule.yahoo_account_id,
+                                schedule.new_list_target_folder
+                            );
+                            let newCronHistory = {
+                                success_count: results.filter((item) => item.success).length,
+                                error_count: results.length - results.filter((item) => item.success).length,
+                                detail: results,
+                                user_id: schedule.user_id,
+                                yahoo_account_id: schedule.yahoo_account_id,
+                            };
+                            await CronHistoryModel.create(newCronHistory);
                         },
                         null,
                         false
@@ -154,8 +187,20 @@ export default class CronJobService {
                 if (!cronCalendar) {
                     cronCalendar = new CronJob(
                         timeCron,
-                        function () {
-                            ProductYahooService.startUploadProductByCalendar(schedule.user_id, schedule.yahoo_account_id, schedule.calendar_target_folder);
+                        async function () {
+                            let results = await ProductYahooService.startUploadProductByCalendar(
+                                schedule.user_id,
+                                schedule.yahoo_account_id,
+                                schedule.calendar_target_folder
+                            );
+                            let newCronHistory = {
+                                success_count: results.filter((item) => item.success).length,
+                                error_count: results.length - results.filter((item) => item.success).length,
+                                detail: results,
+                                user_id: schedule.user_id,
+                                yahoo_account_id: schedule.yahoo_account_id,
+                            };
+                            await CronHistoryModel.create(newCronHistory);
                         },
                         null,
                         false

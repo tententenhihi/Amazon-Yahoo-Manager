@@ -3,7 +3,7 @@ import ProductAmazonService from '../services/ProductAmazonService';
 import ProductAmazonSchema from '../models/ProductAmazonModel';
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
 import ProductYahooService from '../services/ProductYahooService';
-import CategoryService from '../services/CategoryService'
+import CategoryService from '../services/CategoryService';
 const UploadFile = require('../helpers/UploadFile');
 
 export default class AmazonController {
@@ -252,25 +252,29 @@ export default class AmazonController {
                 productAmazon.shipping = parseInt(productAmazon.shipping) || 0;
 
                 await productAmazon.save();
-                let existProductYahoo = await ProductYahooService.findOne({product_amazon_id})
+                let existProductYahoo = await ProductYahooService.findOne({
+                    user_id: user._id,
+                    yahoo_account_id: productAmazon.yahoo_account_id,
+                    product_amazon_id,
+                });
                 if (existProductYahoo) {
                     existProductYahoo.folder_id = folder_id;
-                    existProductYahoo.yahoo_account_id = productAmazon.yahoo_account_id
+                    existProductYahoo.yahoo_account_id = productAmazon.yahoo_account_id;
                     await existProductYahoo.save();
                 } else {
                     let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id: productAmazon.yahoo_account_id, user_id: user._id });
-                    let cateAmazon = await CategoryService.findOne({amazon_cate_id: productAmazon.category_id})
+                    let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id });
                     if (!cateAmazon) {
                         cateAmazon = await CategoryService.create({
                             user_id: user._id,
                             amazon_cate_id: productAmazon.category_id,
-                            asin: productAmazon.asin
-                        })
+                            asin: productAmazon.asin,
+                        });
                     }
                     let cate_yahoo = cateAmazon.yahoo_cate_id || '0';
                     //Dùng cate amazon Check xem có trong mapping k
                     let productYahoo = {
-                        ...defaultSetting,
+                        ...defaultSetting._doc,
                         id_category_amazon: productAmazon.category_id,
                         ship_fee1: defaultSetting.yahoo_auction_shipping,
                         extra_stock: defaultSetting.extra_stock,
@@ -290,6 +294,8 @@ export default class AmazonController {
                         bid_or_buy_price: 0,
                         product_amazon_id: productAmazon._id,
                         created: Date.now(),
+                        listing_status: 'NOT_LISTED',
+                        _id: null
                     };
                     await ProductYahooService.create(productYahoo);
                 }

@@ -16,6 +16,7 @@ import AdminRouter from './AdminRouter';
 import FolderRouter from './FolderRouter';
 import ProductYahooEndedRouter from './ProductYahooEndedRouter';
 import CategoryRouter from './CategoryRouter';
+import CronHistoryRouter from './CronHistoryRouter';
 
 var router = express.Router();
 
@@ -41,5 +42,6 @@ router.use('/api/v1/user', UserRouter);
 router.use('/api/v1/admin', AdminRouter);
 router.use('/api/v1/folder', FolderRouter);
 router.use('/api/v1/category', CategoryRouter);
+router.use('/api/v1/cron', CronHistoryRouter);
 
 export default router;

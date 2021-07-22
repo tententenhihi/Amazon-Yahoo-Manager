@@ -1,10 +1,11 @@
 <template>
   <div class="wrapper-content">
     <div class="box-header">
-      <i class="fa fa-list"></i> 出品ログ一覧 <small><i>更新をして最新情報を確認してください</i></small>
-      <button class="btn btn-add-account" @click="getLogDetail()">
+      <i class="fa fa-list"></i> 出品ログ一覧
+      <small><i>更新をして最新情報を確認してください</i></small>
+      <!-- <button class="btn btn-add-account">
         更新
-      </button>
+      </button> -->
     </div>
     <hr class="mt-10" />
     <div class="box-content">
@@ -18,10 +19,14 @@
           :prev-text="'«'"
           :next-text="'»'"
           :container-class="'pagination'"
-          :page-class="'page-item'">
+          :page-class="'page-item'"
+        >
         </paginate>
         <div class="table-responsive">
-          <table class="table table-striped display pt-20 mb-20" style="width: 100%">
+          <table
+            class="table table-striped display pt-20 mb-20"
+            style="width: 100%"
+          >
             <thead class="thead-purple">
               <tr>
                 <th scope="col">日付</th>
@@ -33,11 +38,21 @@
             </thead>
             <tbody>
               <tr v-for="(log, index) in tableData" :key="index">
-                <td>3123123</td>
-                <td>213</td>
-                <td>213</td>
-                <td>213</td>
-                <td>213</td>
+                <td>
+                  {{
+                    $moment(log.product_created).format("DD/MM/YYYY - HH:mm")
+                  }}
+                </td>
+                <td>
+                  <a
+                    target="_blank"
+                    :href="`/yahoo-auction-products/${log.product_id}`"
+                    >{{ log.product_id }}</a
+                  >
+                </td>
+                <td>{{ log.product_aID ? log.product_aID : "-" }}</td>
+                <td>{{ log.message ? log.message : "-" }}</td>
+                <td>{{ $moment(log.created).format("DD/MM/YYYY - HH:mm") }}</td>
               </tr>
             </tbody>
           </table>
@@ -48,52 +63,39 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'LogPublish',
-  data () {
+  name: "LogPublish",
+  data() {
     return {
       log: {},
       details: [123],
       page: 1
-    }
+    };
   },
-  async mounted () {
-    await this.getLogDetail();
+  async mounted() {
+    this.details = this.$route.params.data;
+    console.log(" ### this.details: ", this.details);
   },
   computed: {
-    tableData () {
-      return this.details.slice((this.page - 1) * this.$constants.PAGE_SIZE, this.page * this.$constants.PAGE_SIZE)
+    tableData() {
+      return this.details.slice(
+        (this.page - 1) * this.$constants.PAGE_SIZE,
+        this.page * this.$constants.PAGE_SIZE
+      );
     },
-    pageCount () {
-      return Math.ceil(this.details.length / this.$constants.PAGE_SIZE)
+    pageCount() {
+      return Math.ceil(this.details.length / this.$constants.PAGE_SIZE);
     },
     ...mapGetters({
-      selectedYahooAccount: 'getSelectedYahooAccount'
+      selectedYahooAccount: "getSelectedYahooAccount"
     }),
-    yahooAccountId () {
-      return this.selectedYahooAccount._id
+    yahooAccountId() {
+      return this.selectedYahooAccount._id;
     }
-  },
-  methods: {
-    async getLogDetail() {
-    //   try {
-    //     let res = await LogApi.get(this.yahooAccountId);
-    //     if (res && res.status === 200) {
-    //       this.details = res.data.details;
-    //     }
-    //   } catch (error) {
-    //     this.$swal.fire({
-    //       icon: "error",
-    //       title: "エラー",
-    //       text: error.message
-    //     });
-    //   }
-    },
   }
-}
+};
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
