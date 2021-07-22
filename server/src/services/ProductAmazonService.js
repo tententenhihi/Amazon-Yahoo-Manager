@@ -123,7 +123,8 @@ const parseDataProductHTML = async (html, yahoo_account_id) => {
         } else {
             profit = infoProfitDefault.yahoo_auction_static_profit;
         }
-        price = basecost + profit + infoProfitDefault.yahoo_auction_shipping + infoProfitDefault.amazon_shipping;
+        //infoProfitDefault.yahoo_auction_shipping +
+        price = basecost + profit +  infoProfitDefault.amazon_shipping;
         price = price / (1 - infoProfitDefault.yahoo_auction_fee / 100);
         price = Math.ceil(price);
         profit = Math.ceil(profit);
