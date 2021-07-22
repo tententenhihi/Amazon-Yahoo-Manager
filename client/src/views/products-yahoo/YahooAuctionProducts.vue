@@ -270,31 +270,30 @@
                   product.product_yahoo_title
                 }}</a>
               </td>
-              <td class="text-center">fix-0</td>
+              <td class="text-center">{{ product.duration }}</td>
               <td class="text-center">
                 {{
                   product.start_price
                     ? product.start_price.toLocaleString("ja-JP")
-                    : 0
-                }}
-                {{ product.start_price ? "円" : "" }}
+                    : "-"
+                }}{{ product.start_price ? "円" : "" }}
               </td>
               <td class="text-center">
                 {{
                   product.bid_or_buy_price
                     ? product.bid_or_buy_price.toLocaleString("ja-JP")
-                    : 0
+                    : "-"
                 }}{{ product.bid_or_buy_price ? "円" : "" }}
               </td>
               <td class="text-center">
                 {{
                   product.ship_fee1
                     ? product.ship_fee1.toLocaleString("ja-JP")
-                    : 0
+                    : "-"
                 }}{{ product.ship_fee1 ? "円" : "" }}
               </td>
-              <td class="text-center">{{ product.extra_stock }}</td>
-              <td class="text-center">{{ product.count_product }}</td>
+              <td class="text-center">{{ product.quantity_check }}</td>
+              <td class="text-center">{{ product.quantity }}</td>
               <td class="text-center">
                 {{
                   product.import_price
@@ -315,7 +314,7 @@
                 {{ product.profit ? product.profit.toLocaleString("ja-JP") : 0
                 }}{{ product.profit ? "円" : "" }}
               </td>
-              <td class="text-center">fix-1</td>
+              <td class="text-center">{{ product.count_product }}</td>
               <td class="text-center">
                 <span
                   v-if="product.listing_status === 'UNDER_EXHIBITION'"
@@ -459,44 +458,87 @@
 
     <modal-component ref="modalEditProduct">
       <template v-slot:header>
-        <h5 style="word-break: break-all;">「{{ selectedEditProduct.product_yahoo_title }}」の編集</h5>
+        <h5 style="word-break: break-all;">
+          「{{ selectedEditProduct.product_yahoo_title }}」の編集
+        </h5>
       </template>
       <template>
         <div class="form-group">
           <label for="">Y！オーク商品名</label>
-          <input type="text" class="form-control" ref="productYahooTitle" :value="selectedEditProduct.product_yahoo_title">
+          <input
+            type="text"
+            class="form-control"
+            ref="productYahooTitle"
+            :value="selectedEditProduct.product_yahoo_title"
+          />
         </div>
         <div class="form-group">
           <label for="">カテゴリーID</label>
-          <input type="number" class="form-control" v-model="selectedEditProduct.yahoo_auction_category_id">
+          <input
+            type="number"
+            class="form-control"
+            v-model="selectedEditProduct.yahoo_auction_category_id"
+          />
         </div>
         <div class="form-group">
           <label for="">開始価格</label>
-          <input type="number" class="form-control" v-model="selectedEditProduct.start_price">
+          <input
+            type="number"
+            class="form-control"
+            v-model="selectedEditProduct.start_price"
+          />
         </div>
         <div class="form-group">
           <label for="">即決価格</label>
-          <input type="number" class="form-control" v-model="selectedEditProduct.bid_or_buy_price">
+          <input
+            type="number"
+            class="form-control"
+            v-model="selectedEditProduct.bid_or_buy_price"
+          />
         </div>
         <div class="form-group">
           <label for="">送料</label>
-          <input type="number" class="form-control" v-model="selectedEditProduct.ship_fee1">
+          <input
+            type="number"
+            class="form-control"
+            v-model="selectedEditProduct.ship_fee1"
+          />
         </div>
         <div class="form-group">
           <label for="">個数</label>
-          <input type="number" class="form-control" v-model="selectedEditProduct.quantity">
+          <input
+            type="number"
+            class="form-control"
+            v-model="selectedEditProduct.quantity"
+          />
         </div>
         <div class="form-group">
           <label for="">出品停止在庫数</label>
-          <input type="number" class="form-control" v-model="selectedEditProduct.quantity_check">
+          <input
+            type="number"
+            class="form-control"
+            v-model="selectedEditProduct.quantity_check"
+          />
         </div>
         <div class="form-group">
           <label for="">商品詳細</label>
-          <textarea class="form-control" id="" cols="30" rows="5" v-model="selectedEditProduct.description"></textarea>
+          <textarea
+            class="form-control"
+            id=""
+            cols="30"
+            rows="5"
+            v-model="selectedEditProduct.description"
+          ></textarea>
         </div>
         <div class="form-group">
           <label for="">備考</label>
-          <textarea class="form-control" id="" cols="30" rows="5" v-model="selectedEditProduct.note"></textarea>
+          <textarea
+            class="form-control"
+            id=""
+            cols="30"
+            rows="5"
+            v-model="selectedEditProduct.note"
+          ></textarea>
         </div>
       </template>
       <template v-slot:button>
@@ -669,7 +711,7 @@ export default {
       selectedTypeWitch: "",
       SWITCH_TYPE,
       selectedFolder: null,
-      selectedEditProduct: {},
+      selectedEditProduct: {}
     };
   },
   async mounted() {
@@ -719,30 +761,35 @@ export default {
         });
       }
     },
-    onEditProduct (product, index) {
-      this.selectedEditProduct = {...product}
-      this.$refs.modalEditProduct.openModal()
+    onEditProduct(product, index) {
+      this.selectedEditProduct = { ...product };
+      this.$refs.modalEditProduct.openModal();
     },
-    async onSaveEditProduct () {
+    async onSaveEditProduct() {
       let productYahooTitle = this.$refs.productYahooTitle.value;
       let params = {
         ...this.selectedEditProduct,
         product_yahoo_title: productYahooTitle
-      }
+      };
       let formData = new FormData();
-      formData.append('payload', JSON.stringify(params));
-      let res = await ProductYahooApi.update(this.selectedEditProduct._id, formData)
+      formData.append("payload", JSON.stringify(params));
+      let res = await ProductYahooApi.update(
+        this.selectedEditProduct._id,
+        formData
+      );
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
           title: "商品情報を変更しました。",
           timer: 500,
-          showConfirmButton: false,
+          showConfirmButton: false
         });
         this.$refs.modalEditProduct.closeModal();
-        let findIndex =  this.searchProducts.findIndex(item => item._id === this.selectedEditProduct._id);
-        this.searchProducts[findIndex] = {...res.data.result}
-        this.searchProducts = [...this.searchProducts]
+        let findIndex = this.searchProducts.findIndex(
+          item => item._id === this.selectedEditProduct._id
+        );
+        this.searchProducts[findIndex] = { ...res.data.result };
+        this.searchProducts = [...this.searchProducts];
       }
     },
     onConfirmDelete(product, index) {

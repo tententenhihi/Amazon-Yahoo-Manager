@@ -245,7 +245,6 @@ export default class AmazonController {
                 }
                 productAmazon.folder_id = folder_id;
                 productAmazon.is_convert_yahoo = true;
-
                 productAmazon.basecost = parseInt(productAmazon.basecost) || 0;
                 productAmazon.profit = parseInt(productAmazon.profit) || 0;
                 productAmazon.price = parseInt(productAmazon.price) || 0;
@@ -295,7 +294,8 @@ export default class AmazonController {
                         product_amazon_id: productAmazon._id,
                         created: Date.now(),
                         listing_status: 'NOT_LISTED',
-                        _id: null
+                        count_product: productAmazon.countProduct && productAmazon.countProduct > 1 ? productAmazon.countProduct : 1,
+                        _id: null,
                     };
                     await ProductYahooService.create(productYahoo);
                 }

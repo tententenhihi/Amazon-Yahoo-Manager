@@ -67,7 +67,7 @@ var Product = new Schema({
     },
     quantity: {
         type: Number,
-        default: 1,
+        default: 3,
     },
     quantity_check: {
         type: Number,
@@ -210,7 +210,7 @@ var Product = new Schema({
     },
     count_product: {
         type: Number,
-        default: 3,
+        default: 1,
     },
     profit: {
         type: String,

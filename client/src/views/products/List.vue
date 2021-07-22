@@ -209,9 +209,21 @@
                   {{ product.asin }}
                 </a>
               </td>
-              <td class="text-center">{{ product.price }}</td>
-              <td class="text-center">{{ product.profit }}</td>
-              <td class="text-center">{{ product.basecost }}</td>
+              <td class="text-center">
+                {{ product.price ? product.price.toLocaleString("ja-JP") : 0
+                }}{{ product.price ? "円" : "" }}
+              </td>
+              <td class="text-center">
+                {{ product.profit ? product.profit.toLocaleString("ja-JP") : 0
+                }}{{ product.profit ? "円" : "" }}
+              </td>
+              <td class="text-center">
+                {{
+                  product.basecost
+                    ? product.basecost.toLocaleString("ja-JP")
+                    : 0
+                }}{{ product.basecost ? "円" : "" }}
+              </td>
               <td class="text-center">
                 <div class="input-group">
                   <input
