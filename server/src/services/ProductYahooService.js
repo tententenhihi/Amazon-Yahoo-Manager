@@ -187,7 +187,7 @@ export default class ProductYahooService {
     }
     static async startUploadProductByCalendar(user_id, yahoo_account_id, calendar_target_folder) {
         console.log(' ######### Start Cron job: startUploadProductByCalendar ');
-        
+
         let result = [];
         //Get day of month
         let today = new Date();

@@ -12,6 +12,26 @@ import Utils from '../utils/Utils';
 export default class AuctionYahooService {
     static async uploadNewProduct(cookie, productData, proxy) {
         try {
+            // Check Data
+            if (!productData.yahoo_auction_category_id || productData.yahoo_auction_category_id === '0') {
+                return {
+                    status: 'ERROR',
+                    statusMessage: 'Category is required',
+                };
+            }
+            if (!productData.start_price) {
+                return {
+                    status: 'ERROR',
+                    statusMessage: 'Start price is required',
+                };
+            }
+            if (!productData.images || productData.images.length == 0) {
+                return {
+                    status: 'ERROR',
+                    statusMessage: 'Images is required',
+                };
+            }
+
             let listImage = [];
             console.log(' =============== uploadNewProduct ================= ');
             if (productData.images[0].startsWith('http')) {
@@ -145,7 +165,7 @@ export default class AuctionYahooService {
             //p861707070
             let productTitle = productData.product_yahoo_title;
             if (productTitle.length > 74) {
-                productTitle = productTitle.substring(0,74)
+                productTitle = productTitle.substring(0, 74);
             }
             // PREVIEW
             let previewParams = {
@@ -246,13 +266,12 @@ export default class AuctionYahooService {
             let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
             if (mgc == null) {
                 let $Preview = cheerio.load(resPreview.data);
-                let message = $Preview('strong').text();
+                let message = $Preview('.decErrorBox__title').text().split('\n')[0];
                 return {
                     status: 'ERROR',
                     statusMessage: message,
                 };
             }
-
             if (mgc) mgc = mgc[1];
 
             // SUBMIT
@@ -909,7 +928,7 @@ export default class AuctionYahooService {
                     headers,
                     proxy: proxyConfig,
                 });
-                if (resSubmit.data.Result && resSubmit.data.Result.length > 0) {
+                if (resSubmit.data.Result != null && resSubmit.data.Result != {}) {
                     return {
                         status: 'SUCCESS',
                     };

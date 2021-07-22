@@ -39,10 +39,6 @@ export default class ProductYahooController {
             let data = req.body;
 
             if (data.newComment) {
-                console.log(' ========== Send Message =========== ');
-                console.log(' #### aID: ', data.aID);
-                console.log(' #### message: ', data.newComment);
-
                 //Send Message
                 let yahooAccount = await AccountYahooService.findOne({ _id: data.yahoo_account_id });
                 if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
