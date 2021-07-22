@@ -790,8 +790,11 @@ export default class AuctionYahooService {
         // urlLogin = 'http://lumtest.com/myip.json';
         await page.goto(urlLogin, { waitUntil: 'load', timeout: timeout });
         page.setDefaultNavigationTimeout(0);
+        await page.waitForNavigation({ timeout: timeout });
+        await Utils.sleep(3000);
         await page.type('#username', account.yahoo_id);
         await Utils.sleep(3000);
+        await page.waitForNavigation({ timeout: timeout });
         await page.click('#btnNext');
         await page.waitForNavigation({ timeout: timeout });
         await page.type('#passwd', account.password);
