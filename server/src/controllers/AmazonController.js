@@ -320,4 +320,32 @@ export default class AmazonController {
             response.error500(error);
         }
     }
+    static async deleteMultipleProduct(req, res) {
+        let response = new Response(res);
+        try {
+            const { ids } = req.body;
+            let result = null;
+            for (let index = 0; index < ids.length; index++) {
+                const element = ids[index];
+                result = await ProductAmazonService.delete(element);
+            }
+            if (result) {
+                response.success200({ success: true });
+            }
+        } catch (error) {
+            response.error500(error);
+        }
+    }
+    static async deleteAllProduct(req, res) {
+        let response = new Response(res);
+        try {
+            const { yahoo_account_id } = req.body;
+            let result = await ProductAmazonService.deleteMultiple(yahoo_account_id);
+            if (result) {
+                response.success200({ success: true });
+            }
+        } catch (error) {
+            response.error500(error);
+        }
+    }
 }

@@ -11,5 +11,7 @@ ProductAmazonRouter.route('/delete/:_id').post(AmazonController.deleteProduct);
 ProductAmazonRouter.route('/create-by-csv').post(AmazonController.createProductByCSV);
 ProductAmazonRouter.route('/set-shipping-product/:_id').post(AmazonController.setShippingProduct);
 ProductAmazonRouter.route('/convert-yahoo-product').post(AmazonController.convertToYahooProduct);
+ProductAmazonRouter.route('/delete-multiple-product').post(AmazonController.deleteMultipleProduct);
+ProductAmazonRouter.route('/delete-all-product').post(AmazonController.deleteAllProduct);
 
 export default ProductAmazonRouter;

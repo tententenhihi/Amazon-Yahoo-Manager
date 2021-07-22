@@ -121,6 +121,29 @@
           </div>
           <hr />
         </div>
+        <div class="group-button px-10 py-20">
+          <button
+            type="submit"
+            :disabled="!selectedProduct.length"
+            class="btn btn-primary my-10"
+            @click="convertYahooProduct"
+          >
+            取扱いに追加
+          </button>
+          <button
+            :disabled="!selectedProduct.length"
+            @click="$refs.modalDeleteProduct.openModal()"
+            class="btn btn-danger mx-10"
+          >
+            削除
+          </button>
+          <button
+            @click="$refs.modalDeleteAllProduct.openModal()"
+            class="btn btn-danger mx-10"
+          >
+            Amazon商品一覧全削除
+          </button>
+        </div>
         <paginate
           v-if="pageCount > 1"
           v-model="page"
@@ -133,19 +156,11 @@
           :page-class="'page-item'"
         >
         </paginate>
-        <button
-          type="submit"
-          :disabled="!selectedProduct.length"
-          class="btn btn-primary my-10"
-          @click="convertYahooProduct"
-        >
-          取扱いに追加
-        </button>
         <table class="table table-hover pt-20 my-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
               <th>
-                <input class="checkall" type="checkbox" />
+                <input class="checkall" v-model="isCheckAllProduct" type="checkbox" />
               </th>
               <th class="text-center">画像</th>
               <th>タイトル</th>
@@ -304,6 +319,36 @@
         </div>
       </template>
     </modal-component>
+    <modal-component ref="modalDeleteProduct" :isModalBody="false">
+      <template v-slot:header>
+        <h5>選択された商品をAmazon商品一覧から除外しますか？</h5>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button class="btn btn-default" @click="$refs.modalDeleteProduct.closeModal()">
+            キャンセル
+          </button>
+          <button class="btn btn-primary mr-1" @click="onDeleteMultipleProduct">
+            確認
+          </button>
+        </div>
+      </template>
+    </modal-component>
+    <modal-component ref="modalDeleteAllProduct" :isModalBody="false">
+      <template v-slot:header>
+        <h5>取り扱い管理に商品が残っていれば、Amazon商品一覧から削除しても出品・監視機能は問題なく動作します。全削除します。よろしいですか？</h5>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button class="btn btn-default" @click="$refs.modalDeleteAllProduct.closeModal()">
+            キャンセル
+          </button>
+          <button class="btn btn-primary mr-1" @click="onDeleteAllProduct">
+            確認
+          </button>
+        </div>
+      </template>
+    </modal-component>
   </div>
 </template>
 
@@ -329,7 +374,8 @@ export default {
       searchProducts: [],
       selectedProduct: [],
       selectedFolder: null,
-      SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/"
+      SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/",
+      isCheckAllProduct: false,
     };
   },
   async mounted() {
@@ -558,6 +604,67 @@ export default {
         this.onCloseModal();
         this.getListProduct();
       }
+    },
+    async onDeleteMultipleProduct() {
+      let params = {
+        ids: this.selectedProduct.map(item => item._id)
+      };
+      let res = await ProductAmazonApi.deleteMultipleProduct(params);
+      if (res && res.status === 200) {
+        this.selectedProduct.forEach(item => {
+          let index = this.products.findIndex(
+            product => product._id === item._id
+          );
+          this.products.splice(index, 1);
+        });
+        this.isCheckAllProduct = false;
+        this.selectedProduct = [];
+        this.$refs.modalDeleteProduct.closeModal();
+        this.$swal.fire({
+          icon: "success",
+          title: "Amazon商品一覧を削除しました。"
+        });
+      }
+    },
+    async onDeleteAllProduct() {
+      let params = {
+        yahoo_account_id: this.selectedYahooAccount._id
+      };
+      let res = await ProductAmazonApi.deleteAllProduct(params);
+      if (res && res.status === 200) {
+        this.products = []
+        this.searchProducts = []
+        this.isCheckAllProduct = false;
+        this.selectedProduct = [];
+        this.$refs.modalDeleteAllProduct.closeModal();
+        this.$swal.fire({
+          icon: "success",
+          title: "Amazon商品一覧を削除しました。"
+        });
+      }
+    }
+  },
+  watch: {
+    isCheckAllProduct() {
+      if (this.isCheckAllProduct) {
+        this.selectedProduct = [...this.tableData];
+      } else {
+        this.selectedProduct = [];
+      }
+    },
+    selectedProduct() {
+      if (
+        this.selectedProduct.length &&
+        this.selectedProduct.length == this.tableData.length
+      ) {
+        this.isCheckAllProduct = true;
+      } else {
+        this.isCheckAllProduct = false;
+      }
+    },
+    page() {
+      this.isCheckAllProduct = false;
+      this.selectedProduct = [];
     }
   }
 };

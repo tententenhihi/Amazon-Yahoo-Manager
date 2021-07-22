@@ -99,6 +99,29 @@
           取引で困ったことなどがあったら、落札者に質問してみよう！
         </div>
         <ValidationObserver tag="div" ref="formMessage">
+          <div class="input-group mb-2">
+            <select v-model="selectedTemplate" id="" class="form-control">
+              <option :value="selectedTemplate" selected
+                >テンプレートを選択</option
+              >
+              <option
+                :key="index"
+                v-for="(template, index) in templates"
+                :value="template"
+                >{{ template.name }}</option
+              >
+            </select>
+            <div class="input-group-prepend">
+              <div class="input-group-btn">
+                <router-link
+                  tag="button"
+                  class="btn btn-primary btn-management"
+                  :to="{ name: 'TradeMessageTemplate' }"
+                  >管理</router-link
+                >
+              </div>
+            </div>
+          </div>
           <ValidationProvider
             name="コメント"
             rules="required"
@@ -189,17 +212,21 @@
 <script>
 import { mapGetters } from "vuex";
 import ProductYahooEndedApi from "@/services/ProductYahooEndedApi";
+import TradeMessageTemplateApi from '@/services/TradeMessageTemplateApi'
 
 export default {
   name: "YahooAuctionTradeMessage",
   data() {
     return {
       product: {},
-      comment: ""
+      comment: "",
+      templates: [],
+      selectedTemplate: null
     };
   },
   async mounted() {
     this.getProduct();
+    await this.getListTradeMessageTemplate();
   },
   computed: {
     ...mapGetters({
@@ -213,6 +240,20 @@ export default {
     }
   },
   methods: {
+    async getListTradeMessageTemplate() {
+      try {
+        let res = await TradeMessageTemplateApi.get(this.yahooAccountId);
+        if (res && res.status === 200) {
+          this.templates = res.data.templates;
+        }
+      } catch (error) {
+        this.$swal.fire({
+          icon: "error",
+          title: "エラー",
+          text: error.message
+        });
+      }
+    },
     async getProduct() {
       let res = await ProductYahooEndedApi.show(this.productId);
       if (res && res.status === 200) {
@@ -241,6 +282,11 @@ export default {
           });
         }
       }
+    }
+  },
+  watch: {
+    selectedTemplate () {
+      this.comment = this.selectedTemplate.content
     }
   }
 };
@@ -326,5 +372,10 @@ export default {
 }
 .user {
   font-weight: bold;
+}
+.btn-management {
+  height: calc(2.25rem + 2px);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 </style>

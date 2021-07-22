@@ -307,6 +307,15 @@ export default class ProductAmazonService {
             throw new Error('Error:' + error.message);
         }
     }
+    static async deleteMultiple(yahooAccountId) {
+        try {
+            await ProductAmazonSchema.deleteMany({yahoo_account_id: yahooAccountId});
+            return true
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error:' + error.message);
+        }
+    }
     static async createByCsv(data) {
         try {
             let result = await ProductAmazonSchema.insertMany(data);

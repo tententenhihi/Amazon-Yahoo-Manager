@@ -28,5 +28,11 @@ export default {
   },
   convertYahooProduct (data) {
     return Api.post(`${prefix}/convert-yahoo-product/`, data)
-  }
+  },
+  deleteMultipleProduct(data) {
+    return Api.post(`${prefix}/delete-multiple-product`, data);
+  },
+  deleteAllProduct(data) {
+    return Api.post(`${prefix}/delete-all-product`, data);
+  },
 };
