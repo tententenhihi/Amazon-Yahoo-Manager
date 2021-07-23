@@ -39,9 +39,6 @@ app.use(upload());
 app.use('/uploads', express.static('uploads'));
 app.use('/', indexRouter);
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
-var os = require('os');
-var hostname = os.hostname();
-console.log(' #### hostname: ', hostname);
 let initData = async () => {
     UserService.addUser({
         username: 'admin',
@@ -54,8 +51,7 @@ let initData = async () => {
     new QueueGetProductAmazon();
     new QueueLoginYahooAuction();
     BrightDataService.loadProxyToDB();
-    new CronJobService();
-    CronJobService.startGetProductYahooEnded();
+    CronJobService.startCron();
     console.log('Server Started.!');
 };
 // Connect mongo DB

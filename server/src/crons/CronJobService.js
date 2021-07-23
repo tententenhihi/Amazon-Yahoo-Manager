@@ -11,13 +11,14 @@ const CronJob = require('cron').CronJob;
 const CronTime = require('cron').CronTime;
 
 export default class CronJobService {
-    constructor() {}
     static async startCron() {
         CronJobService.startUploadProductYahoo();
+        CronJobService.startGetProductYahooEnded();
         cron.schedule('*/5 * * * *', async () => {
             CronJobService.startGetProductYahooEnded();
         });
     }
+
     static async startGetProductYahooEnded() {
         console.log(' ====== START Get Product yahoo ended every 5 minute ======');
         let listAccountYahoo = await AccountYahooService.find({});
@@ -28,7 +29,7 @@ export default class CronJobService {
                 if (proxyResult.status === 'SUCCESS') {
                     let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data);
                     let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
-                    console.log(' ##### startGetProductYahooEnded listProductEnded: ', listProductEnded);
+                    // console.log(' ##### startGetProductYahooEnded listProductEnded: ', listProductEnded);
                     // tạo , update product
                     for (let j = 0; j < listProductEnded.length; j++) {
                         const product = listProductEnded[j];

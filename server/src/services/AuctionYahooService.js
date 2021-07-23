@@ -352,6 +352,7 @@ export default class AuctionYahooService {
                 proxy: proxyConfig,
             });
 
+            // Fs.writeFileSync(usernameYahoo + ' - preview.html', response.data);
             let $ = cheerio.load(response.data);
 
             let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
@@ -365,6 +366,7 @@ export default class AuctionYahooService {
                     listProduct.push({ aID, idBuyer, time_end, price_end });
                 }
             }
+            console.log(listProduct);
             //Get detail info
 
             for (let i = 0; i < listProduct.length; i++) {
@@ -691,6 +693,9 @@ export default class AuctionYahooService {
             `--proxy-server=${newProxyUrl}`,
         ];
 
+        if (Fs.existsSync('./tmp')) {
+            Fs.rmdirSync('./tmp', { recursive: true });
+        }
         const options = {
             args,
             headless: true,
@@ -727,18 +732,19 @@ export default class AuctionYahooService {
 
         console.log(' ### password');
         const password = await page.waitForSelector('#passwd');
-        await password.type('#passwd');
+        await password.type(account.password);
         await Utils.sleep(1000);
 
         console.log(' #### Submit');
         await waitAndClick('#btnSubmit');
-        await Utils.sleep(10000);
-
+        const find = await page.waitForSelector('input[type=text]', { timeout: 30000 });
+        await Utils.sleep(1000);
+        // const data = await page.evaluate(() => document.querySelector('*').outerHTML);
+        // Fs.writeFileSync('login.html', data);
         const cookies = await page.cookies();
-        browser.close();
+        await browser.close();
         if (cookies.length > 4) {
             console.log(' ======== SUCCESS ======= ');
-
             return cookies
                 .map(function (c) {
                     return `${c.name}=${c.value}`;
