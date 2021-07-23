@@ -4,6 +4,7 @@ import ProxySchema from '../models/ProxyModel';
 import Response from '../utils/Response';
 import bcrypt from 'bcryptjs';
 import QueueLoginYahooAuction from '../services/QueueLoginYahooAuction'
+import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService'
 class YahooAccountController {
     static async getListAccount(req, res) {
         let response = new Response(res);
@@ -45,7 +46,9 @@ class YahooAccountController {
                     let result = await newAccount.save();
                     proxy.status = 'used'
                     await proxy.save()
-                    
+
+                    await ProductInfomationDefaultService.get(user._id, result._doc._id)
+
                     QueueLoginYahooAuction.addNew(newAccount)
                     response.success200(result._doc);
                 }
