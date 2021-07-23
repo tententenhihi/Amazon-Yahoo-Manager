@@ -28,7 +28,12 @@ class AdminController {
     static async createUser(req, res) {
         let response = new Response(res);
         try {
-            const { username, password, name, status, email, expired_at, note, maxYahooAccount } = req.body;
+            var host = req.get('host');
+            var origin = req.get('origin');
+            console.log(' #### host: ', host);
+            console.log(' #### origin: ', origin);
+
+            const { username, password, name, status, email, expired_at, note, maxYahooAccount, domain } = req.body;
             if (!username || !password || !name || !status || !email || !expired_at) {
                 return response.error400({ message: '完全な情報を入力してください。' });
             }
@@ -57,10 +62,10 @@ class AdminController {
                         newCode.code = Utils.generateKey();
                         await newCode.save();
                         let body = `
-                          <div style="color: black">
-                            Please click to link to active your account: <br>
-                            ${req.protocol + '://' + req.host}/login?code=${newCode.code}
-                          </div>
+                            <div style="color: black">
+                                Please click to link to active your account: <br>
+                                ${domain}/login?code=${newCode.code}
+                            </div>
                         `;
                         await sendEmail(user.email, body, 'Amazon Yahoo Manager active account');
                         return response.success200({ user });
