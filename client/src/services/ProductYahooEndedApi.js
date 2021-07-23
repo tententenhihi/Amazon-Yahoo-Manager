@@ -12,8 +12,8 @@ export default {
       timeout: 60 * 1000
     });
   },
-  stopTransaction(credentials) {
-    return Api.post(`${prefix}/stop-transition`, credentials, {
+  deleteBuyer(credentials) {
+    return Api.post(`${prefix}/delete-buyer`, credentials, {
       timeout: 60 * 1000
     });
   },

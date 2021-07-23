@@ -93,7 +93,10 @@
         <br />
         <button class="btn btn-danger mt-20" :disabled="true">取引中止</button>
         <br />
-        <button class="btn btn-danger my-20">落札者削除</button> <br />
+        <button class="btn btn-danger my-20" @click="deleteBuyer">
+          落札者削除
+        </button>
+        <br />
         <hr />
         <div class="my-20">
           取引で困ったことなどがあったら、落札者に質問してみよう！
@@ -244,6 +247,24 @@ export default {
     }
   },
   methods: {
+    async deleteBuyer() {
+      let payload = {
+        product_id: this.product._id,
+        reason: "seller"
+      };
+
+      let res = await ProductYahooEndedApi.deleteBuyer(payload);
+      if (res && res.status === 200) {
+        this.product = res.data.product;
+        this.comment = "";
+        this.$swal.fire({
+          icon: "success",
+          title: "Delete buyer successfully",
+          timer: 500,
+          showConfirmButton: false
+        });
+      }
+    },
     async getListTradeMessageTemplate() {
       try {
         let res = await TradeMessageTemplateApi.get(this.yahooAccountId);

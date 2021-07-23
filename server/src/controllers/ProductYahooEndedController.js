@@ -58,23 +58,30 @@ export default class ProductYahooEndedController {
         }
     }
 
-    static async stopTransaction(req, res) {
+    static async deleteBuyer(req, res) {
         let response = new Response(res);
         try {
-            const { idYahoo, idProduct, idBuyer, reason } = req.params;
-            let accountYahoo = await AccountYahooService.findById(idYahoo);
-            const cookie = accountYahoo.cookie;
-            const idProxy = accountYahoo.proxy_id;
-            const resultCheckProxy = await ProxyService.findByIdAndCheckLive(idProxy);
-            if (resultCheckProxy.status === 'SUCCESS') {
-                let result = await AuctionYahooService.stopTransaction(cookie, resultCheckProxy.data, idProduct, idBuyer, reason);
-                if (result.status === 'SUCCESS') {
-                    return response.success200(result);
+            const { product_id, reason } = req.body;
+            console.log(' #### product_id: ', product_id);
+            let productEnded = await ProductYahooEndedService.findById(product_id);
+            if (!productEnded) {
+                return response.error400({ message: 'Product not found..!' });
+            }
+            let yahooAccount = await AccountYahooService.findById(productEnded.yahoo_account_id);
+            if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+                let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+                if (proxyResult.status === 'SUCCESS') {
+                    let result = await AuctionYahooService.deleteBuyer(yahooAccount.cookie, proxyResult.data, productEnded.aID, productEnded.idBuyer, reason);
+                    if (result.status === 'SUCCESS') {
+                        return response.success200(result);
+                    } else {
+                        return response.error400({ message: result.message });
+                    }
                 } else {
-                    return response.error400(result);
+                    return response.error400({ message: proxyResult.statusMessage });
                 }
             } else {
-                return response.error400(resultCheckProxy);
+                return response.error400({ message: 'User is Failse.!' });
             }
         } catch (error) {
             response.error500(error);
@@ -87,7 +94,7 @@ export default class ProductYahooEndedController {
             let { message, product_id } = req.body;
             let productEnded = await ProductYahooEndedService.findById(product_id);
             if (!productEnded) {
-                return response.error400({ message: 'Product Yahoo not found..!' });
+                return response.error400({ message: 'Product  not found..!' });
             }
             //Send Message
             let yahooAccount = await AccountYahooService.findById(productEnded.yahoo_account_id);

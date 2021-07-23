@@ -333,6 +333,7 @@ export default class AuctionYahooService {
             };
         }
     }
+
     static async getProductAuctionEnded(usernameYahoo, cookie, proxy) {
         try {
             let proxyConfig = {
@@ -409,7 +410,8 @@ export default class AuctionYahooService {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
         }
     }
-    static async getProductAuctionClosed(usernameYahoo, cookie, proxy) {
+
+    static async getProductAuctionClosed(cookie, proxy) {
         try {
             let proxyConfig = {
                 host: proxy.host,
@@ -459,6 +461,7 @@ export default class AuctionYahooService {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
         }
     }
+
     static async getProductAuctioning(cookie, proxy) {
         let proxyConfig = {
             host: proxy.host,
@@ -746,7 +749,8 @@ export default class AuctionYahooService {
             throw new Error('Can not get cookies:', page.url());
         }
     }
-    static async stopTransaction(cookie, proxy, aID, idBuyer, reason = 'seller') {
+
+    static async deleteBuyer(cookie, proxy, aID, idBuyer, reason = 'seller') {
         // reason: seller or winner
         try {
             let headers = {
@@ -822,6 +826,7 @@ export default class AuctionYahooService {
             };
         }
     }
+
     static async sendMessage(cookie, proxy, aID, usernameYahoo, idBuyer, message) {
         try {
             // console.log('### cookie: ', cookie);
@@ -894,6 +899,7 @@ export default class AuctionYahooService {
             };
         }
     }
+
     static async sendRating(cookie, proxy, aID, idBuyer, ratingData) {
         try {
             let headers = {

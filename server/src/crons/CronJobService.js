@@ -14,27 +14,11 @@ export default class CronJobService {
     constructor() {
         CronJobService.startGetProductYahooEnded();
         CronJobService.startUploadProductYahoo();
-        CronJobService.xxx();
     }
 
-    static async xxx() {
-        let listAccountYahoo = await AccountYahooService.find({});
-        for (let i = 0; i < listAccountYahoo.length; i++) {
-            const accountYahoo = listAccountYahoo[i];
-            if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
-                let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
-                if (proxyResult.status === 'SUCCESS') {
-                    let listProductClosed = await AuctionYahooService.getProductAuctionClosed(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data);
-                    console.log(' ###### listProductClosed: ', listProductClosed);
-                } else {
-                    console.log(proxyResult);
-                }
-            }
-        }
-    }
     static async startGetProductYahooEnded() {
-        console.log(' ====== START Get Product yahoo ended every 5 minute ======');
         cron.schedule('*/5 * * * *', async () => {
+            console.log(' ====== START Get Product yahoo ended every 5 minute ======');
             let listAccountYahoo = await AccountYahooService.find({});
             for (let i = 0; i < listAccountYahoo.length; i++) {
                 const accountYahoo = listAccountYahoo[i];
@@ -167,12 +151,21 @@ export default class CronJobService {
 
             // Cron relist
             if (schedule.relist_auto) {
-                let timeCron = `0 ${schedule.new_list_start_time_minute} ${schedule.new_list_start_time_hour} * * *`;
+                let timeCron = `0 ${schedule.relist_start_time_minute} ${schedule.relist_start_time_hour} * * *`;
                 if (!cronRelist) {
                     cronRelist = new CronJob(
                         timeCron,
-                        function () {
-                            ProductYahooService.startReSubmitProduct(schedule.user_id, schedule.yahoo_account_id);
+                        async function () {
+                            let results = await ProductYahooService.startReSubmitProduct(schedule.user_id, schedule.yahoo_account_id);
+                            let newCronHistory = {
+                                success_count: results.filter((item) => item.success).length,
+                                error_count: results.length - results.filter((item) => item.success).length,
+                                detail: results,
+                                user_id: schedule.user_id,
+                                yahoo_account_id: schedule.yahoo_account_id,
+                            };
+
+                            await CronHistoryModel.create(newCronHistory);
                         },
                         null,
                         false

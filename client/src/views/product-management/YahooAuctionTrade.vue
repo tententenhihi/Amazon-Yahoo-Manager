@@ -12,13 +12,13 @@
               <th class="text-center">
                 <input class="checkall" type="checkbox" />
               </th>
-              <th class="text-center">オークションID</th>
-              <th class="text-center">出品画像</th>
-              <th class="text-center">取り扱い画像</th>
+              <th class="text-center" width="120">オークションID</th>
+              <th class="text-center" width="110">出品画像</th>
+              <th class="text-center" width="100">取り扱い画像</th>
               <th width="300">Y！オーク商品の名前</th>
-              <th class="text-center" width="100">落札価格</th>
-              <th class="text-center" width="100">落札個数</th>
-              <th class="text-center" width="120">落札者情報</th>
+              <th class="text-center" width="110">落札価格</th>
+              <th class="text-center" width="110">落札個数</th>
+              <th class="text-center" width="130">落札者情報</th>
               <th class="text-center" width="120">終了日時</th>
               <th class="text-center">状態</th>
               <th width="150">メモ</th>

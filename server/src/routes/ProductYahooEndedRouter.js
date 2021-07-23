@@ -8,7 +8,7 @@ ProductYahooEndedRouter.route('/show/:_id').get(ProductYahooEndedController.show
 ProductYahooEndedRouter.route('/update/:_id').post(ProductYahooEndedController.updateProduct);
 ProductYahooEndedRouter.route('/delete/:_id').post(ProductYahooEndedController.deleteProduct);
 
-ProductYahooEndedRouter.route('/stop-transition').post(ProductYahooEndedController.stopTransaction);
+ProductYahooEndedRouter.route('/delete-buyer').post(ProductYahooEndedController.deleteBuyer);
 ProductYahooEndedRouter.route('/send-message').post(ProductYahooEndedController.sendMessage);
 ProductYahooEndedRouter.route('/send-rating').post(ProductYahooEndedController.sendRating);
 ProductYahooEndedRouter.route('/set-note').post(ProductYahooEndedController.setNote);
