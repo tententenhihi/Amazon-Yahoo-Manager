@@ -1,0 +1,672 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ja">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>ヤフオク! - 取引ナビ</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" href="https://s.yimg.jp/images/auc/pc/common/css/tradingnavi/1.0.0/standard_common.css" type="text/css" media="all">
+<link media="all" type="text/css" href="https://s.yimg.jp/images/auc/pc/tradingnavi/css/1.0.36/style_common.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://s.yimg.jp/images/auct/cms/promo/paymentfree/pc/pc_put/css/1.0.2/mdl_tradingnavi.css" type="text/css" media="all">
+<!-- basic-MHCSS -->
+<!-- mhcss -->
+<link href="https://s.yimg.jp/yui/jp/mh/pc/1.5.7/css/std.css" rel="stylesheet" type="text/css" media="all">
+<!-- /mhcss -->
+<!--[if lte IE 7]><style type="text/css">*{zoom:1;}ul,ol,li{zoom:normal;}</style><![endif]-->
+</head>
+<body class="yj950-1">
+
+<div id="acWrHead">
+<div id="header">
+<span class="yjGuid"><a name="yjPagetop" id="yjPagetop"></a></span>
+<!-- MHD -->
+<!-- basic-MH-login -->
+<!-- mhd -->
+<div id="msthd">
+  <div>
+    <div id="msthdtp">
+      <div id="mhd_uhd_pc"></div>
+      <div id="msthdsb">
+        <div class="msthdLink">
+          <ul>
+            <li class="msthdLinkYtop"><a data-redirectadclick href="https://www.yahoo.co.jp/" data-ylk="slk:h_ytop;pos:0" id="msthdYtop">Yahoo! JAPAN</a></li>
+            <!-- mhhl -->
+            <li class="msthdLinkHelp"><a data-redirectadclick href="https://www.yahoo-help.jp/app/home/service/auctions/" data-ylk="slk:h_hlp;pos:0" id="msthdHelp">ヘルプ</a></li>
+            <!-- /mhhl -->
+          </ul>
+        </div>
+        <div id="msthdsrch">
+          <form data-redirectadclick action="https://search.yahoo.co.jp/search" name="p">
+            <p id="msthdsrchBox">
+              <label id="msthdslb" for="msthdsbox" title="キーワード：" class="offLeft">キーワード：</label>
+              <input id="msthdsbox" type="text" name="p" value="" placeholder="ウェブ検索">
+              <button id="msthdsbt" type="submit" title="検索">検索</button>
+              <input type=hidden name="ei" value="UTF-8" id="msthdei">
+              <input type=hidden name="fr" value="ush">
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- mhlg -->
+    <div class="logo">
+      <a data-redirectadclick href="https://auctions.yahoo.co.jp/" data-ylk="slk:h_srvtop;pos:0" id="msthdLogo">
+        <img src="https://s.yimg.jp/c/logo/f/2.0/auctions_r_34_2x.png" alt="ヤフオク!" width="134" height="30">
+      </a>
+    </div>
+    <!-- /mhlg -->
+    <!-- mhli_login -->
+    <noscript>
+      <style type="text/css">
+      <!--
+        #msthdLoginUser{display: inline-block;}
+        #msthd #msthdUserIcon #msthdUserIconImg{display: inline;}
+        #msthd #msthdsrch {display: inline-block;}
+      -->
+      </style>
+    </noscript>
+    <div class="msthdtxt">
+      <div id="msthdUserIcon">
+        <a data-redirectadclick href="https://accounts.yahoo.co.jp/profile?.done=https%3A%2F%2Fcontact.auctions.yahoo.co.jp%2Fseller%2Ftop%3Faid%3Dl690917990%26%2338%3Bsyid%3Dexffk72575%26%2338%3Bbid%3Dbacntse2412&.src=auc" data-ylk="slk:h_usricn;pos:0"><img src="https://s.yimg.jp/images/account/sp/img/display_name/user/64/00.png" alt="ユーザーアイコン" width="36" height="36" id="msthdUserIconImg"></a>
+      </div>
+      <div id="msthdLoginUser">
+        <p>
+          <a data-redirectadclick href="https://accounts.yahoo.co.jp/profile?.done=https%3A%2F%2Fcontact.auctions.yahoo.co.jp%2Fseller%2Ftop%3Faid%3Dl690917990%26%2338%3Bsyid%3Dexffk72575%26%2338%3Bbid%3Dbacntse2412&.src=auc" class="b" id="msthdLoginName" data-ylk="slk:h_reginf;pos:0"></a>
+        </p>
+        <p>
+          <span id="mhd_premium_pc"></span>
+        </p>
+      </div>
+      <div id="msthdPointArea">
+        <p>
+          <a data-redirectadclick href="https://points.yahoo.co.jp/book" data-ylk="slk:h_tpthst;pos:0" id="msthdPoint"><span id="msthdPointNum">-ポイント</span></a><span id="msthdPointTxt"></span>
+        </p>
+        <p>
+          <span id="mhd_text_pc" style="display: none;"></span>
+        </p>
+      </div>
+    </div>
+    <!-- /mhli_login -->
+  </div>
+</div>
+<script type="text/javascript" src="https://s.yimg.jp/images/security/pf/pcore-1.0.2.min.js"></script>
+<script type="text/javascript" src="https://s.yimg.jp/images/security/pf/yjsecure.js"></script>
+<script type="text/javascript" src="https://s.yimg.jp/images/mempf/mhd/2_3_0/mempf.js"></script>
+<script type="text/javascript">
+window.msthdPromo = function() {
+  YAHOO.JP.msthd.Promo.init();
+};
+</script>
+<script type="text/javascript">
+  (function(d,t){var s=d.getElementsByTagName(t)[0],n=d.createElement(t);n.id='msthdScript';n.src='https://s.yimg.jp/yui/jp/mh/pc/1.9.0/js/std-min.js';n.setAttribute('data-s','');n.setAttribute('data-tm','');s.parentNode.insertBefore(n,s);}(document,'script'));
+</script>
+<!-- /mhd -->
+
+<!-- /MHD -->
+<!-- EMG -->
+<div id="emg"><!-- EMG noResult --></div><!--/#emg-->
+<!-- /EMG -->
+<!-- SPN -->
+<div class="modAdSpn js-modal-cover">
+<script type="text/javascript" language="JavaScript">
+<!--
+yads_ad_ds = '79822_30501';
+yads_type_tag = '2084314004';
+//-->
+</script>
+<script type="text/javascript" language="JavaScript" src="//yads.c.yimg.jp/js/yads.js"></script>
+
+</div>
+<style>
+.modAdSpn{margin:0 auto 10px}
+</style>
+<!-- /SPN -->
+
+<noscript>
+<div id="libJsOffAlert">
+<div class="untBody">
+<p><em>現在JavaScriptの設定が無効になっています。</em></p>
+<p class="decTxt">すべての機能を利用するにはJavaScriptの設定を有効にしてください。<a href="https://www.yahoo-help.jp/app/noscript">JavaScriptの設定を変更する方法はこちら</a>。</p>
+</div>
+</div>
+</noscript>
+
+<!-- PointNavi -->
+<div id="libPointNavi" class="cf">
+    <div class="ptsPoint">
+            </div>
+<div class="ptsNavi">
+<ul>
+<li><a href="https://auctions.yahoo.co.jp/user/jp/show/mystatus" data-ylk="rsec:nav_header;slk:myauc;pos:1" >マイオク</a></li>
+<li><a href="https://auctions.yahoo.co.jp/sell/jp/show/submit?category=0" data-ylk="rsec:nav_header;slk:sell;pos:1" >出品</a></li>
+<li><a href="https://auctions.yahoo.co.jp/sell/jp/show/prefs?.done=https%3A%2F%2Fcontact.auctions.yahoo.co.jp%2Fseller%2Ftop%3Faid%3Dl690917990%26%2338%3Bsyid%3Dexffk72575%26%2338%3Bbid%3Dbacntse2412" data-ylk="rsec:nav_header;slk:aopt;pos:1" >オプション/設定</a></li>
+</ul>
+</div>
+</div><!--/#libPointNavi-->
+<!-- /PointNavi -->
+</div><!--/#header-->
+</div>
+
+<hr class="yjSeparation">
+
+<div id="acWrContents">
+<div id="contents">
+<div id="yjContentsBody">
+<div id="yjMain" class="cf">
+
+<div id="acConHeader" class="cf">
+<!-- HeadH1 -->
+<div class="acMdHeadH1 libTitleH1">
+<h1>取引ナビ</h1>
+<div class="decGuideLink mT20">
+<a href="https://auctions.yahoo.co.jp/topic/tradingnavi/guide/" target="_61103652-0026950316-5608250" data-ylk="rsec:btn;slk:lguide;pos:1" ><span class="decIconBeginer"></span>使い方ガイド</a>
+</div>
+</div><!-- /.acMdHeadH1 -->
+<!-- /HeadH1 -->
+
+<!-- ItemInfo -->
+  
+<div class="acMdItemInfo libItemInfo ">
+<dl class="ptsItmInfoDl"><dt class="decItmPhoto"><img src="https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0207/users/91220202eda2a889757314715dee8efbf58f8208/i-img332x500-1626937901aqglns125508.jpg" alt="" width="50" height="50"></dt>
+
+<dd class="decItmName">
+      遊戯王 20TH-JPC67 クリアクリボー (日本語版 スーパーレア) 20th ANNIVERSARY LEGEND COLLECTION
+  </dd>
+
+<dd class="decPrice"><span class="decQunt">落札数量： 1</span>落札価格： 132円</dd>
+<dd class="decMDT">終了日時： 7月22日 19時38分</dd>
+<dd class="decItmID"><p>オークションID： l690917990</p></dd>
+<dd class="decBuyerID"><p>落札者： bacntse2412（<a href="https://auctions.yahoo.co.jp/jp/show/rating?userID=bacntse2412" target="_61103652-0026950316-5608250" data-ylk="rsec:itm;slk:rtg;pos:1" >1</a>）</p></dd>
+</dl>
+
+  <p class="ptsItmPgBtn"><a href="https://page.auctions.yahoo.co.jp/jp/auction/l690917990" target="_61103652-0026950316-5608250" class="libBtnGrayS" data-ylk="rsec:itm;slk:tc;pos:1" ><span>商品ページへ</span></a></p>
+
+</div><!-- /.acMdItemInfo -->
+<!-- ItemInfo -->
+</div><!-- /#acConHeader -->
+
+
+<!-- ErrorBox -->
+<!-- /ErrorBox -->
+
+<!-- ErrorBox -->
+<div class="acMdErrorBox libErrorAlertBox" id="remindSystemError" style="display:none;">
+  <div class="untBody">
+    <p id="remindError"></p>
+  </div><!-- /.untBody -->
+</div><!-- /.acMdErrorBox -->
+<!-- /ErrorBox -->
+
+<!-- TradeNotice -->
+<!-- /TradeNotice -->
+
+<!-- StatusImg -->
+<div class="acMdStatusImage">
+  <ul class="acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current01">
+    <li class="acMdStatusImage__statusText">取引情報</li>
+            <li class="acMdStatusImage__statusText">お支払い</li>
+        <li class="acMdStatusImage__statusText">発送連絡</li>
+    <li class="acMdStatusImage__statusText">受取連絡</li>
+  </ul>
+  <ul class="acMdStatusImage__charge">
+    <li class="acMdStatusImage__chargeText">
+            連絡待ち    </li>
+            <li class="acMdStatusImage__chargeText"></li>
+        <li class="acMdStatusImage__chargeText"></li>
+    <li class="acMdStatusImage__chargeText"></li>
+  </ul>
+</div>
+<!-- /StatusImg -->
+
+<div class="PayDeadline">
+  <div class="PayDeadline__body ">
+    <div class="PayDeadline__text ">
+      かんたん決済支払期限:7月27日（あと4日）
+    </div>
+  </div>
+</div>
+<!-- StatusCmt -->
+<div class="acMdStatusCmt">
+      <div class="elAdvnc">
+                <p class="fntB">落札者がお届け先住所、お届け方法、お支払い方法を入力中です。<br />落札者からの連絡をお待ちください。</p>
+          <p class="fnt12 decTxtNtc">通知先：exffk72575@yahoo.co.jp <span>[ <a href="https://auctions.yahoo.co.jp/user/jp/show/prefs?select=notify" target="_blank" data-ylk="rsec:cm;slk:edt;pos:1" >変更する</a> ]</span></p>
+          </div>
+  </div><!-- /.acMdStatusCmt -->
+
+<!-- DSKモジュール -->
+        <!-- DSKモジュール -->
+
+<!-- /StatusCmt -->
+
+
+  <!-- sendInfo -->
+    <!-- /sendInfo -->
+
+
+
+<!-- PayShipInfo -->
+<!-- /PayShipInfo -->
+
+<!-- Bundle -->
+
+<!-- /Bundle  -->
+
+<!-- /TradeBtn -->
+<!-- /TradeBtn -->
+
+<!-- TradeInfo -->
+<div class="acMdTradeInfo">
+<div class="libJsExpand libGrdVr libJsExpandClose">
+<div class="libTitleH2TxtVr"><h2>取引情報</h2></div>
+<div class="libLeadText">
+<p class="libJsExpandToggleBtn"><span class="decIcoArw"></span><a href="javascript:void(0)">お届け情報・お支払い情報などを確認する</a></p>
+</div>
+<div class="libJsExpandBody ptsMsgWr mL10 mR10 mB10">
+
+  <div class="libTableCnfTop decTableCnfBod">
+  <table border="0" cellpadding="0" cellspacing="10">
+  <tr>
+  <th>
+    <div class="decThWrp">お届け情報</div>
+      </th>
+
+      <td class="decInTblCel"><div class="decCnfWr"><span class="decNnEntTxt">落札者が入力中です。落札者からの連絡をお待ちください。</span></div></td>
+  </tr>
+</table>
+</div><!-- /.libTableCnfTop -->
+
+<div class="libTableCnfTop">
+<table border="0" cellpadding="0" cellspacing="10">
+<tr>
+<th><div class="decThWrp">お支払い情報</div></th>
+<td class="decInTblCel"><div class="decCnfWr"><span class="decNnEntTxt">落札者が入力中です。落札者からの連絡をお待ちください。</span></div></td>
+</tr>
+</table>
+</div><!-- /.libTableCnfTop -->
+
+  <div class="libTableCnfTop">
+  <table border="0" cellpadding="0" cellspacing="10">
+    <tr>
+      <th>
+        <div class="decThWrp">落札者情報</div>
+              </th>
+
+              <td class="decInTblCel">
+          <div class="decCnfWr"><span class="decNnEntTxt">落札者が入力中です。落札者からの連絡をお待ちください。</span></div>
+        </td>
+          </tr>
+  </table>
+  </div><!-- /.libTableCnfTop -->
+
+<div class="libTableCnfTop">
+<table border="0" cellpadding="0" cellspacing="10">
+<tr>
+<th>
+  <div class="decThWrp">出品者情報</div>
+  </th>
+<td class="decInTblCel">
+<div class="libTableCnf">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<th><div class="decThWrp">氏名</div></th>
+<td><div class="decCnfWr">角田　省三</div></td>
+</tr>
+<tr>
+<th><div class="decThWrp">住所</div></th>
+<td><div class="decCnfWr">〒3550110<br />埼玉県 比企郡吉見町 東野3-5-7 </div></td>
+</tr>
+<tr>
+<th><div class="decThWrp">電話番号</div></th>
+<td><div class="decCnfWr">0922509497</div></td>
+</tr>
+</table>
+</div><!-- /.libTableCnf -->
+</td>
+</tr>
+</table>
+</div><!-- /.libTableCnfTop -->
+
+<div class="libTableCnfTop">
+<table border="0" cellpadding="0" cellspacing="10">
+<tr>
+<th><div class="decThWrp">まとめて取引情報</div></th>
+<td class="decInTblCel">
+<div class="libTableCnf">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+      <td><div class="decCnfWr">・単品取引</div></td>
+    </tr>
+  </table>
+</div><!-- /.libTableCnf -->
+</td>
+</tr>
+</table>
+</div><!-- /.libTableCnfTop -->
+
+
+</div><!-- /.libJsExpandBody -->
+</div><!-- /.libJsExpand -->
+</div><!-- /.acMdTradeInfo -->
+<!-- /TradeInfo -->
+
+<!-- MsgForm -->
+<div class="acMdMsgForm" id="messageComment">
+<div class="libTitleH2TxtVr">
+<h2>取引メッセージ</h2>
+</div>
+<div class="libLeadText">
+<p>取引で困ったことなどがあったら、落札者に質問してみよう！</p>
+</div>
+<div class="decFormErr" id="messageTxt"></div>
+<div class="untMsgForm" id="msgForm">
+<div id="area1" class="decTxtArea">
+<textarea id="textarea" placeholder="メッセージを入力してください"></textarea>
+</div>
+<div class="decSmtBtn">
+<input type="hidden" id="oid" value="61103652-0026950316-5608250" />
+<input type="hidden" id="syid" value="exffk72575" />
+<input type="hidden" id="aid" value="l690917990" />
+<input type="hidden" id="bid" value="bacntse2412" />
+<input type="hidden" id="crumb" value="9a2f2648c41b89063564f2a8133c9872395c4f9860e6a733c2d28f0bb964d9ff" />
+<input id="submitButton" class="libBtnGrayM" type="submit" value="送信する" onclick="YAHOO.JP.auc.order.common.SubmitMessage.execute('/message/submit');" data-ylk="rsec:msg;slk:snd;pos:1" >
+</div>
+</div>
+</div>
+<!-- /MsgForm -->
+
+<!-- MsgForm -->
+<div class="acMdMsgForm">
+<div class="untPreMsg" id="messagelist">
+<input type="hidden" id="currentMsgId" value="2103448323" />
+<dl class="ptsPartner" id="2103448323">
+<dt>
+<p id="buyerid">bacntse2412</p>
+<span class="decTime">7月23日 12時42分</span>
+</dt>
+<dd id="body">Bac</dd>
+</dl>
+<dl class="ptsPartner" id="2103448303">
+<dt>
+<p id="buyerid">bacntse2412</p>
+<span class="decTime">7月23日 12時42分</span>
+</dt>
+<dd id="body">Hello</dd>
+</dl>
+<dl class="ptsOwn" id="2103447471">
+<dt>
+<p id="sellerid">exffk72575</p>
+<span class="decTime">7月23日 12時39分</span>
+</dt>
+<dd id="body">5555555555555555555</dd>
+</dl>
+<dl class="ptsOwn" id="2103303358">
+<dt>
+<p id="sellerid">exffk72575</p>
+<span class="decTime">7月23日 03時34分</span>
+</dt>
+<dd id="body">333333333333333333333333</dd>
+</dl>
+<dl class="ptsOwn" id="2103303355">
+<dt>
+<p id="sellerid">exffk72575</p>
+<span class="decTime">7月23日 03時33分</span>
+</dt>
+<dd id="body">22222222222222</dd>
+</dl>
+<dl class="ptsOwn" id="2103303341">
+<dt>
+<p id="sellerid">exffk72575</p>
+<span class="decTime">7月23日 03時33分</span>
+</dt>
+<dd id="body">1111111111</dd>
+</dl>
+<dl class="ptsOwn" id="2103303336">
+<dt>
+<p id="sellerid">exffk72575</p>
+<span class="decTime">7月23日 03時33分</span>
+</dt>
+<dd id="body">222222</dd>
+</dl>
+<dl class="ptsOwn" id="2103303180">
+<dt>
+<p id="sellerid">exffk72575</p>
+<span class="decTime">7月23日 03時30分</span>
+</dt>
+<dd id="body">2222</dd>
+</dl>
+<dl class="ptsOwn" id="2103303198">
+<dt>
+<p id="sellerid">exffk72575</p>
+<span class="decTime">7月23日 03時29分</span>
+</dt>
+<dd id="body">2222</dd>
+</dl>
+<dl class="ptsOwn" id="2103174471">
+<dt>
+<p id="sellerid">exffk72575</p>
+<span class="decTime">7月22日 20時06分</span>
+</dt>
+<dd id="body">2222222</dd>
+</dl>
+<dl class="ptsOwn" id="2103172759">
+<dt>
+<p id="sellerid">exffk72575</p>
+<span class="decTime">7月22日 20時01分</span>
+</dt>
+<dd id="body">1111111</dd>
+</dl>
+</div>
+</div>
+<!-- /MsgForm -->
+
+</div><!--/#yjMain-->
+</div><!--/#yjContentsBody-->
+</div><!--/#contents-->
+</div>
+
+<!--.plibModal-->
+<div id="plibLoadMdl">
+<div id="plibLoadMdlInner">
+<div class="alignL elAdvnc">
+<p class="decAdvnc fntB fnt15 mB10">取引ナビでは、出品者から初回の連絡は不要です。</p>
+<p>落札者が、お届け先住所、お届け方法、お支払い方法を入力中です。</p>
+<p>落札者からの連絡をお待ちください。</p>
+<div class="decGuideLink alignR mT10">
+<a href="https://auctions.yahoo.co.jp/topic/tradingnavi/guide/" target="_61103652-0026950316-5608250" data-ylk="rsec:stmod;slk:lguide;pos:1" ><span class="decIconBeginer"></span>取引ナビガイド</a>
+</div>
+<div class="alignC mT10">
+<input type="submit" class="libBtnGrayM close" value="閉じる" name="" data-ylk="rsec:stmod;slk:close;pos:1" >
+</div>
+</div>
+</div>
+</div>
+
+<div class="plibModal" id="jsManualBox" style="top: 997.5px; left: 96px; display: none;">
+    <h2>発送連絡をすると配送コード画面には戻れません。<br>発送連絡をしますか？</h2>
+    <div class="alignC mT20 mB10">
+
+        <form action="/seller/submit" method="POST" onsubmit="this.onsubmit=function(){return false;}">
+            <input type="hidden" name="aid" value="l690917990" />
+            <input type="hidden" name="syid" value="exffk72575" />
+            <input type="hidden" name="bid" value="bacntse2412" />
+            <input type="hidden" name="oid" value="61103652-0026950316-5608250" />
+                        <input type="hidden" name=".crumb" value="" />
+            <input type="hidden" name="shipInvoiceNumReg" value="1" />
+
+            <a href="javascript:void(0);" class="libBtnGrayM close"  data-ylk="rsec:dete;slk:rt;pos:1" >キャンセル</a>
+            <input type="submit" class="libBtnRedL mL20" value="発送連絡をする" data-ylk="rsec:dete;slk:btn;pos:1" >
+        </form>
+    </div>
+</div>
+
+<!--/.plibModal-->
+
+
+
+<hr class="yjSeparation">
+<div id="acWrFooter">
+<div id="footer">
+<!-- libPropertyLink -->
+<div class="libPropertyLink">
+<ul>
+<li class="decLst"><a href="https://auctions.yahoo.co.jp/" data-ylk="rsec:rt;slk:top;pos:1" >ヤフオク!</a></li>
+</ul>
+</div><!--/libPropertyLink-->
+<div class="libSupple alignL mT30 fnt12">
+ご入力いただいた情報は、Yahoo! JAPANが取得し、管理を行います。<br>
+Yahoo! JAPANは、<a href="https://about.yahoo.co.jp/docs/info/terms/chapter1.html#cf2nd" target="_blank" data-ylk="rsec:pol;slk:pol;pos:1" >プライバシーポリシー</a>に従ってお客様の情報を取り扱うものとし、本サービスおよび利用する提携配送サービスに必要な範囲を超え、またはプライバシーポリシーに表明する目的以外に利用することはありません。
+</div>
+<!-- SitePolicy -->
+<address><a rel="nofollow" href="https://privacy.yahoo.co.jp/" data-ylk="rsec:footer;slk:pol;pos:1" >プライバシー</a> - <a rel="nofollow" href="https://about.yahoo.co.jp/docs/info/terms/" data-ylk="rsec:footer;slk:ag;pos:1" >利用規約</a> - <a rel="nofollow" href="https://premium.yahoo.co.jp/info/guidelines.html/?sc_yprec=yyac_footer" data-ylk="rsec:footer;slk:gidpre;pos:1" >プレミアム利用ガイド</a> - <a rel="nofollow" href="https://auctions.yahoo.co.jp/special/html/guidelines.html" data-ylk="rsec:footer;slk:gidlin;pos:1" >ガイドライン</a> - <a rel="nofollow" href="https://auctions.yahoo.co.jp/special/html/tokushoho.html" data-ylk="rsec:footer;slk:toku;pos:1" >特定商取引法の表示</a> - <a rel="nofollow" href="https://business.yahoo.co.jp/category2/index.html" data-ylk="rsec:footer;slk:stropn;pos:1" >ストア出店について</a> - <a rel="nofollow" href="https://auctions.yahoo.co.jp/guide/kaizen/" data-ylk="rsec:footer;slk:fdbk;pos:1" >ご意見・ご要望</a> - <a rel="nofollow" href="https://www.yahoo-help.jp/app/home/p/353/" data-ylk="rsec:footer;slk:help;pos:1" >ヘルプ・お問い合わせ</a><br>
+Copyright (C) 2021 Yahoo Japan Corporation. All Rights Reserved.
+</address>
+<!-- /SitePolicy -->
+
+</div><!--/#footer-->
+</div>
+<script type="text/javascript" src="https://s.yimg.jp/images/commerce/js/libs/jquery/core/1.8.1/jquery.min.js"></script>
+<script src="https://s.yimg.jp/images/ds/ult/auctions/rapidjp-1.0.0.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+
+
+var ins;
+
+
+var conf = {
+        spaceid:2084314004,
+        tracked_mods:['acWrContents','libPointNavi','acWrFooter','msthd','plibLoadMdl'],
+        keys:{
+                pagetype:'form',
+                conttype:'tnvslrtop',
+        opttype:'pc',
+                uiid:'seller',
+                apptype:'web',
+                status:'login',
+                vtgrpid:'tnv',
+                ctsid:'l690917990',
+                tnvprgrs:'1',
+                vtestid:'',
+                service:'auctions'
+        },
+        apv:false,
+        compr_on:false
+};
+
+YAHOO.i13n.WEBWORKER_FILE = "/dev/js/rapid/rapid-worker-1.2.js";
+ins = (new YAHOO.i13n.JP.simpleRapid(conf)).initRapid();
+
+</script>
+
+<!-- JavaScript -->
+<script type="text/javascript" src="https://s.yimg.jp/images/auct/odhistory/pc/1.0.3/SubmitMessage-min.js"></script>
+<script src="https://s.yimg.jp/images/auc/pc/common/js/1.0.1/common.jquery.js" type="text/javascript"></script>
+<script src="https://s.yimg.jp/images/auc/pc/tradingnavi/js/1.0.3/common.js" type="text/javascript"></script>
+<script src="https://s.yimg.jp/images/auc/pc/tradingnavi/js/1.0.1/autosize.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function() {
+    try{
+        if(typeof localStorage == 'undefined'){
+            var localStorageAvailable = false;
+        }else if(window.localStorage){
+            var localStorageAvailable = true;
+            var KEY_BUYER_CANCEL = "yjoptoutpromotebuyercancelfnavi";
+        }
+    }catch(e){
+        var localStorageAvailable = false;
+    }
+    function preDefault(event) {
+        var ev = event || window.event;
+        if (ev.preventDefault) {
+            ev.preventDefault();
+        } else{
+            ev.returnValue = false;
+        }
+    }
+    $(document).ready(function(){
+        // buyerCancelのLoadモーダル
+        if (false) {
+            if (localStorageAvailable) {
+                var isDisplayed = window.localStorage.getItem(KEY_BUYER_CANCEL);
+                // 表示記録がない場合は表示する
+                if (!isDisplayed) {
+                    modalOpn($("#plibLoadMdl"));
+                    trgDisable();
+                    $("a").not("#plibLoadMdlInner a").bind("click", prevDefault);
+                    $(".close").attr('disabled', false);
+                    // localStorageにbuyerCancel用のキーを保存
+                    window.localStorage.setItem(KEY_BUYER_CANCEL, 1);
+                }
+            }
+        // buyerCancel以外のLoadモーダル
+        } else {
+            $("#plibLoadMdl").css("height", $(document).height()).css("display", "block");
+            $("input,textarea").attr('disabled', 'disabled');
+            $("a").not("#plibLoadMdlInner a").bind("click", preDefault);
+            $(".close").attr('disabled', false);
+        }
+    });
+    $(".close").click(function() {
+        $("#plibLoadMdl").css("display", "none");
+        $("input,textarea").removeAttr('disabled');
+        $("a").not("#plibLoadMdlInner a").unbind('click', preDefault);
+    });
+});
+</script>
+
+
+<script type="text/javascript">
+YAHOO.JP.auc.cre.$('.libJsExpand').Expand();
+</script>
+
+
+
+
+<!-- JavaScript -->
+<script language="JavaScript" type="text/javascript">
+(function() {
+  var domain = "contact.auctions.yahoo.co.jp";
+  var spaceid = "2084314004";
+  var property = "jp_auction";
+  var url = "https://pvtag.yahoo.co.jp/t?f=" + spaceid + "&p=" + property + "&domain=" + domain + "&js=1&rnd=" + new Date().getTime();
+  document.write("<sc" + "ript src=\""  + url + "\"></sc" + "ript>");
+})();
+</script>
+<noscript>
+<iframe src="https://pvtag.yahoo.co.jp/t?f=2084314004&p=jp_auction&domain=contact.auctions.yahoo.co.jp&js=0" height=1 width=1 marginwidth=0 marginheight=0 hspace=0 vspace=0 frameborder=0 scrolling="no"></iframe>
+</noscript>
+<script src="https://s.yimg.jp/images/ds/yas/ual-2.10.2.min.js"></script>
+<script>
+  window.ualcmds = window.ualcmds || [];
+  window.ual = window.ual || function() {
+    ualcmds.push(arguments);
+  };
+
+  ual('config', 'token', 'c7c61354-54b0-48b6-b152-a67e042b8e21');
+  if (typeof YAHOO !== 'undefined'
+    && typeof YAHOO.i13n !== 'undefined'
+    && typeof YAHOO.i13n.A_SID !== 'undefined') {
+    ual('hit', 'pageview', {
+      service: 'auctions',
+      opttype: 'pc',
+      nopv: false,
+      hierarchy_id: '2084314004',
+      ss_join_id: YAHOO.i13n.A_SID,
+
+    });
+  } else {
+    ual('hit', 'pageview', {
+      service: 'auctions',
+      opttype: 'pc',
+      nopv: false,
+      hierarchy_id: '2084314004',
+
+    });
+  }
+
+</script>
+</body>
+</html>

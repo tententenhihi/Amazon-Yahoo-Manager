@@ -155,9 +155,11 @@
                 <div class="message-info d-block">
                   <span class="created-at float-left">
                     {{
-                      $moment(message.created_at).format(
-                        "YYYY年MM月DD日 HH時mm分"
-                      )
+                      typeof message.created_at === "number"
+                        ? $moment(message.created_at).format(
+                            "MM月DD日 HH時mm分"
+                          )
+                        : message.created_at
                     }}
                   </span>
                   <span class="user float-right">
@@ -180,9 +182,11 @@
                 <div class="message-info d-block">
                   <span class="created-at float-right">
                     {{
-                      $moment(message.created_at).format(
-                        "YYYY年MM月DD日 HH時mm分"
-                      )
+                      typeof message.created_at === "number"
+                        ? $moment(message.created_at).format(
+                            "YYYY年MM月DD日 HH時mm分"
+                          )
+                        : message.created_at
                     }}
                   </span>
                   <span class="user float-left">
@@ -212,7 +216,7 @@
 <script>
 import { mapGetters } from "vuex";
 import ProductYahooEndedApi from "@/services/ProductYahooEndedApi";
-import TradeMessageTemplateApi from '@/services/TradeMessageTemplateApi'
+import TradeMessageTemplateApi from "@/services/TradeMessageTemplateApi";
 
 export default {
   name: "YahooAuctionTradeMessage",
@@ -285,8 +289,8 @@ export default {
     }
   },
   watch: {
-    selectedTemplate () {
-      this.comment = this.selectedTemplate.content
+    selectedTemplate() {
+      this.comment = this.selectedTemplate.content;
     }
   }
 };

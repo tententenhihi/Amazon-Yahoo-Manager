@@ -6,103 +6,120 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-10 py-20 table-responsive">
-        <table class="table table-striped pt-20 mb-20" style="width: 100%">
+        <table class="table table-hover pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
-              <th scope="col">
-                <input type="checkbox" name="" id="" />
+              <th class="text-center">
+                <input class="checkall" type="checkbox" />
               </th>
-              <th scope="col">オークションID</th>
-              <th scope="col">出品画像</th>
-              <th scope="col">取り扱い画像</th>
-              <th scope="col">Y！オーク商品の名前</th>
-              <th scope="col">落札価格</th>
-              <th scope="col">落札個数</th>
-              <th scope="col">落札者情報</th>
-              <th scope="col">終了日時</th>
-              <th scope="col">状態</th>
-              <th scope="col">メモ</th>
-              <th scope="col">発送先</th>
-              <th scope="col">仕入れ価格</th>
-              <th scope="col">想定利益</th>
-              <th scope="col">落札手数料</th>
-              <th scope="col">利益率</th>
-              <th scope="col">予定送料</th>
-              <th scope="col"></th>
+              <th class="text-center">オークションID</th>
+              <th class="text-center">出品画像</th>
+              <th class="text-center">取り扱い画像</th>
+              <th width="300">Y！オーク商品の名前</th>
+              <th class="text-center" width="100">落札価格</th>
+              <th class="text-center" width="100">落札個数</th>
+              <th class="text-center" width="120">落札者情報</th>
+              <th class="text-center" width="120">終了日時</th>
+              <th class="text-center">状態</th>
+              <th width="150">メモ</th>
+              <th class="text-center" width="100">予定受取金額</th>
+              <th width="200">発送先</th>
+              <th width="200">仕入れ価格</th>
+              <th width="200">想定利益</th>
+              <th width="200">落札手数料</th>
+              <th width="200">利益率</th>
+              <th width="200">予定送料</th>
+              <th width="100"></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(product, index) in products" :key="index">
-              <td>
+              <td class="text-center" width="50">
                 <input type="checkbox" name="" id="" />
               </td>
-              <td>{{ product.aID }}</td>
-              <td>
+              <td class="text-center">{{ product.aID }}</td>
+              <td class="text-center" width="100">
                 <img
-                  style="max-height: 50px; max-width: 50px"
                   v-if="product.images && product.images.length"
                   :src="
                     product.images[0].includes('http')
                       ? product.images[0]
                       : SERVER_HOST_UPLOAD + product.images[0]
                   "
-                  alt=""
+                  style="min-width: 50px"
                 />
               </td>
-              <td>
+              <td class="text-center" width="100">
                 <img
-                  style="max-height: 50px; max-width: 50px"
                   v-if="product.images && product.images.length"
                   :src="
                     product.images[0].includes('http')
                       ? product.images[0]
                       : SERVER_HOST_UPLOAD + product.images[0]
                   "
-                  alt=""
+                  style="min-width: 50px"
                 />
               </td>
               <td>
-                <div>
-                  {{ product.product_yahoo_title }}
-                </div>
                 <a
-                  :href="`https://www.amazon.co.jp/dp/${product.asin_amazon}`"
-                  class="btn btn-info btn-xs"
+                  :href="
+                    `https://page.auctions.yahoo.co.jp/jp/auction/${product.aID}`
+                  "
                   target="_blank"
+                  >{{ product.product_yahoo_title }}</a
                 >
-                  購入先を表示
-                </a>
-              </td>
-              <td>{{ product.price_end }}</td>
-              <td>{{ product.buyer_count }}</td>
-              <td>
                 <div>
-                  {{ product.idBuyer }}
+                  <a
+                    :href="`https://www.amazon.co.jp/dp/${product.asin_amazon}`"
+                    class="btn btn-info btn-xs"
+                    target="_blank"
+                  >
+                    購入先を表示
+                  </a>
                 </div>
-                <a
-                  class="btn btn-xs"
-                  style="border: 1px solid #d19405; background: #fece2f; color: #4c3000;"
-                  :href="`/yahoo-auction-trade-message/${product._id}`"
-                >
-                  取引ナビ
-                </a>
               </td>
-              <td>{{ product.time_end }}</td>
-              <td>{{ product.auction_status }}</td>
+              <td class="text-center">{{ product.price_end }}</td>
+              <td class="text-center">{{ product.buyer_count }}</td>
+              <td class="text-center">
+                <div class="field-buyer">{{ product.idBuyer }}</div>
+                <div class="goto">
+                  <a
+                    class="btn btn-xs"
+                    style="border: 1px solid #d19405; background: #fece2f; color: #4c3000"
+                    :href="`/yahoo-auction-trade-message/${product._id}`"
+                  >
+                    取引ナビ
+                  </a>
+                </div>
+              </td>
+              <td class="text-center">{{ product.time_end }}</td>
+              <td class="text-center">{{ product.auction_status }}</td>
               <td>
-                <div style="word-break: break-all;">
-                  {{ product.note }}
+                <div class="field-note">
+                  <p>{{ product.note }}</p>
                 </div>
-                <button class="btn btn-info" @click="onOpenModalNote(product)">
-                  <i class="fa fa-edit" aria-hidden="true"></i> 編集
-                </button>
+                <div>
+                  <button
+                    class="btn btn-info"
+                    @click="onOpenModalNote(product)"
+                  >
+                    <i class="fa fa-edit" aria-hidden="true"></i> 編集
+                  </button>
+                </div>
               </td>
-              <td>{{ "null" }}</td>
+              <td class="text-center">null</td>
+
+              <td>null</td>
+
               <td>{{ product.import_price }}</td>
               <td>{{ product.profit }}</td>
-              <td>{{ 0 }}</td>
-              <td>{{ 0 }}</td>
-              <td>{{ 0 }}</td>
+
+              <td>null</td>
+
+              <td>null</td>
+
+              <td>{{ product.ship_fee }}</td>
+
               <td>
                 <button
                   class="btn btn-md btn-info mb-1 mr-1"

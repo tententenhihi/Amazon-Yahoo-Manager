@@ -1,5 +1,5 @@
 import UserModel from '../models/UserModel';
-import YahooAccountModel from '../models/YahooAccount'
+import YahooAccountModel from '../models/YahooAccount';
 import Response from '../utils/Response';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -7,8 +7,8 @@ import { SECRET_KEY, LIFE_TIME_TOKEN } from '../configs/settings';
 import UserService from '../services/UserService';
 import Utils from '../utils/Utils';
 import VerifyCodeSchema from '../models/VerifyCodeModel';
-const { sendEmail } = require('../helpers/sendEmail')
-const saltRounds = 10
+const { sendEmail } = require('../helpers/sendEmail');
+const saltRounds = 10;
 
 class AuthController {
     static async checkAdmin(req, res, next) {
@@ -58,7 +58,7 @@ class AuthController {
                     email,
                 });
                 if (!userLogin) {
-                    userLogin = await UserModel.findOne({username: email})
+                    userLogin = await UserModel.findOne({ username: email });
                 }
                 if (userLogin) {
                     if (userLogin.status === 'LOCKED') {
@@ -103,11 +103,11 @@ class AuthController {
                             userLogin.token = token;
                             userLogin.save();
                         }
-                        let yahooAccount = await YahooAccountModel.find({user_id: userLogin._id});
+                        let yahooAccount = await YahooAccountModel.find({ user_id: userLogin._id });
                         return response.success200({
                             message: 'Authentication successful!',
                             userData: userLogin,
-                            yahooAccount: yahooAccount
+                            yahooAccount: yahooAccount,
                         });
                     }
                 }
@@ -123,87 +123,87 @@ class AuthController {
         }
     }
 
-    static async forgotPassword (req, res) {
+    static async forgotPassword(req, res) {
         let response = new Response(res);
         try {
-            const {email} = req.body
-            let user = await UserService.findUser({email});
+            const { email } = req.body;
+            let user = await UserService.findUser({ email });
             if (user) {
                 let newCode = new VerifyCodeSchema();
-                newCode.email = user.email
-                newCode.code = Utils.generateKey()
+                newCode.email = user.email;
+                newCode.code = Utils.generateKey();
                 await newCode.save();
                 let body = `
                     <div style="color: black">
                         Please click to link to reset password: <br>
-                        http://${process.env.WEB_SERVER_HOST}/reset-password?code=${newCode.code}
+                        ${req.protocol + '://' + req.host}/reset-password?code=${newCode.code}
                     </div>
-                `
-                await sendEmail(user.email, body, 'Amazon Yahoo Manager reset password')
-                return response.success200({status: true})
+                `;
+                await sendEmail(user.email, body, 'Amazon Yahoo Manager reset password');
+                return response.success200({ status: true });
             } else {
-                return response.error400({message: 'ユーザーが見つかりません。'})
+                return response.error400({ message: 'ユーザーが見つかりません。' });
             }
         } catch (error) {
             response.error500(error);
         }
     }
 
-    static async resetPassword (req, res) {
+    static async resetPassword(req, res) {
         let response = new Response(res);
         try {
-            const { password, code} = req.body
-            let verifyCode = await VerifyCodeSchema.findOne({code});
+            const { password, code } = req.body;
+            let verifyCode = await VerifyCodeSchema.findOne({ code });
             if (verifyCode) {
                 verifyCode.status = 1;
                 await verifyCode.save();
-                let user = await UserModel.findOne({email: verifyCode.email});
-                bcrypt.genSalt(saltRounds, function(err, salt) {
+                let user = await UserModel.findOne({ email: verifyCode.email });
+                bcrypt.genSalt(saltRounds, function (err, salt) {
                     bcrypt.hash(password, salt, async function (err, hash) {
                         user.password = password;
-                        user.hash_password = hash
-                        await user.save()
-                        return response.success200({success: true});
+                        user.hash_password = hash;
+                        await user.save();
+                        return response.success200({ success: true });
                     });
                 });
             } else {
-                return response.error400({message: 'コードが見つかりません。'})
+                return response.error400({ message: 'コードが見つかりません。' });
             }
         } catch (error) {
             response.error500(error);
         }
     }
 
-    static async verifyAccount (req, res) {
+    static async verifyAccount(req, res) {
         let response = new Response(res);
         try {
-            const {code} = req.body
-            let verifyCode = await VerifyCodeSchema.findOne({code, status: 0});
+            const { code } = req.body;
+            let verifyCode = await VerifyCodeSchema.findOne({ code, status: 0 });
             if (verifyCode && Object.keys(verifyCode).length) {
                 verifyCode.status = 1;
                 await verifyCode.save();
-                let user = await UserModel.findOne({email: verifyCode.email});
-                user.verified_at = new Date()
+                let user = await UserModel.findOne({ email: verifyCode.email });
+                user.verified_at = new Date();
                 await user.save();
-                return response.success200(verifyCode._doc)
+                return response.success200(verifyCode._doc);
             } else {
-                return response.error400({message: '間違ったコード'});
+                return response.error400({ message: '間違ったコード' });
             }
         } catch (error) {
             return response.error500(error);
         }
     }
 
-    static async getVerifyCode (req, res) {
+    static async getVerifyCode(req, res) {
         let response = new Response(res);
         try {
-            const {code} = req.body
-            let verifyCode = await VerifyCodeSchema.findOne({code, status: 0});
+            const { code } = req.body;
+            let verifyCode = await VerifyCodeSchema.findOne({ code, status: 0 });
             console.log(verifyCode);
             if (verifyCode && Object.keys(verifyCode).length) {
-                return response.success200(verifyCode._doc)
+                return response.success200(verifyCode._doc);
             } else {
-                return response.error400({message: '間違ったコード'});
+                return response.error400({ message: '間違ったコード' });
             }
         } catch (error) {
             return response.error500(error);

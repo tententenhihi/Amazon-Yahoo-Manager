@@ -3,17 +3,18 @@
     <div class="wrapper-content">
       <div class="box-header">
         <i class="fa fa-list mr-2"></i>ユーザー設定
-        <button
-          class="btn btn-add-account"
-          @click="onOpenModalUser(user)"
-        >
+        <button class="btn btn-add-account" @click="onOpenModalUser(user)">
           <i class="fa fa-plus"></i> ユーザーを追加する
         </button>
       </div>
       <hr class="mt-10" />
       <div class="box-content">
         <div class="px-30 py-20">
-          <table id="userTable" class="table display pt-20 mb-20" style="width: 100%">
+          <table
+            id="userTable"
+            class="table display pt-20 mb-20"
+            style="width: 100%"
+          >
             <thead class="thead-purple">
               <tr>
                 <th scope="col">ID</th>
@@ -33,7 +34,9 @@
                 <td>{{ user.username }}</td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.status }}</td>
-                <td>{{ user.yahooaccounts.length + '/' + user.maxYahooAccount }}</td>
+                <td>
+                  {{ user.yahooaccounts.length + "/" + user.maxYahooAccount }}
+                </td>
                 <td>{{ $moment(user.expired_at).format("YYYY-MM-DD") }}</td>
                 <td>
                   <button
@@ -86,18 +89,19 @@
         <div class="form-group form-line">
           <label class="col-sm-4 control-label">名前: </label>
           <div class="col-sm-7">
-            <input
-              type="text"
-              class="form-control input-sm"
-              v-model="name"
-            />
+            <input type="text" class="form-control input-sm" v-model="name" />
           </div>
         </div>
         <div class="form-group form-line">
           <label class="col-sm-4 control-label">状態: </label>
           <div class="col-sm-7">
             <select class="form-control" id="" v-model="status">
-              <option v-for="(status, index) of STATUS_USER" :key="index" :value="status">{{status}}</option>
+              <option
+                v-for="(status, index) of STATUS_USER"
+                :key="index"
+                :value="status"
+                >{{ status }}</option
+              >
             </select>
           </div>
         </div>
@@ -116,8 +120,15 @@
           <label class="col-sm-4 control-label"></label>
           <div class="col-sm-7">
             <div class="form-check">
-              <input type="checkbox" v-model="isResetPassword" class="form-check-input" id="is-change-pass">
-              <label class="form-check-label" for="is-change-pass">パスワードの変更です</label>
+              <input
+                type="checkbox"
+                v-model="isResetPassword"
+                class="form-check-input"
+                id="is-change-pass"
+              />
+              <label class="form-check-label" for="is-change-pass"
+                >パスワードの変更です</label
+              >
             </div>
           </div>
         </div>
@@ -146,7 +157,12 @@
         <div class="form-group form-line">
           <label class="col-sm-4 control-label">注意: </label>
           <div class="col-sm-7">
-            <textarea v-model="note" class="form-control input-sm" cols="30" rows="10"></textarea>
+            <textarea
+              v-model="note"
+              class="form-control input-sm"
+              cols="30"
+              rows="10"
+            ></textarea>
           </div>
         </div>
         <div class="form-group form-line">
@@ -176,10 +192,10 @@
 
 <script>
 import AdminApi from "@/services/AdminApi";
-const STATUS_USER = ['LIVE', 'LOCKED']
+const STATUS_USER = ["LIVE", "LOCKED"];
 export default {
   name: "AdminUsers",
-  data () {
+  data() {
     return {
       STATUS_USER,
       isResetPassword: false,
@@ -205,24 +221,36 @@ export default {
       re_password: "",
       editId: "",
       maxYahooAccount: 5,
-      tableUser: null,
+      tableUser: null
     };
   },
   async mounted() {
     await this.getListUser();
-    this.createDatatable()
+    this.createDatatable();
   },
   computed: {},
   methods: {
-    createDatatable () {
+    createDatatable() {
       let self = this;
       if (self.$("#userTable").DataTable()) {
-        self.$("#userTable").DataTable().destroy();
+        self
+          .$("#userTable")
+          .DataTable()
+          .destroy();
       }
       self.$nextTick(() => {
         self.$("#userTable").DataTable({
           initComplete: function() {
-            $(this.api().table().container()).find('input').parent().wrap('<form>').parent().attr('autocomplete', 'off');
+            $(
+              this.api()
+                .table()
+                .container()
+            )
+              .find("input")
+              .parent()
+              .wrap("<form>")
+              .parent()
+              .attr("autocomplete", "off");
           },
           language: {
             sEmptyTable: "テーブルにデータがありません",
@@ -239,13 +267,13 @@ export default {
               sFirst: "先頭",
               sLast: "最終",
               sNext: "次",
-              sPrevious: "前",
+              sPrevious: "前"
             },
             oAria: {
               sSortAscending: ": 列を昇順に並べ替えるにはアクティブにする",
-              sSortDescending: ": 列を降順に並べ替えるにはアクティブにする",
-            },
-          },
+              sSortDescending: ": 列を降順に並べ替えるにはアクティブにする"
+            }
+          }
         });
       });
     },
@@ -272,16 +300,17 @@ export default {
       this.username = user.username;
       this.name = user.name;
       this.status = user.status;
-      this.maxYahooAccount = user.maxYahooAccount
+      this.maxYahooAccount = user.maxYahooAccount;
       this.password = "";
       this.re_password = "";
       this.email = user.email;
       this.note = user.note;
-      this.expired_at = this.$moment(user.expired_at).format("YYYY-MM-DD")
+      this.expired_at = this.$moment(user.expired_at).format("YYYY-MM-DD");
       this.editId = user._id;
       this.$refs.modalInfoUser.openModal();
     },
     async onSaveUser() {
+      let domain = window.location.origin;
       let credential = {
         username: this.username,
         name: this.name,
@@ -290,26 +319,28 @@ export default {
         maxYahooAccount: this.maxYahooAccount,
         email: this.email,
         note: this.note,
-        expired_at: this.expired_at
+        expired_at: this.expired_at,
+        domain
       };
+
       if (this.editId) {
         credential._id = this.editId;
         let result = await AdminApi.updateUser(credential);
         if (result && result.status === 200) {
           this.onCloseModal();
           let index = this.users.findIndex(
-            (user) => user._id === result.data.user._id
+            user => user._id === result.data.user._id
           );
           this.users[index] = result.data.user;
-          this.users = [...this.users]
-          this.createDatatable()
+          this.users = [...this.users];
+          this.createDatatable();
         }
       } else {
         let result = await AdminApi.createUser(credential);
         if (result && result.status === 200) {
           this.onCloseModal();
-          this.users.push({...result.data.user, yahooaccounts: []});
-          this.createDatatable()
+          this.users.push({ ...result.data.user, yahooaccounts: [] });
+          this.createDatatable();
         }
       }
     },
@@ -324,14 +355,14 @@ export default {
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
           confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  キャンセル',
+          cancelButtonText: '<i class="fa fa-times"></i>  キャンセル'
         })
-        .then(async (result) => {
+        .then(async result => {
           if (result.isConfirmed) {
             let res = await AdminApi.deleteUser(user);
             if (res && res.status == 200) {
               self.users.splice(index, 1);
-              this.createDatatable()
+              this.createDatatable();
               self.$swal.fire(
                 "削除されました",
                 "ユーザーが削除されました。",
@@ -340,8 +371,8 @@ export default {
             }
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

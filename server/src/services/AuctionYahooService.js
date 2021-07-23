@@ -333,7 +333,7 @@ export default class AuctionYahooService {
             };
         }
     }
-    static async getProductAuctionEnded(cookie, proxy) {
+    static async getProductAuctionEnded(usernameYahoo, cookie, proxy) {
         try {
             let proxyConfig = {
                 host: proxy.host,
@@ -364,184 +364,97 @@ export default class AuctionYahooService {
                     listProduct.push({ aID, idBuyer, time_end, price_end });
                 }
             }
+            //Get detail info
+
+            for (let i = 0; i < listProduct.length; i++) {
+                let product = listProduct[i];
+                let url = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${product.aID}&syid=${usernameYahoo}&bid=${product.idBuyer}`;
+                response = await axios.get(url, {
+                    headers: {
+                        cookie,
+                    },
+                    proxy: proxyConfig,
+                });
+                $ = cheerio.load(response.data);
+                //message
+                let listMessage = [];
+                let container = $('#messagelist');
+                if (container && container[0] && container[0].children && container[0].children.length > 0) {
+                    for (const children of container[0].children) {
+                        let classx = $(children).attr('class');
+                        let dataM = null;
+                        if (classx === 'ptsPartner') {
+                            dataM = {
+                                type: 'buyer',
+                                comment: $(children).find('#body').text().trim(),
+                                yahoo_id: $(children).find('#buyerid').text().trim(),
+                                created_at: $(children).find('.decTime').text().trim(),
+                            };
+                            listMessage.push(dataM);
+                        } else if (classx === 'ptsOwn') {
+                            dataM = {
+                                type: 'seller',
+                                comment: $(children).find('#body').text().trim(),
+                                yahoo_id: $(children).find('#sellerid').text().trim(),
+                                created_at: $(children).find('.decTime').text().trim(),
+                            };
+                            listMessage.push(dataM);
+                        }
+                    }
+                }
+                product.message_list = listMessage;
+            }
             return listProduct;
-            // // Check Product Exist in DB;
-            // let listProductExist = [];
-            // for (let i = 0; i < listProduct.length; i++) {
-            //     const aID = listProduct[i].aID;
-            //     let productYahooExist = await ProductYahooService.findOne({ aID });
-            //     if (productYahooExist) {
-            //         if (productYahooExist.type !== 'AUCTION_ENDED') {
-            //             productYahooExist.type = 'AUCTION_ENDED';
-            //             productYahooExist.idBuyer = listProduct[i].idBuyer;
-            //             await productYahooExist.save();
-            //         }
-            //         listProductExist.push(listProduct[i]);
-            //     }
-            // }
+        } catch (error) {
+            console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
+        }
+    }
+    static async getProductAuctionClosed(usernameYahoo, cookie, proxy) {
+        try {
+            let proxyConfig = {
+                host: proxy.host,
+                port: proxy.port,
+                auth: {
+                    username: proxy.username,
+                    password: proxy.password,
+                },
+            };
 
-            // listProductID = listProductID.filter((item) => !listProductExist.includes(item));
-            // for (const productID of listProductID) {
-            //     let resProduct = await axios.get(`https://auctions.yahoo.co.jp/sell/jp/show/resubmit?aID=${productID}`, {
-            //         headers: {
-            //             cookie,
-            //         },
-            //         proxy: proxyConfig,
-            //     });
-            //     $ = cheerio.load(resProduct.data);
+            let response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=1', {
+                headers: {
+                    cookie,
+                },
+                proxy: proxyConfig,
+            });
 
-            //     let aID = $('input[name="aID"]').val();
-            //     let oldAID = $('input[name="oldAID"]').val();
-            //     let mode = $('input[name="mode"]').val();
-            //     let category = $('input[name="category"]').val();
+            let $ = cheerio.load(response.data);
 
-            //     let md5 = $('input[name="md5"]').val();
-            //     let crumb = $('input[name=".crumb"]').val();
-            //     // let tos = $('input[name="tos"]').val();
-            //     // let submitTipsDisp = $('input[name="submitTipsDisp"]').val();
-            //     // let fnavi = $('input[name="fnavi"]').val();
-            //     let CloseEarly = $('input[name="CloseEarly"]').val();
-            //     let pagetype = $('input[name="pagetype"]').val();
-            //     let isDraftChecked = $('input[name="isDraftChecked"]').val();
-            //     let saveIndex = $('input[name="saveIndex"]').val();
-            //     let newsubmitform = $('input[name="newsubmitform"]').val();
-            //     let retpolicy_comment = $('input[name="retpolicy_comment"]').val();
-            //     let info01 = $('input[name="info01"]').val();
-            //     let info02 = $('input[name="info02"]').val();
-            //     let info03 = $('input[name="info03"]').val();
-            //     let title = $('#fleaTitleForm').val();
+            let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
+            let listProduct = [];
+            for (const row of rowTable) {
+                let aID = $(row).find('td:nth-child(2)').text().trim();
+                if (aID && aID !== '商品ID' && aID.trim() !== '') {
+                    listProduct.push(aID);
+                }
+            }
 
-            //     let istatus = $('select[name="istatus"]').val();
+            response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0', {
+                headers: {
+                    cookie,
+                },
+                proxy: proxyConfig,
+            });
 
-            //     let submit_description = $('input[name="submit_description"]').val();
-            //     let Description = $('input[name="Description"]').val();
-            //     let Description_rte = $('input[name="Description_rte"]').val();
-            //     let Description_rte_work = $('input[name="Description_rte_work"]').val();
+            $ = cheerio.load(response.data);
 
-            //     let categoryText = $('.Category__text').text();
-
-            //     let loc_cd = $('select[name="loc_cd"]').val();
-            //     let auc_shipping_who = $('#auc_shipping_who').val();
-
-            //     let ship_delivery_n = $('#ship_delivery_n').val();
-            //     let ship_delivery_s = $('#ship_delivery_s').val();
-            //     let ship_delivery_l = $('#ship_delivery_l').val();
-
-            //     let ship_delivery_yupacket = $('#ship_delivery_yupacket').val();
-            //     let ship_delivery_yupack = $('#ship_delivery_yupack').val();
-
-            //     let shipschedule = $('#shipschedule').val();
-            //     let StartPrice = $('#auc_StartPrice_auction').val();
-
-            //     let submitUnixtime = $('input[name="submitUnixtime"]').val();
-            //     let Duration = $('#Duration').val();
-            //     let tmpClosingYMD = $('#tmpClosingYMD').val();
-            //     let tmpClosingTime = $('#tmpClosingTime').val();
-
-            //     let thumbNail = $('#thumbNail').val();
-            //     let img_crumb = $('#img_crumb').val();
-
-            //     let ImageFullPath1 = $('#auc_image_fullpath1').val();
-            //     let ImageWidth1 = $('input[name="ImageWidth1"]').val();
-            //     let ImageHeight1 = $('input[name="ImageHeight1"]').val();
-
-            //     let ImageFullPath2 = $('#auc_image_fullpath2').val();
-            //     let ImageWidth2 = $('input[name="ImageWidth2"]').val();
-            //     let ImageHeight2 = $('input[name="ImageHeight2"]').val();
-
-            //     let ImageFullPath3 = $('#auc_image_fullpath3').val();
-            //     let ImageWidth3 = $('input[name="ImageWidth3"]').val();
-            //     let ImageHeight3 = $('input[name="ImageHeight3"]').val();
-
-            //     let ImageFullPath4 = $('#auc_image_fullpath4').val();
-            //     let ImageWidth4 = $('input[name="ImageWidth4"]').val();
-            //     let ImageHeight4 = $('input[name="ImageHeight4"]').val();
-
-            //     let ImageFullPath5 = $('#auc_image_fullpath5').val();
-            //     let ImageWidth5 = $('input[name="ImageWidth5"]').val();
-            //     let ImageHeight5 = $('input[name="ImageHeight5"]').val();
-
-            //     let ImageFullPath6 = $('#auc_image_fullpath6').val();
-            //     let ImageWidth6 = $('input[name="ImageWidth6"]').val();
-            //     let ImageHeight6 = $('input[name="ImageHeight6"]').val();
-
-            //     let ImageFullPath7 = $('#auc_image_fullpath7').val();
-            //     let ImageWidth7 = $('input[name="ImageWidth7"]').val();
-            //     let ImageHeight7 = $('input[name="ImageHeight7"]').val();
-
-            //     let ImageFullPath8 = $('#auc_image_fullpath8').val();
-            //     let ImageWidth8 = $('input[name="ImageWidth8"]').val();
-            //     let ImageHeight8 = $('input[name="ImageHeight8"]').val();
-
-            //     let ImageFullPath9 = $('#auc_image_fullpath9').val();
-            //     let ImageWidth9 = $('input[name="ImageWidth9"]').val();
-            //     let ImageHeight9 = $('input[name="ImageHeight9"]').val();
-
-            //     let ImageFullPath10 = $('#auc_image_fullpath10').val();
-            //     let ImageWidth10 = $('input[name="ImageWidth10"]').val();
-            //     let ImageHeight10 = $('input[name="ImageHeight10"]').val();
-
-            //     let ypoint = $('input[name="ypoint"]').val();
-
-            //     let images = [
-            //         ImageFullPath1,
-            //         ImageFullPath2,
-            //         ImageFullPath3,
-            //         ImageFullPath4,
-            //         ImageFullPath5,
-            //         ImageFullPath6,
-            //         ImageFullPath7,
-            //         ImageFullPath8,
-            //         ImageFullPath9,
-            //         ImageFullPath10,
-            //     ];
-            //     images = images.filter((item) => item.trim() !== '');
-            //     let productData = {
-            //         aID,
-            //         oldAID,
-            //         images,
-            //         product_model: mode,
-            //         yahoo_auction_category_id: category,
-            //         md5,
-            //         crumb,
-            //         retpolicy_comment,
-            //         product_yahoo_title: title,
-            //         status: istatus,
-            //         description: Description,
-            //         Description_rte: Description,
-            //         location: loc_cd,
-            //         shipping: auc_shipping_who,
-            //         ship_schedule: shipschedule,
-            //         start_price: StartPrice,
-            //         duration: Duration,
-            //         tmpClosingTime,
-            //         thumbNail,
-            //         img_crumb,
-            //         // ypoint,
-            //         // tmpClosingYMD,
-            //         // submitUnixtime,
-            //         // ship_delivery_n,
-            //         // ship_delivery_s,
-            //         // ship_delivery_l,
-            //         // ship_delivery_yupacket,
-            //         // ship_delivery_yupack,
-            //         // Description_rte_work: Description,
-            //         // categoryText,
-            //         // submit_description,
-            //         // info01,
-            //         // info02,
-            //         // info03,
-            //         // submitTipsDisp,
-            //         // fnavi,
-            //         // CloseEarly,
-            //         // pagetype,
-            //         // isDraftChecked,
-            //         // saveIndex,
-            //         // newsubmitform,
-            //     };
-            // }
-
-            console.log(' =========== getProductAuctionsSuccess =============== ');
+            rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
+            for (const row of rowTable) {
+                let aID = $(row).find('td:nth-child(2)').text().trim();
+                if (aID && aID !== '商品ID' && aID.trim() !== '') {
+                    listProduct.push(aID);
+                }
+            }
+            return listProduct;
         } catch (error) {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
         }
