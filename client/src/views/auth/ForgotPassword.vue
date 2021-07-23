@@ -82,7 +82,6 @@ export default {
         });
 
         if (response && response.status === 200) {
-          console.log(response);
           this.$swal.fire(
             "送信しました！",
             "メールを確認し、パスワードをリセットしてください。",

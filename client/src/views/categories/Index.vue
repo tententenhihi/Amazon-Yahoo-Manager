@@ -94,7 +94,6 @@ export default {
       }
     },
     async onUpdateCategory (category) {
-      console.log(category);
       let res = await CategoryApi.update(category);
       if (res && res.status == 200) {
         this.$swal.fire({

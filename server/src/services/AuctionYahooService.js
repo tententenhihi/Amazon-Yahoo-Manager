@@ -33,7 +33,6 @@ export default class AuctionYahooService {
             }
 
             let listImage = [];
-            console.log(' =============== uploadNewProduct ================= ');
             if (productData.images[0].startsWith('http')) {
                 let folderSaveImage = 'uploads/yahoo-products/' + productData._id;
                 if (!Fs.existsSync(folderSaveImage)) {
@@ -366,7 +365,6 @@ export default class AuctionYahooService {
                     listProduct.push({ aID, idBuyer, time_end, price_end });
                 }
             }
-            console.log(listProduct);
             //Get detail info
 
             for (let i = 0; i < listProduct.length; i++) {
@@ -671,7 +669,6 @@ export default class AuctionYahooService {
             };
             listProductDATA.push(productData);
         }
-        console.log(listProductDATA);
         console.log(' =========== Done =============== ');
         return listProductDATA;
     }
