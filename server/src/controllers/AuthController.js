@@ -125,6 +125,8 @@ class AuthController {
 
     static async forgotPassword(req, res) {
         let response = new Response(res);
+        const domain = req.get('origin');
+
         try {
             const { email } = req.body;
             let user = await UserService.findUser({ email });
@@ -136,7 +138,7 @@ class AuthController {
                 let body = `
                     <div style="color: black">
                         Please click to link to reset password: <br>
-                        ${req.protocol + '://' + req.host}/reset-password?code=${newCode.code}
+                        ${domain}/reset-password?code=${newCode.code}
                     </div>
                 `;
                 await sendEmail(user.email, body, 'Amazon Yahoo Manager reset password');

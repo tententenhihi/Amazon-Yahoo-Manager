@@ -28,12 +28,8 @@ class AdminController {
     static async createUser(req, res) {
         let response = new Response(res);
         try {
-            var host = req.get('host');
-            var origin = req.get('origin');
-            console.log(' #### host: ', host);
-            console.log(' #### origin: ', origin);
-
-            const { username, password, name, status, email, expired_at, note, maxYahooAccount, domain } = req.body;
+            const domain = req.get('origin');
+            const { username, password, name, status, email, expired_at, note, maxYahooAccount } = req.body;
             if (!username || !password || !name || !status || !email || !expired_at) {
                 return response.error400({ message: '完全な情報を入力してください。' });
             }
