@@ -29,9 +29,12 @@ class AdminController {
         let response = new Response(res);
         try {
             const domain = req.get('origin');
-            const { username, password, name, status, email, expired_at, note, maxYahooAccount } = req.body;
+            const { username, password, re_password, name, status, email, expired_at, note, maxYahooAccount } = req.body;
             if (!username || !password || !name || !status || !email || !expired_at) {
                 return response.error400({ message: '完全な情報を入力してください。' });
+            }
+            if (password != re_password) {
+                return response.error400({ message: 'パスワード（確認）に一貫性がありません' });
             }
             let existUsers = await UserModel.findOne({ email });
             if (!existUsers) {
@@ -77,7 +80,7 @@ class AdminController {
     static async updateUser(req, res) {
         let response = new Response(res);
         try {
-            const { password, name, status, experied_at, note } = req.body;
+            const { password, name, status, experied_at, note, re_password } = req.body;
             const { user_id } = req.params;
             let user = await UserModel.findById(user_id);
             if (user) {
@@ -86,6 +89,9 @@ class AdminController {
                 user.experied_at = experied_at;
                 user.note = note;
                 if (password) {
+                    if (password != re_password) {
+                        return response.error400({ message: 'パスワード（確認）に一貫性がありません' });
+                    }
                     bcrypt.genSalt(saltRounds, function (err, salt) {
                         bcrypt.hash(password, salt, async function (err, hash) {
                             user.password = password;

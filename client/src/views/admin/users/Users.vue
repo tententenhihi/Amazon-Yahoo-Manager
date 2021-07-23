@@ -289,6 +289,7 @@ export default {
       this.note = "";
       this.expired_at = "";
       this.editId = "";
+      this.isResetPassword = false
     },
     async getListUser() {
       let result = await AdminApi.getUsers();
@@ -316,6 +317,7 @@ export default {
         name: this.name,
         status: this.status,
         password: this.password,
+        re_password: this.re_password,
         maxYahooAccount: this.maxYahooAccount,
         email: this.email,
         note: this.note,
@@ -331,7 +333,7 @@ export default {
           let index = this.users.findIndex(
             user => user._id === result.data.user._id
           );
-          this.users[index] = result.data.user;
+          this.users[index] = {...this.users[index], ...result.data.user};
           this.users = [...this.users];
           this.createDatatable();
         }
