@@ -34,7 +34,7 @@
               type="number"
               class="form-control"
               id="price"
-              v-model="product.price"
+              v-model="product.basecost"
               placeholder="価格(¥)"
             />
           </div>

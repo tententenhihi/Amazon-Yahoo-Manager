@@ -160,7 +160,11 @@
           <thead class="thead-purple">
             <tr>
               <th>
-                <input class="checkall" v-model="isCheckAllProduct" type="checkbox" />
+                <input
+                  class="checkall"
+                  v-model="isCheckAllProduct"
+                  type="checkbox"
+                />
               </th>
               <th class="text-center">画像</th>
               <th>タイトル</th>
@@ -327,7 +331,10 @@
       </template>
       <template v-slot:button>
         <div class="button-group">
-          <button class="btn btn-default" @click="$refs.modalDeleteProduct.closeModal()">
+          <button
+            class="btn btn-default"
+            @click="$refs.modalDeleteProduct.closeModal()"
+          >
             キャンセル
           </button>
           <button class="btn btn-primary mr-1" @click="onDeleteMultipleProduct">
@@ -338,11 +345,16 @@
     </modal-component>
     <modal-component ref="modalDeleteAllProduct" :isModalBody="false">
       <template v-slot:header>
-        <h5>取り扱い管理に商品が残っていれば、Amazon商品一覧から削除しても出品・監視機能は問題なく動作します。全削除します。よろしいですか？</h5>
+        <h5>
+          取り扱い管理に商品が残っていれば、Amazon商品一覧から削除しても出品・監視機能は問題なく動作します。全削除します。よろしいですか？
+        </h5>
       </template>
       <template v-slot:button>
         <div class="button-group">
-          <button class="btn btn-default" @click="$refs.modalDeleteAllProduct.closeModal()">
+          <button
+            class="btn btn-default"
+            @click="$refs.modalDeleteAllProduct.closeModal()"
+          >
             キャンセル
           </button>
           <button class="btn btn-primary mr-1" @click="onDeleteAllProduct">
@@ -352,7 +364,11 @@
       </template>
     </modal-component>
 
-    <modal-component ref="modalEditProduct" classModalDialog="modal-lg" styleModalFooter="justify-content: space-between">
+    <modal-component
+      ref="modalEditProduct"
+      classModalDialog="modal-lg"
+      styleModalFooter="justify-content: space-between"
+    >
       <template v-slot:header>
         <h5 style="word-break: break-all;">
           「{{ selectedEditProduct.displayName }}」の編集
@@ -389,7 +405,7 @@
           <input
             type="number"
             class="form-control"
-            v-model="selectedEditProduct.price"
+            v-model="selectedEditProduct.basecost"
           />
         </div>
         <div class="form-group">
@@ -410,9 +426,15 @@
         </div>
         <div class="form-group">
           <label for="type">フォルダ</label>
-          <select id="type" class="form-control" v-model="selectedEditProduct.folder_id">
+          <select
+            id="type"
+            class="form-control"
+            v-model="selectedEditProduct.folder_id"
+          >
             <template v-for="(folder, index) in folders">
-              <option :value="folder._id" :key="index">{{folder.name}}</option>
+              <option :value="folder._id" :key="index">{{
+                folder.name
+              }}</option>
             </template>
           </select>
         </div>
@@ -432,11 +454,17 @@
           <button class="btn btn-primary mr-1" @click="onSaveEditProduct()">
             保存
           </button>
-          <button class="btn btn-default" @click="$refs.modalEditProduct.closeModal()">
+          <button
+            class="btn btn-default"
+            @click="$refs.modalEditProduct.closeModal()"
+          >
             キャンセル
           </button>
         </div>
-        <button class="btn btn-warning" @click="goToFormProduct(selectedEditProduct._id)">
+        <button
+          class="btn btn-warning"
+          @click="goToFormProduct(selectedEditProduct._id)"
+        >
           その他の項目を編集
         </button>
       </template>
@@ -491,9 +519,15 @@ export default {
     })
   },
   methods: {
-    validateNumber (e) {
-      if(!((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58) || e.keyCode == 8)) {
-        e.preventDefault()
+    validateNumber(e) {
+      if (
+        !(
+          (e.keyCode > 95 && e.keyCode < 106) ||
+          (e.keyCode > 47 && e.keyCode < 58) ||
+          e.keyCode == 8
+        )
+      ) {
+        e.preventDefault();
       }
     },
     async getFolders() {
@@ -726,8 +760,8 @@ export default {
       };
       let res = await ProductAmazonApi.deleteAllProduct(params);
       if (res && res.status === 200) {
-        this.products = []
-        this.searchProducts = []
+        this.products = [];
+        this.searchProducts = [];
         this.isCheckAllProduct = false;
         this.selectedProduct = [];
         this.$refs.modalDeleteAllProduct.closeModal();
@@ -759,9 +793,9 @@ export default {
           showConfirmButton: false
         });
         this.$refs.modalEditProduct.closeModal();
-        await this.getListProduct()
+        await this.getListProduct();
       }
-    },
+    }
   },
   watch: {
     isCheckAllProduct() {

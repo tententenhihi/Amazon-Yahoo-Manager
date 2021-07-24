@@ -35,48 +35,34 @@ export default class AmazonController {
     static async createProduct(req, res) {
         let response = new Response(res);
         try {
-            let { asin, name, price, delivery, countProduct, infoDetail, type, status, description, image_length, folder_id, yahoo_account_id, shipping } =
-                JSON.parse(req.body.payload);
             let user = req.user;
 
-            if (!asin) {
+            let data = JSON.parse(req.body.payload);
+            data.url = 'https://www.amazon.co.jp/dp/' + data.asin;
+            data.idUser = user._id;
+            data.images = [];
+            
+            if (!data.asin) {
                 response.error400({ message: 'Asin is required' });
             }
-            if (!name) {
+            if (!data.name) {
                 response.error400({ message: 'Name is required' });
             }
-            if (!price) {
+            if (!data.basecost) {
                 response.error400({ message: 'Price is required' });
             }
-            if (!delivery) {
+            if (!data.delivery) {
                 response.error400({ message: 'Delivery is required' });
             }
-            if (!countProduct) {
+            if (!data.countProduct) {
                 response.error400({ message: 'Count product is required' });
             }
-            if (!description) {
+            if (!data.description) {
                 response.error400({ message: 'Description is required' });
             }
-            let data = {
-                images: [],
-                idUser: user._id,
-                asin,
-                name,
-                url: 'https://www.amazon.co.jp/dp/' + asin,
-                price,
-                delivery,
-                countProduct,
-                infoDetail,
-                type,
-                status,
-                description,
-                folder_id,
-                yahoo_account_id,
-                shipping,
-            };
-
-            if (req.files && image_length) {
-                for (let index = 0; index < image_length; index++) {
+            console.log(data);
+            if (req.files && data.image_length) {
+                for (let index = 0; index < data.image_length; index++) {
                     const element = req.files[`image-` + index];
                     if (element) {
                         data.images[index] = await UploadFile(element, { disk: 'products/' + user._id + '/' });
@@ -85,16 +71,16 @@ export default class AmazonController {
             } else {
                 return response.error400({ message: 'Image is required' });
             }
-
+            console.log(' ============== ');
             // profit
-            let infoProfitDefault = await ProductInfomationDefaultService.findOne({ yahoo_account_id });
+            let infoProfitDefault = await ProductInfomationDefaultService.findOne({ yahoo_account_id: data.yahoo_account_id });
             // giá gốc
-            let basecost = parseFloat(price);
+            let basecost = parseFloat(data.basecost.toString());
             if (!basecost) {
                 basecost = 0;
             }
             let profit = 0;
-            price = 0;
+            let price = 0;
 
             if (infoProfitDefault && basecost) {
                 if (infoProfitDefault.yahoo_auction_profit_type == 0) {
@@ -102,7 +88,6 @@ export default class AmazonController {
                 } else {
                     profit = infoProfitDefault.yahoo_auction_static_profit;
                 }
-                //infoProfitDefault.yahoo_auction_shipping +
                 price = basecost + profit + infoProfitDefault.amazon_shipping;
                 price = price / (1 - infoProfitDefault.yahoo_auction_fee / 100);
                 price = Math.ceil(price);
@@ -111,17 +96,16 @@ export default class AmazonController {
                 price = basecost;
             }
 
-            if (shipping) {
-                price += parseFloat(shipping.toString());
+            if (data.shipping) {
+                price += parseFloat(data.shipping.toString());
             }
-
             data = { ...data, basecost, profit, price };
-
             let result = await ProductAmazonService.create(data);
             if (result) {
                 response.success200(result);
             }
         } catch (error) {
+            console.log(error);
             response.error500(error);
         }
     }
@@ -130,66 +114,36 @@ export default class AmazonController {
         let response = new Response(res);
         try {
             const { _id } = req.params;
-            let {
-                asin,
-                url,
-                name,
-                price,
-                delivery,
-                countProduct,
-                infoDetail,
-                type,
-                status,
-                description,
-                folder_id,
-                images,
-                image_length,
-                yahoo_account_id,
-                shipping,
-            } = JSON.parse(req.body.payload);
             let user = req.user;
 
-            if (!asin) {
+            let data = JSON.parse(req.body.payload);
+            data.url = 'https://www.amazon.co.jp/dp/' + data.asin;
+
+            if (!data.asin) {
                 response.error400({ message: 'Asin is required' });
             }
-            if (!name) {
+            if (!data.name) {
                 response.error400({ message: 'Name is required' });
             }
-            if (!price) {
+            if (!data.basecost) {
                 response.error400({ message: 'Price is required' });
             }
-            if (!delivery) {
+            if (!data.delivery) {
                 response.error400({ message: 'Delivery is required' });
             }
-            if (!countProduct) {
+            if (!data.countProduct) {
                 response.error400({ message: 'Count product is required' });
             }
-            if (!description) {
+            if (!data.description) {
                 response.error400({ message: 'Description is required' });
             }
-
-            let data = {
-                images,
-                asin,
-                name,
-                url: 'https://www.amazon.co.jp/dp/' + asin,
-                price,
-                delivery,
-                countProduct,
-                infoDetail,
-                type,
-                status,
-                description,
-                folder_id,
-                shipping,
-            };
 
             if (req.files && req.files.image) {
                 data.image = await UploadFile(req.files.image, { disk: 'products/' + user._id });
             }
 
-            if (req.files && image_length) {
-                for (let index = 0; index < image_length; index++) {
+            if (req.files && data.image_length) {
+                for (let index = 0; index < data.image_length; index++) {
                     const element = req.files[`image-` + index];
                     if (element) {
                         data.images[index] = await UploadFile(element, { disk: 'products/' + user._id + '/' });
@@ -200,14 +154,14 @@ export default class AmazonController {
             }
 
             // profit
-            let infoProfitDefault = await ProductInfomationDefaultService.findOne({ yahoo_account_id });
+            let infoProfitDefault = await ProductInfomationDefaultService.findOne({ yahoo_account_id: data.yahoo_account_id });
             // giá gốc
-            let basecost = parseFloat(price);
+            let basecost = parseFloat(data.basecost.toString());
             if (!basecost) {
                 basecost = 0;
             }
             let profit = 0;
-            price = 0;
+            let price = 0;
 
             if (infoProfitDefault && basecost) {
                 if (infoProfitDefault.yahoo_auction_profit_type == 0) {
@@ -215,7 +169,6 @@ export default class AmazonController {
                 } else {
                     profit = infoProfitDefault.yahoo_auction_static_profit;
                 }
-                //infoProfitDefault.yahoo_auction_shipping +
                 price = basecost + profit + infoProfitDefault.amazon_shipping;
                 price = price / (1 - infoProfitDefault.yahoo_auction_fee / 100);
                 price = Math.ceil(price);
@@ -223,13 +176,10 @@ export default class AmazonController {
             } else {
                 price = basecost;
             }
-
-            if (shipping) {
-                price += parseFloat(shipping.toString());
+            if (data.shipping) {
+                price += parseFloat(data.shipping.toString());
             }
-
             data = { ...data, basecost, profit, price };
-
             let result = await ProductAmazonService.update(_id, data);
             if (result) {
                 response.success200(result);
