@@ -52,7 +52,6 @@ class AuthController {
         try {
             let email = req.body.email;
             let password = req.body.password;
-            console.log(req.body);
             // For the given email fetch user from DB
             if (email && password) {
                 let userLogin = await UserModel.findOne({
@@ -208,7 +207,6 @@ class AuthController {
         try {
             const { code } = req.body;
             let verifyCode = await VerifyCodeSchema.findOne({ code, status: 0 });
-            console.log(verifyCode);
             if (verifyCode && Object.keys(verifyCode).length) {
                 return response.success200(verifyCode._doc);
             } else {

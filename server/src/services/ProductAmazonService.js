@@ -124,7 +124,7 @@ const parseDataProductHTML = async (html, yahoo_account_id) => {
             profit = infoProfitDefault.yahoo_auction_static_profit;
         }
         //infoProfitDefault.yahoo_auction_shipping +
-        price = basecost + profit +  infoProfitDefault.amazon_shipping;
+        price = basecost + profit + infoProfitDefault.amazon_shipping;
         price = price / (1 - infoProfitDefault.yahoo_auction_fee / 100);
         price = Math.ceil(price);
         profit = Math.ceil(profit);
@@ -309,8 +309,8 @@ export default class ProductAmazonService {
     }
     static async deleteMultiple(yahooAccountId) {
         try {
-            await ProductAmazonSchema.deleteMany({yahoo_account_id: yahooAccountId});
-            return true
+            await ProductAmazonSchema.deleteMany({ yahoo_account_id: yahooAccountId });
+            return true;
         } catch (error) {
             console.log(error);
             throw new Error('Error:' + error.message);
@@ -331,6 +331,9 @@ export default class ProductAmazonService {
             if (!product) {
                 throw new Error('Error: Product not found');
             } else {
+                shipping = parseFloat(shipping);
+                let newPrice =  product.price - product.shipping + shipping;
+                product.price = newPrice;
                 product.shipping = shipping;
                 await product.save();
                 return product;

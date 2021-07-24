@@ -62,7 +62,6 @@ export default class ProductYahooEndedController {
         let response = new Response(res);
         try {
             const { product_id, reason } = req.body;
-            console.log(' #### product_id: ', product_id);
             let productEnded = await ProductYahooEndedService.findById(product_id);
             if (!productEnded) {
                 return response.error400({ message: 'Product not found..!' });
