@@ -1,7 +1,8 @@
 <template>
   <div class="wrapper-content" v-if="isInit">
     <div class="box-header">
-      <i class="fa fa-edit mr-2"></i>{{ productId ? '製品の編集' : '新製品を追加する'}}
+      <i class="fa fa-edit mr-2"></i
+      >{{ productId ? "製品の編集" : "新製品を追加する" }}
     </div>
     <hr />
     <div class="box-content">
@@ -9,38 +10,65 @@
         <div class="form-row">
           <div class="form-group col-md-6">
             <label for="asin">ASIN</label>
-            <input type="text" class="form-control" id="asin" v-model="product.asin" placeholder="ASIN">
+            <input
+              type="text"
+              class="form-control"
+              id="asin"
+              v-model="product.asin"
+              placeholder="ASIN"
+            />
           </div>
           <div class="form-group col-md-6">
             <label for="name">名前</label>
-            <input type="text" class="form-control" id="name" v-model="product.name" placeholder="名前">
-          </div>
-          <div class="form-group col-md-6">
-            <label for="url">URL</label>
-            <input type="text" class="form-control" id="url" v-model="product.url" placeholder="URL">
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              v-model="product.name"
+              placeholder="名前"
+            />
           </div>
           <div class="form-group col-md-6">
             <label for="price">価格(¥)</label>
-            <input type="number" class="form-control" id="price" v-model="product.price" placeholder="価格(¥)">
+            <input
+              type="number"
+              class="form-control"
+              id="price"
+              v-model="product.price"
+              placeholder="価格(¥)"
+            />
           </div>
           <div class="form-group col-md-6">
             <label for="countProduct">製品を数える</label>
-            <input type="number" class="form-control" id="countProduct" v-model="product.countProduct" placeholder="製品を数える">
+            <input
+              type="number"
+              class="form-control"
+              id="countProduct"
+              v-model="product.countProduct"
+              placeholder="製品を数える"
+            />
           </div>
           <div class="form-group col-md-6">
             <label for="delivery">配達</label>
-            <input type="text" class="form-control" id="delivery" v-model="product.delivery" placeholder="配達">
+            <input
+              type="text"
+              class="form-control"
+              id="delivery"
+              v-model="product.delivery"
+              placeholder="配達"
+            />
           </div>
           <div class="form-group col-md-6">
             <label for="type">フォルダ</label>
             <select id="type" class="form-control" v-model="product.folder_id">
               <template v-for="(folder, index) in folders">
-                <option :value="folder._id" :key="index">{{folder.name}}</option>
+                <option :value="folder._id" :key="index">{{
+                  folder.name
+                }}</option>
               </template>
             </select>
           </div>
-          <div class="form-group col-md-6">
-          </div>
+          <div class="form-group col-md-6"></div>
           <!-- <div class="form-group col-md-6">
             <label for="type">タイプ</label>
             <select id="type" class="form-control" v-model="product.type">
@@ -59,20 +87,35 @@
           </div> -->
           <div class="form-group col-md-6">
             <label for="status">説明</label>
-            <textarea v-model="product.description" class="form-control" cols="30" rows="5"></textarea>
+            <textarea
+              v-model="product.description"
+              class="form-control"
+              cols="30"
+              rows="5"
+            ></textarea>
           </div>
           <div class="col-md-6"></div>
           <div class="form-group col-md-6">
             <label for="image">画像</label>
-            <input type="file" class="form-control" id="image" multiple ref="imageProduct" @change="onUploadImage">
+            <input
+              type="file"
+              class="form-control"
+              id="image"
+              multiple
+              ref="imageProduct"
+              @change="onUploadImage"
+            />
           </div>
           <div class="col-md-6"></div>
         </div>
         <div class="row mb-20 images">
           <template v-for="(image, index) in previewImages">
             <div class="col-sm-3 image-item" :key="index">
-              <img :src="image.preview_url" alt="">
-              <i class="fa fa-times image_icon_remove" @click="onRemoveImage(index)"></i>
+              <img :src="image.preview_url" alt="" />
+              <i
+                class="fa fa-times image_icon_remove"
+                @click="onRemoveImage(index)"
+              ></i>
             </div>
           </template>
         </div>
@@ -96,7 +139,12 @@
           <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
             セーブ
           </button>
-          <router-link :to="{name: 'AmazonProducts'}" tag="button" class="btn btn-warning mb-1">キャンセル</router-link>
+          <router-link
+            :to="{ name: 'AmazonProducts' }"
+            tag="button"
+            class="btn btn-warning mb-1"
+            >キャンセル</router-link
+          >
         </div>
       </div>
     </div>
@@ -104,86 +152,87 @@
 </template>
 
 <script>
-import ProductAmazonApi from '@/services/ProductAmazonApi'
-import FolderApi from '@/services/FolderApi'
-import { mapGetters } from 'vuex';
+import ProductAmazonApi from "@/services/ProductAmazonApi";
+import FolderApi from "@/services/FolderApi";
+import { mapGetters } from "vuex";
 export default {
-  name: 'FormProduct',
-  data () {
+  name: "FormProduct",
+  data() {
     return {
       product: {
-        asin: '',
-        name: '',
-        url: '',
-        price: '',
-        countProduct: '',
-        delivery: '',
+        asin: "",
+        name: "",
+        price: "",
+        countProduct: "",
+        delivery: "",
         type: this.$constants.PRODUCT_TYPE[0],
         status: this.$constants.PRODUCT_STATUS[0],
-        image: '',
+        image: "",
         infoDetail: [],
-        description: ''
+        description: ""
       },
       previewImages: [],
       folders: [],
-      isInit: false,
-    }
+      isInit: false
+    };
   },
-  async mounted () {
+  async mounted() {
     this.getFolders();
     if (this.productId != 0) {
-      let result = await ProductAmazonApi.show({_id: this.productId})
+      let result = await ProductAmazonApi.show({ _id: this.productId });
       if (result && result.status === 200) {
-        this.product = result.data
+        this.product = result.data;
         if (this.product.yahoo_account_id !== this.yahooAccountId) {
-          this.$router.push({name: 'AmazonProducts'})
+          this.$router.push({ name: "AmazonProducts" });
         }
         this.previewImages = this.product.images.map(item => {
           return {
-            preview_url: item.includes('http') ? item : process.env.SERVER_API + 'uploads/' + item
-          }
-        })
+            preview_url: item.includes("http")
+              ? item
+              : process.env.SERVER_API + "uploads/" + item
+          };
+        });
       } else {
-        this.$router.push({name: 'AmazonProducts'})
+        this.$router.push({ name: "AmazonProducts" });
       }
     }
-    this.isInit = true
+    this.isInit = true;
   },
   computed: {
-    productId () {
-      return this.$route.params.id || 0
+    productId() {
+      return this.$route.params.id || 0;
     },
     ...mapGetters({
-      selectedYahooAccount: 'getSelectedYahooAccount'
+      selectedYahooAccount: "getSelectedYahooAccount"
     }),
-    yahooAccountId () {
-      return this.selectedYahooAccount._id
+    yahooAccountId() {
+      return this.selectedYahooAccount._id;
     }
   },
   methods: {
-    async getFolders () {
+    async getFolders() {
       let res = await FolderApi.get(this.yahooAccountId);
       if (res && res.status == 200) {
-        this.folders = res.data.folders
+        this.folders = res.data.folders;
       }
     },
-    addNewInfoDetail () {
+    addNewInfoDetail() {
       this.product.infoDetail.push({
-        name: '',
-        value: ''
-      })
+        name: "",
+        value: ""
+      });
     },
-    deleteInfoDetail (index) {
-      this.product.infoDetail.splice(index, 1)
+    deleteInfoDetail(index) {
+      this.product.infoDetail.splice(index, 1);
     },
-    onUploadImage (e) {
+    onUploadImage(e) {
       let self = this;
       const images = e.target.files;
       for (let index = 0; index < images.length; index++) {
         const ele = images[index];
         let reader = new FileReader();
         reader.readAsDataURL(ele);
-        reader.onload = event =>{
+        reader.onload = event => {
           self.previewImages.push({
             file: ele,
             preview_url: event.target.result
@@ -191,34 +240,30 @@ export default {
         };
       }
     },
-    onRemoveImage (index) {
+    onRemoveImage(index) {
       this.previewImages.splice(index, 1);
     },
-    async onSaveProduct () {
-      this.product.yahoo_account_id = this.selectedYahooAccount._id
-      this.product.image_length = this.previewImages.length
+    async onSaveProduct() {
+      this.product.yahoo_account_id = this.selectedYahooAccount._id;
+      this.product.image_length = this.previewImages.length;
       let formData = new FormData();
-      formData.append('payload', JSON.stringify(this.product));
+      formData.append("payload", JSON.stringify(this.product));
       for (let index = 0; index < this.product.image_length; index++) {
-        formData.append(`image-${index}`, this.previewImages[index].file)
+        formData.append(`image-${index}`, this.previewImages[index].file);
       }
-      let result = null
+      let result = null;
       if (this.productId == 0) {
-        result = await ProductAmazonApi.create(formData)
+        result = await ProductAmazonApi.create(formData);
       } else {
-        result = await ProductAmazonApi.update(this.productId, formData)
+        result = await ProductAmazonApi.update(this.productId, formData);
       }
       if (result && result.status === 200) {
-        this.$swal.fire(
-          "成功",
-          "製品が更新されました。",
-          "success"
-        );
-        this.$router.push({name: 'AmazonProducts'})
+        this.$swal.fire("成功", "製品が更新されました。", "success");
+        this.$router.push({ name: "AmazonProducts" });
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

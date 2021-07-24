@@ -365,8 +365,8 @@ export default class AuctionYahooService {
                     listProduct.push({ aID, idBuyer, time_end, price_end });
                 }
             }
-            //Get detail info
 
+            // Get detail info
             for (let i = 0; i < listProduct.length; i++) {
                 let product = listProduct[i];
                 let url = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${product.aID}&syid=${usernameYahoo}&bid=${product.idBuyer}`;
@@ -404,6 +404,7 @@ export default class AuctionYahooService {
                     }
                 }
 
+                // Ship address
                 let shipInfo = '';
                 let shipInfoNode = $('#yjMain > div.acMdPayShipInfo > div > table > tbody > tr:nth-child(4) > td > table > tbody > tr');
                 if (shipInfoNode && shipInfoNode.length > 0) {
@@ -412,9 +413,41 @@ export default class AuctionYahooService {
                     }
                 }
                 shipInfo = shipInfo.trim();
+
+                // product_buy_count
+
+                let productCountNode = $('.decQunt').text();
+                if (productCountNode) {
+                    let product_buy_count = productCountNode.replace(/\D+/g, '');
+                    if (product_buy_count) {
+                        product.product_buy_count = product_buy_count;
+                    }
+                }
+
                 product.message_list = listMessage;
                 product.ship_info = shipInfo;
             }
+            // Get count buyer
+            for (let i = 0; i < listProduct.length; i++) {
+                let product = listProduct[i];
+                let url = `https://page.auctions.yahoo.co.jp/jp/auction/${product.aID}`;
+                response = await axios.get(url, {
+                    headers: {
+                        cookie,
+                    },
+                    proxy: proxyConfig,
+                });
+                $ = cheerio.load(response.data);
+                //message
+                let buyer_count = $('#l-sub > div.ProductInformation > ul > li:nth-child(1) > div > ul > li:nth-child(1) > dl > dd').text();
+                if (buyer_count) {
+                    buyer_count = buyer_count.replace(/\D+/g, '');
+                    if (buyer_count) {
+                        product.buyer_count = buyer_count;
+                    }
+                }
+            }
+            console.log(listProduct);
             return listProduct;
         } catch (error) {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);

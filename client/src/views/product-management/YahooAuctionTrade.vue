@@ -107,7 +107,7 @@
                   </button>
                 </div>
               </td>
-              <td class="text-center">null</td>
+              <td class="text-center">{{ getProfitExpect(product) }}</td>
 
               <td v-html="getShipInfo(product)"></td>
 
@@ -190,12 +190,14 @@ export default {
     }
   },
   methods: {
+    getProfitExpect(product) {
+      return product.price_end * product.product_buy_count;
+    },
     getShipInfo(product) {
       if (product.ship_info) {
-        console.log(product.ship_info);
-        return product.ship_info.replace("/\n/g", "===");
+        return product.ship_info;
       }
-      return "";
+      return `<span class="label label-danger">未定</span>`;
     },
     async getListProduct() {
       try {

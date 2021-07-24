@@ -35,15 +35,12 @@ export default class AmazonController {
     static async createProduct(req, res) {
         let response = new Response(res);
         try {
-            let { asin, url, name, price, delivery, countProduct, infoDetail, type, status, description, image_length, folder_id, yahoo_account_id } =
+            let { asin, name, price, delivery, countProduct, infoDetail, type, status, description, image_length, folder_id, yahoo_account_id, shipping } =
                 JSON.parse(req.body.payload);
             let user = req.user;
 
             if (!asin) {
                 response.error400({ message: 'Asin is required' });
-            }
-            if (!url) {
-                response.error400({ message: 'Url is required' });
             }
             if (!name) {
                 response.error400({ message: 'Name is required' });
@@ -57,25 +54,15 @@ export default class AmazonController {
             if (!countProduct) {
                 response.error400({ message: 'Count product is required' });
             }
-            if (!infoDetail) {
-                response.error400({ message: 'Info detail is required' });
+            if (!description) {
+                response.error400({ message: 'Description is required' });
             }
-            // if (!ProductAmazonSchema.TYPE.includes(type)) {
-            //     response.error400({ message: 'Type is required' });
-            // }
-            // if (!ProductAmazonSchema.STATUS.includes(status)) {
-            //     response.error400({ message: 'Status is required' });
-            // }
-            if (!folder_id) {
-                response.error400({ message: 'Folder is required' });
-            }
-
             let data = {
                 images: [],
                 idUser: user._id,
                 asin,
                 name,
-                url,
+                url: 'https://www.amazon.co.jp/dp/' + asin,
                 price,
                 delivery,
                 countProduct,
@@ -85,6 +72,7 @@ export default class AmazonController {
                 description,
                 folder_id,
                 yahoo_account_id,
+                shipping,
             };
 
             if (req.files && image_length) {
@@ -97,6 +85,37 @@ export default class AmazonController {
             } else {
                 return response.error400({ message: 'Image is required' });
             }
+
+            // profit
+            let infoProfitDefault = await ProductInfomationDefaultService.findOne({ yahoo_account_id });
+            // giá gốc
+            let basecost = parseFloat(price);
+            if (!basecost) {
+                basecost = 0;
+            }
+            let profit = 0;
+            price = 0;
+
+            if (infoProfitDefault && basecost) {
+                if (infoProfitDefault.yahoo_auction_profit_type == 0) {
+                    profit = (basecost * infoProfitDefault.yahoo_auction_price_profit) / 100;
+                } else {
+                    profit = infoProfitDefault.yahoo_auction_static_profit;
+                }
+                //infoProfitDefault.yahoo_auction_shipping +
+                price = basecost + profit + infoProfitDefault.amazon_shipping;
+                price = price / (1 - infoProfitDefault.yahoo_auction_fee / 100);
+                price = Math.ceil(price);
+                profit = Math.ceil(profit);
+            } else {
+                price = basecost;
+            }
+
+            if (shipping) {
+                price += parseFloat(shipping.toString());
+            }
+
+            data = { ...data, basecost, profit, price };
 
             let result = await ProductAmazonService.create(data);
             if (result) {
@@ -111,16 +130,27 @@ export default class AmazonController {
         let response = new Response(res);
         try {
             const { _id } = req.params;
-            let { asin, url, name, price, delivery, countProduct, infoDetail, type, status, description, folder_id, images, image_length } = JSON.parse(
-                req.body.payload
-            );
+            let {
+                asin,
+                url,
+                name,
+                price,
+                delivery,
+                countProduct,
+                infoDetail,
+                type,
+                status,
+                description,
+                folder_id,
+                images,
+                image_length,
+                yahoo_account_id,
+                shipping,
+            } = JSON.parse(req.body.payload);
             let user = req.user;
 
             if (!asin) {
                 response.error400({ message: 'Asin is required' });
-            }
-            if (!url) {
-                response.error400({ message: 'Url is required' });
             }
             if (!name) {
                 response.error400({ message: 'Name is required' });
@@ -134,24 +164,15 @@ export default class AmazonController {
             if (!countProduct) {
                 response.error400({ message: 'Count product is required' });
             }
-            if (!infoDetail) {
-                response.error400({ message: 'Info detail is required' });
-            }
-            // if (!ProductAmazonSchema.TYPE.includes(type)) {
-            //     response.error400({ message: 'Type is required' });
-            // }
-            // if (!ProductAmazonSchema.STATUS.includes(status)) {
-            //     response.error400({ message: 'Status is required' });
-            // }
-            if (!folder_id) {
-                response.error400({ message: 'Folder is required' });
+            if (!description) {
+                response.error400({ message: 'Description is required' });
             }
 
             let data = {
                 images,
                 asin,
                 name,
-                url,
+                url: 'https://www.amazon.co.jp/dp/' + asin,
                 price,
                 delivery,
                 countProduct,
@@ -160,6 +181,7 @@ export default class AmazonController {
                 status,
                 description,
                 folder_id,
+                shipping,
             };
 
             if (req.files && req.files.image) {
@@ -177,11 +199,43 @@ export default class AmazonController {
                 return response.error400({ message: 'Image is required' });
             }
 
+            // profit
+            let infoProfitDefault = await ProductInfomationDefaultService.findOne({ yahoo_account_id });
+            // giá gốc
+            let basecost = parseFloat(price);
+            if (!basecost) {
+                basecost = 0;
+            }
+            let profit = 0;
+            price = 0;
+
+            if (infoProfitDefault && basecost) {
+                if (infoProfitDefault.yahoo_auction_profit_type == 0) {
+                    profit = (basecost * infoProfitDefault.yahoo_auction_price_profit) / 100;
+                } else {
+                    profit = infoProfitDefault.yahoo_auction_static_profit;
+                }
+                //infoProfitDefault.yahoo_auction_shipping +
+                price = basecost + profit + infoProfitDefault.amazon_shipping;
+                price = price / (1 - infoProfitDefault.yahoo_auction_fee / 100);
+                price = Math.ceil(price);
+                profit = Math.ceil(profit);
+            } else {
+                price = basecost;
+            }
+
+            if (shipping) {
+                price += parseFloat(shipping.toString());
+            }
+
+            data = { ...data, basecost, profit, price };
+
             let result = await ProductAmazonService.update(_id, data);
             if (result) {
                 response.success200(result);
             }
         } catch (error) {
+            console.log(error);
             response.error500(error);
         }
     }

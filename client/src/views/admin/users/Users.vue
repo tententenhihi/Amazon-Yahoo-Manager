@@ -22,8 +22,8 @@
                 <th scope="col">ユーザー名</th>
                 <th scope="col">名前</th>
                 <th scope="col">状態</th>
-                <th scope="col">賞味期限</th>
                 <th scope="col">アカウント枠</th>
+                <th scope="col">利用期限</th>
                 <th scope="col">変更</th>
               </tr>
             </thead>

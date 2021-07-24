@@ -20,7 +20,11 @@ var Product = new Schema({
     },
     buyer_count: {
         type: Number,
-        default: 0,
+        default: 1,
+    },
+    product_buy_count: {
+        type: Number,
+        default: 1,
     },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
