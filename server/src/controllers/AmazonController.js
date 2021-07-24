@@ -349,6 +349,8 @@ export default class AmazonController {
                         created: Date.now(),
                         listing_status: 'NOT_LISTED',
                         count_product: productAmazon.countProduct && productAmazon.countProduct > 1 ? productAmazon.countProduct : 1,
+                        amazon_shipping_fee: productAmazon.shipping,
+                        yahooAuctionFee: defaultSetting.yahoo_auction_fee || 10,
                         _id: null,
                     };
                     await ProductYahooService.create(productYahoo);

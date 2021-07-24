@@ -22,9 +22,17 @@ var Product = new Schema({
         type: Number,
         default: 1,
     },
+    yahooAuctionFee: {
+        type: Number,
+        default: 10,
+    },
     product_buy_count: {
         type: Number,
         default: 1,
+    },
+    amazon_shipping_fee: {
+        type: Number,
+        default: 0,
     },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -62,15 +70,15 @@ var Product = new Schema({
         required: true,
     },
     start_price: {
-        type: String,
+        type: Number,
         required: false,
     },
     bid_or_buy_price: {
-        type: String,
+        type: Number,
         required: false,
     },
     import_price: {
-        type: String,
+        type: Number,
         required: false,
     },
     status: {
@@ -154,24 +162,24 @@ var Product = new Schema({
         default: '',
     },
     ship_fee1: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 0,
     },
     ship_name2: {
         type: String,
         default: '',
     },
     ship_fee2: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 0,
     },
     ship_name3: {
         type: String,
         default: '',
     },
     ship_fee3: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 0,
     },
     foreign_check: {
         type: String,

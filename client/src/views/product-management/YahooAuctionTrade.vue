@@ -107,18 +107,20 @@
                   </button>
                 </div>
               </td>
-              <td class="text-center">{{ getProfitExpect(product) }}</td>
+              <td class="text-center">{{ getExpectInCome(product) }}</td>
 
               <td v-html="getShipInfo(product)"></td>
 
-              <td>{{ product.import_price }}</td>
-              <td>{{ product.profit }}</td>
+              <td>{{ getPriceOriginal(product) }}</td>
+              <td>{{ getProfitExpect(product) }}</td>
 
-              <td>null</td>
+              <td>{{ getYahooFee(product) }}</td>
 
-              <td>null</td>
+              <td>{{ getPersentProfit(product) }}</td>
 
-              <td>{{ product.ship_fee }}</td>
+              <td>
+                {{ getExpectShiping(product) }}
+              </td>
 
               <td>
                 <button
@@ -190,8 +192,57 @@ export default {
     }
   },
   methods: {
+    getExpectShiping(product) {
+      let feeShipping = product.ship_fee1 * product.product_buy_count;
+      if (feeShipping) {
+        return feeShipping.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
+    getExpectInCome(product) {
+      let yahooFee = product.price_end * (product.yahooAuctionFee / 100);
+      let income = product.price_end + product.ship_fee1 - yahooFee;
+      income = income * product.product_buy_count;
+      if (income) {
+        return income.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
+    getPersentProfit(product) {
+      let profitExpect =
+        product.price_end + product.ship_fee1 - product.import_price;
+      let persent = profitExpect / (product.price_end + product.ship_fee1);
+      persent = parseFloat(persent.toFixed(2)) * 100;
+      persent = parseFloat(persent).toFixed(0);
+      if (persent) {
+        return persent + "%";
+      }
+      return "-";
+    },
+    getYahooFee(product) {
+      let yahooFee = product.price_end * (product.yahooAuctionFee / 100);
+      if (yahooFee) {
+        yahooFee = yahooFee * product.product_buy_count;
+        return yahooFee.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
+    getPriceOriginal(product) {
+      let priceOriginal = (product.import_price += product.amazon_shipping_fee);
+      if (priceOriginal) {
+        priceOriginal = priceOriginal * product.product_buy_count;
+        return priceOriginal.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
     getProfitExpect(product) {
-      return product.price_end * product.product_buy_count;
+      let profit =
+        (product.price_end + product.ship_fee1 - product.import_price) *
+        product.product_buy_count;
+      if (profit) {
+        return profit.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
     },
     getShipInfo(product) {
       if (product.ship_info) {

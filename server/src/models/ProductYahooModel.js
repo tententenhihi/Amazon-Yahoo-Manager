@@ -25,6 +25,10 @@ var Product = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ProductAmazon',
     },
+    yahooAuctionFee: {
+        type: Number,
+        default: 10,
+    },
     product_model: {
         type: String,
         default: '',
@@ -32,6 +36,10 @@ var Product = new Schema({
     foreign_key: {
         type: String,
         default: '',
+    },
+    amazon_shipping_fee: {
+        type: Number,
+        default: 0,
     },
     product_yahoo_title: {
         type: String,
@@ -142,24 +150,24 @@ var Product = new Schema({
         default: '',
     },
     ship_fee1: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 0,
     },
     ship_name2: {
         type: String,
         default: '',
     },
     ship_fee2: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 0,
     },
     ship_name3: {
         type: String,
         default: '',
     },
     ship_fee3: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 0,
     },
     foreign_check: {
         type: String,
