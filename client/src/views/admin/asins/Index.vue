@@ -111,7 +111,7 @@ export default {
         if (res && res.status === 200) {
           this.$swal.fire({
             icon: "success",
-            title: "Add black asin successfully",
+            title: "追加成功",
             timer: 500,
             showConfirmButton: false,
           });
@@ -126,7 +126,7 @@ export default {
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
-          title: "Delete black asin successfully",
+          title: "削除成功",
           timer: 500,
           showConfirmButton: false,
         });

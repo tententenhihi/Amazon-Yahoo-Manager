@@ -3,7 +3,7 @@
     <component :is="layout"></component>
     <loading
       :active.sync="isLoading"
-      :can-cancel="false"
+      :can-cancel="true"
       :is-full-page="true"
     />
   </div>

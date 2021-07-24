@@ -1,12 +1,13 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Home from "../views/Home";
 import store from "../store/store";
 import Asin from "../views/Asin/index.vue";
 
 const Login = () => import(/* webpackChunkName: "/static/js/chunks/auth" */ '@/views/auth/Login.vue');
 const ForgotPassword = () => import(/* webpackChunkName: "/static/js/chunks/auth" */ '@/views/auth/ForgotPassword.vue');
 const ResetPassword = () => import(/* webpackChunkName: "/static/js/chunks/auth" */ '@/views/auth/ResetPassword.vue');
+
+const Dashboard = () => import(/* webpackChunkName: "/static/js/chunks/dashboard" */ '@/views/Dashboard.vue');
 
 const YahooAccounts = () => import(/* webpackChunkName: "/static/js/chunks/users" */ '@/views/users/YahooAccounts.vue');
 const ChangePassword = () => import(/* webpackChunkName: "/static/js/chunks/users" */ '@/views/users/ChangePassword.vue');
@@ -76,8 +77,9 @@ const router = new Router({
     },
     {
       path: "/",
-      name: "Home",
-      component: Home,
+      alias: "/dashboard",
+      name: "Dashboard",
+      component: Dashboard,
       meta: {
         requiredAuth: true
       }
@@ -256,7 +258,7 @@ const router = new Router({
       }
     },
     {
-      path: '/yahoo-auction-trade',
+      path: '/yahoo-auction-trades',
       name: 'YahooAuctionTrade',
       component: YahooAuctionTrade,
       meta: {
@@ -265,7 +267,7 @@ const router = new Router({
       }
     },
     {
-      path: '/yahoo-auction-trade-rating/:id',
+      path: '/yahoo-auction-trades-rating/:id',
       name: 'YahooAuctionTradeRating',
       component: YahooAuctionTradeRating,
       meta: {
@@ -274,7 +276,7 @@ const router = new Router({
       }
     },
     {
-      path: '/yahoo-auction-trade-message/:id',
+      path: '/yahoo-auction-trades-message/:id',
       name: 'YahooAuctionTradeMessage',
       component: YahooAuctionTradeMessage,
       meta: {
@@ -340,13 +342,13 @@ const waitForStorageToBeReady = async (to, from, next) => {
     if (user.type == 'admin') {
       next()
     } else {
-      next({name: 'Home'})
+      next({name: 'Dashboard'})
     }
   } else if (!to.meta.isAdmin && authUser && user.type == 'admin') {
     next({name: 'AdminUsers'})
   } else {
     if ((to.name === null || to.name === 'Login') && authUser) {
-      next({name: 'Home'})
+      next({name: 'Dashboard'})
     }
     next()
   }

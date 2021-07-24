@@ -5,12 +5,16 @@ import Response from '../utils/Response';
 import bcrypt from 'bcryptjs';
 import QueueLoginYahooAuction from '../services/QueueLoginYahooAuction'
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService'
+import mongoose from 'mongoose'
 class YahooAccountController {
     static async getListAccount(req, res) {
         let response = new Response(res);
         let user = req.user;
         try {
-            let accounts = await YahooAccountModel.find({user_id: user._id});
+            let accounts = await YahooAccountModel.aggregate([
+                { $match: { user_id: mongoose.Types.ObjectId(user._id) } },
+                { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxy' } },
+            ]);
             response.success200({accounts});
         } catch (error) {
             response.error500(error);

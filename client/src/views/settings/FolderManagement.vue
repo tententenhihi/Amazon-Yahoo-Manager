@@ -89,7 +89,7 @@ export default {
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
-          title: "Add folder successfully",
+          title: "追加成功",
           timer: 500,
           showConfirmButton: false,
         });
@@ -123,7 +123,7 @@ export default {
         if (res && res.status === 200) {
           this.$swal.fire({
             icon: "success",
-            title: "Sort folder successfully",
+            title: "更新成功",
             timer: 500,
             showConfirmButton: false,
           });
@@ -137,7 +137,7 @@ export default {
         if (res && res.status === 200) {
           this.$swal.fire({
             icon: "success",
-            title: "Delete folder successfully",
+            title: "削除成功",
             timer: 500,
             showConfirmButton: false,
           });

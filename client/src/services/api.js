@@ -10,19 +10,19 @@ var showError = res => {
     case 401:
       vue.$swal.fire({
         icon: "error",
-        title: "Chưa Đăng Nhập"
+        title: "未ログイン"
       });
       break;
     case 1000:
       vue.$swal.fire({
         icon: "error",
-        title: "Lỗi Kết Nối Server"
+        title: "接続エラー"
       });
       break;
     case 500:
       vue.$swal.fire({
         icon: "error",
-        title: `Lỗi Server. Vui Lòng báo cho Admin.!`
+        title: `サーバー接続のエラーが発生しました。管理者に連絡しください。`
       });
       console.log(res);
       break;
@@ -38,19 +38,19 @@ var showError = res => {
     case 404:
       vue.$swal.fire({
         icon: "error",
-        title: `${res.data.message ? res.data.message : "Không tìm thấy Api"}`
+        title: `${res.data.message ? res.data.message : "APIが見つかりませんでした"}`
       });
       break;
     case 409:
       vue.$swal.fire({
         icon: "error",
-        title: `Đã Tồn Tại.!`
+        title: `既に存在してます`
       });
       break;
     default:
       vue.$swal.fire({
         icon: "error",
-        title: "Lỗi"
+        title: "未ログイン"
       });
       break;
   }
@@ -93,7 +93,7 @@ export default class Api {
     ) {
       res = {
         status: 1000,
-        message: "Netword Error.!"
+        message: "サーバー接続のエラーが発生しました。管理者に連絡しください。"
       };
     }
 
@@ -131,7 +131,7 @@ export default class Api {
     ) {
       res = {
         status: 1000,
-        message: "Netword Error.!"
+        message: "サーバー接続のエラーが発生しました。管理者に連絡しください。"
       };
     }
     if (res.status != 200) {

@@ -8,7 +8,7 @@
     </div>
     <hr class="mt-10" />
     <div class="box-content">
-      <div class="mx-30">
+      <div class="mx-10">
         <div class="py-2">
           Y!オークに出品される商品一覧
         </div>
@@ -147,6 +147,9 @@
           </button>
         </div>
         <hr />
+      </div>
+      <div class="alert alert-danger mx-10" v-if="isDieProxy">
+        現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
       </div>
       <div class="group-button px-10 py-20">
         <button
@@ -459,7 +462,7 @@
     <modal-component ref="modalEditProduct" classModalDialog="modal-lg" styleModalFooter="justify-content: space-between">
       <template v-slot:header>
         <h5 style="word-break: break-all;">
-          「{{ selectedEditProduct.product_yahoo_title }}」の編集
+          「{{ selectedEditProduct.displayName }}」の編集
         </h5>
       </template>
       <template>
@@ -469,7 +472,7 @@
             type="text"
             class="form-control"
             ref="productYahooTitle"
-            :value="selectedEditProduct.product_yahoo_title"
+            v-model="selectedEditProduct.product_yahoo_title"
           />
         </div>
         <div class="form-group">
@@ -684,6 +687,8 @@ const SWITCH_TYPE = {
   watch_only_prime: "プライムのみ監視"
 };
 
+const PROXY_STATUS_DIE = 'die'
+
 export default {
   name: "YahooAuctionProducts",
   data() {
@@ -737,6 +742,9 @@ export default {
     },
     pageCount() {
       return Math.ceil(this.searchProducts.length / this.$constants.PAGE_SIZE);
+    },
+    isDieProxy () {
+      return this.selectedYahooAccount.proxy && this.selectedYahooAccount.proxy.length ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE : false
     }
   },
   methods: {
@@ -765,14 +773,12 @@ export default {
       }
     },
     onEditProduct(product, index) {
-      this.selectedEditProduct = { ...product };
+      this.selectedEditProduct = { ...product, displayName: product.product_yahoo_title };
       this.$refs.modalEditProduct.openModal();
     },
     async onSaveEditProduct() {
-      let productYahooTitle = this.$refs.productYahooTitle.value;
       let params = {
-        ...this.selectedEditProduct,
-        product_yahoo_title: productYahooTitle
+        ...this.selectedEditProduct
       };
       let formData = new FormData();
       formData.append("payload", JSON.stringify(params));

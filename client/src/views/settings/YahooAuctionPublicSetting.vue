@@ -304,8 +304,8 @@ export default {
       if (res && res.status == 200) {
         this.setting = res.data
         this.$swal.fire(
-          "Successful!",
-          "Your setting has been updated.",
+          "成功",
+          "更新成功",
           "success"
         );
       }

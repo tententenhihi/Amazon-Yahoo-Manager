@@ -73,8 +73,8 @@ export default {
       let res = await ProductGlobalSettingApi.update(this.setting);
       if (res && res.status == 200) {
         this.$swal.fire(
-          "Successful!",
-          "Your setting has been updated.",
+          "成功",
+          "更新成功",
           "success"
         );
       }

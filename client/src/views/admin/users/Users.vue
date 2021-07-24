@@ -37,7 +37,7 @@
                 <td>
                   {{ user.yahooaccounts.length + "/" + user.maxYahooAccount }}
                 </td>
-                <td>{{ $moment(user.expired_at).format("YYYY-MM-DD") }}</td>
+                <td>{{ $moment(user.expired_at).format("DD-MM-YYYY") }}</td>
                 <td>
                   <button
                     class="btn btn-md btn-warning mb-1"
@@ -172,6 +172,7 @@
               type="date"
               class="form-control input-sm"
               v-model="expired_at"
+              :min="minExpiredAt"
             />
           </div>
         </div>
@@ -209,11 +210,11 @@ export default {
         maxYahooAccount: 5,
         email: "",
         note: "",
-        expired_at: ""
+        expired_at: new Date()
       },
       email: "",
       note: "",
-      expired_at: "",
+      expired_at: new Date(),
       username: "",
       name: "",
       status: STATUS_USER[0],
@@ -228,7 +229,22 @@ export default {
     await this.getListUser();
     this.createDatatable();
   },
-  computed: {},
+  computed: {
+    minExpiredAt () {
+      let today = new Date();
+      let dd = today.getDate();
+      let mm = today.getMonth() +1 ;
+      let yyyy = today.getFullYear();
+      if (dd < 10){
+        dd='0'+dd
+      } 
+      if(mm < 10){
+        mm='0'+mm
+      } 
+      today = yyyy+'-'+mm+'-'+dd;
+      return today
+    }
+  },
   methods: {
     createDatatable() {
       let self = this;

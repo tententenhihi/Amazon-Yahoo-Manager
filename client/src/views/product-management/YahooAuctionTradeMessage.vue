@@ -259,7 +259,7 @@ export default {
         this.comment = "";
         this.$swal.fire({
           icon: "success",
-          title: "Delete buyer successfully",
+          title: "削除成功",
           timer: 500,
           showConfirmButton: false
         });
@@ -301,7 +301,7 @@ export default {
           this.comment = "";
           this.$swal.fire({
             icon: "success",
-            title: "Add message successfully",
+            title: "追加成功",
             timer: 500,
             showConfirmButton: false
           });

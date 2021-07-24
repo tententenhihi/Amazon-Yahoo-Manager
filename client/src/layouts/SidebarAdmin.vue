@@ -50,13 +50,13 @@
             <li class="sidebar-dropdown">
               <router-link :to="{name: 'AdminYahooAccounts'}">
                 <i class="fa fa-list"></i>
-                <span>Yahoo Account</span>
+                <span>アカウント一覧</span>
               </router-link>
             </li>
             <li class="sidebar-dropdown">
               <router-link :to="{name: 'AdminAsins'}">
                 <i class="fa fa-star"></i>
-                <span>Blacklist Asin</span>
+                <span>禁止ASIN一覧</span>
               </router-link>
             </li>
             <li class="sidebar-dropdown mt-60" @click="onClickLogout">

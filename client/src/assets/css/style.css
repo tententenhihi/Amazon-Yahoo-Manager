@@ -401,7 +401,7 @@ body {
 .page-wrapper.chiller-theme.toggled #close-sidebar:hover {
   color: #ffffff;
 }
-
+.chiller-theme .sidebar-wrapper ul li.active > a > i,
 .chiller-theme .sidebar-wrapper ul li:hover > a > i,
 .chiller-theme .sidebar-wrapper .sidebar-menu .sidebar-dropdown.active > a i {
   color: #16c7ff;

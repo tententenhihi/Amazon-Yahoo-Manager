@@ -244,7 +244,9 @@
                   <input
                     type="number"
                     class="form-control"
-                    v-model="product.shipping"
+                    v-model.number="product.shipping"
+                    :min="0"
+                    @keydown="validateNumber"
                   />
                   <div class="input-group-prepend">
                     <span class="input-group-text">円</span>
@@ -272,7 +274,7 @@
               <td>
                 <button
                   class="btn btn-md btn-warning mb-1 mr-1"
-                  @click="goToFormProduct(product._id)"
+                  @click="onEditProduct(product, index)"
                 >
                   <i class="fa fa-edit"></i> 編集
                 </button>
@@ -349,6 +351,96 @@
         </div>
       </template>
     </modal-component>
+
+    <modal-component ref="modalEditProduct" classModalDialog="modal-lg" styleModalFooter="justify-content: space-between">
+      <template v-slot:header>
+        <h5 style="word-break: break-all;">
+          「{{ selectedEditProduct.displayName }}」の編集
+        </h5>
+      </template>
+      <template>
+        <div class="form-group">
+          <label for="">名前</label>
+          <input
+            type="text"
+            class="form-control"
+            ref="productAmazonTitle"
+            v-model="selectedEditProduct.name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="">ASIN</label>
+          <input
+            type="text"
+            class="form-control"
+            v-model="selectedEditProduct.asin"
+          />
+        </div>
+        <div class="form-group">
+          <label for="">URL</label>
+          <input
+            type="text"
+            class="form-control"
+            v-model="selectedEditProduct.url"
+          />
+        </div>
+        <div class="form-group">
+          <label for="">価格(¥)</label>
+          <input
+            type="number"
+            class="form-control"
+            v-model="selectedEditProduct.price"
+          />
+        </div>
+        <div class="form-group">
+          <label for="">製品を数える</label>
+          <input
+            type="number"
+            class="form-control"
+            v-model="selectedEditProduct.countProduct"
+          />
+        </div>
+        <div class="form-group">
+          <label for="">配達</label>
+          <input
+            type="text"
+            class="form-control"
+            v-model="selectedEditProduct.delivery"
+          />
+        </div>
+        <div class="form-group">
+          <label for="type">フォルダ</label>
+          <select id="type" class="form-control" v-model="selectedEditProduct.folder_id">
+            <template v-for="(folder, index) in folders">
+              <option :value="folder._id" :key="index">{{folder.name}}</option>
+            </template>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="">説明</label>
+          <textarea
+            class="form-control"
+            id=""
+            cols="30"
+            rows="5"
+            v-model="selectedEditProduct.description"
+          ></textarea>
+        </div>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button class="btn btn-primary mr-1" @click="onSaveEditProduct()">
+            保存
+          </button>
+          <button class="btn btn-default" @click="$refs.modalEditProduct.closeModal()">
+            キャンセル
+          </button>
+        </div>
+        <button class="btn btn-warning" @click="goToFormProduct(selectedEditProduct._id)">
+          その他の項目を編集
+        </button>
+      </template>
+    </modal-component>
   </div>
 </template>
 
@@ -376,6 +468,7 @@ export default {
       selectedFolder: null,
       SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/",
       isCheckAllProduct: false,
+      selectedEditProduct: {}
     };
   },
   async mounted() {
@@ -398,6 +491,11 @@ export default {
     })
   },
   methods: {
+    validateNumber (e) {
+      if(!((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58) || e.keyCode == 8)) {
+        e.preventDefault()
+      }
+    },
     async getFolders() {
       let res = await FolderApi.get(this.selectedYahooAccount._id);
       if (res && res.status === 200) {
@@ -439,7 +537,7 @@ export default {
           if (result.isConfirmed) {
             let res = await ProductAmazonApi.delete(product._id);
             if (res && res.status == 200) {
-              self.products.splice(index, 1);
+              await this.getListProduct();
               self.$swal.fire(
                 "削除しました！",
                 "商品が削除されました。",
@@ -543,6 +641,7 @@ export default {
           timer: 500,
           showConfirmButton: false
         });
+        await this.getListProduct();
       }
     },
     onSearchProduct() {
@@ -611,12 +710,7 @@ export default {
       };
       let res = await ProductAmazonApi.deleteMultipleProduct(params);
       if (res && res.status === 200) {
-        this.selectedProduct.forEach(item => {
-          let index = this.products.findIndex(
-            product => product._id === item._id
-          );
-          this.products.splice(index, 1);
-        });
+        await this.getListProduct();
         this.isCheckAllProduct = false;
         this.selectedProduct = [];
         this.$refs.modalDeleteProduct.closeModal();
@@ -642,7 +736,32 @@ export default {
           title: "Amazon商品一覧を削除しました。"
         });
       }
-    }
+    },
+    onEditProduct(product, index) {
+      this.selectedEditProduct = { ...product, displayName: product.name };
+      this.$refs.modalEditProduct.openModal();
+    },
+    async onSaveEditProduct() {
+      let params = {
+        ...this.selectedEditProduct
+      };
+      let formData = new FormData();
+      formData.append("payload", JSON.stringify(params));
+      let res = await ProductAmazonApi.update(
+        this.selectedEditProduct._id,
+        formData
+      );
+      if (res && res.status === 200) {
+        this.$swal.fire({
+          icon: "success",
+          title: "商品情報を変更しました。",
+          timer: 500,
+          showConfirmButton: false
+        });
+        this.$refs.modalEditProduct.closeModal();
+        await this.getListProduct()
+      }
+    },
   },
   watch: {
     isCheckAllProduct() {

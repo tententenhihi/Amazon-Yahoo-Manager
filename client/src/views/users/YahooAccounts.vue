@@ -266,8 +266,8 @@ export default {
               }
               self.createDatatable()
               self.$swal.fire(
-                "Deleted!",
-                "Your account has been deleted.",
+                "削除",
+                "削除成功",
                 "success"
               );
             }

@@ -2,14 +2,44 @@ import bcrypt from 'bcryptjs';
 import Utils from '../utils/Utils';
 import Response from '../utils/Response';
 import UserModel from '../models/UserModel';
-import YahooAccountModel from '../models/YahooAccount';
 import VerifyCodeSchema from '../models/VerifyCodeModel';
 import ProxyModel from '../models/ProxyModel';
 import AsinAmazonService from '../services/AsinAmazonService';
+import YahooAccountModel from '../models/YahooAccount';
+import AuctionPublicSettingModel from '../models/AuctionPublicSettingModel'
+import CategoryModel from '../models/CategoryModel'
+import FolderModel from '../models/FolderModel'
+import ProductAmazonModel from '../models/ProductAmazonModel'
+import ProductGlobalSettingModel from '../models/ProductGlobalSettingModel'
+import ProductInfomationDefaultModel from '../models/ProductInfomationDefaultModel'
+import ProductYahooEndedModel from '../models/ProductYahooEndedModel'
+import ProductYahooModel from '../models/ProductYahooModel'
+import RatingTemplateModel from '../models/RatingTemplateModel'
+import TradeMessageTemplateModel from '../models/TradeMessageTemplateModel'
+import SearchCodeModel from '../models/SearchCodeAmazonModel'
+
 import { sendEmail } from '../helpers/sendEmail';
 
 const saltRounds = 10;
 
+const deleteUserData = async (userId) => {
+    try {
+        await YahooAccountModel.deleteMany({user_id: userId})
+        await AuctionPublicSettingModel.deleteMany({user_id: userId})
+        await CategoryModel.deleteMany({user_id: userId})
+        await FolderModel.deleteMany({user_id: userId})
+        await ProductAmazonModel.deleteMany({idUser: userId})
+        await ProductGlobalSettingModel.deleteMany({user_id: userId})
+        await ProductInfomationDefaultModel.deleteMany({user_id: userId})
+        await ProductYahooEndedModel.deleteMany({user_id: userId})
+        await ProductYahooModel.deleteMany({user_id: userId})
+        await RatingTemplateModel.deleteMany({user_id: userId})
+        await TradeMessageTemplateModel.deleteMany({user_id: userId})
+        await SearchCodeModel.deleteMany({idUser: userId})
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 class AdminController {
     static async getAllUsers(req, res) {
         let response = new Response(res);
@@ -80,13 +110,13 @@ class AdminController {
     static async updateUser(req, res) {
         let response = new Response(res);
         try {
-            const { password, name, status, experied_at, note, re_password } = req.body;
+            const { password, name, status, expired_at, note, re_password } = req.body;
             const { user_id } = req.params;
             let user = await UserModel.findById(user_id);
             if (user) {
                 user.name = name;
                 user.status = status;
-                user.experied_at = experied_at;
+                user.expired_at = expired_at;
                 user.note = note;
                 if (password) {
                     if (password != re_password) {
@@ -120,6 +150,8 @@ class AdminController {
             let user = await UserModel.findById(user_id);
             if (user) {
                 await user.remove();
+                await deleteUserData(user._id);
+
                 return response.success200({ user });
             } else {
                 return response.error400({ message: 'ユーザーが見つかりません。' });

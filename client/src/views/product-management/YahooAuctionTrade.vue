@@ -4,8 +4,59 @@
       <i class="fa fa-list mr-2"></i>Y!オーク取扱商品管理
     </div>
     <hr class="mt-10" />
-    <div class="box-content">
-      <div class="px-10 py-20 table-responsive">
+    <div class="box-content px-10 py-20">
+      <div class="form-search">
+        <div class="form-row">
+          <div class="form-group col-sm-4">
+            <label for="queryString">検索クエリー</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="searchObj.queryString"
+              id="queryString"
+              placeholder="キーワード / 仕入元・オークションID"
+            />
+          </div>
+          <div class="form-group col-sm-4">
+            <label for="progress">状態</label>
+            <select
+              id="progress"
+              class="form-control"
+              v-model="searchObj.progress"
+            >
+              <option :value="null" selected>すべて</option>
+              <option
+                v-for="(progress, index) in LISTING_PROGRESS"
+                :key="index"
+                :value="progress.value"
+              >
+                {{ progress.display }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" @click="onSearchProduct">検索</button>
+        <button class="btn btn-default" @click="clearSearchProduct">
+          リセット
+        </button>
+      </div>
+      <div class="alert alert-danger" v-if="isDieProxy">
+        現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
+      </div>
+      <div class="table-responsive">
+        <paginate
+          v-if="pageCount > 1"
+          v-model="page"
+          :page-count="pageCount"
+          :page-range="3"
+          :margin-pages="2"
+          :prev-text="'«'"
+          :next-text="'»'"
+          :container-class="'pagination'"
+          :page-class="'page-item'"
+        >
+        </paginate>
         <table class="table table-hover pt-20 mb-20" style="width: 100%">
           <thead class="thead-purple">
             <tr>
@@ -33,7 +84,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(product, index) in products" :key="index">
+            <tr v-for="(product, index) in tableData" :key="index">
               <td class="text-center" width="50">
                 <input type="checkbox" name="" id="" />
               </td>
@@ -86,14 +137,16 @@
                   <a
                     class="btn btn-xs"
                     style="border: 1px solid #d19405; background: #fece2f; color: #4c3000"
-                    :href="`/yahoo-auction-trade-message/${product._id}`"
+                    :href="`/yahoo-auction-trades-message/${product._id}`"
                   >
                     取引ナビ
                   </a>
                 </div>
               </td>
               <td class="text-center">{{ product.time_end }}</td>
-              <td class="text-center">{{ product.auction_status }}</td>
+              <td class="text-center">
+                <span class="label label-info">{{ displayProgress(product.progress) }}</span>
+                </td>
               <td class="text-note">
                 <div class="field-note">
                   <p>{{ product.note }}</p>
@@ -168,14 +221,31 @@
 <script>
 import ProductYahooEndedApi from "@/services/ProductYahooEndedApi";
 import { mapGetters } from "vuex";
-
+const LISTING_PROGRESS = [
+  { value: 'address_inputing', display: '住所入力待ち' },
+  { value: 'postage_inputing', display: '送料連絡中' },
+  { value: 'bundle_requested', display: '同梱依頼品' },
+  { value: 'bundle_accepted', display: '同梱' },
+  { value: 'money_received', display: '入金待ち' },
+  { value: 'preparation_for_shipment', display: '発送連絡中' },
+  { value: 'shipping', display: '発送完了' },
+  { value: 'complete', display: '取引完了' },
+]
+const PROXY_STATUS_DIE = 'die'
 export default {
   name: "YahooAuctionTrade",
   data() {
     return {
       products: [],
       SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/",
-      selectedEdiNote: {}
+      selectedEdiNote: {},
+      searchObj: {
+        queryString: "",
+        progress: null,
+      },
+      searchProducts: [],
+      page: 1,
+      LISTING_PROGRESS
     };
   },
   async mounted() {
@@ -187,6 +257,18 @@ export default {
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
+    },
+    tableData() {
+      return this.searchProducts.slice(
+        (this.page - 1) * this.$constants.PAGE_SIZE,
+        this.page * this.$constants.PAGE_SIZE
+      );
+    },
+    pageCount() {
+      return Math.ceil(this.searchProducts.length / this.$constants.PAGE_SIZE);
+    },
+    isDieProxy () {
+      return this.selectedYahooAccount.proxy && this.selectedYahooAccount.proxy.length ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE : false
     }
   },
   methods: {
@@ -195,6 +277,7 @@ export default {
         let res = await ProductYahooEndedApi.get(this.yahooAccountId);
         if (res && res.status === 200) {
           this.products = res.data.products;
+          this.searchProducts = this.products
         }
       } catch (error) {
         this.$swal.fire({
@@ -255,7 +338,7 @@ export default {
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
-          title: "Add note successfully",
+          title: "追加成功",
           timer: 500,
           showConfirmButton: false
         });
@@ -266,6 +349,34 @@ export default {
     oncloseModal() {
       this.selectedEdiNote = {};
       this.$refs.modalNote.closeModal();
+    },
+    onSearchProduct() {
+      this.searchProducts = this.products.filter(product => {
+        let condition = true;
+        if (this.searchObj.queryString) {
+          condition =
+            condition &&
+            product.product_yahoo_title.includes(this.searchObj.queryString);
+        }
+        if (this.searchObj.progress) {
+          condition =
+            condition &&
+            product.progress === this.searchObj.progress;
+        }
+        if (condition) {
+          return product;
+        }
+      });
+    },
+    clearSearchProduct() {
+      this.searchObj = {
+        queryString: "",
+        progress: null,
+      };
+      this.searchProducts = [...this.products];
+    },
+    displayProgress (progress) {
+      return this.LISTING_PROGRESS.find(item => item.value === progress).display
     }
   }
 };
@@ -274,5 +385,12 @@ export default {
 <style scoped>
 table tr td.text-note {
   word-break: break-all;
+}
+.form-search {
+  padding: 20px 0;
+}
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 </style>

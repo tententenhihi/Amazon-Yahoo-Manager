@@ -33,29 +33,10 @@
         <div class="sidebar-menu pt-10">
           <ul>
             <li class="sidebar-dropdown">
-              <a href="#" @click="showDropdown(1)">
-                <i class="fa fa-user"></i>
-                <span>アカウント設定</span>
-              </a>
-              <div
-                class="sidebar-submenu"
-                :class="{ 'd-block': dropdownOpen == 1 }"
-              >
-                <ul>
-                  <li>
-                    <router-link :to="{ name: 'YahooAccounts' }">
-                      <i class="fa fa-user"></i>
-                      <span>アカウント設定</span>
-                    </router-link>
-                  </li>
-                  <li>
-                    <router-link :to="{ name: 'ChangePassword' }">
-                      <i class="fa fa-lock"></i>
-                      <span>パスワード変更</span>
-                    </router-link>
-                  </li>
-                </ul>
-              </div>
+              <router-link :to="{ name: 'Dashboard' }">
+                <i class="fa fa-home"></i>
+                <span>ダッシュボード</span>
+              </router-link>
             </li>
             <li class="sidebar-dropdown">
               <router-link :to="{ name: 'AsinManagement' }">
@@ -107,12 +88,6 @@
                 </ul>
               </div>
             </li>
-            <!-- <li class="sidebar-dropdown">
-              <router-link :to="{name: 'YahooAuctionSelling'}">
-                <i class="fa fa-list"></i>
-                <span>落札商品管理</span>
-              </router-link>
-            </li> -->
             <li class="sidebar-dropdown">
               <a href="#" @click="showDropdown(3)">
                 <i class="fa fa-cogs"></i>
@@ -180,14 +155,32 @@
                 <span>出品ログ</span>
               </router-link>
             </li>
-            <!-- <li class="sidebar-dropdown mt-100" v-if="userInfo.type == 'admin'">
-              <router-link :to="{name: 'AdminUsers'}">
-                <i class="fa fa-home"></i>
-                <span>管理ページ</span>
-              </router-link>
-            </li> -->
-            <li
-              class="sidebar-dropdown mt-100"
+            <li class="sidebar-dropdown">
+              <a href="#" @click="showDropdown(1)">
+                <i class="fa fa-user"></i>
+                <span>アカウント設定</span>
+              </a>
+              <div
+                class="sidebar-submenu"
+                :class="{ 'd-block': dropdownOpen == 1 }"
+              >
+                <ul>
+                  <li>
+                    <router-link :to="{ name: 'YahooAccounts' }">
+                      <i class="fa fa-user"></i>
+                      <span>アカウント設定</span>
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link :to="{ name: 'ChangePassword' }">
+                      <i class="fa fa-lock"></i>
+                      <span>パスワード変更</span>
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li class="sidebar-dropdown mt-100"
               :class="{ 'mt-100': userInfo.type == 'member' }"
               @click="onClickLogout"
             >

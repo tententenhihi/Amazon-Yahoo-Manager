@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import UserModel from '../models/UserModel';
 import YahooAccountModel from '../models/YahooAccount';
 import Response from '../utils/Response';
@@ -67,6 +68,9 @@ class AuthController {
                     if (!userLogin.verified_at) {
                         return response.error400({ message: 'アカウントの有効化についてはメールを確認してください' });
                     }
+                    if (userLogin.expired_at && new Date(userLogin.expired_at).getTime() <= new Date().getTime()) {
+                        return response.error400({ message: 'Tài khoản đã hết hạn.Vui lòng liên hệ admin' });
+                    }
                     let checkPassword = userLogin.comparePassword(password);
                     if (checkPassword) {
                         let token = userLogin.token;
@@ -103,7 +107,10 @@ class AuthController {
                             userLogin.token = token;
                             userLogin.save();
                         }
-                        let yahooAccount = await YahooAccountModel.find({ user_id: userLogin._id });
+                        let yahooAccount = await YahooAccountModel.aggregate([
+                            { $match: { user_id: mongoose.Types.ObjectId(userLogin._id) } },
+                            { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxy' } },
+                        ]);
                         return response.success200({
                             message: 'Authentication successful!',
                             userData: userLogin,
