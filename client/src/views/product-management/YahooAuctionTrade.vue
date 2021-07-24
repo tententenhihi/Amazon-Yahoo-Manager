@@ -94,7 +94,7 @@
               </td>
               <td class="text-center">{{ product.time_end }}</td>
               <td class="text-center">{{ product.auction_status }}</td>
-              <td>
+              <td class="text-note">
                 <div class="field-note">
                   <p>{{ product.note }}</p>
                 </div>
@@ -271,4 +271,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+table tr td.text-note {
+  word-break: break-all;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <div class="modal fade show" :ref="ref" :id="idModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog" role="document" :class="classModalDialog">
       <div class="modal-content modal-success">
         <div class="modal-header" v-if="isModalHeader">
           <div class="title">
@@ -10,7 +10,7 @@
         <div class="modal-body py-20" v-if="isModalBody">
           <slot></slot>
         </div>
-        <div class="modal-footer pt-10">
+        <div class="modal-footer pt-10" :style="styleModalFooter">
           <slot name="button"></slot>
         </div>
       </div>
@@ -36,6 +36,14 @@ export default {
     isModalBody: {
       type: Boolean,
       default: true
+    },
+    classModalDialog: {
+      type: String,
+      default: ''
+    },
+    styleModalFooter: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -50,4 +58,11 @@ export default {
 
 <style scoped>
 
+</style>
+<style>
+@media (min-width: 992px) {
+  .modal-lg {
+    max-width: 900px !important;
+  }
+}
 </style>

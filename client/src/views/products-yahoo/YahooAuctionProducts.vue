@@ -456,7 +456,7 @@
       </template>
     </modal-component>
 
-    <modal-component ref="modalEditProduct">
+    <modal-component ref="modalEditProduct" classModalDialog="modal-lg" styleModalFooter="justify-content: space-between">
       <template v-slot:header>
         <h5 style="word-break: break-all;">
           「{{ selectedEditProduct.product_yahoo_title }}」の編集
@@ -546,10 +546,13 @@
           <button class="btn btn-primary mr-1" @click="onSaveEditProduct()">
             保存
           </button>
-          <button class="btn btn-default" @click="onCloseModal">
+          <button class="btn btn-default" @click="$refs.modalEditProduct.closeModal()">
             キャンセル
           </button>
         </div>
+        <button class="btn btn-warning" @click="goToFormProduct(selectedEditProduct._id)">
+          その他の項目を編集
+        </button>
       </template>
     </modal-component>
   </div>
@@ -820,7 +823,9 @@ export default {
         });
     },
     goToFormProduct(id) {
-      this.$router.push({ name: "FormProductYahoo", params: { id } });
+      if ((id && confirm('ページを移動します。ページを移動すると、未保存の編集内容は破棄されます、本当によろしいですか？')) || !id) {
+        this.$router.push({ name: "FormProductYahoo", params: { id } });
+      }
     },
     displayProductStatus(product) {
       return this.PRODUCT_STATUS.find(item => item.value === product.status)
