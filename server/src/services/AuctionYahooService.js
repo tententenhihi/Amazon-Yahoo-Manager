@@ -403,7 +403,17 @@ export default class AuctionYahooService {
                         }
                     }
                 }
+
+                let shipInfo = '';
+                let shipInfoNode = $('#yjMain > div.acMdPayShipInfo > div > table > tbody > tr:nth-child(4) > td > table > tbody > tr');
+                if (shipInfoNode && shipInfoNode.length > 0) {
+                    for (const info of shipInfoNode) {
+                        shipInfo += $(info).find('td').text().trim() + '</br>';
+                    }
+                }
+                shipInfo = shipInfo.trim();
                 product.message_list = listMessage;
+                product.ship_info = shipInfo;
             }
             return listProduct;
         } catch (error) {

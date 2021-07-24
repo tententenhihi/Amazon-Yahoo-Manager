@@ -109,7 +109,7 @@
               </td>
               <td class="text-center">null</td>
 
-              <td>null</td>
+              <td v-html="getShipInfo(product)"></td>
 
               <td>{{ product.import_price }}</td>
               <td>{{ product.profit }}</td>
@@ -190,6 +190,13 @@ export default {
     }
   },
   methods: {
+    getShipInfo(product) {
+      if (product.ship_info) {
+        console.log(product.ship_info);
+        return product.ship_info.replace("/\n/g", "===");
+      }
+      return "";
+    },
     async getListProduct() {
       try {
         let res = await ProductYahooEndedApi.get(this.yahooAccountId);
