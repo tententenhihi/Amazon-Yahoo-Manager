@@ -1,17 +1,26 @@
 import Response from '../utils/Response';
 import ProductYahooService from '../services/ProductYahooService';
-import AuctionYahooService from '../services/AuctionYahooService';
 import UploadFile from '../helpers/UploadFile';
-import UserService from '../services/UserService';
-import ProxyService from '../services/ProxyService';
-import AccountYahooService from '../services/AccountYahooService';
+import CategoryYahooService from '../services/CategoryYahooService';
 
 export default class ProductYahooController {
+    static async checkCategory(req, res) {
+        let response = new Response(res);
+        try {
+            let { category_id } = req.body;
+            let category = await CategoryYahooService.findOne({ id: category_id });
+            return response.success200({ category });
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
+
     static async get(req, res) {
         let response = new Response(res);
         try {
             let user = req.user;
-            let {yahoo_account_id} = req.params
+            let { yahoo_account_id } = req.params;
             let products = await ProductYahooService.get(user._id, yahoo_account_id);
             return response.success200({ products });
         } catch (error) {
@@ -67,7 +76,7 @@ export default class ProductYahooController {
                 gift,
                 wrapping,
                 image_length,
-                yahoo_account_id
+                yahoo_account_id,
             } = JSON.parse(req.body.payload);
 
             if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id || !description || !location || !import_price) {
@@ -118,7 +127,7 @@ export default class ProductYahooController {
                 highlight,
                 gift,
                 wrapping,
-                yahoo_account_id
+                yahoo_account_id,
             };
             if (req.files && image_length) {
                 for (let index = 0; index < image_length; index++) {
@@ -201,7 +210,7 @@ export default class ProductYahooController {
                 wrapping,
                 image_length,
                 quantity_check,
-                note
+                note,
             } = JSON.parse(req.body.payload);
 
             // if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id || !description || !location || !import_price) {
@@ -253,7 +262,7 @@ export default class ProductYahooController {
                 gift,
                 wrapping,
                 quantity_check,
-                note
+                note,
             };
             if (req.files && image_length) {
                 for (let index = 0; index < image_length; index++) {
@@ -286,31 +295,30 @@ export default class ProductYahooController {
         }
     }
 
-
-    static async switchWatchOption (req, res) {
+    static async switchWatchOption(req, res) {
         let response = new Response(res);
         try {
             const { ids, type, value } = req.body;
             const TYPES = ['watch_stock', 'watch_profit', 'watch_only_prime'];
             const VALUES = ['0', '1'];
-            if (!TYPES.includes(type) || !VALUES.includes(value) ) {
-                return response.error400('Data not correct!')
+            if (!TYPES.includes(type) || !VALUES.includes(value)) {
+                return response.error400('Data not correct!');
             }
             let res = await ProductYahooService.switchWatchOption(ids, type, value);
             if (res) {
-                return response.success200({success: res})
+                return response.success200({ success: res });
             }
         } catch (error) {
             response.error500(error);
         }
     }
-    static async changeProductFolder (req, res) {
+    static async changeProductFolder(req, res) {
         let response = new Response(res);
         try {
             const { ids, folder_id } = req.body;
             let res = await ProductYahooService.changeProductFolder(ids, folder_id);
             if (res) {
-                return response.success200({success: res})
+                return response.success200({ success: res });
             }
         } catch (error) {
             response.error500(error);

@@ -10,6 +10,65 @@ import proxyChain from 'proxy-chain';
 import Utils from '../utils/Utils';
 
 export default class AuctionYahooService {
+    static async getAllCategory(cateId) {
+        let listCateId = [];
+        try {
+            if (!cateId || cateId.trim() === '') {
+                return [];
+            }
+
+            let urlGetFirstCate = `https://auctions.yahooapis.jp/AuctionWebService/V2/categoryTree?callback=jQuery21103066853671302485_1627142482060&output=json&eappid=Ke3w9B2tmbwE1JyLv0Jtc_hSm91oOrgzL5Mz0hMSaDDuMrxkCE7NPkzVig1w4ceDE6D7uyFL5jBor5I_t2JcPquSTajwz3slNX5f6o9HgjPErLE-&adf=1&category=${cateId}&_=${Date.now()}`;
+            let res = await axios.get(urlGetFirstCate);
+            if (res && res.status === 200) {
+                const parseText = (data) => {
+                    try {
+                        data = data.replace('/**/jQuery21103066853671302485_1627142482060(', '');
+                        data = data.substring(0, data.length - 1);
+
+                        return JSON.parse(data).ResultSet.Result;
+                    } catch (error) {
+                        return null;
+                    }
+                };
+                let cate = parseText(res.data);
+                let listCate = [];
+                if (cate && cate.ChildCategory) {
+                    listCate = cate.ChildCategory;
+                } else {
+                    if (cate && cate.IsLeaf === 'true') {
+                        listCateId.push({
+                            ID: cate.CategoryId,
+                            path: cate.CategoryPath,
+                        });
+                    }
+                }
+                try {
+                    for (const cateItem of listCate) {
+                        if (cateItem.IsLeaf === 'true') {
+                            listCateId.push({
+                                id: cateItem.CategoryId,
+                                path: cateItem.CategoryPath,
+                            });
+                        } else if (cateItem.IsLeaf === 'false' && cateItem.IsLink === 'false') {
+                            let l = await AuctionYahooService.getAllCategory(cateItem.CategoryId);
+                            listCateId = [...listCateId, ...l];
+                        }
+                    }
+                } catch (error) {
+                    if (listCate && listCate.IsLeaf === 'true') {
+                        listCateId.push({
+                            id: listCate.CategoryId,
+                            path: listCate.CategoryPath,
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        return listCateId;
+    }
+
     static async uploadNewProduct(cookie, productData, proxy) {
         try {
             // Check Data
@@ -447,7 +506,6 @@ export default class AuctionYahooService {
                     }
                 }
             }
-            console.log(listProduct);
             return listProduct;
         } catch (error) {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
