@@ -211,6 +211,9 @@ var Product = new Schema({
         type: Number,
         default: 3,
     },
+    ship_info: {
+        type: String,
+    },
     profit: {
         type: String,
     },

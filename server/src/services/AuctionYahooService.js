@@ -33,7 +33,6 @@ export default class AuctionYahooService {
             }
 
             let listImage = [];
-            console.log(' =============== uploadNewProduct ================= ');
             if (productData.images[0].startsWith('http')) {
                 let folderSaveImage = 'uploads/yahoo-products/' + productData._id;
                 if (!Fs.existsSync(folderSaveImage)) {
@@ -366,7 +365,6 @@ export default class AuctionYahooService {
                     listProduct.push({ aID, idBuyer, time_end, price_end });
                 }
             }
-            console.log(listProduct);
             //Get detail info
 
             for (let i = 0; i < listProduct.length; i++) {
@@ -405,7 +403,17 @@ export default class AuctionYahooService {
                         }
                     }
                 }
+
+                let shipInfo = '';
+                let shipInfoNode = $('#yjMain > div.acMdPayShipInfo > div > table > tbody > tr:nth-child(4) > td > table > tbody > tr');
+                if (shipInfoNode && shipInfoNode.length > 0) {
+                    for (const info of shipInfoNode) {
+                        shipInfo += $(info).find('td').text().trim() + '</br>';
+                    }
+                }
+                shipInfo = shipInfo.trim();
                 product.message_list = listMessage;
+                product.ship_info = shipInfo;
             }
             return listProduct;
         } catch (error) {
@@ -671,7 +679,6 @@ export default class AuctionYahooService {
             };
             listProductDATA.push(productData);
         }
-        console.log(listProductDATA);
         console.log(' =========== Done =============== ');
         return listProductDATA;
     }

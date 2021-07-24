@@ -76,7 +76,6 @@ export default {
   },
   async mounted() {
     this.details = this.$route.params.data;
-    console.log(" ### this.details: ", this.details);
   },
   computed: {
     tableData() {

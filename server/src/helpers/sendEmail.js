@@ -13,8 +13,6 @@ async function sendEmail(receivedEmail, body, subjectMail) {
       rejectUnauthorized: false
     }
   });
-  console.log(process.env.GMAIL_USER_NAME);
-  console.log(process.env.GMAIL_USER_PASSWORD);
   let content = '';
   content += `
     <div style="padding: 10px; background-color: #003375">
