@@ -82,7 +82,7 @@
                   <li>
                     <router-link :to="{ name: 'YahooAuctionTrade' }">
                       <i class="fa fa-calendar"></i>
-                      <span>Y!オーク取扱商品管理</span>
+                      <span>Y!オーク落札商品管理</span>
                     </router-link>
                   </li>
                 </ul>
@@ -180,7 +180,8 @@
                 </ul>
               </div>
             </li>
-            <li class="sidebar-dropdown mt-100"
+            <li
+              class="sidebar-dropdown mt-100"
               :class="{ 'mt-100': userInfo.type == 'member' }"
               @click="onClickLogout"
             >

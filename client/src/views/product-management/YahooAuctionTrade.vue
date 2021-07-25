@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper-content">
     <div class="box-header">
-      <i class="fa fa-list mr-2"></i>Y!オーク取扱商品管理
+      <i class="fa fa-list mr-2"></i>Y!オーク落札商品管理
     </div>
     <hr class="mt-10" />
     <div class="box-content px-10 py-20">
@@ -145,8 +145,10 @@
               </td>
               <td class="text-center">{{ product.time_end }}</td>
               <td class="text-center">
-                <span class="label label-info">{{ displayProgress(product.progress) }}</span>
-                </td>
+                <span class="label label-info">{{
+                  displayProgress(product.progress)
+                }}</span>
+              </td>
               <td class="text-note">
                 <div class="field-note">
                   <p>{{ product.note }}</p>
@@ -224,16 +226,16 @@
 import ProductYahooEndedApi from "@/services/ProductYahooEndedApi";
 import { mapGetters } from "vuex";
 const LISTING_PROGRESS = [
-  { value: 'address_inputing', display: '住所入力待ち' },
-  { value: 'postage_inputing', display: '送料連絡中' },
-  { value: 'bundle_requested', display: '同梱依頼品' },
-  { value: 'bundle_accepted', display: '同梱' },
-  { value: 'money_received', display: '入金待ち' },
-  { value: 'preparation_for_shipment', display: '発送連絡中' },
-  { value: 'shipping', display: '発送完了' },
-  { value: 'complete', display: '取引完了' },
-]
-const PROXY_STATUS_DIE = 'die'
+  { value: "address_inputing", display: "住所入力待ち" },
+  { value: "postage_inputing", display: "送料連絡中" },
+  { value: "bundle_requested", display: "同梱依頼品" },
+  { value: "bundle_accepted", display: "同梱" },
+  { value: "money_received", display: "入金待ち" },
+  { value: "preparation_for_shipment", display: "発送連絡中" },
+  { value: "shipping", display: "発送完了" },
+  { value: "complete", display: "取引完了" }
+];
+const PROXY_STATUS_DIE = "die";
 export default {
   name: "YahooAuctionTrade",
   data() {
@@ -243,7 +245,7 @@ export default {
       selectedEdiNote: {},
       searchObj: {
         queryString: "",
-        progress: null,
+        progress: null
       },
       searchProducts: [],
       page: 1,
@@ -269,8 +271,11 @@ export default {
     pageCount() {
       return Math.ceil(this.searchProducts.length / this.$constants.PAGE_SIZE);
     },
-    isDieProxy () {
-      return this.selectedYahooAccount.proxy && this.selectedYahooAccount.proxy.length ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE : false
+    isDieProxy() {
+      return this.selectedYahooAccount.proxy &&
+        this.selectedYahooAccount.proxy.length
+        ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE
+        : false;
     }
   },
   methods: {
@@ -337,7 +342,7 @@ export default {
         let res = await ProductYahooEndedApi.get(this.yahooAccountId);
         if (res && res.status === 200) {
           this.products = res.data.products;
-          this.searchProducts = this.products
+          this.searchProducts = this.products;
         }
       } catch (error) {
         this.$swal.fire({
@@ -419,9 +424,7 @@ export default {
             product.product_yahoo_title.includes(this.searchObj.queryString);
         }
         if (this.searchObj.progress) {
-          condition =
-            condition &&
-            product.progress === this.searchObj.progress;
+          condition = condition && product.progress === this.searchObj.progress;
         }
         if (condition) {
           return product;
@@ -431,12 +434,13 @@ export default {
     clearSearchProduct() {
       this.searchObj = {
         queryString: "",
-        progress: null,
+        progress: null
       };
       this.searchProducts = [...this.products];
     },
-    displayProgress (progress) {
-      return this.LISTING_PROGRESS.find(item => item.value === progress).display
+    displayProgress(progress) {
+      return this.LISTING_PROGRESS.find(item => item.value === progress)
+        .display;
     }
   }
 };
