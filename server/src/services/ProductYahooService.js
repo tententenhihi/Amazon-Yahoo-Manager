@@ -73,9 +73,7 @@ export default class ProductYahooService {
             } else {
                 if (product.product_amazon_id) {
                     let productAmazon = await ProductAmazonSchema.findById(product.product_amazon_id);
-                    if (!product) {
-                        throw new Error('Product amazon not found');
-                    } else {
+                    if (productAmazon) {
                         productAmazon.folder_id = '';
                         productAmazon.is_convert_yahoo = false;
                         await productAmazon.save();

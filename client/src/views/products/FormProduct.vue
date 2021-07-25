@@ -58,6 +58,7 @@
               placeholder="配達"
             />
           </div>
+          <div class="form-group col-md-6"></div>
           <div class="form-group col-md-6">
             <label for="type">フォルダ</label>
             <select id="type" class="form-control" v-model="product.folder_id">
