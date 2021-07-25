@@ -740,7 +740,6 @@ export default {
         this.selectedFolder = null;
         this.selectedProduct = [];
         this.onCloseModal();
-        this.getListProduct();
       }
     },
     async onDeleteMultipleProduct() {
@@ -749,7 +748,10 @@ export default {
       };
       let res = await ProductAmazonApi.deleteMultipleProduct(params);
       if (res && res.status === 200) {
-        await this.getListProduct();
+        this.selectedProduct.forEach(item => {
+          let findIndex = this.searchProducts.findIndex(product => product._id === item._id)
+            this.searchProducts.splice(findIndex, 1)
+        });
         this.isCheckAllProduct = false;
         this.selectedProduct = [];
         this.$refs.modalDeleteProduct.closeModal();

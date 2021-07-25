@@ -970,11 +970,10 @@ export default {
       let res = await ProductYahooApi.deleteMultipleProduct(params);
       if (res && res.status === 200) {
         this.selectedProducts.forEach(item => {
-          let index = this.products.findIndex(
-            product => product._id === item._id
-          );
-          this.products.splice(index, 1);
+          let findIndex = this.searchProducts.findIndex(product => product._id === item._id)
+            this.searchProducts.splice(findIndex, 1)
         });
+
         this.isCheckAllProduct = false;
         this.selectedProducts = [];
         this.onCloseModal();
