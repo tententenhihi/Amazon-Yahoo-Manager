@@ -25,4 +25,7 @@ export default {
   deleteMultipleProduct(data) {
     return Api.post(`${prefix}/delete-multiple-product`, data);
   },
+  checkCategoryYahoo (data) {
+    return Api.post(`${prefix}/check-category`, data);
+  }
 };

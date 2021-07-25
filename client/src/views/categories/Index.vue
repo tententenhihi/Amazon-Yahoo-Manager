@@ -58,13 +58,15 @@
 
 <script>
 import CategoryApi from '@/services/CategoryApi'
+import ProductYahooApi from '@/services/ProductYahooApi'
 
 export default {
   name: 'Categories',
   data () {
     return {
       categories: [],
-      page: 1
+      page: 1,
+      yahooAuctionCategory: null
     }
   },
   async mounted () {
@@ -94,13 +96,25 @@ export default {
       }
     },
     async onUpdateCategory (category) {
-      let res = await CategoryApi.update(category);
-      if (res && res.status == 200) {
+      let resCheckCateYahoo = await ProductYahooApi.checkCategoryYahoo({
+        category_id: category.yahoo_cate_id
+      })
+      if (resCheckCateYahoo && resCheckCateYahoo.status === 200 && resCheckCateYahoo.data.category ) {
+        this.yahooAuctionCategory = resCheckCateYahoo.data.category
+        let res = await CategoryApi.update(category);
+        if (res && res.status == 200) {
+          this.$swal.fire({
+            icon: "success",
+            title: "更新されました",
+            timer: 500,
+            showConfirmButton: false,
+          });
+        }
+      } else {
         this.$swal.fire({
-          icon: "success",
-          title: "更新されました",
-          timer: 500,
-          showConfirmButton: false,
+          icon: "error",
+          title: "エラー",
+          text: 'Vui lòng chính xác yahoo category'
         });
       }
     },

@@ -81,8 +81,14 @@
                   <div class="col-4 text-align-end"><font color="red">*</font>Yahoo商品のカテゴリー（ID指定）:
                   </div>
                   <div class="col-8">
-                    <input type="text" class="form-control" v-model="product.yahoo_auction_category_id" id="">
                     入力すると、上記で選択したカテゴリーよりも、こちらの値が優先されます。
+                    <input type="text" class="form-control" v-model.lazy="product.yahoo_auction_category_id" id="">
+                    <span v-if="yahooAuctionCategory" style="color: green">
+                      {{yahooAuctionCategory.path}}
+                    </span>
+                    <span v-else-if="yahooAuctionCategory === null" style="color: red">
+                      message lỗi nhập cate
+                    </span>
                   </div>
                 </div>
                 <div class="row">
@@ -606,6 +612,7 @@ export default {
       isShowChargedOption: false,
       folders: [],
       SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/",
+      yahooAuctionCategory: undefined
     }
   },
   async mounted () {
@@ -681,6 +688,14 @@ export default {
       }
     },
     async onSaveProduct () {
+      if (!this.yahooAuctionCategory) {
+        this.$swal.fire({
+          icon: "error",
+          title: "エラー",
+          text: 'Vui lòng chính xác yahoo category'
+        });
+        return;
+      }
       let formData = new FormData();
       this.product.image_length = this.images.length
       this.product.yahoo_account_id = this.yahooAccountId
@@ -701,6 +716,16 @@ export default {
           "success"
         );
         this.$router.push({name: 'YahooAuctionProducts'})
+      }
+    }
+  },
+  watch: {
+    async 'product.yahoo_auction_category_id' () {
+      let resCheckCateYahoo = await ProductYahooApi.checkCategoryYahoo({
+        category_id: this.product.yahoo_auction_category_id
+      })
+      if (resCheckCateYahoo && resCheckCateYahoo.status === 200 ) {
+        this.yahooAuctionCategory = resCheckCateYahoo.data.category
       }
     }
   }

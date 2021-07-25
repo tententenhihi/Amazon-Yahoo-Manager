@@ -2,7 +2,7 @@ import express from 'express';
 import ProductYahooController from '../controllers/ProductYahooController';
 
 var ProductYahooRouter = express.Router();
-ProductYahooRouter.route('/check-category').get(ProductYahooController.checkCategory);
+ProductYahooRouter.route('/check-category').post(ProductYahooController.checkCategory);
 ProductYahooRouter.route('/get/:yahoo_account_id').get(ProductYahooController.get);
 ProductYahooRouter.route('/create').post(ProductYahooController.createProduct);
 ProductYahooRouter.route('/show/:_id').get(ProductYahooController.getDetailProduct);

@@ -93,7 +93,7 @@
         <br />
         <button class="btn btn-danger mt-20" :disabled="true">取引中止</button>
         <br />
-        <button class="btn btn-danger my-20" @click="deleteBuyer">
+        <button class="btn btn-danger my-20" @click="$refs.modalSelectReason.openModal()">
           落札者削除
         </button>
         <br />
@@ -213,6 +213,37 @@
         </div>
       </div>
     </div>
+
+    <modal-component ref="modalSelectReason">
+      <template v-slot:header>
+        <h5>理由</h5>
+      </template>
+      <template>
+        <div class="form-group form-line">
+          <div class="col-sm-12">
+            <select class="form-control" v-model="deleteReason">
+              <option
+                v-for="(reason, index) in DELETE_REASON"
+                :value="reason.value"
+                :key="index"
+                >{{ reason.display }}</option
+              >
+            </select>
+          </div>
+        </div>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button class="btn btn-primary mr-2" @click="deleteBuyer">
+            <i class="fa fa-save"></i> セーブ
+          </button>
+          <button class="btn btn-warning" @click="$refs.modalSelectReason.closeModal()">
+            <i class="fa fa-times"></i> キャンセル
+          </button>
+        </div>
+      </template>
+    </modal-component>
+
   </div>
 </template>
 
@@ -220,7 +251,10 @@
 import { mapGetters } from "vuex";
 import ProductYahooEndedApi from "@/services/ProductYahooEndedApi";
 import TradeMessageTemplateApi from "@/services/TradeMessageTemplateApi";
-
+const DELETE_REASON = [
+  { value: 'seller', display: '売り手'},
+  { value: 'winner', display: '勝者'},
+]
 export default {
   name: "YahooAuctionTradeMessage",
   data() {
@@ -228,7 +262,9 @@ export default {
       product: {},
       comment: "",
       templates: [],
-      selectedTemplate: null
+      selectedTemplate: null,
+      deleteReason: DELETE_REASON[0].value,
+      DELETE_REASON,
     };
   },
   async mounted() {
@@ -250,13 +286,14 @@ export default {
     async deleteBuyer() {
       let payload = {
         product_id: this.product._id,
-        reason: "seller"
+        reason: this.deleteReason
       };
 
       let res = await ProductYahooEndedApi.deleteBuyer(payload);
       if (res && res.status === 200) {
         this.product = res.data.product;
         this.comment = "";
+        this.$refs.modalSelectReason.closeModal()
         this.$swal.fire({
           icon: "success",
           title: "削除成功",
