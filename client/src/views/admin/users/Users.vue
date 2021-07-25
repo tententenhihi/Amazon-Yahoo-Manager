@@ -33,7 +33,7 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.name }}</td>
-                <td>{{ user.status }}</td>
+                <td>{{ displayStatus(user.status) }}</td>
                 <td>
                   {{ user.yahooaccounts.length + "/" + user.maxYahooAccount }}
                 </td>
@@ -99,8 +99,8 @@
               <option
                 v-for="(status, index) of STATUS_USER"
                 :key="index"
-                :value="status"
-                >{{ status }}</option
+                :value="status.value"
+                >{{ status.display }}</option
               >
             </select>
           </div>
@@ -193,7 +193,10 @@
 
 <script>
 import AdminApi from "@/services/AdminApi";
-const STATUS_USER = ["LIVE", "LOCKED"];
+const STATUS_USER = [
+  {value: 'LIVE', display: '活動中'},
+  {value: 'LOCKED', display: 'ロック'}
+];
 export default {
   name: "AdminUsers",
   data() {
@@ -204,7 +207,7 @@ export default {
       user: {
         username: "",
         name: "",
-        status: STATUS_USER[0],
+        status: STATUS_USER[0].value,
         password: "",
         re_password: "",
         maxYahooAccount: 5,
@@ -217,7 +220,7 @@ export default {
       expired_at: new Date(),
       username: "",
       name: "",
-      status: STATUS_USER[0],
+      status: STATUS_USER[0].value,
       password: "",
       re_password: "",
       editId: "",
@@ -246,6 +249,9 @@ export default {
     }
   },
   methods: {
+    displayStatus (status) {
+      return this.STATUS_USER.find(item => item.value === status).display
+    },
     createDatatable() {
       let self = this;
       if (self.$("#userTable").DataTable()) {
@@ -297,7 +303,7 @@ export default {
       this.$refs.modalInfoUser.closeModal();
       this.username = "";
       this.name = "";
-      this.status = STATUS_USER[0];
+      this.status = STATUS_USER[0].value;
       this.maxYahooAccount = 5;
       this.password = "";
       this.re_password = "";

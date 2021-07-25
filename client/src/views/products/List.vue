@@ -672,7 +672,7 @@ export default {
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
-          title: "Set shipping successfully",
+          title: "配送の設定が完了しました",
           timer: 500,
           showConfirmButton: false
         });
@@ -716,6 +716,7 @@ export default {
         minPrice: "",
         maxPrice: ""
       };
+      this.searchProducts = [...this.products]
     },
     convertYahooProduct() {
       this.$refs.modalSelectFolder.openModal();
@@ -732,7 +733,7 @@ export default {
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
-          title: "Update successfully",
+          title: "更新が成功しました",
           timer: 500,
           showConfirmButton: false
         });

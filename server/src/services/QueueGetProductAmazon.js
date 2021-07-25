@@ -35,7 +35,7 @@ const getProductByAsin = async (inputData, cb) => {
                     await SearchCodeAmazonService.update(inputData._id, inputData.idUser, {
                         isProductGeted: false,
                         status: 'ERROR',
-                        statusMessage: 'Lỗi: ' + resultGetProduct.message,
+                        statusMessage: 'エラー: ' + resultGetProduct.message,
                     });
                 }
             }
@@ -55,7 +55,7 @@ const getProductByAsin = async (inputData, cb) => {
         await SearchCodeAmazonService.update(inputData._id, inputData.idUser, {
             isProductGeted: false,
             status: 'ERROR',
-            statusMessage: 'Lỗi: ' + error.message,
+            statusMessage: 'エラー: ' + error.message,
         });
         cb({ error });
     }

@@ -605,7 +605,7 @@ export default {
       if (result && result.status === 200) {
         this.$swal.fire(
           "成功",
-          "製品が更新されました。",
+          "更新が成功しました",
           "success"
         );
       }

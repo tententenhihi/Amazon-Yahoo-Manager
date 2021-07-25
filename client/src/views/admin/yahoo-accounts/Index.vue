@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper-content">
     <div class="box-header">
-      Yahoo Account
+      アカウント一覧
     </div>
     <hr class="mt-10" />
     <div class="box-content">
@@ -9,19 +9,19 @@
         <div class="search-proxy mt-10">
           <div class="form-row">
             <div class="form-group col-md-4">
-              <label for="userid">User Id</label>
+              <label for="userid">ユーザーID</label>
               <input type="text" class="form-control" id="userid" v-model="searchUserId">
             </div>
             <div class="form-group col-md-4">
-              <label for="username">Username</label>
+              <label for="username">ユーザー名</label>
               <input type="text" class="form-control" id="username" v-model="searchUsername">
             </div>
             <div class="form-group col-md-4">
-              <label for="proxy">Proxy</label>
+              <label for="proxy">プロキシ</label>
               <input type="text" class="form-control" id="proxy" v-model="searchProxy">
             </div>
           </div>
-          <button class="btn btn-primary" @click="searchYahooAccount">Search</button>
+          <button class="btn btn-primary" @click="searchYahooAccount">検索</button>
         </div>
         <paginate
           v-if="pageCount > 1"
@@ -38,17 +38,16 @@
           <table class="table table-striped display pt-10 my-20">
             <thead class="thead-purple">
               <tr>
-                <th scope="col">User ID</th>
-                <th scope="col">Username</th>
-                <th scope="col">Yahoo ID</th>
-                <th scope="col">Status</th>
-                <th scope="col">Proxy IP</th>
-                <th scope="col">Action</th>
+                <th scope="col">ユーザーID</th>
+                <th scope="col">ユーザー名</th>
+                <th scope="col">Yahoo! オークID</th>
+                <th scope="col">状態</th>
+                <th scope="col">プロキシ IP</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(account, index) in tableData" :key="index">
-                <!-- {{account}} -->
                 <td>{{ account.users[0].userId }}</td>
                 <td>{{ account.users[0].username }}</td>
                 <td>{{ account.yahoo_id }}</td>
@@ -57,14 +56,14 @@
                   <template v-if="account.proxies[0]">
                     {{account.proxies[0].ip}} <br>
                     <span>
-                      {{account.proxies[0].status}}
+                      {{displayStatus(account.proxies[0].status)}}
                     </span>
                   </template>
                 </td>
                 <td>
                   <button class="btn btn-sm btn-warning"
                     @click="setProxyToAccount(index)">
-                      Change Proxy
+                      プロキシ変更
                   </button>
                 </td>
               </tr>
@@ -75,7 +74,7 @@
     </div>
     <modal-component ref="modalProxyAccount">
       <template v-slot:header>
-        <h5><i class="fa fa-user-plus"></i> Set proxy to account</h5>
+        <h5><i class="fa fa-user-plus"></i> アカウントのプロキシ設定</h5>
       </template>
       <template>
         <div class="form-group form-line">
@@ -105,11 +104,11 @@
 import AdminApi from '@/services/AdminApi'
 const PAGE_SIZE = 20
 const STATUS_PROXY = [
-  { value: 'all', display: 'All'},
-  { value: 'live', display: 'Live'},
-  { value: 'used', display: 'Used'},
-  { value: 'lock', display: 'Lock'},
-  { value: 'die', display: 'Die'},
+  { value: 'all', display: '全て'},
+  { value: 'live', display: '活動中'},
+  { value: 'used', display: '使用済み'},
+  { value: 'lock', display: 'ロック'},
+  { value: 'die', display: '壊れた'},
 ]
 export default {
   name: 'YahooAccount',
@@ -142,6 +141,9 @@ export default {
     }
   },
   methods: {
+    displayStatus (status) {
+      return this.STATUS_PROXY.find(item => item.value === status).display
+    },
     async getYahooAccounts() {
       try {
         let res = await AdminApi.getYahooAccounts();
@@ -171,7 +173,7 @@ export default {
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
-          title: "Set proxy to account successfully",
+          title: "アカウントにプロキシの設定が完了しました",
           timer: 500,
           showConfirmButton: false,
         });

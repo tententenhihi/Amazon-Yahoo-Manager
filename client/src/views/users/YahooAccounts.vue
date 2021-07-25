@@ -12,7 +12,10 @@
       </div>
       <hr class="mt-10" />
       <div class="box-content">
-        <div class="px-30 py-20">
+        <div class="px-20 py-20">
+          <div class="alert alert-danger" v-if="isDieProxy">
+            現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
+          </div>
           <table id="accountTable" class="display pt-20 mb-20">
             <thead class="thead-purple">
               <tr>
@@ -85,7 +88,7 @@
           <label class="col-sm-12 control-label">Yahooヤフーオークの情報</label>
         </div>
         <div class="form-group form-line">
-          <label class="col-sm-4 control-label">Yahoo ID: </label>
+          <label class="col-sm-4 control-label">Yahoo! オークID: </label>
           <div class="col-sm-7">
             <input
               type="text"
@@ -125,6 +128,7 @@
 <script>
 import YahooAccountApi from "@/services/YahooAccountApi";
 import { mapGetters } from 'vuex';
+const PROXY_STATUS_DIE = 'die'
 export default {
   name: "YahooAccounts",
   data() {
@@ -153,6 +157,10 @@ export default {
     ...mapGetters({
       selectedYahooAccount: 'getSelectedYahooAccount'
     }),
+    isDieProxy () {
+      return this.selectedYahooAccount.proxy && this.selectedYahooAccount.proxy.length
+        ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE : false
+    }
   },
   methods: {
     createDatatable () {

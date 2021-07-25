@@ -114,7 +114,7 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: 'message lỗi nhập cate'
+          text: 'カテゴリーのエラー'
         });
       }
     },

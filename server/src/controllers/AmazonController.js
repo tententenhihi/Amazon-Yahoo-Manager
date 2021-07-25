@@ -43,22 +43,22 @@ export default class AmazonController {
             data.images = [];
             
             if (!data.asin) {
-                response.error400({ message: 'Asin is required' });
+                response.error400({ message: 'ASINは必須です' });
             }
             if (!data.name) {
-                response.error400({ message: 'Name is required' });
+                response.error400({ message: '名は必須です' });
             }
             if (!data.basecost) {
-                response.error400({ message: 'Price is required' });
+                response.error400({ message: '価格は必須です' });
             }
             if (!data.delivery) {
-                response.error400({ message: 'Delivery is required' });
+                response.error400({ message: '配達は必須です' });
             }
             if (!data.countProduct) {
-                response.error400({ message: 'Count product is required' });
+                response.error400({ message: '品数は必須です' });
             }
             if (!data.description) {
-                response.error400({ message: 'Description is required' });
+                response.error400({ message: '説明は必須です' });
             }
             console.log(data);
             if (req.files && data.image_length) {
@@ -69,7 +69,7 @@ export default class AmazonController {
                     }
                 }
             } else {
-                return response.error400({ message: 'Image is required' });
+                return response.error400({ message: '画像は必須です' });
             }
             console.log(' ============== ');
             // profit
@@ -120,22 +120,22 @@ export default class AmazonController {
             data.url = 'https://www.amazon.co.jp/dp/' + data.asin;
 
             if (!data.asin) {
-                response.error400({ message: 'Asin is required' });
+                response.error400({ message: 'ASINは必須です' });
             }
             if (!data.name) {
-                response.error400({ message: 'Name is required' });
+                response.error400({ message: '名は必須です' });
             }
             if (!data.basecost) {
-                response.error400({ message: 'Price is required' });
+                response.error400({ message: '価格は必須です' });
             }
             if (!data.delivery) {
-                response.error400({ message: 'Delivery is required' });
+                response.error400({ message: '配達は必須です' });
             }
             if (!data.countProduct) {
-                response.error400({ message: 'Count product is required' });
+                response.error400({ message: '品数は必須です' });
             }
             if (!data.description) {
-                response.error400({ message: 'Description is required' });
+                response.error400({ message: '説明は必須です' });
             }
 
             if (req.files && req.files.image) {
@@ -150,7 +150,7 @@ export default class AmazonController {
                     }
                 }
             } else if (!data.images.length) {
-                return response.error400({ message: 'Image is required' });
+                return response.error400({ message: '画像は必須です' });
             }
 
             // profit

@@ -122,7 +122,7 @@ export default {
     if (this.$route.query && this.$route.query.isActive) {
       this.$swal.fire({
         icon: "success",
-        title: "Kích hoạt thành công. Đăng nhập ngay!"
+        title: "アクティベーションに成功しました。 ログインする。"
       });
     }
   }

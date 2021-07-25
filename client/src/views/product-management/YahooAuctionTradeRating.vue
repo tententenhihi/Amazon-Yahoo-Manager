@@ -177,7 +177,7 @@ export default {
         if (res && res.status === 200) {
           this.$swal.fire({
             icon: "success",
-            title: "追加成功",
+            title: "評価の追加が成功しました",
             timer: 500,
             showConfirmButton: false
           });

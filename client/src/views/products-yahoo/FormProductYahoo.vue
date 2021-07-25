@@ -89,7 +89,7 @@
                     <input type="text" class="form-control" v-model.lazy="product.yahoo_auction_category_id" id="">
                     入力すると、上記で選択したカテゴリーよりも、こちらの値が優先されます。 <br>
                     <span v-if="yahooAuctionCategory === null" style="color: red;">
-                      message lỗi nhập cate
+                      カテゴリーのエラー
                     </span>
                   </div>
                 </div>
@@ -694,7 +694,7 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: 'message lỗi nhập cate'
+          text: 'カテゴリーのエラー'
         });
         return;
       }

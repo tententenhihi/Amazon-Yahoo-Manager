@@ -72,7 +72,7 @@ export default {
           this.$router.push({ name: "YahooAccounts" });
           this.$swal.fire({
             icon: "warning",
-            title: "Please add yahoo account"
+            title: "ヤフーのアカウントを設定してください"
           });
         }
       }

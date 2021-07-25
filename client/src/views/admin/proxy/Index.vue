@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper-content" v-if="isInit">
     <div class="box-header">
-      Proxies
+      プロキシ
     </div>
     <hr class="mt-10" />
     <div class="box-content">
@@ -9,17 +9,17 @@
         <div class="search-proxy mt-10">
           <div class="form-row">
             <div class="form-group col-md-4">
-              <label for="proxyIP">Proxy IP</label>
+              <label for="proxyIP">プロキシ IP</label>
               <input type="text" class="form-control" id="proxyIP" v-model="searchStr">
             </div>
             <div class="form-group col-md-4">
-              <label for="status">Status</label>
+              <label for="status">状態</label>
               <select class="form-control" id="status" v-model="filter_status">
                 <option v-for="(status, index) in STATUS_PROXY" :key="index" :value="status.value">{{status.display}}</option>
               </select>
             </div>
           </div>
-          <button class="btn btn-primary" @click="searchProxy">Search</button>
+          <button class="btn btn-primary" @click="searchProxy">検索</button>
         </div>
         <paginate
           v-if="pageCount"
@@ -37,26 +37,17 @@
             <thead class="thead-purple">
               <tr>
                 <th scope="col">ID</th>
-                <th scope="col">IP Proxy</th>
-                <th scope="col">Status</th>
-                <th scope="col">Created At</th>
+                <th scope="col">プロキシ IP</th>
+                <th scope="col">状態</th>
+                <th scope="col">作成日</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(proxy, index) in tableData" :key="index">
-                <td>{{ proxy.proxy_id }}</td>
+                <td>{{ proxy.id }}</td>
                 <td>{{ proxy.ip }}</td>
-                <td>{{ proxy.status }}</td>
+                <td>{{ displayStatus(proxy.status) }}</td>
                 <td>{{ $moment(proxy.created).format('YYYY/MM/DD') }}</td>
-                <!-- <td>
-                  <button class="btn btn-md btn-warning mb-1 mr-1"
-                    @click="goToFormRatingproxy(proxy._id)">
-                    <i class="fa fa-edit"></i> 編集
-                  </button>
-                  <button class="btn btn-md btn-danger mb-1 mr-1" @click="onConfirmDelete(proxy, index)">
-                    <i class="fa fa-trash"></i> 削除
-                  </button>
-                </td> -->
               </tr>
             </tbody>
           </table>
@@ -70,11 +61,11 @@
 import AdminApi from '@/services/AdminApi'
 const PAGE_SIZE = 20
 const STATUS_PROXY = [
-  { value: 'all', display: 'All'},
-  { value: 'live', display: 'Live'},
-  { value: 'used', display: 'Used'},
-  { value: 'lock', display: 'Lock'},
-  { value: 'die', display: 'Die'},
+  { value: 'all', display: '全て'},
+  { value: 'live', display: '活動中'},
+  { value: 'used', display: '使用済み'},
+  { value: 'lock', display: 'ロック'},
+  { value: 'die', display: '壊れた'},
 ]
 export default {
   name: 'Proxies',
@@ -102,6 +93,9 @@ export default {
     },
   },
   methods: {
+    displayStatus (status) {
+      return this.STATUS_PROXY.find(item => item.value === status).display
+    },
     async getProxies() {
       try {
         let res = await AdminApi.getProxies();

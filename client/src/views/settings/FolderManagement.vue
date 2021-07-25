@@ -89,7 +89,7 @@ export default {
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
-          title: "追加成功",
+          title: "フォルダの追加が成功しました",
           timer: 500,
           showConfirmButton: false,
         });
@@ -123,7 +123,7 @@ export default {
         if (res && res.status === 200) {
           this.$swal.fire({
             icon: "success",
-            title: "更新成功",
+            title: "フォルダの順番変更が成功しました",
             timer: 500,
             showConfirmButton: false,
           });
@@ -137,7 +137,7 @@ export default {
         if (res && res.status === 200) {
           this.$swal.fire({
             icon: "success",
-            title: "削除成功",
+            title: "フォルダの削除が成功しました",
             timer: 500,
             showConfirmButton: false,
           });
@@ -158,7 +158,7 @@ export default {
       if (this.selectedFolder.length === 0 || !this.destinationFolder) {
         this.$swal.fire({
           icon: "warning",
-          title: "Please select folder and destination folder",
+          title: " フォルダ元とフォルダ先を選択してください",
         });
       } else {
         let params = {
@@ -169,7 +169,7 @@ export default {
         if (res && res.status == 200) {
           this.$swal.fire({
             icon: "success",
-            title: "Move data in folder successfully",
+            title: "フォルダ移動が完了しました",
             timer: 500,
             showConfirmButton: false,
           });

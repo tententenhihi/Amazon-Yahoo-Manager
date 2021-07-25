@@ -111,7 +111,7 @@ export default {
         if (res && res.status === 200) {
           this.$swal.fire({
             icon: "success",
-            title: "追加成功",
+            title: "ASINブラックリストに追加しました。",
             timer: 500,
             showConfirmButton: false,
           });
@@ -126,7 +126,7 @@ export default {
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
-          title: "削除成功",
+          title: "ASINブラックリストに削除しました。",
           timer: 500,
           showConfirmButton: false,
         });

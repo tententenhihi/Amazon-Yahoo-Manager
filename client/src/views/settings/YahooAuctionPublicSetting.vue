@@ -305,7 +305,7 @@ export default {
         this.setting = res.data
         this.$swal.fire(
           "成功",
-          "更新成功",
+          "更新が成功しました",
           "success"
         );
       }

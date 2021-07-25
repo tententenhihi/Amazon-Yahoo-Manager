@@ -296,7 +296,7 @@ export default {
         this.$refs.modalSelectReason.closeModal()
         this.$swal.fire({
           icon: "success",
-          title: "削除成功",
+          title: " 落札者の削除が完了しました",
           timer: 500,
           showConfirmButton: false
         });
@@ -338,7 +338,7 @@ export default {
           this.comment = "";
           this.$swal.fire({
             icon: "success",
-            title: "追加成功",
+            title: "メッセージの追加が完了しました",
             timer: 500,
             showConfirmButton: false
           });

@@ -20,7 +20,7 @@
             <span class="user-name">
               <strong>{{ this.userInfo.username }}</strong>
             </span>
-            <span class="user-role">Administrator</span>
+            <span class="user-role">管理者</span>
             <span class="user-status">
               <i class="fa fa-circle"></i>
               <span>Online</span>
@@ -44,7 +44,7 @@
             <li class="sidebar-dropdown">
               <router-link :to="{name: 'AdminProxy'}">
                 <i class="fa fa-cog"></i>
-                <span>Proxy</span>
+                <span>プロキシ</span>
               </router-link>
             </li>
             <li class="sidebar-dropdown">

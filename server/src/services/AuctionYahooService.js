@@ -75,19 +75,19 @@ export default class AuctionYahooService {
             if (!productData.yahoo_auction_category_id || productData.yahoo_auction_category_id === '0') {
                 return {
                     status: 'ERROR',
-                    statusMessage: 'Category is required',
+                    statusMessage: 'カテゴリーは必須です',
                 };
             }
             if (!productData.start_price) {
                 return {
                     status: 'ERROR',
-                    statusMessage: 'Start price is required',
+                    statusMessage: '開始価格は必須です',
                 };
             }
             if (!productData.images || productData.images.length == 0) {
                 return {
                     status: 'ERROR',
-                    statusMessage: 'Images is required',
+                    statusMessage: '画像は必須です',
                 };
             }
 
@@ -111,7 +111,7 @@ export default class AuctionYahooService {
                 });
             }
             if (listImage.length === 0) {
-                throw new Error('Image not found.!');
+                throw new Error('画像は必須です');
             }
             let headers = {
                 cookie,

@@ -74,7 +74,7 @@ export default {
       if (res && res.status == 200) {
         this.$swal.fire(
           "成功",
-          "更新成功",
+          "更新が成功しました",
           "success"
         );
       }
