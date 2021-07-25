@@ -76,17 +76,19 @@
                 </div>
                 <div class="row">
                   <div class="col-4 text-align-end"><font color="red">*</font>Yahoo商品のカテゴリー :</div>
+                  <div class="col-8">
+                    <span v-if="yahooAuctionCategory" style="color: green; margin-top: 5px">
+                      {{yahooAuctionCategory.path}}
+                    </span>
+                  </div>
                 </div>
                 <div class="row">
                   <div class="col-4 text-align-end"><font color="red">*</font>Yahoo商品のカテゴリー（ID指定）:
                   </div>
                   <div class="col-8">
-                    入力すると、上記で選択したカテゴリーよりも、こちらの値が優先されます。
                     <input type="text" class="form-control" v-model.lazy="product.yahoo_auction_category_id" id="">
-                    <span v-if="yahooAuctionCategory" style="color: green">
-                      {{yahooAuctionCategory.path}}
-                    </span>
-                    <span v-else-if="yahooAuctionCategory === null" style="color: red">
+                    入力すると、上記で選択したカテゴリーよりも、こちらの値が優先されます。 <br>
+                    <span v-if="yahooAuctionCategory === null" style="color: red;">
                       message lỗi nhập cate
                     </span>
                   </div>
@@ -692,7 +694,7 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: 'Vui lòng chính xác yahoo category'
+          text: 'message lỗi nhập cate'
         });
         return;
       }

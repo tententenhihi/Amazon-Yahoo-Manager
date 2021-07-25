@@ -114,7 +114,7 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: 'Vui lòng chính xác yahoo category'
+          text: 'message lỗi nhập cate'
         });
       }
     },
