@@ -16,7 +16,7 @@
             <div class="error-message" v-if="errors.length">{{errors[0]}}</div>
           </ValidationProvider>
           <div>
-            <button class="btn btn-primary ml-2" style="height: 100%;" @click="addAsin">追加</button>
+            <button class="btn btn-primary ml-2" style="height: 38px;" @click="addAsin">追加</button>
           </div>
         </ValidationObserver>
         <paginate

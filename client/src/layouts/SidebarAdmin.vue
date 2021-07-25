@@ -3,7 +3,7 @@
     <nav id="sidebar" class="sidebar-wrapper">
       <div class="sidebar-content">
         <div class="sidebar-brand">
-          <a href="#">AYM</a>
+          <a href="#" style="font-size: 16px; font-weight: bold; color: white; text-align: center;">ヤフプロ</a>
           <div id="close-sidebar" @click="$emit('closeSidebar')" >
             <i class="fas fa-times"></i>
           </div>
