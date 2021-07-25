@@ -49,6 +49,7 @@ var Product = new Schema({
     },
     countProduct: {
         type: Number,
+        default: 999,
     },
     images: {
         type: Array,

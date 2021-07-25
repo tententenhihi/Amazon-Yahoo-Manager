@@ -31,7 +31,7 @@ const parseDataProductHTML = async (html, yahoo_account_id) => {
     if (countProduct && countProduct.includes('点 ご注文はお早めに')) {
         countProduct = countProduct.replace(/\D+/g, '').trim();
     } else {
-        countProduct = 1;
+        countProduct = 999;
     }
     let delivery = $($('#mir-layout-DELIVERY_BLOCK-slot-DELIVERY_MESSAGE')['0']).text().replace(/\n/g, '').trim();
     if (!delivery) {
@@ -332,7 +332,7 @@ export default class ProductAmazonService {
                 throw new Error('Error: Product not found');
             } else {
                 shipping = parseFloat(shipping);
-                let newPrice =  product.price - product.shipping + shipping;
+                let newPrice = product.price - product.shipping + shipping;
                 product.price = newPrice;
                 product.shipping = shipping;
                 await product.save();
