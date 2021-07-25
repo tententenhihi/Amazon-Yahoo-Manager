@@ -571,7 +571,8 @@ export default {
           if (result.isConfirmed) {
             let res = await ProductAmazonApi.delete(product._id);
             if (res && res.status == 200) {
-              await this.getListProduct();
+              let findIndex = this.searchProducts.findIndex(item => item._id === product._id)
+              this.searchProducts.splice(findIndex, 1)
               self.$swal.fire(
                 "削除しました！",
                 "商品が削除されました。",
@@ -675,7 +676,9 @@ export default {
           timer: 500,
           showConfirmButton: false
         });
-        await this.getListProduct();
+        let findIndex = this.searchProducts.findIndex(item => item._id === product._id)
+        this.searchProducts[findIndex] = {...res.data.product}
+        this.searchProducts = [...this.searchProducts]
       }
     },
     onSearchProduct() {
@@ -704,6 +707,7 @@ export default {
           return product;
         }
       });
+      this.page = 1
     },
     clearSearchProduct() {
       this.searchObj = {
@@ -752,6 +756,9 @@ export default {
           icon: "success",
           title: "Amazon商品一覧を削除しました。"
         });
+        if (this.tableData.length === 0) {
+          this.page = 1
+        }
       }
     },
     async onDeleteAllProduct() {
@@ -793,7 +800,10 @@ export default {
           showConfirmButton: false
         });
         this.$refs.modalEditProduct.closeModal();
-        await this.getListProduct();
+        let product = res.data
+        let findIndex = this.searchProducts.findIndex(item => item._id === product._id)
+        this.searchProducts[findIndex] = {...product}
+        this.searchProducts = [...this.searchProducts]
       }
     }
   },

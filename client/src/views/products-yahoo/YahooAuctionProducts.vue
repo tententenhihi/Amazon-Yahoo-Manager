@@ -449,7 +449,7 @@
       </template>
       <template v-slot:button>
         <div class="button-group">
-          <button class="btn btn-success mr-1" @click="onDeleteMultipleProduct">
+          <button class="btn btn-primary mr-1" @click="onDeleteMultipleProduct">
             移動
           </button>
           <button class="btn btn-default" @click="onCloseModal">
@@ -818,7 +818,8 @@ export default {
           if (result.isConfirmed) {
             let res = await ProductYahooApi.delete(product._id);
             if (res && res.status == 200) {
-              self.products.splice(index, 1);
+              let findIndex = this.searchProducts.findIndex(item => item._id === product._id)
+              this.searchProducts.splice(findIndex, 1)
               self.$swal.fire(
                 "削除しました！",
                 "商品が削除されました。",
@@ -981,6 +982,9 @@ export default {
           icon: "success",
           title: "取扱商品フォルダの設定を行いました。"
         });
+        if (this.tableData.length === 0) {
+          this.page = 1
+        }
       }
     }
   },
