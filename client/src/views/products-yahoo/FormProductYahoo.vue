@@ -177,12 +177,8 @@
                   <div class="col-4 text-align-end">返品の備考 :</div>
                   <div class="col-8">
                     <input type="text" class="form-control" v-model="product.retpolicy_comment">
-                    ※IDの評価が10以下の方は1個に固定されます。
+                    返品可の場合、全角30文字以内で必須入力です。
                   </div>
-                </div>
-                <div class="row">
-                  <div class="col-4 text-align-end"></div>
-                  <div class="col-8">返品可の場合、全角30文字以内で必須入力です。</div>
                 </div>
                 <div class="row">
                   <div class="col-4 text-align-end">入札制限 :</div>
