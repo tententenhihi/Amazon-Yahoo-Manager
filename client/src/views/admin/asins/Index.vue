@@ -130,7 +130,11 @@ export default {
           timer: 500,
           showConfirmButton: false,
         });
-        this.asins.splice(index, 1)
+        let findIndex = this.asins.findIndex(asin => asin._id === item._id)
+        this.asins.splice(findIndex, 1)
+        if (this.tableData.length === 0) {
+          this.page -= 1
+        }
       }
     }
   }

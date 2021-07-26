@@ -124,7 +124,11 @@ export default {
           if (result.isConfirmed) {
             let res = await RatingTemplateApi.delete(template._id);
             if (res && res.status == 200) {
-              self.templates.splice(index, 1);
+              let findIndex = this.templates.findIndex(item => item._id === template._id)
+              self.templates.splice(findIndex, 1);
+              if (self.tableData.length === 0) {
+                self.page -= 1
+              }
               self.$swal.fire(
                 "削除しました！",
                 "商品が削除されました。",

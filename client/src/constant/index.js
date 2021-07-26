@@ -1,6 +1,6 @@
 export default {
   PRODUCT_TYPE: ['AMAZON', 'YAHOO'],
   PRODUCT_STATUS: ['CREATED', 'ERROR', 'SUCCESS'],
-  PAGE_SIZE: 4
+  PAGE_SIZE: 20
 
 }
