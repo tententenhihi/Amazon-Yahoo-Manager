@@ -127,6 +127,7 @@ export default {
         })
       }
       this.searchData = filters
+      this.page = 1;
     }
   }
 }

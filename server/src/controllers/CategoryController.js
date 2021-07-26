@@ -20,7 +20,7 @@ export default class FolderController {
             const {_id} = req.params;
             let { yahoo_cate_id } = req.body
 
-            let result = await CategoryService.update(_id, {yahoo_cate_id});
+            let result = await CategoryService.update(_id, {yahoo_cate_id, is_success_yahoo_cate_id: true});
             if (result) {
                 response.success200(result);
             }

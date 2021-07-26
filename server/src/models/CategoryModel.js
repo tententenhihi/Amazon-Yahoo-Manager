@@ -18,6 +18,10 @@ var CategorySchema = new Schema({
         type: String,
         default: ''
     },
+    is_success_yahoo_cate_id: {
+        type: Boolean,
+        default: false
+    },
     created_at: {
         type: Date,
         default: Date.now,

@@ -109,6 +109,11 @@ export default {
             timer: 500,
             showConfirmButton: false,
           });
+          let findIndex = this.categories.findIndex(item => item._id === res.data._id)
+          this.categories.splice(findIndex, 1)
+          if (this.tableData.length === 0) {
+            this.page -= 1
+          }
         }
       } else {
         this.$swal.fire({

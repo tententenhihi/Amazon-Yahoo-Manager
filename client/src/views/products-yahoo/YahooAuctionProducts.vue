@@ -820,6 +820,9 @@ export default {
             if (res && res.status == 200) {
               let findIndex = this.searchProducts.findIndex(item => item._id === product._id)
               this.searchProducts.splice(findIndex, 1)
+              if (this.tableData.length === 0) {
+                this.page -= 1
+              }
               self.$swal.fire(
                 "削除しました！",
                 "商品が削除されました。",
@@ -890,6 +893,7 @@ export default {
           return product;
         }
       });
+      this.page = 1;
     },
     clearSearchProduct() {
       this.searchObj = {
@@ -982,7 +986,7 @@ export default {
           title: "取扱商品フォルダの設定を行いました。"
         });
         if (this.tableData.length === 0) {
-          this.page = 1
+          this.page -= 1
         }
       }
     }
