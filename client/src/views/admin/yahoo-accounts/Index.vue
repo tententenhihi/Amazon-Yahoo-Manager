@@ -201,6 +201,7 @@ export default {
           return account;
         }
       })
+      this.page = 1;
     }
   }
 }

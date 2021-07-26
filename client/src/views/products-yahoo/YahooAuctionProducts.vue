@@ -893,6 +893,7 @@ export default {
           return product;
         }
       });
+      this.page = 1;
     },
     clearSearchProduct() {
       this.searchObj = {
