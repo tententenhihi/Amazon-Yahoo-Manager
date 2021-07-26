@@ -2,6 +2,7 @@ import Response from '../utils/Response';
 import ProductYahooService from '../services/ProductYahooService';
 import UploadFile from '../helpers/UploadFile';
 import CategoryYahooService from '../services/CategoryYahooService';
+import AccountYahooService from '../services/AccountYahooService';
 
 export default class ProductYahooController {
     static async checkCategory(req, res) {
@@ -83,6 +84,11 @@ export default class ProductYahooController {
                 return response.error400({ message: '必須フィールドをすべて入力してください' });
             }
 
+            let yahooAccount = await AccountYahooService.findById(yahoo_account_id);
+            if (!yahooAccount || yahooAccount.auction_point <= 10) {
+                quantity = 1;
+            }
+
             let data = {
                 user_id: user._id,
                 images: [],
@@ -129,6 +135,7 @@ export default class ProductYahooController {
                 wrapping,
                 yahoo_account_id,
             };
+
             if (req.files && image_length) {
                 for (let index = 0; index < image_length; index++) {
                     const element = req.files[`image-` + index];
@@ -211,11 +218,13 @@ export default class ProductYahooController {
                 image_length,
                 quantity_check,
                 note,
+                yahoo_account_id,
             } = JSON.parse(req.body.payload);
-
-            // if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id || !description || !location || !import_price) {
-            //     return response.error400({ message: '必須フィールドをすべて入力してください' });
-            // }
+            console.log(yahoo_account_id);
+            let yahooAccount = await AccountYahooService.findById(yahoo_account_id);
+            if (!yahooAccount || yahooAccount.auction_point <= 10) {
+                quantity = 1;
+            }
 
             let data = {
                 user_id: user._id,

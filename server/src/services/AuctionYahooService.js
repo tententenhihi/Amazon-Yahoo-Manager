@@ -10,6 +10,46 @@ import proxyChain from 'proxy-chain';
 import Utils from '../utils/Utils';
 
 export default class AuctionYahooService {
+    static async getPointAuction(cookie, proxy) {
+        try {
+            let headers = {
+                cookie,
+                'user-agent':
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                origin: 'https://auctions.yahoo.co.jp',
+                authority: 'auctions.yahoo.co.jp',
+                'Accept-Encoding': 'gzip, deflate, br',
+                Connection: 'keep-alive',
+            };
+            let proxyConfig = {
+                host: proxy.host,
+                port: proxy.port,
+                auth: {
+                    username: proxy.username,
+                    password: proxy.password,
+                },
+            };
+
+            let res = await axios.get(`https://auctions.yahoo.co.jp/user/jp/show/mystatus`, {
+                headers,
+                proxy: proxyConfig,
+            });
+            let $ = cheerio.load(res.data);
+            let textPoints = $('dl > dd > div.decStatusList.cf');
+            if (textPoints && textPoints.length > 0) {
+                for (const nodeP of textPoints) {
+                    if ($(nodeP).text().includes('現在の評価ポイント')) {
+                        return $(nodeP).text().replace('現在の評価ポイント', '').trim();
+                    }
+                }
+            }
+        } catch (error) {
+            console.log(' ####### getPointAuction: ', error);
+            throw error;
+        }
+        return 0;
+    }
+
     static async getAllCategory(cateId) {
         let listCateId = [];
         try {

@@ -17,6 +17,26 @@ export default class CronJobService {
         cron.schedule('*/5 * * * *', async () => {
             CronJobService.startGetProductYahooEnded();
         });
+        cron.schedule('0 0 0 * * *', async () => {
+            CronJobService.startGetPointAuctionOfAccount();
+        });
+    }
+    static async startGetPointAuctionOfAccount() {
+        console.log(' ====== START Get Point yahoo account ======');
+
+        let listAccountYahoo = await AccountYahooService.find({});
+        for (let i = 0; i < listAccountYahoo.length; i++) {
+            const accountYahoo = listAccountYahoo[i];
+            if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
+                let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
+                if (proxyResult.status === 'SUCCESS') {
+                    let point = await AuctionYahooService.getPointAuction(accountYahoo.cookie, proxyResult.data);
+                    if (point != null && point.trim() !== '') {
+                        await AccountYahooService.update(accountYahoo._id, { auction_point: point });
+                    }
+                }
+            }
+        }
     }
 
     static async startGetProductYahooEnded() {

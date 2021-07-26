@@ -9,6 +9,10 @@ var YahooAccount = new Schema({
         trim: true,
         lowercase: true,
     },
+    auction_point: {
+        type: Number,
+        default: 0,
+    },
     yahoo_id: {
         type: String,
     },
@@ -30,7 +34,7 @@ var YahooAccount = new Schema({
         trim: true,
     },
     cookie: {
-        type: String
+        type: String,
     },
     status: {
         type: String,
@@ -46,7 +50,7 @@ var YahooAccount = new Schema({
     created: {
         type: Date,
         default: Date.now,
-    }
+    },
 });
 
 YahooAccount.methods.comparePassword = function (password) {
@@ -57,7 +61,7 @@ YahooAccount.plugin(autoIncrement.plugin, {
     model: 'YahooAccount',
     field: 'accountId',
     startAt: 1,
-    incrementBy: 1
+    incrementBy: 1,
 });
 
 var YahooAccountSchema = mongoose.model('YahooAccount', YahooAccount);

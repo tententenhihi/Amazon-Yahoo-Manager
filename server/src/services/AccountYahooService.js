@@ -28,4 +28,13 @@ export default class AccountYahooService {
             return null;
         }
     }
+    static async update(id, data) {
+        try {
+            let accounts = await YahooAccountSchema.findByIdAndUpdate(id, data);
+            return accounts;
+        } catch (error) {
+            console.log(' Error AccountYahooService findById: ', error);
+            return null;
+        }
+    }
 }
