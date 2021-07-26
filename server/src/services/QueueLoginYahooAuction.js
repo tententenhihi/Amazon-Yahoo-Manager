@@ -9,8 +9,9 @@ const autoLoginYahoo = async (inputData, cb) => {
         if (proxyResult.status === 'SUCCESS') {
             let proxy = proxyResult.data;
             let cookie = await AuctionYahooService.getCookie(inputData, proxy);
-            await AuctionYahooService.getPointAuction(cookie, proxy);
+            let point = await AuctionYahooService.getPointAuction(cookie, proxy);
             inputData.cookie = cookie;
+            inputData.auction_point = point;
             inputData.status = 'SUCCESS';
         } else {
             inputData.status = proxyResult.status;
