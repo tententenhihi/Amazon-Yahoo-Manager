@@ -3,6 +3,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import cors from 'cors';
+import Fs from 'fs';
 import indexRouter from './routes/index';
 import MongoDB from './services/MongoDB';
 import PassportService from './services/PassportService';
@@ -52,6 +53,15 @@ let initData = async () => {
     new QueueLoginYahooAuction();
     BrightDataService.loadProxyToDB();
     CronJobService.startCron();
+    if (!Fs.existsSync('uploads')) {
+        Fs.mkdirSync('uploads');
+    }
+    if (!Fs.existsSync('uploads/products')) {
+        Fs.mkdirSync('uploads/products');
+    }
+    if (!Fs.existsSync('uploads/yahoo-products')) {
+        Fs.mkdirSync('uploads/yahoo-products');
+    }
     console.log('Server Started.!');
 };
 

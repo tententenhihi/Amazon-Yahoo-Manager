@@ -111,6 +111,7 @@ export default class AuctionYahooService {
 
     static async uploadNewProduct(cookie, productData, proxy) {
         try {
+            console.log(' ========= START UPLOAD YAHOO ========= ');
             // Check Data
             if (!productData.yahoo_auction_category_id || productData.yahoo_auction_category_id === '0') {
                 return {
@@ -551,8 +552,7 @@ export default class AuctionYahooService {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
         }
     }
-
-    static async getProductAuctionClosed(cookie, proxy) {
+    static async getProductAuctionFinished(usernameYahoo, cookie, proxy) {
         try {
             let proxyConfig = {
                 host: proxy.host,
@@ -563,7 +563,25 @@ export default class AuctionYahooService {
                 },
             };
 
-            let response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=1', {
+            // let response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=1', {
+            //     headers: {
+            //         cookie,
+            //     },
+            //     proxy: proxyConfig,
+            // });
+
+            // let $ = cheerio.load(response.data);
+
+            // let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
+            // let listProduct = [];
+            // for (const row of rowTable) {
+            //     let aID = $(row).find('td:nth-child(2)').text().trim();
+            //     if (aID && aID !== '商品ID' && aID.trim() !== '') {
+            //         listProduct.push(aID);
+            //     }
+            // }
+
+            let response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0', {
                 headers: {
                     cookie,
                 },
@@ -571,26 +589,8 @@ export default class AuctionYahooService {
             });
 
             let $ = cheerio.load(response.data);
-
-            let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
             let listProduct = [];
-            for (const row of rowTable) {
-                let aID = $(row).find('td:nth-child(2)').text().trim();
-                if (aID && aID !== '商品ID' && aID.trim() !== '') {
-                    listProduct.push(aID);
-                }
-            }
-
-            response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0', {
-                headers: {
-                    cookie,
-                },
-                proxy: proxyConfig,
-            });
-
-            $ = cheerio.load(response.data);
-
-            rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
+            let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
             for (const row of rowTable) {
                 let aID = $(row).find('td:nth-child(2)').text().trim();
                 if (aID && aID !== '商品ID' && aID.trim() !== '') {
@@ -603,7 +603,7 @@ export default class AuctionYahooService {
         }
     }
 
-    static async getProductAuctioning(cookie, proxy) {
+    static async getProductAuctionSelling(usernameYahoo, cookie, proxy) {
         let proxyConfig = {
             host: proxy.host,
             port: proxy.port,
@@ -612,14 +612,12 @@ export default class AuctionYahooService {
                 password: proxy.password,
             },
         };
-
         let response = await axios.get('https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling', {
             headers: {
                 cookie,
             },
             proxy: proxyConfig,
         });
-
         let $ = cheerio.load(response.data);
 
         let rowTable = $(
@@ -629,189 +627,10 @@ export default class AuctionYahooService {
         for (const row of rowTable) {
             let id = $(row).find('td:nth-child(1)').text();
             if (id !== '商品ID') {
-                listProductID.push(id);
+                listProductID.push({ aID: id });
             }
         }
-        let listProductDATA = [];
-
-        for (const productID of listProductID) {
-            let resProduct = await axios.get(`https://auctions.yahoo.co.jp/sell/jp/show/updateauction?aID=${productID}`, {
-                headers: {
-                    cookie,
-                },
-                proxy: proxyConfig,
-            });
-            $ = cheerio.load(resProduct.data);
-            let aID = $('input[name="aID"]').val();
-            let oldAID = $('input[name="oldAID"]').val();
-            let mode = $('input[name="mode"]').val();
-            let category = $('input[name="category"]').val();
-
-            let md5 = $('input[name="md5"]').val();
-            let crumb = $('input[name=".crumb"]').val();
-            let tos = $('input[name="tos"]').val();
-            let submitTipsDisp = $('input[name="submitTipsDisp"]').val();
-            let fnavi = $('input[name="fnavi"]').val();
-            let CloseEarly = $('input[name="CloseEarly"]').val();
-            let pagetype = $('input[name="pagetype"]').val();
-            let isDraftChecked = $('input[name="isDraftChecked"]').val();
-            let saveIndex = $('input[name="saveIndex"]').val();
-            let newsubmitform = $('input[name="newsubmitform"]').val();
-            let retpolicy_comment = $('input[name="retpolicy_comment"]').val();
-            let info01 = $('input[name="info01"]').val();
-            let info02 = $('input[name="info02"]').val();
-            let info03 = $('input[name="info03"]').val();
-            let title = $('#fleaTitleForm').val();
-
-            let istatus = $('select[name="istatus"]').val();
-
-            let submit_description = $('input[name="submit_description"]').val();
-            let Description = $('input[name="Description"]').val();
-            let Description_rte = $('input[name="Description_rte"]').val();
-            let Description_rte_work = $('input[name="Description_rte_work"]').val();
-
-            let categoryText = $('.Category__text').text();
-
-            let loc_cd = $('select[name="loc_cd"]').val();
-            let auc_shipping_who = $('#auc_shipping_who').val();
-
-            let ship_delivery_n = $('#ship_delivery_n').val();
-            let ship_delivery_s = $('#ship_delivery_s').val();
-            let ship_delivery_l = $('#ship_delivery_l').val();
-
-            let ship_delivery_yupacket = $('#ship_delivery_yupacket').val();
-            let ship_delivery_yupack = $('#ship_delivery_yupack').val();
-
-            let shipschedule = $('#shipschedule').val();
-            let StartPrice = $('#auc_StartPrice_auction').val();
-
-            let submitUnixtime = $('input[name="submitUnixtime"]').val();
-            let Duration = $('#Duration').val();
-            let tmpClosingYMD = $('#tmpClosingYMD').val();
-            let tmpClosingTime = $('#tmpClosingTime').val();
-
-            let thumbNail = $('#thumbNail').val();
-            let img_crumb = $('#img_crumb').val();
-
-            let ImageFullPath1 = $('#auc_image_fullpath1').val();
-            let ImageWidth1 = $('input[name="ImageWidth1"]').val();
-            let ImageHeight1 = $('input[name="ImageHeight1"]').val();
-
-            let ImageFullPath2 = $('#auc_image_fullpath2').val();
-            let ImageWidth2 = $('input[name="ImageWidth2"]').val();
-            let ImageHeight2 = $('input[name="ImageHeight2"]').val();
-
-            let ImageFullPath3 = $('#auc_image_fullpath3').val();
-            let ImageWidth3 = $('input[name="ImageWidth3"]').val();
-            let ImageHeight3 = $('input[name="ImageHeight3"]').val();
-
-            let ImageFullPath4 = $('#auc_image_fullpath4').val();
-            let ImageWidth4 = $('input[name="ImageWidth4"]').val();
-            let ImageHeight4 = $('input[name="ImageHeight4"]').val();
-
-            let ImageFullPath5 = $('#auc_image_fullpath5').val();
-            let ImageWidth5 = $('input[name="ImageWidth5"]').val();
-            let ImageHeight5 = $('input[name="ImageHeight5"]').val();
-
-            let ImageFullPath6 = $('#auc_image_fullpath6').val();
-            let ImageWidth6 = $('input[name="ImageWidth6"]').val();
-            let ImageHeight6 = $('input[name="ImageHeight6"]').val();
-
-            let ImageFullPath7 = $('#auc_image_fullpath7').val();
-            let ImageWidth7 = $('input[name="ImageWidth7"]').val();
-            let ImageHeight7 = $('input[name="ImageHeight7"]').val();
-
-            let ImageFullPath8 = $('#auc_image_fullpath8').val();
-            let ImageWidth8 = $('input[name="ImageWidth8"]').val();
-            let ImageHeight8 = $('input[name="ImageHeight8"]').val();
-
-            let ImageFullPath9 = $('#auc_image_fullpath9').val();
-            let ImageWidth9 = $('input[name="ImageWidth9"]').val();
-            let ImageHeight9 = $('input[name="ImageHeight9"]').val();
-
-            let ImageFullPath10 = $('#auc_image_fullpath10').val();
-            let ImageWidth10 = $('input[name="ImageWidth10"]').val();
-            let ImageHeight10 = $('input[name="ImageHeight10"]').val();
-
-            let ypoint = $('input[name="ypoint"]').val();
-
-            let productData = {
-                aID,
-                oldAID,
-                mode,
-                category,
-                md5,
-                crumb,
-                tos,
-                submitTipsDisp,
-                fnavi,
-                CloseEarly,
-                pagetype,
-                isDraftChecked,
-                saveIndex,
-                newsubmitform,
-                retpolicy_comment,
-                info01,
-                info02,
-                info03,
-                title,
-                istatus,
-                submit_description,
-                Description,
-                Description_rte,
-                Description_rte_work,
-                categoryText,
-                loc_cd,
-                auc_shipping_who,
-                ship_delivery_n,
-                ship_delivery_s,
-                ship_delivery_l,
-                ship_delivery_yupacket,
-                ship_delivery_yupack,
-                shipschedule,
-                StartPrice,
-                submitUnixtime,
-                Duration,
-                tmpClosingYMD,
-                tmpClosingTime,
-                thumbNail,
-                img_crumb,
-                ImageFullPath1,
-                ImageWidth1,
-                ImageHeight1,
-                ImageFullPath2,
-                ImageWidth2,
-                ImageHeight2,
-                ImageFullPath3,
-                ImageWidth3,
-                ImageHeight3,
-                ImageFullPath4,
-                ImageWidth4,
-                ImageHeight4,
-                ImageFullPath5,
-                ImageWidth5,
-                ImageHeight5,
-                ImageFullPath6,
-                ImageWidth6,
-                ImageHeight6,
-                ImageFullPath7,
-                ImageWidth7,
-                ImageHeight7,
-                ImageFullPath8,
-                ImageWidth8,
-                ImageHeight8,
-                ImageFullPath9,
-                ImageWidth9,
-                ImageHeight9,
-                ImageFullPath10,
-                ImageWidth10,
-                ImageHeight10,
-                ypoint,
-            };
-            listProductDATA.push(productData);
-        }
-        console.log(' =========== Done =============== ');
-        return listProductDATA;
+        return listProductID;
     }
 
     static async getCookie(account, proxy) {

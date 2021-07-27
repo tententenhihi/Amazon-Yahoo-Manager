@@ -6,6 +6,10 @@ import ProductYahooEndedService from '../services/ProductYahooEndedService';
 import ProxyService from '../services/ProxyService';
 import AuctionPublicSettingModel from '../models/AuctionPublicSettingModel';
 import CronHistoryModel from '../models/CronHistoryModel';
+import ProductYahooAuctionService from '../services/ProductYahooAuctionService';
+import ProductYahooSellingService from '../services/ProductYahooSellingService';
+import ProductYahooFinishedService from '../services/ProductYahooFinishedService';
+
 let listCronJob = [];
 const CronJob = require('cron').CronJob;
 const CronTime = require('cron').CronTime;
@@ -13,9 +17,9 @@ const CronTime = require('cron').CronTime;
 export default class CronJobService {
     static async startCron() {
         CronJobService.startUploadProductYahoo();
-        CronJobService.startGetProductYahooEnded();
+        CronJobService.startGetProductYahoo();
         cron.schedule('*/5 * * * *', async () => {
-            CronJobService.startGetProductYahooEnded();
+            CronJobService.startGetProductYahoo();
         });
         cron.schedule('0 0 0 * * *', async () => {
             CronJobService.startGetPointAuctionOfAccount();
@@ -39,7 +43,7 @@ export default class CronJobService {
         }
     }
 
-    static async startGetProductYahooEnded() {
+    static async startGetProductYahoo() {
         console.log(' ====== START Get Product yahoo ended every 5 minute ======');
         let listAccountYahoo = await AccountYahooService.find({});
         for (let i = 0; i < listAccountYahoo.length; i++) {
@@ -47,41 +51,134 @@ export default class CronJobService {
             if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data);
-                    let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
-                    // console.log(' ##### startGetProductYahooEnded listProductEnded: ', listProductEnded);
-                    // tạo , update product
-                    for (let j = 0; j < listProductEnded.length; j++) {
-                        const product = listProductEnded[j];
-                        //Check Xem có trong db chưa.
-                        let productExisted = listProductEndedInDB.find((item) => item.aID === product.aID);
-                        //chưa có thì tạo mới.
-                        if (!productExisted) {
-                            let productYahoo = await ProductYahooService.findOne({ aID: product.aID });
-                            if (productYahoo) {
-                                let newProductYahooEnded = {
-                                    ...productYahoo._doc,
-                                    ...product,
-                                    _id: null,
-                                };
-                                newProductYahooEnded = await ProductYahooEndedService.create(newProductYahooEnded);
+                    try {
+                        let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data);
+                        let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
+                        console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
+                        // tạo , update product
+                        for (let j = 0; j < listProductEnded.length; j++) {
+                            const product = listProductEnded[j];
+                            //Check Xem có trong db chưa.
+                            let productExisted = listProductEndedInDB.find((item) => item.aID === product.aID);
+                            //chưa có thì tạo mới.
+                            if (!productExisted) {
+                                let productYahoo = await ProductYahooAuctionService.findOne({ aID: product.aID });
+                                if (productYahoo) {
+                                    let newProductYahooEnded = {
+                                        ...productYahoo._doc,
+                                        ...product,
+                                        _id: null,
+                                    };
+                                    newProductYahooEnded = await ProductYahooEndedService.create(newProductYahooEnded);
+                                }
+                            } else {
+                                await ProductYahooEndedService.update(productExisted._id, product);
                             }
-                        } else {
-                            await ProductYahooEndedService.update(productExisted._id, product);
                         }
+                        // xóa product trong db
+                        for (const productDB of listProductEndedInDB) {
+                            let checkDelete = true;
+                            for (const productYAHOO of listProductEnded) {
+                                if (productDB.aID === productYAHOO.aID) {
+                                    checkDelete = false;
+                                    break;
+                                }
+                            }
+                            if (checkDelete) {
+                                await ProductYahooEndedService.delete(productDB._id);
+                            }
+                        }
+                    } catch (error) {
+                        console.log(' ### getProductAuctionEnded: ', error);
                     }
-                    // xóa product
-                    for (const productDB of listProductEndedInDB) {
-                        let checkDelete = true;
-                        for (const productYAHOO of listProductEnded) {
-                            if (productDB.aID === productYAHOO.aID) {
-                                checkDelete = false;
-                                break;
+                    try {
+                        let listProductSelling = await AuctionYahooService.getProductAuctionSelling(
+                            accountYahoo.yahoo_id,
+                            accountYahoo.cookie,
+                            proxyResult.data
+                        );
+                        let listProductInDB = await ProductYahooSellingService.find({ yahoo_account_id: accountYahoo._id });
+                        console.log(' ##### startGetProductYahoo listProductSelling: ', listProductSelling);
+                        // tạo , update product
+                        for (let j = 0; j < listProductSelling.length; j++) {
+                            const product = listProductSelling[j];
+                            //Check Xem có trong db chưa.
+                            let productExisted = listProductInDB.find((item) => item.aID === product.aID);
+                            //chưa có thì tạo mới.
+                            if (!productExisted) {
+                                let productYahoo = await ProductYahooAuctionService.findOne({ aID: product.aID });
+                                if (productYahoo) {
+                                    let newProductYahooEnded = {
+                                        ...productYahoo._doc,
+                                        ...product,
+                                        _id: null,
+                                    };
+                                    newProductYahooEnded = await ProductYahooSellingService.create(newProductYahooEnded);
+                                }
+                            } else {
+                                await ProductYahooSellingService.update(productExisted._id, product);
                             }
                         }
-                        if (checkDelete) {
-                            await ProductYahooEndedService.delete(productDB._id);
+                        // xóa product trong db
+                        for (const productDB of listProductInDB) {
+                            let checkDelete = true;
+                            for (const productYAHOO of listProductSelling) {
+                                if (productDB.aID === productYAHOO.aID) {
+                                    checkDelete = false;
+                                    break;
+                                }
+                            }
+                            if (checkDelete) {
+                                await ProductYahooSellingService.delete(productDB._id);
+                            }
                         }
+                    } catch (error) {
+                        console.log(' ### getProductAuctionSelling: ', error);
+                    }
+
+                    try {
+                        let listProductFinished = await AuctionYahooService.getProductAuctionFinished(
+                            accountYahoo.yahoo_id,
+                            accountYahoo.cookie,
+                            proxyResult.data
+                        );
+                        let listProductInDB = await ProductYahooFinishedService.find({ yahoo_account_id: accountYahoo._id });
+                        console.log(' ##### startGetProductYahoo getProductAuctionFinished: ', listProductFinished);
+                        // tạo , update product
+                        for (let j = 0; j < listProductFinished.length; j++) {
+                            const product = listProductFinished[j];
+                            //Check Xem có trong db chưa.
+                            let productExisted = listProductInDB.find((item) => item.aID === product.aID);
+                            //chưa có thì tạo mới.
+                            if (!productExisted) {
+                                let productYahoo = await ProductYahooAuctionService.findOne({ aID: product.aID });
+                                if (productYahoo) {
+                                    let newProductYahooEnded = {
+                                        ...productYahoo._doc,
+                                        ...product,
+                                        _id: null,
+                                    };
+                                    newProductYahooEnded = await ProductYahooFinishedService.create(newProductYahooEnded);
+                                }
+                            } else {
+                                await ProductYahooFinishedService.update(productExisted._id, product);
+                            }
+                        }
+                        // xóa product trong db
+                        for (const productDB of listProductInDB) {
+                            let checkDelete = true;
+                            for (const productYAHOO of listProductSelling) {
+                                if (productDB.aID === productYAHOO.aID) {
+                                    checkDelete = false;
+                                    break;
+                                }
+                            }
+                            if (checkDelete) {
+                                await ProductYahooFinishedService.delete(productDB._id);
+                            }
+                        }
+                    } catch (error) {
+                        console.log(' ### getProductAuctionSelling: ', error);
                     }
                 } else {
                     console.log(proxyResult);
@@ -91,6 +188,7 @@ export default class CronJobService {
     }
 
     static async startUploadProductYahoo() {
+        console.log(' ========= startUploadProductYahoo =========');
         let listSchedule = await AuctionPublicSettingModel.find({ $or: [{ new_list_auto: true }, { relist_auto: true }, { calendar_list_setting: true }] });
         for (const schedule of listSchedule) {
             let cronNewList = listCronJob.find((item) => {

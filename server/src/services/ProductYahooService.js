@@ -5,6 +5,7 @@ import ProxyService from '../services/ProxyService';
 import AuctionYahooService from '../services/AuctionYahooService';
 import fs from 'fs';
 import mongoose from 'mongoose';
+import ProductYahooAuctionService from './ProductYahooAuctionService';
 
 export default class ProductYahooService {
     static async find(data) {
@@ -148,17 +149,20 @@ export default class ProductYahooService {
             if (proxyResult.status === 'SUCCESS') {
                 for (const folder_id of new_list_target_folder) {
                     let listProduct = await ProductYahooSchema.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
+
                     for (let index = 0; index < listProduct.length; index++) {
                         const productYahooData = listProduct[index];
                         let dataUpdate = {};
                         let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data);
                         console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
-                        if (uploadAuctionResult.status === 'SUCCESS') {
-                            dataUpdate.listing_status = 'UNDER_EXHIBITION';
-                        }
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                         dataUpdate.aID = uploadAuctionResult.aID;
+
+                        if (uploadAuctionResult.status === 'SUCCESS') {
+                            dataUpdate.listing_status = 'UNDER_EXHIBITION';
+                            await ProductYahooAuctionService.create({ ...productYahooData._doc, ...dataUpdate });
+                        }
                         await ProductYahooService.update(productYahooData._id, dataUpdate);
                         let message = '出品に成功しました';
                         if (uploadAuctionResult.status === 'ERROR') {
@@ -201,12 +205,13 @@ export default class ProductYahooService {
                             let dataUpdate = {};
                             let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data);
                             console.log(' ### startUploadProductByCalendar uploadAuctionResult: ', uploadAuctionResult);
-                            if (uploadAuctionResult.status === 'SUCCESS') {
-                                dataUpdate.listing_status = 'UNDER_EXHIBITION';
-                            }
                             dataUpdate.upload_status = uploadAuctionResult.status;
                             dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                             dataUpdate.aID = uploadAuctionResult.aID;
+                            if (uploadAuctionResult.status === 'SUCCESS') {
+                                dataUpdate.listing_status = 'UNDER_EXHIBITION';
+                                await ProductYahooAuctionService.create({ ...productYahooData._doc, ...dataUpdate });
+                            }
                             await ProductYahooService.update(productYahooData._id, dataUpdate);
                             let message = '出品に成功しました';
                             if (uploadAuctionResult.status === 'ERROR') {
@@ -239,23 +244,23 @@ export default class ProductYahooService {
         if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
             if (proxyResult.status === 'SUCCESS') {
+                let listProductFinished = await AuctionYahooService.getProductAuctionFinished(yahooAccount.cookie, proxyResult.data);
+                console.log(' ###### listProductFinished: ', listProductFinished);
 
-                let listProductClosed = await AuctionYahooService.getProductAuctionClosed(yahooAccount.cookie, proxyResult.data);
-                console.log(' ###### listProductClosed: ', listProductClosed);
-
-                for (const aID of listProductClosed) {
-                    let listProduct = await ProductYahooSchema.find({ user_id, yahoo_account_id, aID });
+                for (const aID of listProductFinished) {
+                    let listProduct = await ProductYahooAuctionService.find({ user_id, yahoo_account_id, aID });
                     for (let index = 0; index < listProduct.length; index++) {
                         const productYahooData = listProduct[index];
                         let dataUpdate = {};
                         let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data);
-                        console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
-                        if (uploadAuctionResult.status === 'SUCCESS') {
-                            dataUpdate.listing_status = 'UNDER_EXHIBITION';
-                        }
+                        console.log(' ###  uploadAuctionResult: ', uploadAuctionResult);
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                         dataUpdate.aID = uploadAuctionResult.aID;
+                        if (uploadAuctionResult.status === 'SUCCESS') {
+                            dataUpdate.listing_status = 'UNDER_EXHIBITION';
+                            await ProductYahooAuctionService.create({ ...productYahooData._doc, ...dataUpdate });
+                        }
                         await ProductYahooService.update(productYahooData._id, dataUpdate);
                         let message = '出品に成功しました';
                         if (uploadAuctionResult.status === 'ERROR') {
