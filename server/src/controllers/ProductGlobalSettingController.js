@@ -18,15 +18,10 @@ export default class ProductGlobalSettingController {
     static async create (req, res) {
         let response = new Response(res);
         try {
-            let { product_detail, payment_detail, delivery_detail, precaution_detail, yahoo_account_id } = req.body
             let user = req.user
             let data = {
                 user_id: user._id,
-                yahoo_account_id,
-                product_detail,
-                payment_detail,
-                delivery_detail,
-                precaution_detail,
+                ...req.body
             }
 
             let result = await ProductGlobalSettingService.create(data);
@@ -41,16 +36,10 @@ export default class ProductGlobalSettingController {
     static async update (req, res) {
         let response = new Response(res);
         try {
-            let { product_detail, payment_detail, delivery_detail, precaution_detail, template, _id } = req.body
             let userId = req.user._id
             let data = {
                 user_id: userId,
-                _id,
-                product_detail,
-                payment_detail,
-                delivery_detail,
-                precaution_detail,
-                template
+                ...req.body
             }
             
             let result = await ProductGlobalSettingService.update(data);

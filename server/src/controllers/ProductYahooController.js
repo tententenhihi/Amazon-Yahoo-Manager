@@ -34,115 +34,31 @@ export default class ProductYahooController {
         let response = new Response(res);
         try {
             let user = req.user;
-            let {
-                folder_id,
-                product_model,
-                foreign_key,
-                product_yahoo_title,
-                yahoo_auction_category_id,
-                start_price,
-                bid_or_buy_price,
-                import_price,
-                status,
-                status_comment,
-                offer,
-                quantity,
-                duration,
-                closing_time,
-                retpolicy,
-                retpolicy_comment,
-                min_bid_rating,
-                bad_rating_ratio,
-                bid_credit_limit,
-                auto_extension,
-                close_early,
-                num_resubmit,
-                reserve_price,
-                description,
-                ship_time,
-                shipping,
-                location,
-                city,
-                ship_name1,
-                ship_fee1,
-                ship_name2,
-                ship_fee2,
-                ship_name3,
-                ship_fee3,
-                foreign_check,
-                ship_schedule,
-                featured_amount,
-                bold,
-                highlight,
-                gift,
-                wrapping,
-                image_length,
-                yahoo_account_id,
-            } = JSON.parse(req.body.payload);
+            let payload = JSON.parse(req.body.payload);
 
-            if (!folder_id || !product_yahoo_title || !yahoo_auction_category_id || !description || !location || !import_price) {
+            if (!payload.folder_id || !payload.product_yahoo_title ||
+                !payload.yahoo_auction_category_id || !payload.description || !payload.location || !payload.import_price) {
                 return response.error400({ message: '必須フィールドをすべて入力してください' });
             }
 
-            let yahooAccount = await AccountYahooService.findById(yahoo_account_id);
+            let yahooAccount = await AccountYahooService.findById(payload.yahoo_account_id);
             if (!yahooAccount || yahooAccount.auction_point <= 10) {
-                quantity = 1;
+                payload.quantity = 1;
             }
 
             let data = {
                 user_id: user._id,
                 images: [],
-                folder_id,
-                product_model,
-                foreign_key,
-                product_yahoo_title,
-                yahoo_auction_category_id,
-                start_price,
-                bid_or_buy_price,
-                import_price,
-                status,
-                status_comment,
-                offer,
-                quantity,
-                duration,
-                closing_time,
-                retpolicy,
-                retpolicy_comment,
-                min_bid_rating,
-                bad_rating_ratio,
-                bid_credit_limit,
-                auto_extension,
-                close_early,
-                num_resubmit,
-                reserve_price,
-                description,
-                ship_time,
-                shipping,
-                location,
-                city,
-                ship_name1,
-                ship_fee1,
-                ship_name2,
-                ship_fee2,
-                ship_name3,
-                ship_fee3,
-                foreign_check,
-                ship_schedule,
-                featured_amount,
-                bold,
-                highlight,
-                gift,
-                wrapping,
-                yahoo_account_id,
+                ...payload
             };
 
-            if (req.files && image_length) {
-                for (let index = 0; index < image_length; index++) {
+            if (req.files && payload.image_length) {
+                for (let index = 0; index < payload.image_length; index++) {
                     const element = req.files[`image-` + index];
                     data.images.push(await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' }));
                 }
             } else {
-                return response.error400({ message: 'Image is required' });
+                return response.error400({ message: '画像は必須です' });
             }
             let result = await ProductYahooService.create(data);
             response.success200({ result });
@@ -172,109 +88,19 @@ export default class ProductYahooController {
         try {
             let user = req.user;
             const { _id } = req.params;
-            let {
-                folder_id,
-                images,
-                product_model,
-                foreign_key,
-                product_yahoo_title,
-                yahoo_auction_category_id,
-                start_price,
-                bid_or_buy_price,
-                import_price,
-                status,
-                status_comment,
-                offer,
-                quantity,
-                duration,
-                closing_time,
-                retpolicy,
-                retpolicy_comment,
-                min_bid_rating,
-                bad_rating_ratio,
-                bid_credit_limit,
-                auto_extension,
-                close_early,
-                num_resubmit,
-                reserve_price,
-                description,
-                ship_time,
-                shipping,
-                location,
-                city,
-                ship_name1,
-                ship_fee1,
-                ship_name2,
-                ship_fee2,
-                ship_name3,
-                ship_fee3,
-                foreign_check,
-                ship_schedule,
-                featured_amount,
-                bold,
-                highlight,
-                gift,
-                wrapping,
-                image_length,
-                quantity_check,
-                note,
-                yahoo_account_id,
-            } = JSON.parse(req.body.payload);
-            console.log(yahoo_account_id);
-            let yahooAccount = await AccountYahooService.findById(yahoo_account_id);
+            let payload = JSON.parse(req.body.payload);
+
+            let yahooAccount = await AccountYahooService.findById(payload.yahoo_account_id);
             if (!yahooAccount || yahooAccount.auction_point <= 10) {
-                quantity = 1;
+                payload.quantity = 1;
             }
 
             let data = {
                 user_id: user._id,
-                images,
-                folder_id,
-                product_model,
-                foreign_key,
-                product_yahoo_title,
-                yahoo_auction_category_id,
-                start_price,
-                bid_or_buy_price,
-                import_price,
-                status,
-                status_comment,
-                offer,
-                quantity,
-                duration,
-                closing_time,
-                retpolicy,
-                retpolicy_comment,
-                min_bid_rating,
-                bad_rating_ratio,
-                bid_credit_limit,
-                auto_extension,
-                close_early,
-                num_resubmit,
-                reserve_price,
-                description,
-                ship_time,
-                shipping,
-                location,
-                city,
-                ship_name1,
-                ship_fee1,
-                ship_name2,
-                ship_fee2,
-                ship_name3,
-                ship_fee3,
-                foreign_check,
-                ship_schedule,
-                featured_amount,
-                bold,
-                highlight,
-                gift,
-                wrapping,
-                quantity_check,
-                note,
+                ...payload
             };
-            if (req.files && image_length) {
-                for (let index = 0; index < image_length; index++) {
+            if (req.files && payload.image_length) {
+                for (let index = 0; index < payload.image_length; index++) {
                     const element = req.files[`image-` + index];
                     if (element) {
                         data.images[index] = await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' });

@@ -16,7 +16,7 @@
                 </small>
               </div>
               <div class="col-8 product-image">
-                <input type="file"  class="ml-2 d-none" :ref="'inputImage-' + index" @change="onUploadImage(index)">
+                <input type="file" accept="image/png, image/gif, image/jpeg" class="ml-2 d-none" :ref="'inputImage-' + index" @change="onUploadImage(index)">
                 <img :src="image.preview_url" :id="`image_${index}_preview`"
                   @click="onClickReUploadImage(index)"
                   style="width:200px; border:1px solid #d2d6de">
@@ -31,7 +31,7 @@
                 </small>
               </div>
               <div class="col-8 product-image">
-                <input type="file"  class="ml-2 d-none" :ref="'inputImage-' + images.length" @change="onUploadImage(images.length)">
+                <input type="file" accept="image/png, image/gif, image/jpeg" class="ml-2 d-none" :ref="'inputImage-' + images.length" @change="onUploadImage(images.length)">
                 <img src="@/assets/images/no_product.png" name="image_preview" id="image_preview"
                   @click="$refs['inputImage-' + images.length].click()"
                   style="width:200px; border:1px solid #d2d6de">

@@ -64,7 +64,7 @@
                 <br><small>(単位:日)</small>
                 </label>
                 <div class="col-8">
-                  <input type="text" class="form-control" readonly :value="1">
+                  <input type="text" :min="1" :maxlength="2" @keyup="validatePublicInterval" :max="12" :value="setting.publish_interval" class="form-control" :readonly="!setting.new_list_auto">
                 </div>
                 <div class="col-1">
                   <input type="radio" class="mt-2" :value="true" id="" v-model="setting.new_list_interval_per_day">
@@ -280,6 +280,24 @@ export default {
     }
   },
   methods: {
+    validatePublicInterval(e) {
+      if (
+        !(
+          (e.keyCode > 95 && e.keyCode < 106) ||
+          (e.keyCode > 47 && e.keyCode < 58) ||
+          e.keyCode == 8
+        )
+      ) {
+        e.target.value = 1
+        this.setting.publish_interval = 1
+        e.preventDefault();
+      }
+      if (parseInt(e.target.value) > 31) {
+        e.target.value = 31
+        this.setting.publish_interval = 31
+      }
+      this.setting.publish_interval = e.target.value
+    },
     async getCurrentSetting () {
       let res = await AuctionPublicSettingApi.get(this.yahooAccountId);
       if (res && res.status == 200) {

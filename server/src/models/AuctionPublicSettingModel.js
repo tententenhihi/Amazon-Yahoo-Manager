@@ -31,6 +31,10 @@ var AuctionPublicSetting = new Schema({
         type: Boolean,
         default: true,
     },
+    publish_interval: {
+        type: Number,
+        default: 1,
+    },
     new_list_day_of_week:{
         type: Number,
         default: 1,
