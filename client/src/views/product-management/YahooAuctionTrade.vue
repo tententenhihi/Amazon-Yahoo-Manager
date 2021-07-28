@@ -129,7 +129,7 @@
                   </a>
                 </div>
               </td>
-              <td class="text-center">{{ product.price_end }}</td>
+              <td class="text-center">{{ getPriceEnd(product) }}</td>
               <td class="text-center">{{ product.buyer_count }}</td>
               <td class="text-center">
                 <div class="field-buyer">{{ product.idBuyer }}</div>
@@ -279,6 +279,12 @@ export default {
     }
   },
   methods: {
+    getPriceEnd(product) {
+      if (product.price_end) {
+        return product.price_end.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
     getExpectShiping(product) {
       let feeShipping = product.ship_fee1 * product.product_buy_count;
       if (feeShipping) {

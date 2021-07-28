@@ -18,6 +18,12 @@ var Product = new Schema({
     price_end: {
         type: Number,
     },
+    negotiate: {
+        type: String,
+    },
+    flower: {
+        type: String,
+    },
     buyer_count: {
         type: Number,
         default: 1,

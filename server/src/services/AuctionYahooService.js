@@ -593,8 +593,15 @@ export default class AuctionYahooService {
             let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
             for (const row of rowTable) {
                 let aID = $(row).find('td:nth-child(2)').text().trim();
+                let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '');
+                let time_end = $(row).find('td:nth-child(5)').text().trim();
+
                 if (aID && aID !== '商品ID' && aID.trim() !== '') {
-                    listProduct.push(aID);
+                    listProduct.push({
+                        aID,
+                        price_end,
+                        time_end,
+                    });
                 }
             }
             return listProduct;
@@ -623,14 +630,29 @@ export default class AuctionYahooService {
         let rowTable = $(
             '#acWrContents > div > table > tbody > tr > td > table > tbody > tr > td > table:nth-child(2) > tbody > tr:nth-child(2) > td > table > tbody > tr'
         );
-        let listProductID = [];
+        let listProduct = [];
         for (const row of rowTable) {
-            let id = $(row).find('td:nth-child(1)').text();
-            if (id !== '商品ID') {
-                listProductID.push({ aID: id });
+            let aID = $(row).find('td:nth-child(1)').text();
+            let price_end = $(row).find('td:nth-child(3)').text().trim().replace(/\D+/g, '');
+            let negotiate = $(row).find('td:nth-child(4)').text().trim();
+            let flower = $(row).find('td:nth-child(5)').text().trim();
+            let buyer_count = $(row).find('td:nth-child(6)').text().trim();
+            let idBuyer = $(row).find('td:nth-child(7)').text().trim();
+            let time_end = $(row).find('td:nth-child(8)').text().trim();
+
+            if (aID && aID !== '商品ID' && aID.trim() !== '') {
+                listProduct.push({
+                    aID,
+                    price_end,
+                    negotiate,
+                    flower,
+                    buyer_count,
+                    idBuyer,
+                    time_end,
+                });
             }
         }
-        return listProductID;
+        return listProduct;
     }
 
     static async getCookie(account, proxy) {

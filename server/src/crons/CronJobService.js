@@ -178,7 +178,7 @@ export default class CronJobService {
                             }
                         }
                     } catch (error) {
-                        console.log(' ### getProductAuctionSelling: ', error);
+                        console.log(' ### getProductAuctionFinished: ', error);
                     }
                 } else {
                     console.log(proxyResult);
