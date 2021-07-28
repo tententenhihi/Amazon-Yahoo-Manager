@@ -40,6 +40,8 @@ const Categories = () => import(/* webpackChunkName: "/static/js/chunks/categori
 const Logs = () => import(/* webpackChunkName: "/static/js/chunks/logs" */ '@/views/logs/Index.vue');
 const LogDetail = () => import(/* webpackChunkName: "/static/js/chunks/logs" */ '@/views/logs/Detail.vue');
 
+const ImageInsertion = () => import(/* webpackChunkName: "/static/js/chunks/image-insertion" */ '@/views/image-insertion/Index.vue');
+
 // product management
 const YahooAuctionTrade = () =>
   import(/* webpackChunkName: "/static/js/chunks/product-management" */ '@/views/product-management/YahooAuctionTrade.vue');
@@ -47,6 +49,10 @@ const YahooAuctionTradeRating = () =>
   import(/* webpackChunkName: "/static/js/chunks/product-management" */ '@/views/product-management/YahooAuctionTradeRating.vue');
 const YahooAuctionTradeMessage = () =>
   import(/* webpackChunkName: "/static/js/chunks/product-management" */ '@/views/product-management/YahooAuctionTradeMessage.vue');
+const YahooAuctionSellings = () =>
+  import(/* webpackChunkName: "/static/js/chunks/product-management" */ '@/views/product-management/YahooAuctionSellings.vue');
+const YahooAuctionSellingsFinished = () =>
+  import(/* webpackChunkName: "/static/js/chunks/product-management" */ '@/views/product-management/YahooAuctionSellingsFinished.vue');
 
 // admin
 const AdminUsers = () => import(/* webpackChunkName: "/static/js/chunks/admin/users" */ '@/views/admin/users/Users.vue');
@@ -167,7 +173,6 @@ const router = new Router({
       component: FolderManagement,
       meta: {
         requiredAuth: true,
-        type: 'config'
       }
     },
     {
@@ -284,7 +289,33 @@ const router = new Router({
         type: 'product-management'
       }
     },
-    
+    {
+      path: '/yahoo-auction-sellings',
+      name: 'YahooAuctionSellings',
+      component: YahooAuctionSellings,
+      meta: {
+        requiredAuth: true,
+        type: 'product-management'
+      }
+    },
+    {
+      path: '/yahoo-auction-sellings/finished',
+      name: 'YahooAuctionSellingsFinished',
+      component: YahooAuctionSellingsFinished,
+      meta: {
+        requiredAuth: true,
+        type: 'product-management'
+      }
+    },
+    {
+      path: '/images',
+      name: 'ImageInsertion',
+      component: ImageInsertion,
+      meta: {
+        requiredAuth: true,
+      }
+    },
+
     // admin
     {
       path: '/admin/users',

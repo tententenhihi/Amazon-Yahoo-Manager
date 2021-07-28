@@ -14,6 +14,7 @@ import QueueLoginYahooAuction from './services/QueueLoginYahooAuction';
 import upload from 'express-fileupload';
 import BrightDataService from './services/BrightDataService';
 import CronJobService from './crons/CronJobService';
+import ImageInsertionService from './services/ImageInsertionService'
 
 require('dotenv').config();
 
@@ -63,6 +64,7 @@ let initData = async () => {
         Fs.mkdirSync('uploads/yahoo-products');
     }
     console.log('Server Started.!');
+    ImageInsertionService.initData();
 };
 
 // Connect mongo DB

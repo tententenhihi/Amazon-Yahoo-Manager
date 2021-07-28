@@ -106,6 +106,12 @@ var Product = new Schema({
     profit: {
         type: String,
     },
+    progress: {
+        type: String,
+        enum: ['address_inputing', 'postage_inputing', 'bundle_requested', 'bundle_accepted',
+            'money_received', 'preparation_for_shipment', 'shipping', 'complete'],
+        default: 'address_inputing',
+    },
     message_list: {
         type: Array,
         default: [],

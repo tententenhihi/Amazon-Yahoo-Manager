@@ -80,6 +80,18 @@
               >
                 <ul>
                   <li>
+                    <router-link :to="{ name: 'YahooAuctionSellings' }">
+                      <i class="fa fa-calendar"></i>
+                      <span>Y!オーク出品中</span>
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link :to="{ name: 'YahooAuctionSellingsFinished' }">
+                      <i class="fa fa-calendar"></i>
+                      <span>Y!オーク出品終了分</span>
+                    </router-link>
+                  </li>
+                  <li>
                     <router-link :to="{ name: 'YahooAuctionTrade' }">
                       <i class="fa fa-calendar"></i>
                       <span>Y!オーク落札商品管理</span>
@@ -98,12 +110,6 @@
                 :class="{ 'd-block': dropdownOpen == 3 }"
               >
                 <ul>
-                  <li>
-                    <router-link :to="{ name: 'FolderManagement' }">
-                      <i class="fa fa-list-alt"></i>
-                      <span>フォルダ管理</span>
-                    </router-link>
-                  </li>
                   <li>
                     <router-link :to="{ name: 'ProductInfomationDefault' }">
                       <i class="fa fa-list-alt"></i>
@@ -142,6 +148,18 @@
                   </li>
                 </ul>
               </div>
+            </li>
+             <li class="sidebar-dropdown">
+              <router-link :to="{ name: 'FolderManagement' }">
+                <i class="fa fa-folder"></i>
+                <span>フォルダ管理</span>
+              </router-link>
+            </li>
+            <li class="sidebar-dropdown">
+              <router-link :to="{ name: 'ImageInsertion' }">
+                <i class="fa fa-file-image"></i>
+                <span>画像挿入設定</span>
+              </router-link>
             </li>
             <li class="sidebar-dropdown">
               <router-link :to="{ name: 'Categories' }">

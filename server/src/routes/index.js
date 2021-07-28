@@ -17,6 +17,9 @@ import FolderRouter from './FolderRouter';
 import ProductYahooEndedRouter from './ProductYahooEndedRouter';
 import CategoryRouter from './CategoryRouter';
 import CronHistoryRouter from './CronHistoryRouter';
+import ImageInsertionRouter from './ImageInsertionRouter';
+import ProductYahooSellingRouter from './ProductYahooSellingRouter';
+import ProductYahooFinishedRouter from './ProductYahooFinishedRouter';
 
 var router = express.Router();
 
@@ -43,5 +46,8 @@ router.use('/api/v1/admin', AdminRouter);
 router.use('/api/v1/folder', FolderRouter);
 router.use('/api/v1/category', CategoryRouter);
 router.use('/api/v1/cron', CronHistoryRouter);
+router.use('/api/v1/image-insertion', ImageInsertionRouter);
+router.use('/api/v1/product-yahoo-selling', ProductYahooSellingRouter);
+router.use('/api/v1/product-yahoo-finished', ProductYahooFinishedRouter);
 
 export default router;

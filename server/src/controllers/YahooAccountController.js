@@ -6,6 +6,12 @@ import bcrypt from 'bcryptjs';
 import QueueLoginYahooAuction from '../services/QueueLoginYahooAuction'
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService'
 import mongoose from 'mongoose'
+
+import ProductInfomationDefaultSchema from '../models/ProductInfomationDefaultModel';
+import AuctionPublicSettingSchema from '../models/AuctionPublicSettingModel';
+import ProductGlobalSettingSchema from '../models/ProductGlobalSettingModel';
+import TradeMessageTemplateSchema from '../models/TradeMessageTemplateModel';
+import RatingTemplateSchema from '../models/RatingTemplateModel';
 class YahooAccountController {
     static async getListAccount(req, res) {
         let response = new Response(res);
@@ -105,6 +111,51 @@ class YahooAccountController {
             } else {
                 response.error400();
             }
+        } catch (error) {
+            response.error500(error);
+        }
+    }
+
+    static async copyDefaultSetting(req, res) {
+        let response = new Response(res);
+        try {
+            const { yahoo_account_id, ids } = req.body
+            let user = req.user
+            let existAccount = await YahooAccountModel.findById(_id);
+            if (!existAccount) {
+                return response.error404({message: 'Account not found'});
+            }
+            for (let index = 0; index < ids.length; index++) {
+                const element = ids[index];
+                ProductInfomationDefaultSchema.findOne({user_id: user._id, yahoo_account_id}).exec(
+                    function(err, doc) {
+                        doc._id = mongoose.Types.ObjectId();
+                        doc.isNew = true;
+                        doc.yahoo_account_id = element
+                        doc.save();
+                    }
+                );
+                AuctionPublicSettingSchema.findOne({user_id: user._id, yahoo_account_id}).exec(
+                    function(err, doc) {
+                        doc._id = mongoose.Types.ObjectId();
+                        doc.isNew = true;
+                        doc.yahoo_account_id = element
+                        doc.save();
+                    }
+                );
+                ProductGlobalSettingSchema.findOne({user_id: user._id, yahoo_account_id}).exec(
+                    function(err, doc) {
+                        doc._id = mongoose.Types.ObjectId();
+                        doc.isNew = true;
+                        doc.yahoo_account_id = element
+                        doc.save();
+                    }
+                );
+                
+                TradeMessageTemplateSchema
+                RatingTemplateSchema
+            }
+            return response.success200({success: true});
         } catch (error) {
             response.error500(error);
         }

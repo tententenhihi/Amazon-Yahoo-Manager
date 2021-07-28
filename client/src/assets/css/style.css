@@ -592,7 +592,7 @@ ul.pagination {
   padding-left: 0;
   list-style: none;
   border-radius: 0.25rem;
-  margin: 10px 0;
+  margin: 10px 1px;
 }
 ul.pagination li a {
   position: relative;
