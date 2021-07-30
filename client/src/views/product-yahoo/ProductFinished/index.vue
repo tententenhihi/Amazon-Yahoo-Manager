@@ -37,7 +37,7 @@
         <button
           :disabled="!selectedProduct.length"
           @click="$refs.modalDeleteProduct.openModal()"
-          class="btn btn-primary"
+          class="btn btn-danger px-3"
         >
           削除
         </button>
@@ -102,17 +102,6 @@
                     product.thumbnail.includes('http')
                       ? product.thumbnail
                       : SERVER_HOST_UPLOAD + product.thumbnail
-                  "
-                  style="min-width: 50px"
-                />
-              </td>
-              <td class="text-center" width="100">
-                <img
-                  v-if="product.images && product.images.length"
-                  :src="
-                    product.images[0].includes('http')
-                      ? product.images[0]
-                      : SERVER_HOST_UPLOAD + product.images[0]
                   "
                   style="min-width: 50px"
                 />

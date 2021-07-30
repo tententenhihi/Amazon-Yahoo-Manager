@@ -1,5 +1,8 @@
 import Response from '../utils/Response';
 import ProductYahooSellingService from '../services/ProductYahooSellingService';
+import AuctionYahooService from '../services/AuctionYahooService';
+import AccountYahooService from '../services/AccountYahooService';
+import ProxyService from '../services/ProxyService';
 
 export default class ProductYahooSellingController {
     static async get(req, res) {
@@ -19,11 +22,35 @@ export default class ProductYahooSellingController {
         let response = new Response(res);
         try {
             const { _id } = req.params;
-            let result = await ProductYahooSellingService.delete(_id);
-            if (result) {
-                response.success200({ success: true });
+            let productDelete = await ProductYahooSellingService.findById(_id);
+            if (productDelete) {
+                let yahooAccount = await AccountYahooService.findById(productDelete.yahoo_account_id);
+                if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+                    let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+                    if (proxyResult.status === 'SUCCESS') {
+                        let result = null;
+                        if (productDelete.buyer_count > 0) {
+                            // Xoa khi co ng đấu thầu
+                        } else {
+                            result = await AuctionYahooService.cancelAuction(productDelete.aID, yahooAccount.cookie, proxyResult.data);
+                        }
+                        if (result.status === 'SUCCESS') {
+                            await ProductYahooSellingService.delete(_id);
+                            return response.success200({ success: true });
+                        } else {
+                            return response.error400({ message: result.message });
+                        }
+                    } else {
+                        return response.error400({ message: 'Proxy Error.!' });
+                    }
+                } else {
+                    return response.error400({ message: 'Yahoo Account Error.!' });
+                }
+            } else {
+                return response.error400({ message: 'Product not found.!' });
             }
         } catch (error) {
+            console.log(error);
             response.error500(error);
         }
     }
@@ -32,10 +59,42 @@ export default class ProductYahooSellingController {
         let response = new Response(res);
         try {
             const { ids } = req.body;
-            for (let index = 0; index < ids.length; index++) {
-                await ProductYahooSellingService.delete(ids[index]);
+            if (ids && ids.length > 0) {
+                let productDelete = await ProductYahooSellingService.findById(ids[0]);
+                let yahooAccount = await AccountYahooService.findById(productDelete.yahoo_account_id);
+                if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+                    let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+                    if (proxyResult.status === 'SUCCESS') {
+                        let result = [];
+
+                        for (const id of ids) {
+                            try {
+                                productDelete = await ProductYahooSellingService.findById(id);
+                                let resultDelete = null;
+                                if (productDelete.buyer_count > 0) {
+                                    // Xoa khi co ng đấu thầu
+                                } else {
+                                    resultDelete = await AuctionYahooService.cancelAuction(productDelete.aID, yahooAccount.cookie, proxyResult.data);
+                                }
+
+                                if (resultDelete.status === 'SUCCESS') {
+                                    await ProductYahooSellingService.delete(_id);
+                                }
+                                result.push(resultDelete);
+                            } catch (error) {
+                                result.push({ type: 'ERROR', message: error.message });
+                            }
+                        }
+                        return response.success200({ result });
+                    } else {
+                        return response.error400({ message: 'Proxy Error.!' });
+                    }
+                } else {
+                    return response.error400({ message: 'Yahoo Account Error.!' });
+                }
+            } else {
+                return response.success200({});
             }
-            response.success200({ success: true });
         } catch (error) {
             response.error500(error);
         }

@@ -23,7 +23,7 @@ var Product = new Schema({
     },
     buyer_count: {
         type: Number,
-        default: 1,
+        default: 0,
     },
     yahooAuctionFee: {
         type: Number,

@@ -167,7 +167,7 @@ export default class CronJobService {
                         // xóa product trong db
                         for (const productDB of listProductInDB) {
                             let checkDelete = true;
-                            for (const productYAHOO of listProductSelling) {
+                            for (const productYAHOO of listProductFinished) {
                                 if (productDB.aID === productYAHOO.aID) {
                                     checkDelete = false;
                                     break;

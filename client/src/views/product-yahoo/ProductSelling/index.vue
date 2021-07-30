@@ -37,7 +37,7 @@
         <button
           :disabled="!selectedProduct.length"
           @click="$refs.modalDeleteProduct.openModal()"
-          class="btn btn-primary"
+          class="btn btn-danger px-3"
         >
           削除
         </button>
@@ -90,7 +90,11 @@
                 <input
                   type="checkbox"
                   :id="product._id"
-                  :disabled="!product.idBuyer"
+                  :disabled="
+                    product.idBuyer == null || product.idBuyer == ''
+                      ? false
+                      : true
+                  "
                   v-model="selectedProduct"
                   :value="product"
                 />
@@ -217,7 +221,7 @@
     </modal-component>
     <modal-component ref="modalDeleteProduct" :isModalBody="false">
       <template v-slot:header>
-        <h5>ご選択された商品がありません。</h5>
+        <h5>選択したすべての製品を削除します</h5>
       </template>
       <template v-slot:button>
         <div class="button-group">

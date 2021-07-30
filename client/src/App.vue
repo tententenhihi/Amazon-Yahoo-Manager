@@ -3,7 +3,7 @@
     <component :is="layout"></component>
     <loading
       :active.sync="isLoading"
-      :can-cancel="true"
+      :can-cancel="false"
       :is-full-page="true"
     />
   </div>
@@ -67,7 +67,11 @@ export default {
     },
     checkExistYahooAccount() {
       const NO_NEED_VALIDATE_ROUTER = ["YahooAccounts", "ChangePassword"];
-      if (this.isUserLoggedIn && this.userInfo.type !== "admin" && !this.selectedYahooAccount._id) {
+      if (
+        this.isUserLoggedIn &&
+        this.userInfo.type !== "admin" &&
+        !this.selectedYahooAccount._id
+      ) {
         if (!NO_NEED_VALIDATE_ROUTER.includes(this.$route.name)) {
           this.$router.push({ name: "YahooAccounts" });
           this.$swal.fire({

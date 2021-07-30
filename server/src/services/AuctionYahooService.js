@@ -1038,4 +1038,146 @@ export default class AuctionYahooService {
             };
         }
     }
+
+    static async cancelAuction(aID, cookie, proxy) {
+        let proxyConfig = {
+            host: proxy.host,
+            port: proxy.port,
+            auth: {
+                username: proxy.username,
+                password: proxy.password,
+            },
+        };
+        if (config.get('env') === 'development') {
+            proxyConfig = null;
+        }
+        let response = await axios.get(`https://page.auctions.yahoo.co.jp/jp/show/cancelauction?aID=${aID}`, {
+            headers: {
+                cookie,
+            },
+            proxy: proxyConfig,
+        });
+        Fs.writeFileSync('preview.html', response.data);
+        let $ = cheerio.load(response.data);
+        let crumb = $('input[name="crumb"]').val();
+        if (!crumb) {
+            return {
+                status: 'ERROR',
+                message: 'Crumb not found.!',
+            };
+        }
+        let payload = {
+            aID: aID,
+            crumb: crumb,
+            cancel_fee: 'none',
+            confirm: '取り消す',
+        };
+        payload = Qs.stringify(payload);
+        response = await axios.post(`https://page.auctions.yahoo.co.jp/jp/config/cancelauction`, payload, {
+            headers: {
+                cookie,
+                'content-type': 'application/x-www-form-urlencoded',
+            },
+            proxy: proxyConfig,
+        });
+        if (response.status === 200 && response.data.includes('このオークションは終了しています')) {
+            return {
+                status: 'SUCCESS',
+            };
+        } else {
+            return {
+                status: 'ERROR',
+                message: 'ERROR: ' + response.status,
+            };
+        }
+    }
+
+    static async deleteProductFinished(aID, cookie, proxy) {
+        let proxyConfig = {
+            host: proxy.host,
+            port: proxy.port,
+            auth: {
+                username: proxy.username,
+                password: proxy.password,
+            },
+        };
+        if (config.get('env') === 'development') {
+            proxyConfig = null;
+        }
+        let response = await axios.get(`https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0`, {
+            headers: {
+                cookie,
+            },
+            proxy: proxyConfig,
+        });
+        Fs.writeFileSync('preview.html', response.data);
+        let $ = cheerio.load(response.data);
+        let crumb = $('input[name=".crumb"]').val();
+        if (!crumb) {
+            return {
+                status: 'ERROR',
+                message: 'Crumb not found.!',
+            };
+        }
+        if (typeof aID === 'object') {
+            let result = [];
+            for (const aid of aID) {
+                let payload = {
+                    action: 'delete',
+                    hasWinner: '0',
+                    '.done': 'https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0',
+                    '.crumb': crumb,
+                    'aidlist[]': aid,
+                };
+                payload = Qs.stringify(payload);
+                response = await axios.post(`https://auctions.yahoo.co.jp/closeduser/jp/uconfig/removeclosed`, payload, {
+                    headers: {
+                        cookie,
+                        'content-type': 'application/x-www-form-urlencoded',
+                    },
+                    proxy: proxyConfig,
+                });
+                if (response.status === 200 && response.data.includes('チェックした商品を終了分から削除しました')) {
+                    result.push({
+                        status: 'SUCCESS',
+                    });
+                } else {
+                    result.push({
+                        status: 'ERROR',
+                        message: 'ERROR: ' + response.status,
+                    });
+                }
+            }
+            return {
+                status: 'SUCCESS',
+                result,
+            };
+        } else {
+            let payload = {
+                action: 'delete',
+                hasWinner: '0',
+                '.done': 'https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0',
+                '.crumb': crumb,
+                'aidlist[]': aID,
+            };
+            payload = Qs.stringify(payload);
+            response = await axios.post(`https://auctions.yahoo.co.jp/closeduser/jp/uconfig/removeclosed`, payload, {
+                headers: {
+                    cookie,
+                    'content-type': 'application/x-www-form-urlencoded',
+                },
+                proxy: proxyConfig,
+            });
+            if (response.status === 200 && response.data.includes('チェックした商品を終了分から削除しました')) {
+                return {
+                    status: 'SUCCESS',
+                };
+            } else {
+                return {
+                    status: 'ERROR',
+                    message: 'ERROR: ' + response.status,
+                };
+            }
+        }
+    }
 }
