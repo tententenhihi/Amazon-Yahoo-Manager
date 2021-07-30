@@ -571,10 +571,12 @@ export default {
           if (result.isConfirmed) {
             let res = await ProductAmazonApi.delete(product._id);
             if (res && res.status == 200) {
-              let findIndex = this.searchProducts.findIndex(item => item._id === product._id)
-              this.searchProducts.splice(findIndex, 1)
+              let findIndex = this.searchProducts.findIndex(
+                item => item._id === product._id
+              );
+              this.searchProducts.splice(findIndex, 1);
               if (this.tableData.length === 0) {
-                this.page -= 1
+                this.page -= 1;
               }
               self.$swal.fire(
                 "削除しました！",
@@ -679,9 +681,11 @@ export default {
           timer: 500,
           showConfirmButton: false
         });
-        let findIndex = this.searchProducts.findIndex(item => item._id === product._id)
-        this.searchProducts[findIndex] = {...res.data.product}
-        this.searchProducts = [...this.searchProducts]
+        let findIndex = this.searchProducts.findIndex(
+          item => item._id === product._id
+        );
+        this.searchProducts[findIndex] = { ...res.data.product };
+        this.searchProducts = [...this.searchProducts];
       }
     },
     onSearchProduct() {
@@ -710,7 +714,7 @@ export default {
           return product;
         }
       });
-      this.page = 1
+      this.page = 1;
     },
     clearSearchProduct() {
       this.searchObj = {
@@ -719,7 +723,7 @@ export default {
         minPrice: "",
         maxPrice: ""
       };
-      this.searchProducts = [...this.products]
+      this.searchProducts = [...this.products];
     },
     convertYahooProduct() {
       this.$refs.modalSelectFolder.openModal();
@@ -752,8 +756,10 @@ export default {
       let res = await ProductAmazonApi.deleteMultipleProduct(params);
       if (res && res.status === 200) {
         this.selectedProduct.forEach(item => {
-          let findIndex = this.searchProducts.findIndex(product => product._id === item._id)
-            this.searchProducts.splice(findIndex, 1)
+          let findIndex = this.searchProducts.findIndex(
+            product => product._id === item._id
+          );
+          this.searchProducts.splice(findIndex, 1);
         });
         this.isCheckAllProduct = false;
         this.selectedProduct = [];
@@ -763,7 +769,7 @@ export default {
           title: "Amazon商品一覧を削除しました。"
         });
         if (this.tableData.length === 0) {
-          this.page -= 1
+          this.page -= 1;
         }
       }
     },
@@ -806,10 +812,12 @@ export default {
           showConfirmButton: false
         });
         this.$refs.modalEditProduct.closeModal();
-        let product = res.data
-        let findIndex = this.searchProducts.findIndex(item => item._id === product._id)
-        this.searchProducts[findIndex] = {...product}
-        this.searchProducts = [...this.searchProducts]
+        let product = res.data;
+        let findIndex = this.searchProducts.findIndex(
+          item => item._id === product._id
+        );
+        this.searchProducts[findIndex] = { ...product };
+        this.searchProducts = [...this.searchProducts];
       }
     }
   },

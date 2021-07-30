@@ -6,6 +6,9 @@ var Product = new Schema({
         type: String,
         required: true,
     },
+    thumbnail: {
+        type: String,
+    },
     oldAID: {
         type: String,
     },

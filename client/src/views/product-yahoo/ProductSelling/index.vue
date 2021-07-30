@@ -27,7 +27,11 @@
         現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
       </div>
       <div class="group-button py-20 position-relative">
-        <button class="btn btn-primary my-10" style="position: absolute; top: -15px; right: 0; margin-bottom: -10px;" @click="getListProduct()">
+        <button
+          class="btn btn-primary my-10"
+          style="position: absolute; top: -15px; right: 0; margin-bottom: -10px;"
+          @click="getListProduct()"
+        >
           <i class="fa fa-refresh"></i> 最新の情報を反映する
         </button>
         <button
@@ -55,45 +59,50 @@
           <thead class="thead-purple">
             <tr>
               <th class="text-center">
-                <input class="checkall" type="checkbox" v-model="isCheckAllProduct" />
+                <input
+                  class="checkall"
+                  type="checkbox"
+                  v-model="isCheckAllProduct"
+                />
               </th>
               <th class="text-center" width="120">オークションID</th>
-              <th class="text-center" width="110">出品画像</th>
+              <th class="text-center" width="100">出品画像</th>
               <th class="text-center" width="100">取り扱い画像</th>
               <th width="300">Y！オーク商品の名前</th>
               <th class="text-center" width="110">落札価格</th>
               <th class="text-center" width="110">落札個数</th>
               <th class="text-center" width="130">落札者情報</th>
               <th class="text-center" width="120">終了日時</th>
-              <th class="text-center">状態</th>
+              <!-- <th class="text-center">状態</th> -->
               <th width="150">メモ</th>
               <th class="text-center" width="100">予定受取金額</th>
-              <th width="200">発送先</th>
               <th width="200">仕入れ価格</th>
               <th width="200">想定利益</th>
               <th width="200">落札手数料</th>
               <th width="200">利益率</th>
               <th width="200">予定送料</th>
-              <th width="200">残り時間</th>
-              <th width="200">入札数</th>
               <th width="100"></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(product, index) in tableData" :key="index">
               <td class="text-center" width="50">
-                <input type="checkbox" :id="product._id" :disabled="!!product.idBuyer"
+                <input
+                  type="checkbox"
+                  :id="product._id"
+                  :disabled="!product.idBuyer"
                   v-model="selectedProduct"
-                  :value="product" />
+                  :value="product"
+                />
               </td>
               <td class="text-center">{{ product.aID }}</td>
               <td class="text-center" width="100">
                 <img
-                  v-if="product.images && product.images.length"
+                  v-if="product.thumbnail"
                   :src="
-                    product.images[0].includes('http')
-                      ? product.images[0]
-                      : SERVER_HOST_UPLOAD + product.images[0]
+                    product.thumbnail.includes('http')
+                      ? product.thumbnail
+                      : SERVER_HOST_UPLOAD + product.thumbnail
                   "
                   style="min-width: 50px"
                 />
@@ -133,11 +142,11 @@
                 <div class="field-buyer">{{ product.idBuyer }}</div>
               </td>
               <td class="text-center">{{ product.time_end }}</td>
-              <td class="text-center">
+              <!-- <td class="text-center">
                 <span class="label label-info">{{
                   displayProgress(product.progress)
                 }}</span>
-              </td>
+              </td> -->
               <td class="text-note">
                 <div class="field-note">
                   <p>{{ product.note }}</p>
@@ -153,8 +162,6 @@
               </td>
               <td class="text-center">{{ getExpectInCome(product) }}</td>
 
-              <td v-html="getShipInfo(product)"></td>
-
               <td>{{ getPriceOriginal(product) }}</td>
               <td>{{ getProfitExpect(product) }}</td>
 
@@ -166,12 +173,12 @@
                 {{ getExpectShiping(product) }}
               </td>
 
-              <td>
+              <!-- <td>
                 {{ product.time_end }}
               </td>
               <td>
                 {{ product.buyer_count }}
-              </td>
+              </td> -->
               <td>
                 <button
                   class="btn btn-md btn-danger mb-1 mr-1"
@@ -230,7 +237,7 @@
 </template>
 
 <script>
-import ProductYahooFinishedApi from "@/services/ProductYahooFinishedApi";
+import ProductYahooSellingApi from "@/services/ProductYahooSellingApi";
 import { mapGetters } from "vuex";
 const LISTING_PROGRESS = [
   { value: "address_inputing", display: "住所入力待ち" },
@@ -244,14 +251,14 @@ const LISTING_PROGRESS = [
 ];
 const PROXY_STATUS_DIE = "die";
 export default {
-  name: "YahooAuctionFinisheds",
+  name: "YahooAuctionSellings",
   data() {
     return {
       products: [],
       SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/",
       selectedEdiNote: {},
       searchObj: {
-        queryString: "",
+        queryString: ""
       },
       searchProducts: [],
       page: 1,
@@ -345,15 +352,9 @@ export default {
       }
       return "-";
     },
-    getShipInfo(product) {
-      if (product.ship_info) {
-        return product.ship_info;
-      }
-      return `<span class="label label-danger">未定</span>`;
-    },
     async getListProduct() {
       try {
-        let res = await ProductYahooFinishedApi.get(this.yahooAccountId);
+        let res = await ProductYahooSellingApi.get(this.yahooAccountId);
         if (res && res.status === 200) {
           this.products = res.data.products;
           this.searchProducts = this.products;
@@ -371,7 +372,7 @@ export default {
       this.$refs.modalNote.openModal();
     },
     async onSaveNote() {
-      let res = await ProductYahooFinishedApi.setNote({
+      let res = await ProductYahooSellingApi.setNote({
         product_id: this.selectedEdiNote._id,
         note: this.$refs.textareaNote.value
       });
@@ -396,7 +397,9 @@ export default {
         if (this.searchObj.queryString) {
           condition =
             condition &&
-            product.product_yahoo_title.includes(this.searchObj.queryString);
+            (product.product_yahoo_title.includes(this.searchObj.queryString) ||
+              product.aID.includes(this.searchObj.queryString) ||
+              product.idBuyer.includes(this.searchObj.queryString));
         }
         if (condition) {
           return product;
@@ -406,7 +409,7 @@ export default {
     },
     clearSearchProduct() {
       this.searchObj = {
-        queryString: "",
+        queryString: ""
       };
       this.searchProducts = [...this.products];
     },
@@ -429,12 +432,14 @@ export default {
         })
         .then(async result => {
           if (result.isConfirmed) {
-            let res = await ProductYahooFinishedApi.delete(product._id);
+            let res = await ProductYahooSellingApi.delete(product._id);
             if (res && res.status == 200) {
-              let findIndex = this.searchProducts.findIndex(item => item._id === product._id)
-              this.searchProducts.splice(findIndex, 1)
+              let findIndex = this.searchProducts.findIndex(
+                item => item._id === product._id
+              );
+              this.searchProducts.splice(findIndex, 1);
               if (this.tableData.length === 0) {
-                this.page -= 1
+                this.page -= 1;
               }
               self.$swal.fire(
                 "削除しました！",
@@ -449,11 +454,13 @@ export default {
       let params = {
         ids: this.selectedProduct.map(item => item._id)
       };
-      let res = await ProductYahooFinishedApi.deleteMultiple(params);
+      let res = await ProductYahooSellingApi.deleteMultiple(params);
       if (res && res.status === 200) {
         this.selectedProduct.forEach(item => {
-          let findIndex = this.searchProducts.findIndex(product => product._id === item._id)
-            this.searchProducts.splice(findIndex, 1)
+          let findIndex = this.searchProducts.findIndex(
+            product => product._id === item._id
+          );
+          this.searchProducts.splice(findIndex, 1);
         });
         this.isCheckAllProduct = false;
         this.selectedProduct = [];
@@ -463,21 +470,21 @@ export default {
           title: "商品一覧を削除しました。"
         });
         if (this.tableData.length === 0) {
-          this.page -= 1
+          this.page -= 1;
         }
       }
-    },
+    }
   },
   watch: {
     isCheckAllProduct() {
       if (this.isCheckAllProduct) {
-        let data = [...this.tableData]
+        let data = [...this.tableData];
         let filterPro = data.filter(item => {
           if (!item.idBuyer) {
             return item;
           }
         });
-        this.selectedProduct = [...filterPro]
+        this.selectedProduct = [...filterPro];
       } else {
         this.selectedProduct = [];
       }
@@ -485,11 +492,12 @@ export default {
     selectedProduct() {
       if (
         this.selectedProduct.length &&
-        this.selectedProduct.length == this.tableData.filter(item => {
-          if (!item.idBuyer) {
-            return item;
-          }
-        }).length
+        this.selectedProduct.length ==
+          this.tableData.filter(item => {
+            if (!item.idBuyer) {
+              return item;
+            }
+          }).length
       ) {
         this.isCheckAllProduct = true;
       } else {

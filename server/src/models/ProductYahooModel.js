@@ -256,6 +256,9 @@ var Product = new Schema({
         enum: [0, 1],
         default: 0,
     },
+    image_overlay_index: {
+        type: Number,
+    },
     created: {
         type: Date,
         default: Date.now,

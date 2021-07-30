@@ -12,7 +12,6 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-/src/configs/settings.js
 /public/users
 /public/
 /uploads/

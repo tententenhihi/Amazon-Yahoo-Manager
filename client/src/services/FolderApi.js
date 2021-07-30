@@ -21,4 +21,7 @@ export default {
   move (data) {
     return Api.post(`${prefix}/move`, data);
   },
+  copyData(data) {
+    return Api.post(`${prefix}/copy-data`, data);
+  },
 };

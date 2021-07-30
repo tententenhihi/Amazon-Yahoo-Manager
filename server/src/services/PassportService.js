@@ -1,4 +1,4 @@
-import { SECRET_KEY } from '../configs/settings';
+import config from 'config';
 
 class PassportSerive {
     static init() {
@@ -9,7 +9,7 @@ class PassportSerive {
         var jwtOptions = {};
 
         jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-        jwtOptions.secretOrKey = SECRET_KEY;
+        jwtOptions.secretOrKey = config.get('SECRET_KEY');
         var strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
             if (jwt_payload) {
                 next(null, jwt_payload);

@@ -8,6 +8,25 @@ import constants from '../constants';
 import puppeteer from 'puppeteer';
 import proxyChain from 'proxy-chain';
 import Utils from '../utils/Utils';
+import ImageInsertionService from './ImageInsertionService';
+import path from 'path';
+import config from 'config';
+
+const Jimp = require('jimp');
+
+async function waterMark(input, overlay, outputFolder) {
+    let watermark = await Jimp.read(overlay);
+    watermark = watermark.resize(300, 300);
+    const image = await Jimp.read(input);
+    watermark = await watermark;
+    await image.resize(300, 300);
+    image.composite(watermark, 0, 0, {
+        mode: Jimp.BLEND_SOURCE_OVER,
+        // opacityDest: 1,
+        // opacitySource: 0.5,
+    });
+    await image.writeAsync(outputFolder);
+}
 
 export default class AuctionYahooService {
     static async getPointAuction(cookie, proxy) {
@@ -29,7 +48,9 @@ export default class AuctionYahooService {
                     password: proxy.password,
                 },
             };
-
+            if (config.get('env') === 'development') {
+                proxyConfig = null;
+            }
             let res = await axios.get(`https://auctions.yahoo.co.jp/user/jp/show/mystatus`, {
                 headers,
                 proxy: proxyConfig,
@@ -151,9 +172,32 @@ export default class AuctionYahooService {
                     return 'uploads/' + item;
                 });
             }
+
+            let listImageOverlay = [];
+            if (productData.image_overlay_index != null) {
+                let listImageOverlayOfAccountYahoo = await ImageInsertionService.get(productData.user_id, productData.yahoo_account_id);
+                listImageOverlayOfAccountYahoo = listImageOverlayOfAccountYahoo.images;
+                let imageOverlay = 'uploads/' + listImageOverlayOfAccountYahoo[productData.image_overlay_index];
+                for (const imageInput of listImage) {
+                    let saveImage =
+                        'uploads/yahoo-products/' +
+                        productData._id +
+                        '/' +
+                        path.basename(imageInput).replace(path.extname(imageInput), '') +
+                        '_' +
+                        `overlay_500x500.jpg`;
+                    await waterMark(imageInput, imageOverlay, saveImage);
+                    listImageOverlay.push(saveImage);
+                }
+                listImage = listImageOverlay;
+            }
+
             if (listImage.length === 0) {
                 throw new Error('画像は必須です');
             }
+
+            let thumbnail = listImage[0].replace('uploads/', '');
+
             let headers = {
                 cookie,
                 'user-agent':
@@ -171,6 +215,9 @@ export default class AuctionYahooService {
                     password: proxy.password,
                 },
             };
+            if (config.get('env') === 'development') {
+                proxyConfig = null;
+            }
             const getKeys = async (cookie) => {
                 try {
                     const configs = {
@@ -206,7 +253,8 @@ export default class AuctionYahooService {
             let payloadImage = {};
             for (let i = 0; i < listImage.length; i++) {
                 const formData = new FormData();
-                const buffer = Fs.readFileSync(listImage[i]);
+                const buffer = Fs.createReadStream(listImage[i]);
+
                 formData.append('files[0]', buffer, `photo${i}.jpg`);
                 formData.append('.crumb', keys.img_crumb);
                 const resImage = await axios.post(`https://auctions.yahoo.co.jp/img/images/new`, formData, {
@@ -214,7 +262,7 @@ export default class AuctionYahooService {
                         ...headers,
                         ...formData.getHeaders(),
                     },
-                    proxy: proxyConfig,
+                    // proxy: proxyConfig,
                 });
 
                 payloadImage[`image_comment${i + 1}`] = '';
@@ -241,10 +289,6 @@ export default class AuctionYahooService {
                 }
             }
 
-            // Biến Ko biết
-            //値下げ交渉
-            //決済方法
-            //海外発送
             let now = new Date();
             now.setDate(now.getDate() + productData.duration);
             let tmpClosingYMD = moment(now).format('yyyy-MM-DD');
@@ -415,6 +459,7 @@ export default class AuctionYahooService {
                 return {
                     status: 'SUCCESS',
                     aID,
+                    thumbnail,
                 };
             } else {
                 let message = $('strong').text();
@@ -443,7 +488,9 @@ export default class AuctionYahooService {
                     password: proxy.password,
                 },
             };
-
+            if (config.get('env') === 'development') {
+                proxyConfig = null;
+            }
             let response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=1', {
                 headers: {
                     cookie,
@@ -458,9 +505,9 @@ export default class AuctionYahooService {
             let listProduct = [];
             for (const row of rowTable) {
                 let aID = $(row).find('td:nth-child(2)').text().trim();
-                let idBuyer = $(row).find('td:nth-child(6)').text().trim();
+                let idBuyer = $(row).find('td:nth-child(6)').text().trim().replace('-', '');
                 let time_end = $(row).find('td:nth-child(5)').text().trim();
-                let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '');
+                let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '').replace('-', '');
                 if (aID && aID !== '商品ID' && aID.trim() !== '') {
                     listProduct.push({ aID, idBuyer, time_end, price_end });
                 }
@@ -552,6 +599,7 @@ export default class AuctionYahooService {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
         }
     }
+
     static async getProductAuctionFinished(usernameYahoo, cookie, proxy) {
         try {
             let proxyConfig = {
@@ -562,6 +610,9 @@ export default class AuctionYahooService {
                     password: proxy.password,
                 },
             };
+            if (config.get('env') === 'development') {
+                proxyConfig = null;
+            }
 
             // let response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=1', {
             //     headers: {
@@ -594,7 +645,7 @@ export default class AuctionYahooService {
             for (const row of rowTable) {
                 let aID = $(row).find('td:nth-child(2)').text().trim();
                 let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '');
-                let time_end = $(row).find('td:nth-child(5)').text().trim();
+                let time_end = $(row).find('td:nth-child(5)').text().trim().replace('-', '');
 
                 if (aID && aID !== '商品ID' && aID.trim() !== '') {
                     listProduct.push({
@@ -619,6 +670,10 @@ export default class AuctionYahooService {
                 password: proxy.password,
             },
         };
+        if (config.get('env') === 'development') {
+            proxyConfig = null;
+        }
+
         let response = await axios.get('https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling', {
             headers: {
                 cookie,
@@ -634,11 +689,11 @@ export default class AuctionYahooService {
         for (const row of rowTable) {
             let aID = $(row).find('td:nth-child(1)').text();
             let price_end = $(row).find('td:nth-child(3)').text().trim().replace(/\D+/g, '');
-            let negotiate = $(row).find('td:nth-child(4)').text().trim();
-            let flower = $(row).find('td:nth-child(5)').text().trim();
-            let buyer_count = $(row).find('td:nth-child(6)').text().trim();
-            let idBuyer = $(row).find('td:nth-child(7)').text().trim();
-            let time_end = $(row).find('td:nth-child(8)').text().trim();
+            let negotiate = $(row).find('td:nth-child(4)').text().trim().replace('-', '');
+            let flower = $(row).find('td:nth-child(5)').text().trim().replace(/\D+/g, '');
+            let buyer_count = $(row).find('td:nth-child(6)').text().trim().replace(/\D+/g, '');
+            let idBuyer = $(row).find('td:nth-child(7)').text().trim().replace('-', '');
+            let time_end = $(row).find('td:nth-child(8)').text().trim().replace('-', '');
 
             if (aID && aID !== '商品ID' && aID.trim() !== '') {
                 listProduct.push({

@@ -22,7 +22,6 @@ export default class RatingTemplateService {
     static async update (_id, data) {
         try {
             let template = await RatingTemplateSchema.findOneAndUpdate({ _id: _id }, data, { new: true });
-            return template._doc;
         } catch (error) {
             console.log(error);
             throw new Error(error.message);

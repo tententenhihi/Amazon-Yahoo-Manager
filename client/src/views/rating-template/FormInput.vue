@@ -45,7 +45,6 @@ const RATING_LIST = [
   { value: 'veryBad', display: '非常に悪い' },
 ]
 export default {
-  name: 'FormProduct',
   data () {
     return {
       RATING_LIST,

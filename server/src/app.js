@@ -14,8 +14,8 @@ import QueueLoginYahooAuction from './services/QueueLoginYahooAuction';
 import upload from 'express-fileupload';
 import BrightDataService from './services/BrightDataService';
 import CronJobService from './crons/CronJobService';
-import ImageInsertionService from './services/ImageInsertionService'
-
+import ImageInsertionService from './services/ImageInsertionService';
+import ProductYahooService from './services/ProductYahooService';
 require('dotenv').config();
 
 const app = express();
@@ -32,8 +32,9 @@ var passport = PassportService.init();
 app.use(passport.initialize());
 app.use('/api', passport.authenticate('jwt', { session: false }));
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ imit: '50mb', extended: false }));
+
 app.use(cookieParser());
 app.use('/public', express.static(Path.join(__dirname, '../public')));
 app.use(upload());
@@ -65,6 +66,10 @@ let initData = async () => {
     }
     console.log('Server Started.!');
     ImageInsertionService.initData();
+
+    // let results = await ProductYahooService.startUploadProductInListFolderId('60f3aaa13c13e41abc49cec2', '60f3adcc3c13e41abc49cee2', [
+    //     '6102d217bce59130b4f972d1',
+    // ]);
 };
 
 // Connect mongo DB

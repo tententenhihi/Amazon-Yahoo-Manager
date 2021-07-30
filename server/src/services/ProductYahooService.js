@@ -97,6 +97,26 @@ export default class ProductYahooService {
         }
     }
 
+    static async setImageOverlay(ids, selectedImageIndex) {
+        try {
+            for (let index = 0; index < ids.length; index++) {
+                const id = ids[index];
+                let product = await ProductYahooSchema.findById(id);
+                if (!product) {
+                    throw new Error('Product not found');
+                } else {
+                    product.yahoo_account_id = mongoose.Types.ObjectId(product.yahoo_account_id);
+                    product.image_overlay_index = selectedImageIndex;
+                    await product.save();
+                }
+            }
+            return true;
+        } catch (error) {
+            console.log(error);
+            throw new Error(error.message);
+        }
+    }
+
     static async switchWatchOption(ids, type, value) {
         try {
             for (let index = 0; index < ids.length; index++) {
@@ -161,6 +181,7 @@ export default class ProductYahooService {
 
                         if (uploadAuctionResult.status === 'SUCCESS') {
                             dataUpdate.listing_status = 'UNDER_EXHIBITION';
+                            dataUpdate.thumbnail = uploadAuctionResult.thumbnail;
                             await ProductYahooAuctionService.create({ ...productYahooData._doc, ...dataUpdate });
                         }
                         await ProductYahooService.update(productYahooData._id, dataUpdate);

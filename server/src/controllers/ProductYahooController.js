@@ -36,8 +36,14 @@ export default class ProductYahooController {
             let user = req.user;
             let payload = JSON.parse(req.body.payload);
 
-            if (!payload.folder_id || !payload.product_yahoo_title ||
-                !payload.yahoo_auction_category_id || !payload.description || !payload.location || !payload.import_price) {
+            if (
+                !payload.folder_id ||
+                !payload.product_yahoo_title ||
+                !payload.yahoo_auction_category_id ||
+                !payload.description ||
+                !payload.location ||
+                !payload.import_price
+            ) {
                 return response.error400({ message: '必須フィールドをすべて入力してください' });
             }
 
@@ -49,7 +55,7 @@ export default class ProductYahooController {
             let data = {
                 user_id: user._id,
                 images: [],
-                ...payload
+                ...payload,
             };
 
             if (req.files && payload.image_length) {
@@ -97,7 +103,7 @@ export default class ProductYahooController {
 
             let data = {
                 user_id: user._id,
-                ...payload
+                ...payload,
             };
             if (req.files && payload.image_length) {
                 for (let index = 0; index < payload.image_length; index++) {
@@ -137,9 +143,21 @@ export default class ProductYahooController {
             const TYPES = ['watch_stock', 'watch_profit', 'watch_only_prime'];
             const VALUES = ['0', '1'];
             if (!TYPES.includes(type) || !VALUES.includes(value)) {
-                return response.error400('Data not correct!');
+                return response.error400('更新失敗!');
             }
             let res = await ProductYahooService.switchWatchOption(ids, type, value);
+            if (res) {
+                return response.success200({ success: res });
+            }
+        } catch (error) {
+            response.error500(error);
+        }
+    }
+    static async setImageOverlay(req, res) {
+        let response = new Response(res);
+        try {
+            const { ids, selectedImageIndex } = req.body;
+            let res = await ProductYahooService.setImageOverlay(ids, selectedImageIndex);
             if (res) {
                 return response.success200({ success: res });
             }

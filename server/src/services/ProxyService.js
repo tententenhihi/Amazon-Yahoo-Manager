@@ -1,6 +1,8 @@
 import ProxySchema from '../models/ProxyModel';
 import axios from 'axios-https-proxy-fix';
 import Utils from '../utils/Utils';
+import config from 'config';
+
 export default class ProxyService {
     static async getProxyById(id) {
         try {
@@ -11,9 +13,9 @@ export default class ProxyService {
         }
     }
 
-    static async updateProxy(dataUpdate) {
+    static async updateProxy(id, dataUpdate) {
         try {
-            let newProxy = await ProxySchema.findByIdAndUpdate(dataUpdate._id, { $set: { ...dataUpdate } }, { new: true });
+            let newProxy = await ProxySchema.findByIdAndUpdate(id, { $set: { ...dataUpdate } }, { new: true });
             return newProxy != null;
         } catch (error) {
             console.log(' Error ProxyService updateProxy: ', error);
@@ -22,9 +24,13 @@ export default class ProxyService {
     }
 
     static async checkLiveProxy(proxy) {
-        let timeout = 0;
-        while (timeout < 3) {
-            try {
+        try {
+            console.log(' ### ', config.get('env'));
+            if (config.get('env') === 'development') {
+                return true;
+            }
+            let timeout = 0;
+            while (timeout < 3) {
                 let res = await axios.get('http://lumtest.com/myip.json', {
                     proxy: {
                         host: proxy.host,
@@ -38,13 +44,14 @@ export default class ProxyService {
                 if (res && res.status === 200 && res.data.ip === proxy.ip) {
                     return true;
                 }
-            } catch (error) {
-                console.log(' ####  Error checkLiveProxy: ', error);
+                timeout++;
+                await Utils.sleep(10 * 1000);
             }
-            timeout++;
-            await Utils.sleep(10 * 1000);
+            return false;
+        } catch (error) {
+            console.log(' ### ERROR checkLiveProxy :', error.message);
+            return false;
         }
-        return false;
     }
 
     static async findByIdAndCheckLive(id) {
@@ -69,7 +76,7 @@ export default class ProxyService {
             }
             let checkLive = await this.checkLiveProxy(proxy);
             if (!checkLive) {
-                await this.dataUpdate({ _id: proxy._id, status: 'die' });
+                await this.updateProxy({ _id: proxy._id, status: 'die' });
                 return {
                     status: 'ERROR',
                     statusMessage: 'Proxy is died',

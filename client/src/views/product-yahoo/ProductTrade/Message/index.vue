@@ -93,7 +93,10 @@
         <br />
         <button class="btn btn-danger mt-20" :disabled="true">取引中止</button>
         <br />
-        <button class="btn btn-danger my-20" @click="$refs.modalSelectReason.openModal()">
+        <button
+          class="btn btn-danger my-20"
+          @click="$refs.modalSelectReason.openModal()"
+        >
           落札者削除
         </button>
         <br />
@@ -237,13 +240,15 @@
           <button class="btn btn-primary mr-2" @click="deleteBuyer">
             <i class="fa fa-save"></i> セーブ
           </button>
-          <button class="btn btn-warning" @click="$refs.modalSelectReason.closeModal()">
+          <button
+            class="btn btn-warning"
+            @click="$refs.modalSelectReason.closeModal()"
+          >
             <i class="fa fa-times"></i> キャンセル
           </button>
         </div>
       </template>
     </modal-component>
-
   </div>
 </template>
 
@@ -252,9 +257,9 @@ import { mapGetters } from "vuex";
 import ProductYahooEndedApi from "@/services/ProductYahooEndedApi";
 import TradeMessageTemplateApi from "@/services/TradeMessageTemplateApi";
 const DELETE_REASON = [
-  { value: 'seller', display: '売り手'},
-  { value: 'winner', display: '勝者'},
-]
+  { value: "seller", display: "売り手" },
+  { value: "winner", display: "勝者" }
+];
 export default {
   name: "YahooAuctionTradeMessage",
   data() {
@@ -264,7 +269,7 @@ export default {
       templates: [],
       selectedTemplate: null,
       deleteReason: DELETE_REASON[0].value,
-      DELETE_REASON,
+      DELETE_REASON
     };
   },
   async mounted() {
@@ -293,7 +298,7 @@ export default {
       if (res && res.status === 200) {
         this.product = res.data.product;
         this.comment = "";
-        this.$refs.modalSelectReason.closeModal()
+        this.$refs.modalSelectReason.closeModal();
         this.$swal.fire({
           icon: "success",
           title: " 落札者の削除が完了しました",

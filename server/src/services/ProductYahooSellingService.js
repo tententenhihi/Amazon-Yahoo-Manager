@@ -1,5 +1,6 @@
 import ProductYahooSellingModel from '../models/ProductYahooSellingModel';
 import fs from 'fs';
+import { mongo } from 'mongoose';
 
 export default class ProductYahooSellingService {
     static async find(data) {

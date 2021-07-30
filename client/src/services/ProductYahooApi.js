@@ -27,5 +27,8 @@ export default {
   },
   checkCategoryYahoo (data) {
     return Api.post(`${prefix}/check-category`, data);
-  }
+  },
+  setOverlayImage(data) {
+    return Api.post(`${prefix}/set-image-overlay`, data);
+  },
 };

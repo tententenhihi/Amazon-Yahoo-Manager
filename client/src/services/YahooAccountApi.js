@@ -1,18 +1,21 @@
 import Api from "./api";
 
-const prefix = '/api/v1/yahoo-account'
+const prefix = "/api/v1/yahoo-account";
 
 export default {
-  get () {
+  get() {
     return Api.get(`${prefix}/get-list`);
   },
-  create (credentials) {
+  create(credentials) {
     return Api.post(`${prefix}/create-new`, credentials);
   },
-  update (credentials) {
+  update(credentials) {
     return Api.post(`${prefix}/edit/${credentials._id}`, credentials);
   },
-  delete (credentials) {
+  delete(credentials) {
     return Api.post(`${prefix}/delete/${credentials._id}`, credentials);
+  },
+  copyData(credentials) {
+    return Api.post(`${prefix}/copy-data`, credentials);
   }
 };

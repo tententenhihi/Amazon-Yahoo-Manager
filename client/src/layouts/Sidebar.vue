@@ -40,7 +40,7 @@
             </li>
             <li class="sidebar-dropdown">
               <router-link :to="{ name: 'AsinManagement' }">
-                <i class="fa fa-list"></i>
+                <i class="fa fa-shopping-cart"></i>
                 <span>ASIN管理</span>
               </router-link>
             </li>
@@ -55,13 +55,13 @@
               >
                 <ul>
                   <li>
-                    <router-link :to="{ name: 'AmazonProducts' }">
+                    <router-link :to="'/amazon-products'">
                       <i class="fa fa-calendar"></i>
                       <span>Amazon商品一覧</span>
                     </router-link>
                   </li>
                   <li>
-                    <router-link :to="{ name: 'YahooAuctionProducts' }">
+                    <router-link :to="'/yahoo-auction-products'">
                       <i class="fa fa-calendar"></i>
                       <span>Y!オーク取扱商品管理</span>
                     </router-link>
@@ -80,19 +80,19 @@
               >
                 <ul>
                   <li>
-                    <router-link :to="{ name: 'YahooAuctionSellings' }">
+                    <router-link :to="'/yahoo-auction-sellings'">
                       <i class="fa fa-calendar"></i>
                       <span>Y!オーク出品中</span>
                     </router-link>
                   </li>
                   <li>
-                    <router-link :to="{ name: 'YahooAuctionSellingsFinished' }">
+                    <router-link :to="'/yahoo-auction-finished'">
                       <i class="fa fa-calendar"></i>
                       <span>Y!オーク出品終了分</span>
                     </router-link>
                   </li>
                   <li>
-                    <router-link :to="{ name: 'YahooAuctionTrade' }">
+                    <router-link :to="'/yahoo-auction-trades'">
                       <i class="fa fa-calendar"></i>
                       <span>Y!オーク落札商品管理</span>
                     </router-link>
@@ -112,7 +112,7 @@
                 <ul>
                   <li>
                     <router-link :to="{ name: 'ProductInfomationDefault' }">
-                      <i class="fa fa-list-alt"></i>
+                      <i class="fa fa-calculator"></i>
                       <span>Y!オーク出品情報管理</span>
                     </router-link>
                   </li>
@@ -146,10 +146,17 @@
                       <span>自動出品設定</span>
                     </router-link>
                   </li>
+
+                  <li>
+                    <router-link :to="'/copy-default-settings'">
+                      <i class="fa fa-clone"></i>
+                      <span>情報のコピーをする</span>
+                    </router-link>
+                  </li>
                 </ul>
               </div>
             </li>
-             <li class="sidebar-dropdown">
+            <li class="sidebar-dropdown">
               <router-link :to="{ name: 'FolderManagement' }">
                 <i class="fa fa-folder"></i>
                 <span>フォルダ管理</span>
@@ -163,7 +170,7 @@
             </li>
             <li class="sidebar-dropdown">
               <router-link :to="{ name: 'Categories' }">
-                <i class="fa fa-folder"></i>
+                <i class="fa fa-bookmark"></i>
                 <span>カテゴリ管理</span>
               </router-link>
             </li>

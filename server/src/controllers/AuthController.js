@@ -1,10 +1,10 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 import UserModel from '../models/UserModel';
 import YahooAccountModel from '../models/YahooAccount';
 import Response from '../utils/Response';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { SECRET_KEY, LIFE_TIME_TOKEN } from '../configs/settings';
+import config from 'config';
 import UserService from '../services/UserService';
 import Utils from '../utils/Utils';
 import VerifyCodeSchema from '../models/VerifyCodeModel';
@@ -74,7 +74,7 @@ class AuthController {
                     if (checkPassword) {
                         let token = userLogin.token;
                         if (token) {
-                            await jwt.verify(token, SECRET_KEY, async (err, decoded) => {
+                            await jwt.verify(token, config.get('SECRET_KEY'), async (err, decoded) => {
                                 if (err) {
                                     token = await jwt.sign(
                                         {
@@ -82,9 +82,9 @@ class AuthController {
                                             type: userLogin.type,
                                             _id: userLogin._id,
                                         },
-                                        SECRET_KEY,
+                                        config.get('SECRET_KEY'),
                                         {
-                                            expiresIn: LIFE_TIME_TOKEN,
+                                            expiresIn: config.get('LIFE_TIME_TOKEN'),
                                         }
                                     );
                                     userLogin.token = token;
@@ -98,9 +98,9 @@ class AuthController {
                                     type: userLogin.type,
                                     _id: userLogin._id,
                                 },
-                                SECRET_KEY,
+                                config.get('SECRET_KEY'),
                                 {
-                                    expiresIn: LIFE_TIME_TOKEN,
+                                    expiresIn: config.get('LIFE_TIME_TOKEN'),
                                 }
                             );
                             userLogin.token = token;

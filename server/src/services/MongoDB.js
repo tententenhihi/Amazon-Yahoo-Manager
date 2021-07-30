@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { MONGODB_CONNECTION_STRING, MONGODB_USER, MONGODB_PASSWORD, MONGODB_DATABASE_NAME } from '../configs/settings';
+import config from 'config';
 
 class MongoDB {
     static connect(callback) {
@@ -14,14 +14,13 @@ class MongoDB {
             // user: MONGODB_USER,
             // pass: MONGODB_PASSWORD,
             // authSource:  'admin'
-
         };
-        
+        const MONGODB_CONNECTION_STRING = config.get('MONGODB_HOST') + config.get('MONGODB_DATABASE_NAME');
         mongoose.connect(MONGODB_CONNECTION_STRING, mongoOptions);
         mongoose.Promise = global.Promise;
         var db = mongoose.connection;
         db.on('error', console.error.bind(console, 'connection error:'));
-        db.once('open', function() {
+        db.once('open', function () {
             console.log(' MongoDB Connected');
             callback();
         });

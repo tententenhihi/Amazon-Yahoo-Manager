@@ -187,6 +187,22 @@
         >
           プライムのみ監視ON/OFF
         </button>
+
+        <button
+          :disabled="!selectedProducts.length"
+          @click="onOpenModalWitchOption('watch_only_prime')"
+          class="btn btn-info"
+        >
+          プライムのみ監視ON/OFF
+        </button>
+
+        <button
+          :disabled="!selectedProducts.length"
+          @click="openModalOverLayImage"
+          class="btn btn-info"
+        >
+          写真を挿入
+        </button>
       </div>
       <div class="px-10 table-responsive">
         <paginate
@@ -351,7 +367,12 @@
                 <span v-else class="label label-danger">OFF</span>
               </td>
               <td class="text-center">
-                <span class="label label-danger">Fix-なし</span>
+                <span
+                  v-if="product.image_overlay_index == null"
+                  class="label label-danger"
+                  >なし</span
+                >
+                <span v-else class="label label-info">はい</span>
               </td>
               <td class="text-center">
                 {{
@@ -387,6 +408,57 @@
         </table>
       </div>
     </div>
+
+    <modal-component ref="modalOverlayImage">
+      <template v-slot:header>
+        <h5><i class="fa fa-image"></i> 写真を挿入</h5>
+      </template>
+      <template>
+        <div class="form-group form-line">
+          <label class="col-sm-4 control-label"
+            >挿入する画像を選択します。</label
+          >
+          <div class="ml-5">
+            <div
+              v-for="(item, index) in imageInsertion"
+              :key="index"
+              style="align-items: center; display: flex;"
+              class="my-2"
+            >
+              <input
+                v-model="selectedImageIndex"
+                class="form-check-input"
+                type="radio"
+                :value="index"
+                name="flexRadioDefault"
+                id="flexRadioDefault1"
+              />
+              <img
+                @click="selectedImageIndex = index"
+                for="flexRadioDefault1"
+                style="cursor: pointer; border:1px solid gray; margin-left: 10px"
+                width="100px"
+                height="100px"
+                :src="item"
+                alt=""
+                srcset=""
+              />
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button class="btn btn-success mr-1" @click="onSaveImageOverlay">
+            保存
+          </button>
+          <button class="btn btn-default" @click="onCloseModal">
+            キャンセル
+          </button>
+        </div>
+      </template>
+    </modal-component>
+
     <modal-component ref="modalSwitchOption">
       <template v-slot:header>
         <h5>選択された商品にどの操作を適用しますか？</h5>
@@ -459,7 +531,11 @@
       </template>
     </modal-component>
 
-    <modal-component ref="modalEditProduct" classModalDialog="modal-lg" styleModalFooter="justify-content: space-between">
+    <modal-component
+      ref="modalEditProduct"
+      classModalDialog="modal-lg"
+      styleModalFooter="justify-content: space-between"
+    >
       <template v-slot:header>
         <h5 style="word-break: break-all;">
           「{{ selectedEditProduct.displayName }}」の編集
@@ -549,11 +625,17 @@
           <button class="btn btn-primary mr-1" @click="onSaveEditProduct()">
             保存
           </button>
-          <button class="btn btn-default" @click="$refs.modalEditProduct.closeModal()">
+          <button
+            class="btn btn-default"
+            @click="$refs.modalEditProduct.closeModal()"
+          >
             キャンセル
           </button>
         </div>
-        <button class="btn btn-warning" @click="goToFormProduct(selectedEditProduct._id)">
+        <button
+          class="btn btn-warning"
+          @click="goToFormProduct(selectedEditProduct._id)"
+        >
           その他の項目を編集
         </button>
       </template>
@@ -565,6 +647,7 @@
 import ProductYahooApi from "@/services/ProductYahooApi";
 import FolderApi from "@/services/FolderApi";
 import { mapGetters } from "vuex";
+import ImageInsertionApi from "@/services/ImageInsertionApi";
 
 const PRODUCT_STATUS = [
   { display: "中古", value: "used" },
@@ -687,7 +770,7 @@ const SWITCH_TYPE = {
   watch_only_prime: "プライムのみ監視"
 };
 
-const PROXY_STATUS_DIE = 'die'
+const PROXY_STATUS_DIE = "die";
 
 export default {
   name: "YahooAuctionProducts",
@@ -719,11 +802,14 @@ export default {
       selectedTypeWitch: "",
       SWITCH_TYPE,
       selectedFolder: null,
-      selectedEditProduct: {}
+      selectedEditProduct: {},
+      imageInsertion: [],
+      selectedImageIndex: null
     };
   },
   async mounted() {
     await this.getListProduct();
+    await this.getImageInsertion();
     this.getFolders();
   },
   computed: {
@@ -743,11 +829,27 @@ export default {
     pageCount() {
       return Math.ceil(this.searchProducts.length / this.$constants.PAGE_SIZE);
     },
-    isDieProxy () {
-      return this.selectedYahooAccount.proxy && this.selectedYahooAccount.proxy.length ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE : false
+    isDieProxy() {
+      return this.selectedYahooAccount.proxy &&
+        this.selectedYahooAccount.proxy.length
+        ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE
+        : false;
     }
   },
   methods: {
+    async getImageInsertion() {
+      let res = await ImageInsertionApi.get(this.yahooAccountId);
+      if (res && res.status == 200) {
+        this.imageInsertion = res.data.imageInsertion.images.map(image => {
+          return this.SERVER_HOST_UPLOAD + image;
+        });
+        console.log(this.imageInsertion);
+      }
+    },
+
+    openModalOverLayImage() {
+      this.$refs.modalOverlayImage.openModal();
+    },
     async getFolders() {
       let res = await FolderApi.get(this.selectedYahooAccount._id);
       if (res && res.status === 200) {
@@ -773,7 +875,10 @@ export default {
       }
     },
     onEditProduct(product, index) {
-      this.selectedEditProduct = { ...product, displayName: product.product_yahoo_title };
+      this.selectedEditProduct = {
+        ...product,
+        displayName: product.product_yahoo_title
+      };
       this.$refs.modalEditProduct.openModal();
     },
     async onSaveEditProduct() {
@@ -818,10 +923,12 @@ export default {
           if (result.isConfirmed) {
             let res = await ProductYahooApi.delete(product._id);
             if (res && res.status == 200) {
-              let findIndex = this.searchProducts.findIndex(item => item._id === product._id)
-              this.searchProducts.splice(findIndex, 1)
+              let findIndex = this.searchProducts.findIndex(
+                item => item._id === product._id
+              );
+              this.searchProducts.splice(findIndex, 1);
               if (this.tableData.length === 0) {
-                this.page -= 1
+                this.page -= 1;
               }
               self.$swal.fire(
                 "削除しました！",
@@ -833,8 +940,14 @@ export default {
         });
     },
     goToFormProduct(id) {
-      if ((id && confirm('ページを移動します。ページを移動すると、未保存の編集内容は破棄されます、本当によろしいですか？')) || !id) {
-        this.$router.push({ name: "FormProductYahoo", params: { id } });
+      if (
+        (id &&
+          confirm(
+            "ページを移動します。ページを移動すると、未保存の編集内容は破棄されます、本当によろしいですか？"
+          )) ||
+        !id
+      ) {
+        this.$router.push({ name: "CreateProductYahooLocal", params: { id } });
       }
     },
     displayProductStatus(product) {
@@ -948,6 +1061,7 @@ export default {
       this.$refs.modalSwitchOption.closeModal();
       this.$refs.modalSelectFolder.closeModal();
       this.$refs.modalDeleteProduct.closeModal();
+      this.$refs.modalOverlayImage.closeModal();
     },
     async onMoveProductToFolder() {
       let params = {
@@ -967,6 +1081,28 @@ export default {
         });
       }
     },
+    async onSaveImageOverlay() {
+      let params = {
+        ids: this.selectedProducts.map(item => item._id),
+        selectedImageIndex: this.selectedImageIndex
+      };
+      let res = await ProductYahooApi.setOverlayImage(params);
+      if (res && res.status === 200) {
+        this.isCheckAllProduct = false;
+        this.onCloseModal();
+
+        this.selectedProducts = this.selectedProducts.map(item => {
+          item.image_overlay_index = this.selectedImageIndex;
+          return item;
+        });
+
+        this.selectedProducts = [];
+        this.$swal.fire({
+          icon: "success",
+          title: "更新成功"
+        });
+      }
+    },
     async onDeleteMultipleProduct() {
       let params = {
         ids: this.selectedProducts.map(item => item._id)
@@ -974,8 +1110,10 @@ export default {
       let res = await ProductYahooApi.deleteMultipleProduct(params);
       if (res && res.status === 200) {
         this.selectedProducts.forEach(item => {
-          let findIndex = this.searchProducts.findIndex(product => product._id === item._id)
-            this.searchProducts.splice(findIndex, 1)
+          let findIndex = this.searchProducts.findIndex(
+            product => product._id === item._id
+          );
+          this.searchProducts.splice(findIndex, 1);
         });
 
         this.isCheckAllProduct = false;
@@ -986,7 +1124,7 @@ export default {
           title: "取扱商品フォルダの設定を行いました。"
         });
         if (this.tableData.length === 0) {
-          this.page -= 1
+          this.page -= 1;
         }
       }
     }

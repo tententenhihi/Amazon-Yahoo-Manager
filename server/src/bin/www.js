@@ -8,13 +8,13 @@ import app from '../app';
 import debugLib from 'debug';
 import http from 'http';
 const debug = debugLib('your-project-name:server');
-import { SERVER_PORT } from '../configs/settings';
+import config from 'config';
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || SERVER_PORT);
+var port = normalizePort(config.get('PORT'));
 app.set('port', port);
 
 /**

@@ -91,11 +91,11 @@
               <td class="text-center">{{ product.aID }}</td>
               <td class="text-center" width="100">
                 <img
-                  v-if="product.images && product.images.length"
+                  v-if="product.thumbnail"
                   :src="
-                    product.images[0].includes('http')
-                      ? product.images[0]
-                      : SERVER_HOST_UPLOAD + product.images[0]
+                    product.thumbnail.includes('http')
+                      ? product.thumbnail
+                      : SERVER_HOST_UPLOAD + product.thumbnail
                   "
                   style="min-width: 50px"
                 />

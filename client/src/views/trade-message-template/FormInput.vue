@@ -32,7 +32,6 @@
 import TradeMessageTemplateApi from '@/services/TradeMessageTemplateApi'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'FormProduct',
   data () {
     return {
       template: {
