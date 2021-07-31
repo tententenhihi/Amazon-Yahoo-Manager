@@ -4,5 +4,5 @@
     "LIFE_TIME_TOKEN": "30d",
     "MONGODB_DATABASE_NAME": "Amazon-yahoo-manager",
     "MONGODB_HOST": "mongodb://localhost:27017/",
-    "PORT": 3000
+    "PORT": 5000
 }
