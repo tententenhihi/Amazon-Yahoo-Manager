@@ -478,7 +478,7 @@ export default class AuctionYahooService {
         }
     }
 
-    static async getProductAuctionEnded(usernameYahoo, cookie, proxy) {
+    static async getProductAuctionEnded(usernameYahoo, cookie, proxy, getAidOnly) {
         try {
             let proxyConfig = {
                 host: proxy.host,
@@ -512,7 +512,9 @@ export default class AuctionYahooService {
                     listProduct.push({ aID, idBuyer, time_end, price_end });
                 }
             }
-
+            if (getAidOnly) {
+                return listProduct;
+            }
             // Get detail info
             for (let i = 0; i < listProduct.length; i++) {
                 let product = listProduct[i];

@@ -54,7 +54,7 @@ export default class CronJobService {
                     try {
                         let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data);
                         let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
-                        console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
+                        // console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
                         // tạo , update product
                         for (let j = 0; j < listProductEnded.length; j++) {
                             const product = listProductEnded[j];
@@ -98,7 +98,7 @@ export default class CronJobService {
                             proxyResult.data
                         );
                         let listProductInDB = await ProductYahooSellingService.find({ yahoo_account_id: accountYahoo._id });
-                        console.log(' ##### startGetProductYahoo listProductSelling: ', listProductSelling);
+                        // console.log(' ##### startGetProductYahoo listProductSelling: ', listProductSelling);
                         // tạo , update product
                         for (let j = 0; j < listProductSelling.length; j++) {
                             const product = listProductSelling[j];
@@ -143,7 +143,7 @@ export default class CronJobService {
                             proxyResult.data
                         );
                         let listProductInDB = await ProductYahooFinishedService.find({ yahoo_account_id: accountYahoo._id });
-                        console.log(' ##### startGetProductYahoo getProductAuctionFinished: ', listProductFinished);
+                        // console.log(' ##### startGetProductYahoo getProductAuctionFinished: ', listProductFinished);
                         // tạo , update product
                         for (let j = 0; j < listProductFinished.length; j++) {
                             const product = listProductFinished[j];
@@ -225,10 +225,11 @@ export default class CronJobService {
             if (schedule.new_list_auto && schedule.new_list_target_folder.length > 0) {
                 let timeCron = null;
                 if (schedule.new_list_interval_per_day) {
-                    timeCron = `0 ${schedule.new_list_start_time_minute} ${schedule.new_list_start_time_hour} * * *`;
+                    timeCron = `0 ${schedule.new_list_start_time_minute} ${schedule.new_list_start_time_hour} */${schedule.publish_interval} * *`;
                 } else {
                     timeCron = `0 ${schedule.new_list_start_time_minute} ${schedule.new_list_start_time_hour} * * ${schedule.new_list_day_of_week - 1}`;
                 }
+                console.log(timeCron);
                 if (!cronNewList) {
                     cronNewList = new CronJob(
                         timeCron,
