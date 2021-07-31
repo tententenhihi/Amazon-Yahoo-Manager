@@ -103,7 +103,7 @@
                       ? product.thumbnail
                       : SERVER_HOST_UPLOAD + product.thumbnail
                   "
-                  style="min-width: 50px"
+                  style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
               </td>
               <td class="text-center" width="100">
@@ -114,7 +114,7 @@
                       ? product.images[0]
                       : SERVER_HOST_UPLOAD + product.images[0]
                   "
-                  style="min-width: 50px"
+                  style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
               </td>
               <td>

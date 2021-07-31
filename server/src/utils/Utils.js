@@ -1,8 +1,20 @@
 import Fs from 'fs';
 import Path from 'path';
 import FS from 'fs';
-import Axios from 'axios';
 import MTD from '../lib/zeltice-mt-downloader';
+
+var parsrUrlImageAmazon = (url) => {
+    try {
+        let base_name = Path.basename(url).split('.')[0];
+        let ext = Path.extname(url);
+        url = url.split('/images/I/')[0];
+        url += '/images/I/' + base_name + ext;
+        if (url && url.trim !== '') {
+            return url
+        }
+    } catch (error) {}
+    return url;
+};
 
 var toString = (str) => {
     return str.replace(/[^a-zA-Z0-9 ]/g, '');
@@ -194,6 +206,7 @@ const partFileName = (filename) => {
     }
     return filename + '-' + generateKey();
 };
+
 const Utils = {
     downloadFile,
     converTimeToSecound,
@@ -206,6 +219,7 @@ const Utils = {
     isUrlEndcoded,
     partFileName,
     toString,
+    parsrUrlImageAmazon,
 };
 
 export default Utils;

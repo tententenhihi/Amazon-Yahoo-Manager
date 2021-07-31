@@ -31,22 +31,27 @@ export default class ProxyService {
             }
             let timeout = 0;
             while (timeout < 3) {
-                let res = await axios.get('http://lumtest.com/myip.json', {
-                    proxy: {
-                        host: proxy.host,
-                        port: proxy.port,
-                        auth: {
-                            username: proxy.username,
-                            password: proxy.password,
+                try {
+                    console.log(' ### timeout: ', timeout);
+                    let res = await axios.get('http://lumtest.com/myip.json', {
+                        proxy: {
+                            host: proxy.host,
+                            port: proxy.port,
+                            auth: {
+                                username: proxy.username,
+                                password: proxy.password,
+                            },
                         },
-                    },
-                });
-                if (res && res.status === 200 && res.data.ip === proxy.ip) {
-                    return true;
-                }
+                    });
+                    if (res && res.status === 200 && res.data.ip === proxy.ip) {
+                        console.log(' ### PROXY LIVE');
+                        return true;
+                    }
+                } catch (error) {}
                 timeout++;
                 await Utils.sleep(10 * 1000);
             }
+            console.log(' ### PROXY DIE');
             return false;
         } catch (error) {
             console.log(' ### ERROR checkLiveProxy :', error.message);

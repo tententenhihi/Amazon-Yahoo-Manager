@@ -1041,7 +1041,7 @@ export default class AuctionYahooService {
         }
     }
 
-    static async cancelAuction(aID, cookie, proxy) {
+    static async cancelAuction(aID, cookie, proxy, isHaveBuyer) {
         let proxyConfig = {
             host: proxy.host,
             port: proxy.port,
@@ -1059,7 +1059,7 @@ export default class AuctionYahooService {
             },
             proxy: proxyConfig,
         });
-        Fs.writeFileSync('preview.html', response.data);
+        // Fs.writeFileSync('preview.html', response.data);
         let $ = cheerio.load(response.data);
         let crumb = $('input[name="crumb"]').val();
         if (!crumb) {
@@ -1074,6 +1074,10 @@ export default class AuctionYahooService {
             cancel_fee: 'none',
             confirm: '取り消す',
         };
+
+        if (isHaveBuyer) {
+            delete payload.cancel_fee;
+        }
         payload = Qs.stringify(payload);
         response = await axios.post(`https://page.auctions.yahoo.co.jp/jp/config/cancelauction`, payload, {
             headers: {
@@ -1112,7 +1116,7 @@ export default class AuctionYahooService {
             },
             proxy: proxyConfig,
         });
-        Fs.writeFileSync('preview.html', response.data);
+        // Fs.writeFileSync('preview.html', response.data);
         let $ = cheerio.load(response.data);
         let crumb = $('input[name=".crumb"]').val();
         if (!crumb) {

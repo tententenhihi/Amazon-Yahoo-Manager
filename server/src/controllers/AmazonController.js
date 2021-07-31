@@ -41,7 +41,7 @@ export default class AmazonController {
             data.url = 'https://www.amazon.co.jp/dp/' + data.asin;
             data.idUser = user._id;
             data.images = [];
-            
+
             if (!data.asin) {
                 response.error400({ message: 'ASINは必須です' });
             }
@@ -255,56 +255,56 @@ export default class AmazonController {
                 productAmazon.shipping = parseInt(productAmazon.shipping) || 0;
 
                 await productAmazon.save();
-                let existProductYahoo = await ProductYahooService.findOne({
-                    user_id: user._id,
-                    yahoo_account_id: productAmazon.yahoo_account_id,
-                    product_amazon_id,
-                });
-                if (existProductYahoo) {
-                    existProductYahoo.folder_id = folder_id;
-                    existProductYahoo.yahoo_account_id = productAmazon.yahoo_account_id;
-                    await existProductYahoo.save();
-                } else {
-                    let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id: productAmazon.yahoo_account_id, user_id: user._id });
-                    let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id });
-                    if (!cateAmazon) {
-                        cateAmazon = await CategoryService.create({
-                            user_id: user._id,
-                            amazon_cate_id: productAmazon.category_id,
-                            asin: productAmazon.asin,
-                        });
-                    }
-                    let cate_yahoo = cateAmazon.yahoo_cate_id || '0';
-                    //Dùng cate amazon Check xem có trong mapping k
-                    let productYahoo = {
-                        ...defaultSetting._doc,
-                        id_category_amazon: productAmazon.category_id,
-                        ship_fee1: defaultSetting.yahoo_auction_shipping,
-                        extra_stock: defaultSetting.extra_stock,
-                        asin_amazon: productAmazon.asin,
-                        images: productAmazon.images,
-                        user_id: productAmazon.idUser,
-                        foreign_key: productAmazon._id,
-                        product_yahoo_title: productAmazon.name,
-                        yahoo_account_id: productAmazon.yahoo_account_id,
-                        start_price: parseInt(productAmazon.price) || 0,
-                        import_price: parseInt(productAmazon.basecost) || 0,
-                        profit: productAmazon.profit,
-                        description: productAmazon.description,
-                        folder_id,
-                        product_model: 'AMAZON',
-                        yahoo_auction_category_id: cate_yahoo,
-                        bid_or_buy_price: 0,
-                        product_amazon_id: productAmazon._id,
-                        created: Date.now(),
-                        listing_status: 'NOT_LISTED',
-                        count_product: productAmazon.countProduct && productAmazon.countProduct > 1 ? productAmazon.countProduct : 1,
-                        amazon_shipping_fee: productAmazon.shipping,
-                        yahooAuctionFee: defaultSetting.yahoo_auction_fee || 10,
-                        _id: null,
-                    };
-                    await ProductYahooService.create(productYahoo);
+                // let existProductYahoo = await ProductYahooService.findOne({
+                //     user_id: user._id,
+                //     yahoo_account_id: productAmazon.yahoo_account_id,
+                //     product_amazon_id,
+                // });
+                // if (existProductYahoo) {
+                //     existProductYahoo.folder_id = folder_id;
+                //     existProductYahoo.yahoo_account_id = productAmazon.yahoo_account_id;
+                //     await existProductYahoo.save();
+                // } else {
+                let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id: productAmazon.yahoo_account_id, user_id: user._id });
+                let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id });
+                if (!cateAmazon) {
+                    cateAmazon = await CategoryService.create({
+                        user_id: user._id,
+                        amazon_cate_id: productAmazon.category_id,
+                        asin: productAmazon.asin,
+                    });
                 }
+                let cate_yahoo = cateAmazon.yahoo_cate_id || '0';
+                //Dùng cate amazon Check xem có trong mapping k
+                let productYahoo = {
+                    ...defaultSetting._doc,
+                    id_category_amazon: productAmazon.category_id,
+                    ship_fee1: defaultSetting.yahoo_auction_shipping,
+                    extra_stock: defaultSetting.extra_stock,
+                    asin_amazon: productAmazon.asin,
+                    images: productAmazon.images,
+                    user_id: productAmazon.idUser,
+                    foreign_key: productAmazon._id,
+                    product_yahoo_title: productAmazon.name,
+                    yahoo_account_id: productAmazon.yahoo_account_id,
+                    start_price: parseInt(productAmazon.price) || 0,
+                    import_price: parseInt(productAmazon.basecost) || 0,
+                    profit: productAmazon.profit,
+                    description: productAmazon.description,
+                    folder_id,
+                    product_model: 'AMAZON',
+                    yahoo_auction_category_id: cate_yahoo,
+                    bid_or_buy_price: 0,
+                    product_amazon_id: productAmazon._id,
+                    created: Date.now(),
+                    listing_status: 'NOT_LISTED',
+                    count_product: productAmazon.countProduct && productAmazon.countProduct > 1 ? productAmazon.countProduct : 1,
+                    amazon_shipping_fee: productAmazon.shipping,
+                    yahooAuctionFee: defaultSetting.yahoo_auction_fee || 10,
+                    _id: null,
+                };
+                await ProductYahooService.create(productYahoo);
+                // }
             }
 
             return response.success200({ success: true });

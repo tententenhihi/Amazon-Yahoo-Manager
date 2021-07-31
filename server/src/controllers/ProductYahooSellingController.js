@@ -31,9 +31,11 @@ export default class ProductYahooSellingController {
                         let result = null;
                         if (productDelete.buyer_count > 0) {
                             // Xoa khi co ng đấu thầu
+                            result = await AuctionYahooService.cancelAuction(productDelete.aID, yahooAccount.cookie, proxyResult.data, true);
                         } else {
                             result = await AuctionYahooService.cancelAuction(productDelete.aID, yahooAccount.cookie, proxyResult.data);
                         }
+                        console.log(' ########## result: ', result);
                         if (result.status === 'SUCCESS') {
                             await ProductYahooSellingService.delete(_id);
                             return response.success200({ success: true });
@@ -71,9 +73,7 @@ export default class ProductYahooSellingController {
                             try {
                                 productDelete = await ProductYahooSellingService.findById(id);
                                 let resultDelete = null;
-                                if (productDelete.buyer_count > 0) {
-                                    // Xoa khi co ng đấu thầu
-                                } else {
+                                if (!productDelete.buyer_count || productDelete.buyer_count === 0) {
                                     resultDelete = await AuctionYahooService.cancelAuction(productDelete.aID, yahooAccount.cookie, proxyResult.data);
                                 }
 
