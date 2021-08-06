@@ -87,7 +87,7 @@
             </div>
           </div>
 
-          <div class="form-row">
+          <!-- <div class="form-row">
             <div class="form-group col-sm-4">
               <label for="stock">在庫監視</label>
               <select
@@ -139,7 +139,7 @@
                 </option>
               </select>
             </div>
-          </div>
+          </div> -->
 
           <button class="btn btn-primary" @click="onSearchProduct">検索</button>
           <button class="btn btn-default" @click="clearSearchProduct">
@@ -166,7 +166,7 @@
         >
           削除
         </button>
-        <button
+        <!-- <button
           :disabled="!selectedProducts.length"
           @click="onOpenModalWitchOption('watch_stock')"
           class="btn btn-info"
@@ -186,15 +186,7 @@
           class="btn btn-info"
         >
           プライムのみ監視ON/OFF
-        </button>
-
-        <button
-          :disabled="!selectedProducts.length"
-          @click="onOpenModalWitchOption('watch_only_prime')"
-          class="btn btn-info"
-        >
-          プライムのみ監視ON/OFF
-        </button>
+        </button> -->
 
         <button
           :disabled="!selectedProducts.length"
@@ -237,11 +229,11 @@
               </th>
               <th class="text-center" width="70">仕入元の<br />在庫数</th>
               <th class="text-center" width="80">出品中<br /></th>
-              <th class="text-center" width="60">在庫<br />監視<br /></th>
+              <!-- <th class="text-center" width="60">在庫<br />監視<br /></th>
               <th class="text-center" width="60">利益<br />監視<br /></th>
               <th class="text-center" width="70">
                 プライム<br />のみ監視<br />
-              </th>
+              </th> -->
               <th class="text-center" width="70">
                 画像挿入
               </th>
@@ -342,7 +334,7 @@
                 >
                 <span v-else class="label label-danger">未出品</span>
               </td>
-              <td class="text-center">
+              <!-- <td class="text-center">
                 <span
                   v-if="product.watch_stock === '1'"
                   class="label label-success"
@@ -365,7 +357,7 @@
                   >ON</span
                 >
                 <span v-else class="label label-danger">OFF</span>
-              </td>
+              </td> -->
               <td class="text-center">
                 <span
                   v-if="product.image_overlay_index == null"

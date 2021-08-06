@@ -237,10 +237,10 @@ export default class AuctionYahooService {
                     if (md5Value) keys.md5 = md5Value[1];
                     return keys;
                 } catch (err) {
-                    console.log(' ### AuctionYahooService -> uploadNewProduct -> getKeys: ', err.response.statusText);
+                    console.log(' ### AuctionYahooService -> uploadNewProduct -> getKeys: ', err);
                     return {
                         status: 'ERROR',
-                        statusMessage: err.response.statusText,
+                        statusMessage: 'Lỗi get key',
                     };
                 }
             };

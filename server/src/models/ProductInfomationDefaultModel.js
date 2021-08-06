@@ -136,12 +136,13 @@ var ProductInfomationDefault = new Schema({
         type: String,
         default: 'no',
     },
-    // caculate profit
     extra_stock: {
         type: Number,
         enum: [0, 1],
         default: 0,
     },
+    
+    // caculate profit
     profit: {
         type: Number,
         default: 0,

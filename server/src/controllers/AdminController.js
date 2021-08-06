@@ -85,18 +85,19 @@ class AdminController {
                     bcrypt.hash(password, salt, async function (err, hash) {
                         user.password = password;
                         user.hash_password = hash;
+                        user.verified_at = new Date();
                         await user.save();
-                        let newCode = new VerifyCodeSchema();
-                        newCode.email = user.email;
-                        newCode.code = Utils.generateKey();
-                        await newCode.save();
-                        let body = `
-                            <div style="color: black">
-                                Please click to link to active your account: <br>
-                                ${domain}/login?code=${newCode.code}
-                            </div>
-                        `;
-                        await sendEmail(user.email, body, 'Amazon Yahoo Manager active account');
+                        // let newCode = new VerifyCodeSchema();
+                        // newCode.email = user.email;
+                        // newCode.code = Utils.generateKey();
+                        // await newCode.save();
+                        // let body = `
+                        //     <div style="color: black">
+                        //         Please click to link to active your account: <br>
+                        //         ${domain}/login?code=${newCode.code}
+                        //     </div>
+                        // `;
+                        // await sendEmail(user.email, body, 'Amazon Yahoo Manager active account');
                         return response.success200({ user });
                     });
                 });
