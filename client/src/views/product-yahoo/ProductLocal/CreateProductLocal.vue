@@ -105,18 +105,24 @@
                     />
                   </div>
                 </div>
-                <div class="row">
+                <div class="row mb-0">
                   <div class="col-4 text-align-end">
                     <font color="red">*</font> Y！オーク商品名 : <br />
-                    <small>(商品名は全角64文字以内)</small>
+                    <small>(商品名は全角65文字以内)</small>
                   </div>
                   <div class="col-8">
                     <input
                       type="text"
                       v-model="product.product_yahoo_title"
                       class="form-control"
+                      @input="onChangeTitlte"
                     />
                   </div>
+                </div>
+                <div v-if="isShowErrorTitle" style="text-align: end;">
+                  <span style="color: red; padding-right: 10px"
+                    >入力最大は65文字</span
+                  >
                 </div>
                 <div class="row">
                   <div class="col-4 text-align-end">
@@ -927,7 +933,8 @@ export default {
       isShowChargedOption: false,
       folders: [],
       SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/",
-      yahooAuctionCategory: undefined
+      yahooAuctionCategory: undefined,
+      isShowErrorTitle: false
     };
   },
   async mounted() {
@@ -968,6 +975,20 @@ export default {
     }
   },
   methods: {
+    async onChangeTitlte(value, text) {
+      if (
+        this.product.product_yahoo_title &&
+        this.product.product_yahoo_title.length > 65
+      ) {
+        this.product.product_yahoo_title = this.product.product_yahoo_title.substring(
+          0,
+          65
+        );
+        this.isShowErrorTitle = true;
+      } else {
+        this.isShowErrorTitle = false;
+      }
+    },
     async getFolders() {
       let res = await FolderApi.get(this.yahooAccountId);
       if (res && res.status === 200) {

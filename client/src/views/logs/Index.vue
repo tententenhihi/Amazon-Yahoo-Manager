@@ -37,7 +37,7 @@
             </thead>
             <tbody>
               <tr v-for="(log, index) in tableData" :key="index">
-                <td>{{ $moment(log.created).format("DD/MM/YYYY - HH:mm") }}</td>
+                <td>{{ $moment(log.created).format("YYYY/MM/DD") }}</td>
                 <td>{{ log.success_count }}</td>
                 <td>{{ log.error_count }}</td>
                 <td>

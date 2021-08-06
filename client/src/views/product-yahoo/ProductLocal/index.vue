@@ -542,14 +542,27 @@
       </template>
       <template>
         <div class="form-group">
-          <label for="">Y！オーク商品名</label>
-          <input
-            type="text"
-            class="form-control"
-            ref="productYahooTitle"
-            v-model="selectedEditProduct.product_yahoo_title"
-          />
+          <div>
+            <label for="">Y！オーク商品名</label>
+            <input
+              type="text"
+              class="form-control"
+              ref="productYahooTitle"
+              v-model="selectedEditProduct.product_yahoo_title"
+              @input="onChangeTitlte"
+            />
+          </div>
+          <div v-if="isShowErrorTitle" style="text-align: end;">
+            <span style="color: red">入力最大は65文字</span>
+          </div>
         </div>
+
+        <!-- :value="
+              selectedEditProduct.product_yahoo_title &&
+              selectedEditProduct.product_yahoo_title.length > 65
+                ? selectedEditProduct.product_yahoo_title.substring(0, 65)
+                : selectedEditProduct.product_yahoo_title
+            " -->
         <div class="form-group">
           <label for="">カテゴリーID</label>
           <input
@@ -803,7 +816,8 @@ export default {
       selectedFolder: null,
       selectedEditProduct: {},
       imageInsertion: [],
-      selectedImageIndex: null
+      selectedImageIndex: null,
+      isShowErrorTitle: false
     };
   },
   async mounted() {
@@ -836,13 +850,27 @@ export default {
     }
   },
   methods: {
+    async onChangeTitlte(value, text) {
+      if (
+        this.selectedEditProduct &&
+        this.selectedEditProduct.product_yahoo_title &&
+        this.selectedEditProduct.product_yahoo_title.length > 65
+      ) {
+        this.selectedEditProduct.product_yahoo_title = this.selectedEditProduct.product_yahoo_title.substring(
+          0,
+          65
+        );
+        this.isShowErrorTitle = true;
+      } else {
+        this.isShowErrorTitle = false;
+      }
+    },
     async getImageInsertion() {
       let res = await ImageInsertionApi.get(this.yahooAccountId);
       if (res && res.status == 200) {
         this.imageInsertion = res.data.imageInsertion.images.map(image => {
           return this.SERVER_HOST_UPLOAD + image;
         });
-        console.log(this.imageInsertion);
       }
     },
 
@@ -1134,9 +1162,8 @@ export default {
       };
       let res = await ProductYahooApi.uploadProductNow(params);
       if (res && res.status === 200) {
-        console.log(" ######## res: ", res.data);
-
         let results = res.data.results;
+        console.log(" ####### results: ", results);
         results.map(item => {
           if (item.success) {
           } else {
@@ -1145,12 +1172,12 @@ export default {
 
         let html = `
         <div>
-          <span style="font-weight: bold; color: green">Thành công: ${
+          <span style="font-weight: bold; color: green">成功:  ${
             results.filter(item => item.success).length
           }</span>
         </div>
         <div>
-          <span style="font-weight: bold; color: red">Lỗi: ${
+          <span style="font-weight: bold; color: red">エラー: ${
             results.filter(item => !item.success).length
           }</span>
         </div>

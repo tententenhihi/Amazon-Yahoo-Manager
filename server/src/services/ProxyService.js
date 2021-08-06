@@ -32,7 +32,6 @@ export default class ProxyService {
             let timeout = 0;
             while (timeout < 3) {
                 try {
-                    console.log(' ### timeout: ', timeout);
                     let res = await axios.get('http://lumtest.com/myip.json', {
                         proxy: {
                             host: proxy.host,
@@ -44,14 +43,13 @@ export default class ProxyService {
                         },
                     });
                     if (res && res.status === 200 && res.data.ip === proxy.ip) {
-                        console.log(' ### PROXY LIVE');
                         return true;
                     }
                 } catch (error) {}
                 timeout++;
                 await Utils.sleep(10 * 1000);
             }
-            console.log(' ### PROXY DIE');
+            console.log(' ### PROXY DIE', proxy);
             return false;
         } catch (error) {
             console.log(' ### ERROR checkLiveProxy :', error.message);

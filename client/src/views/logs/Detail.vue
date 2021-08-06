@@ -40,7 +40,7 @@
               <tr v-for="(log, index) in tableData" :key="index">
                 <td>
                   {{
-                    $moment(log.product_created).format("DD/MM/YYYY - HH:mm")
+                    $moment(log.created).format("YYYY/MM/DD")
                   }}
                 </td>
                 <td>
@@ -52,7 +52,7 @@
                 </td>
                 <td>{{ log.product_aID ? log.product_aID : "-" }}</td>
                 <td>{{ log.message ? log.message : "-" }}</td>
-                <td>{{ $moment(log.created).format("DD/MM/YYYY - HH:mm") }}</td>
+                <td>{{ $moment(log.created).format("DD/MM/YYYY - HH:mm:ss") }}</td>
               </tr>
             </tbody>
           </table>

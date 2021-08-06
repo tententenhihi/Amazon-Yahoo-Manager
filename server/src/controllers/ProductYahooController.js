@@ -15,6 +15,9 @@ export default class ProductYahooController {
         try {
             let { ids, yahoo_account_id } = req.body;
             let user_id = req.user._id;
+            console.log(' #### ids: ', ids);
+            console.log(' #### user_id: ', user_id);
+            console.log(' #### ids: ', ids);
 
             let results = [];
             let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
@@ -64,9 +67,13 @@ export default class ProductYahooController {
                     }
                 } else {
                     return response.error400({
-                        message: 'Proxy die',
+                        message: 'プロキシが壊れた',
                     });
                 }
+            } else {
+                return response.error400({
+                    message: 'ヤフーアカウントのエラー',
+                });
             }
 
             if (results && results.length > 0) {

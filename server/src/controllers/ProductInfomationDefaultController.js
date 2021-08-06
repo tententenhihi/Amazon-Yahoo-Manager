@@ -25,7 +25,6 @@ export default class ProductInfomationDefaultController {
                 user_id: user._id,
                 ...req.body
             };
-
             let result = await ProductInfomationDefaultService.update(_id, data);
             if (result) {
                 response.success200(result);

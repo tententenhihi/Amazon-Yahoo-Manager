@@ -204,7 +204,7 @@
             <div class="row mt-20 justify-content-center">
               <button
                 class="btn btn-success mb-1 mr-1"
-                @click="onSaveProduct()"
+                @click="onSaveProduct(1)"
               >
                 <i class="fa fa-save (alias)"></i> 保存
               </button>
@@ -937,7 +937,12 @@ export default {
     }
   },
   methods: {
-    async onSaveProduct() {
+    async onSaveProduct(typeSave) {
+      if (typeSave === 1) {
+        this.product.ship_name1 = "ヤマト運輸";
+        this.product.ship_fee1 = this.product.yahoo_auction_shipping;
+      }
+
       let result = await ProductInfomationDefaultApi.update(
         this.product._id,
         this.product
