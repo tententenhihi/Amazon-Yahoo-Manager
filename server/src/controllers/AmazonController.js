@@ -276,9 +276,6 @@ export default class AmazonController {
                 }
                 let cate_yahoo = cateAmazon.yahoo_cate_id || '0';
                 //Dùng cate amazon Check xem có trong mapping k
-                if (defaultSetting.extra_stock > 0) {
-                    defaultSetting.extra_stock = 0;
-                }
                 let productYahoo = {
                     ...defaultSetting._doc,
                     id_category_amazon: productAmazon.category_id,

@@ -195,6 +195,13 @@
         >
           写真を挿入
         </button>
+        <button
+          :disabled="!selectedProducts.length"
+          @click="onUploadYahooNow"
+          class="btn btn-info"
+        >
+          出品
+        </button>
       </div>
       <div class="px-10 table-responsive">
         <paginate
@@ -1118,6 +1125,47 @@ export default {
         if (this.tableData.length === 0) {
           this.page -= 1;
         }
+      }
+    },
+    async onUploadYahooNow() {
+      let params = {
+        ids: this.selectedProducts.map(item => item._id),
+        yahoo_account_id: this.yahooAccountId
+      };
+      let res = await ProductYahooApi.uploadProductNow(params);
+      if (res && res.status === 200) {
+        console.log(" ######## res: ", res.data);
+
+        let results = res.data.results;
+        results.map(item => {
+          if (item.success) {
+          } else {
+          }
+        });
+
+        let html = `
+        <div>
+          <span style="font-weight: bold; color: green">Thành công: ${
+            results.filter(item => item.success).length
+          }</span>
+        </div>
+        <div>
+          <span style="font-weight: bold; color: red">Lỗi: ${
+            results.filter(item => !item.success).length
+          }</span>
+        </div>
+        `;
+
+        this.isCheckAllProduct = false;
+        this.selectedProducts = this.selectedProducts.map(item => {
+          item.listing_status = "UNDER_EXHIBITION";
+          return item;
+        });
+        this.selectedProducts = [];
+        this.$swal.fire({
+          icon: "success",
+          html
+        });
       }
     }
   },

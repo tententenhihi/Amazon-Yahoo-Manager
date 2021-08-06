@@ -239,14 +239,16 @@ export default class CronJobService {
                                 schedule.yahoo_account_id,
                                 schedule.new_list_target_folder
                             );
-                            let newCronHistory = {
-                                success_count: results.filter((item) => item.success).length,
-                                error_count: results.length - results.filter((item) => item.success).length,
-                                detail: results,
-                                user_id: schedule.user_id,
-                                yahoo_account_id: schedule.yahoo_account_id,
-                            };
-                            await CronHistoryModel.create(newCronHistory);
+                            if (results.length > 0) {
+                                let newCronHistory = {
+                                    success_count: results.filter((item) => item.success).length,
+                                    error_count: results.length - results.filter((item) => item.success).length,
+                                    detail: results,
+                                    user_id: schedule.user_id,
+                                    yahoo_account_id: schedule.yahoo_account_id,
+                                };
+                                await CronHistoryModel.create(newCronHistory);
+                            }
                         },
                         null,
                         false
@@ -278,15 +280,17 @@ export default class CronJobService {
                         timeCron,
                         async function () {
                             let results = await ProductYahooService.startReSubmitProduct(schedule.user_id, schedule.yahoo_account_id);
-                            let newCronHistory = {
-                                success_count: results.filter((item) => item.success).length,
-                                error_count: results.length - results.filter((item) => item.success).length,
-                                detail: results,
-                                user_id: schedule.user_id,
-                                yahoo_account_id: schedule.yahoo_account_id,
-                            };
+                            if (results.length > 0) {
+                                let newCronHistory = {
+                                    success_count: results.filter((item) => item.success).length,
+                                    error_count: results.length - results.filter((item) => item.success).length,
+                                    detail: results,
+                                    user_id: schedule.user_id,
+                                    yahoo_account_id: schedule.yahoo_account_id,
+                                };
 
-                            await CronHistoryModel.create(newCronHistory);
+                                await CronHistoryModel.create(newCronHistory);
+                            }
                         },
                         null,
                         false
@@ -322,14 +326,16 @@ export default class CronJobService {
                                 schedule.yahoo_account_id,
                                 schedule.calendar_target_folder
                             );
-                            let newCronHistory = {
-                                success_count: results.filter((item) => item.success).length,
-                                error_count: results.length - results.filter((item) => item.success).length,
-                                detail: results,
-                                user_id: schedule.user_id,
-                                yahoo_account_id: schedule.yahoo_account_id,
-                            };
-                            await CronHistoryModel.create(newCronHistory);
+                            if (results.length > 0) {
+                                let newCronHistory = {
+                                    success_count: results.filter((item) => item.success).length,
+                                    error_count: results.length - results.filter((item) => item.success).length,
+                                    detail: results,
+                                    user_id: schedule.user_id,
+                                    yahoo_account_id: schedule.yahoo_account_id,
+                                };
+                                await CronHistoryModel.create(newCronHistory);
+                            }
                         },
                         null,
                         false

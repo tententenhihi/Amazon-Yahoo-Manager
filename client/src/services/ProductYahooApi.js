@@ -1,5 +1,5 @@
 import Api from "./api";
-const prefix = '/api/v1/product-yahoo'
+const prefix = "/api/v1/product-yahoo";
 export default {
   get(yahooAccountId) {
     return Api.get(`${prefix}/get/${yahooAccountId}`);
@@ -25,10 +25,15 @@ export default {
   deleteMultipleProduct(data) {
     return Api.post(`${prefix}/delete-multiple-product`, data);
   },
-  checkCategoryYahoo (data) {
+  checkCategoryYahoo(data) {
     return Api.post(`${prefix}/check-category`, data);
   },
   setOverlayImage(data) {
     return Api.post(`${prefix}/set-image-overlay`, data);
   },
+  uploadProductNow(data) {
+    return Api.post(`${prefix}/upload-product-yahoo-now`, data, {
+      timeout: 5 * 60 * 1000
+    });
+  }
 };

@@ -12,6 +12,8 @@ ProductYahooRouter.route('/switch-watch-option').post(ProductYahooController.swi
 ProductYahooRouter.route('/change-product-folder').post(ProductYahooController.changeProductFolder);
 ProductYahooRouter.route('/delete-multiple-product').post(ProductYahooController.deleteMultipleProduct);
 ProductYahooRouter.route('/set-image-overlay').post(ProductYahooController.setImageOverlay);
+ProductYahooRouter.route('/upload-product-yahoo-now').post(ProductYahooController.uploadProductYahooNow);
+
 
 
 

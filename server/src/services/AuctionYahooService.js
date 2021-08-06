@@ -130,7 +130,7 @@ export default class AuctionYahooService {
         return listCateId;
     }
 
-    static async uploadNewProduct(cookie, productData, proxy) {
+    static async uploadNewProduct(cookie, productData, proxy, descrionUpload) {
         try {
             console.log(' ========= START UPLOAD YAHOO ========= ');
             // Check Data
@@ -246,8 +246,18 @@ export default class AuctionYahooService {
             };
 
             let keys = await getKeys(cookie);
+
             if (keys && keys.status === 'ERROR') {
                 return keys;
+            }
+
+            console.log(' ############## keys: ', keys);
+
+            if (keys && !keys.img_crumb) {
+                return {
+                    status: 'ERROR',
+                    statusMessage: 'Lỗi get key... Token lỗi => Lấy lại token.!',
+                };
             }
             // Upload Image and get thumbnail
             let payloadImage = {};
@@ -370,8 +380,8 @@ export default class AuctionYahooService {
                 numResubmit: productData.num_resubmit,
                 ReservePrice: productData.reserve_price,
 
-                Description: productData.description,
-                Description_rte: productData.description,
+                Description: descrionUpload || productData.description,
+                Description_rte: descrionUpload || productData.description,
 
                 // Ship
                 shiptime: productData.ship_time,

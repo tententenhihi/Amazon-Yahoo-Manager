@@ -6,6 +6,7 @@ import AuctionYahooService from '../services/AuctionYahooService';
 import fs from 'fs';
 import mongoose from 'mongoose';
 import ProductYahooAuctionService from './ProductYahooAuctionService';
+import ProductGlobalSettingService from './ProductGlobalSettingService';
 import Utils from '../utils/Utils';
 var isCalendarUploading = false;
 
@@ -175,13 +176,28 @@ export default class ProductYahooService {
                     console.log('  isCalendarUploading: ', isCalendarUploading);
                     await Utils.sleep(5000);
                 }
+
                 for (const folder_id of new_list_target_folder) {
                     let listProduct = await ProductYahooSchema.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
 
                     for (let index = 0; index < listProduct.length; index++) {
                         const productYahooData = listProduct[index];
                         let dataUpdate = {};
-                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data);
+
+                        let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
+                            yahooAccount.user_id,
+                            yahooAccount._id,
+                            yahooAccount.yahoo_id,
+                            productYahooData.description,
+                            productYahooData.note
+                        );
+
+                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(
+                            yahooAccount.cookie,
+                            productYahooData,
+                            proxyResult.data,
+                            descrionUpload
+                        );
                         console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
@@ -234,7 +250,21 @@ export default class ProductYahooService {
                             for (let index = 0; index < listProduct.length; index++) {
                                 const productYahooData = listProduct[index];
                                 let dataUpdate = {};
-                                let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data);
+
+                                let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
+                                    yahooAccount.user_id,
+                                    yahooAccount._id,
+                                    yahooAccount.yahoo_id,
+                                    productYahooData.description,
+                                    productYahooData.note
+                                );
+
+                                let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(
+                                    yahooAccount.cookie,
+                                    productYahooData,
+                                    proxyResult.data,
+                                    descrionUpload
+                                );
                                 console.log(' ### startUploadProductByCalendar uploadAuctionResult: ', uploadAuctionResult);
                                 dataUpdate.upload_status = uploadAuctionResult.status;
                                 dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
@@ -291,7 +321,21 @@ export default class ProductYahooService {
                     for (let index = 0; index < listProduct.length; index++) {
                         const productYahooData = listProduct[index];
                         let dataUpdate = {};
-                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data);
+
+                        let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
+                            yahooAccount.user_id,
+                            yahooAccount._id,
+                            yahooAccount.yahoo_id,
+                            productYahooData.description,
+                            productYahooData.note
+                        );
+
+                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(
+                            yahooAccount.cookie,
+                            productYahooData,
+                            proxyResult.data,
+                            descrionUpload
+                        );
                         console.log(' ###  uploadAuctionResult: ', uploadAuctionResult);
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;

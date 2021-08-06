@@ -253,7 +253,6 @@ var Product = new Schema({
     },
     extra_stock: {
         type: Number,
-        enum: [0, 1],
         default: 0,
     },
     image_overlay_index: {
