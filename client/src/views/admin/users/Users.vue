@@ -166,7 +166,7 @@
           </div>
         </div>
         <div class="form-group form-line">
-          <label class="col-sm-4 control-label">賞味期限: </label>
+          <label class="col-sm-4 control-label">期限: </label>
           <div class="col-sm-7">
             <input
               type="date"
@@ -194,8 +194,8 @@
 <script>
 import AdminApi from "@/services/AdminApi";
 const STATUS_USER = [
-  {value: 'LIVE', display: '活動中'},
-  {value: 'LOCKED', display: 'ロック'}
+  { value: "LIVE", display: "活動中" },
+  { value: "LOCKED", display: "ロック" }
 ];
 export default {
   name: "AdminUsers",
@@ -233,24 +233,24 @@ export default {
     this.createDatatable();
   },
   computed: {
-    minExpiredAt () {
+    minExpiredAt() {
       let today = new Date();
       let dd = today.getDate();
-      let mm = today.getMonth() +1 ;
+      let mm = today.getMonth() + 1;
       let yyyy = today.getFullYear();
-      if (dd < 10){
-        dd='0'+dd
-      } 
-      if(mm < 10){
-        mm='0'+mm
-      } 
-      today = yyyy+'-'+mm+'-'+dd;
-      return today
+      if (dd < 10) {
+        dd = "0" + dd;
+      }
+      if (mm < 10) {
+        mm = "0" + mm;
+      }
+      today = yyyy + "-" + mm + "-" + dd;
+      return today;
     }
   },
   methods: {
-    displayStatus (status) {
-      return this.STATUS_USER.find(item => item.value === status).display
+    displayStatus(status) {
+      return this.STATUS_USER.find(item => item.value === status).display;
     },
     createDatatable() {
       let self = this;
@@ -311,7 +311,7 @@ export default {
       this.note = "";
       this.expired_at = "";
       this.editId = "";
-      this.isResetPassword = false
+      this.isResetPassword = false;
     },
     async getListUser() {
       let result = await AdminApi.getUsers();
@@ -355,7 +355,7 @@ export default {
           let index = this.users.findIndex(
             user => user._id === result.data.user._id
           );
-          this.users[index] = {...this.users[index], ...result.data.user};
+          this.users[index] = { ...this.users[index], ...result.data.user };
           this.users = [...this.users];
           this.createDatatable();
         }

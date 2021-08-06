@@ -265,11 +265,11 @@ export default class ProductGlobalSettingService {
         let settingData = await ProductGlobalSettingModel.findOne({ user_id: userId, yahoo_account_id });
         if (settingData) {
             let template = listTemplate[settingData.template - 1];
-            template = template.replace('product_description', product_description);
-            template = template.replace('payment_detail', settingData.payment_detail);
-            template = template.replace('delivery_detail', settingData.delivery_detail);
-            template = template.replace('precaution_detail', settingData.precaution_detail);
-            template = template.replace('product_note', product_note);
+            template = template.replace('product_description', product_description.replace(/\n/g,'</br>'));
+            template = template.replace('payment_detail', settingData.payment_detail.replace(/\n/g,'</br>'));
+            template = template.replace('delivery_detail', settingData.delivery_detail.replace(/\n/g,'</br>'));
+            template = template.replace('precaution_detail', settingData.precaution_detail.replace(/\n/g,'</br>'));
+            template = template.replace('product_note', product_note.replace(/\n/g,'</br>'));
             template = template.replace('yahoo_account_username', yahoo_account_username);
             return template;
         }
