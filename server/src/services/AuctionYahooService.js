@@ -250,13 +250,10 @@ export default class AuctionYahooService {
             if (keys && keys.status === 'ERROR') {
                 return keys;
             }
-
-            console.log(' ############## keys: ', keys);
-
             if (keys && !keys.img_crumb) {
                 return {
                     status: 'ERROR',
-                    statusMessage: 'Lỗi get key... Token lỗi => Lấy lại token.!',
+                    statusMessage: 'ヤフーアカウントのエラー',
                 };
             }
             // Upload Image and get thumbnail
@@ -727,7 +724,6 @@ export default class AuctionYahooService {
 
         let sock5 = `http://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`;
         const newProxyUrl = await proxyChain.anonymizeProxy(sock5);
-
         const args = [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -739,14 +735,14 @@ export default class AuctionYahooService {
             `--proxy-server=${newProxyUrl}`,
         ];
 
-        if (Fs.existsSync('./tmp')) {
-            Fs.rmdirSync('./tmp', { recursive: true });
-        }
+        // if (Fs.existsSync('./tmp')) {
+        //     Fs.rmdirSync('./tmp', { recursive: true });
+        // }
         const options = {
             args,
             headless: true,
             ignoreHTTPSErrors: true,
-            userDataDir: './tmp',
+            // userDataDir: './tmp',
         };
 
         const browser = await puppeteer.launch(options);
@@ -764,30 +760,18 @@ export default class AuctionYahooService {
         console.log(' ### username ');
         const username = await page.waitForSelector('#username');
         await username.type(account.yahoo_id);
-        await Utils.sleep(1000);
-
         async function waitAndClick(selector) {
             await page.evaluate((selector) => document.querySelector(selector).click(), selector);
         }
-
-        console.log(' ##### btnNext ');
         await waitAndClick('#btnNext');
-
-        // await page.click('#btnNext');
-        await Utils.sleep(1000);
-
-        console.log(' ### password');
         const password = await page.waitForSelector('#passwd');
         await password.type(account.password);
-        await Utils.sleep(1000);
-
-        console.log(' #### Submit');
+        console.log(' #### Submit ####');
         await waitAndClick('#btnSubmit');
         const find = await page.waitForSelector('input[type=text]', { timeout: 30000 });
-        await Utils.sleep(1000);
-        // const data = await page.evaluate(() => document.querySelector('*').outerHTML);
-        // Fs.writeFileSync('login.html', data);
         const cookies = await page.cookies();
+        console.log(' #### cookies: ', cookies);
+
         await browser.close();
         if (cookies.length > 4) {
             console.log(' ======== SUCCESS ======= ');
@@ -797,6 +781,8 @@ export default class AuctionYahooService {
                 })
                 .join('; ');
         } else {
+            const data = await page.evaluate(() => document.querySelector('*').outerHTML);
+            Fs.writeFileSync('preview.html', data);
             console.log(' ======== Failse ======= ');
             throw new Error('Can not get cookies:', page.url());
         }

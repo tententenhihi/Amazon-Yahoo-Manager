@@ -276,6 +276,11 @@ export default class AmazonController {
                 }
                 let cate_yahoo = cateAmazon.yahoo_cate_id || '0';
                 //Dùng cate amazon Check xem có trong mapping k
+                let title = productAmazon.name;
+                if (title && title.length > 65) {
+                    title = title.substring(0, 65);
+                }
+                
                 let productYahoo = {
                     ...defaultSetting._doc,
                     id_category_amazon: productAmazon.category_id,
@@ -285,7 +290,7 @@ export default class AmazonController {
                     images: productAmazon.images,
                     user_id: productAmazon.idUser,
                     foreign_key: productAmazon._id,
-                    product_yahoo_title: productAmazon.name,
+                    product_yahoo_title: title,
                     yahoo_account_id: productAmazon.yahoo_account_id,
                     start_price: parseInt(productAmazon.price) || 0,
                     import_price: parseInt(productAmazon.basecost) || 0,

@@ -3,7 +3,7 @@ import ProductAmazonSchema from '../models/ProductAmazonModel';
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
 import Utils from '../utils/Utils';
 import Path from 'path';
-import Fs from 'fs';
+import FsExtra from 'fs-extra';
 const cheerio = require('cheerio');
 
 const parseDataProductHTML = async (html, yahoo_account_id) => {
@@ -190,52 +190,6 @@ export default class ProductAmazonService {
                 type: 'SUCCESS',
                 data: product,
             };
-
-            //// Search
-            // let requestAmazon = await Axios.get(`https://www.amazon.co.jp/s?k=${asinModel.code}`, { headers });
-            // if (requestAmazon && requestAmazon.status === 200) {
-            //     let html = requestAmazon.data;
-            //     let $ = cheerio.load(html);
-            //     let listItemProduct = $(
-            //         '#search > div.s-desktop-width-max.s-opposite-dir > div > div.s-matching-dir.sg-col-16-of-20.sg-col.sg-col-8-of-12.sg-col-12-of-16 > div > span:nth-child(4) > div.s-main-slot.s-result-list.s-search-results.sg-row > div'
-            //     );
-            //     if (!listItemProduct || listItemProduct.length == 0) {
-            //         return {
-            //             type: 'error',
-            //             message: 'Not found any product',
-            //         };
-            //     }
-            //     let listProductResult = [];
-            //     for (let i = 0; i < listItemProduct.length; i++) {
-            //         const item = listItemProduct[i];
-            //         let asinItem = $(item).attr('data-asin');
-            //         if (asinItem && asinItem != '') {
-            //             let aTag = $(item).find('.a-link-normal.s-no-outline');
-            //             if (aTag && aTag.attr('href')) {
-            //                 let url = `https://www.amazon.co.jp/` + aTag.attr('href').trim();
-            //                 let requestProductAmazon = await Axios.get(url, { headers });
-            //                 if (requestAmazon && requestAmazon.status === 200) {
-
-            //                 }
-            //             }
-            //         }
-            //     }
-            //     if (!listProductResult || listProductResult.length == 0) {
-            //         return {
-            //             type: 'ERROR',
-            //             message: 'Not found any product',
-            //         };
-            //     }
-            //     return {
-            //         type: 'SUCCESS',
-            //         data: listProductResult,
-            //     };
-            // } else {
-            //     return {
-            //         type: 'ERROR',
-            //         message: 'Lỗi không load được Amazon: ' + requestAmazon,
-            //     };
-            // }
         } catch (error) {
             // console.log(' #### ERROR ProductAmazonService getProductByAsin: ', error);
             return {
@@ -246,8 +200,27 @@ export default class ProductAmazonService {
     }
     static async create(data) {
         try {
-            let product = await ProductAmazonSchema.create(data);
-            return product._doc;
+            let newProduct = await ProductAmazonSchema(data);
+            let listImage = [];
+            for (let i = 0; i < data.images.length; i++) {
+                const image = data.images[i];
+                console.log(image);
+                if (image.startsWith('http')) {
+                    let folderSave = 'amazon-product/' + newProduct._id + '/';
+                    await FsExtra.ensureDirSync('uploads/' + folderSave);
+                    let saveImage = folderSave + 'image' + i + '.jpg';
+                    let check = Utils.downloadFile(image, 'uploads/' + saveImage);
+                    if (check) {
+                        saveImage = listImage.push(saveImage);
+                    }
+                } else {
+                    listImage.push(image);
+                }
+            }
+            newProduct.images = listImage;
+            await newProduct.save();
+            console.log(newProduct);
+            return newProduct;
         } catch (error) {
             console.log(error);
             throw new Error('Error:' + error.message);

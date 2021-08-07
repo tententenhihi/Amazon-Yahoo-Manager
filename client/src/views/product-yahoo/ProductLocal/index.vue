@@ -1163,7 +1163,6 @@ export default {
       let res = await ProductYahooApi.uploadProductNow(params);
       if (res && res.status === 200) {
         let results = res.data.results;
-        console.log(" ####### results: ", results);
         results.map(item => {
           if (item.success) {
           } else {

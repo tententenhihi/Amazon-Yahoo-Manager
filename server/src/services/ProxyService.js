@@ -25,7 +25,6 @@ export default class ProxyService {
 
     static async checkLiveProxy(proxy) {
         try {
-            console.log(' ### ', config.get('env'));
             if (config.get('env') === 'development') {
                 return true;
             }

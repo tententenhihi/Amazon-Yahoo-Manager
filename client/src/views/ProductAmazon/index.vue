@@ -588,7 +588,7 @@ export default {
         });
     },
     goToFormProduct(id) {
-      this.$router.push({ name: "FormProduct", params: { id } });
+      this.$router.push({ name: "CreateProductAmazon", params: { id } });
     },
     onChangeFileCSV(event) {
       try {

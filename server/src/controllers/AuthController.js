@@ -68,7 +68,7 @@ class AuthController {
                         return response.error400({ message: 'アカウントの有効化についてはメールを確認してください' });
                     }
                     if (userLogin.expired_at && new Date(userLogin.expired_at).getTime() <= new Date().getTime()) {
-                        return response.error400({ message: 'Tài khoản đã hết hạn.Vui lòng liên hệ admin' });
+                        return response.error400({ message: '使用期間が切れました。管理者に連絡してください' });
                     }
                     let checkPassword = userLogin.comparePassword(password);
                     if (checkPassword) {
