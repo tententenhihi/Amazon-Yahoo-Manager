@@ -735,14 +735,14 @@ export default class AuctionYahooService {
             `--proxy-server=${newProxyUrl}`,
         ];
 
-        // if (Fs.existsSync('./tmp')) {
-        //     Fs.rmdirSync('./tmp', { recursive: true });
-        // }
+        if (Fs.existsSync('./tmp')) {
+            Fs.rmdirSync('./tmp', { recursive: true });
+        }
         const options = {
             args,
             headless: true,
             ignoreHTTPSErrors: true,
-            // userDataDir: './tmp',
+            userDataDir: './tmp',
         };
 
         const browser = await puppeteer.launch(options);
@@ -768,7 +768,7 @@ export default class AuctionYahooService {
         await password.type(account.password);
         console.log(' #### Submit ####');
         await waitAndClick('#btnSubmit');
-        await Utils.sleep(1000)
+        await Utils.sleep(1000);
         const find = await page.waitForSelector('input[type=text]', { timeout: 30000 });
         const cookies = await page.cookies();
         console.log(' #### cookies: ', cookies);
