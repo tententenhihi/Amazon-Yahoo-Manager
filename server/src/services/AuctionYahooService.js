@@ -768,13 +768,14 @@ export default class AuctionYahooService {
         await password.type(account.password);
         console.log(' #### Submit ####');
         await waitAndClick('#btnSubmit');
+        await Utils.sleep(1000)
         const find = await page.waitForSelector('input[type=text]', { timeout: 30000 });
         const cookies = await page.cookies();
         console.log(' #### cookies: ', cookies);
 
-        await browser.close();
         if (cookies.length > 4) {
             console.log(' ======== SUCCESS ======= ');
+            await browser.close();
             return cookies
                 .map(function (c) {
                     return `${c.name}=${c.value}`;
@@ -784,6 +785,7 @@ export default class AuctionYahooService {
             const data = await page.evaluate(() => document.querySelector('*').outerHTML);
             Fs.writeFileSync('preview.html', data);
             console.log(' ======== Failse ======= ');
+            await browser.close();
             throw new Error('Can not get cookies:', page.url());
         }
     }
