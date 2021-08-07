@@ -755,10 +755,12 @@ export default class AuctionYahooService {
         await page.goto(urlLogin, { waitUntil: 'load', timeout: timeout });
 
         page.setDefaultNavigationTimeout(0);
+        await Utils.sleep(1000);
 
         console.log(' ### username ');
         const username = await page.waitForSelector('#username');
         await username.type(account.yahoo_id);
+        await Utils.sleep(1000);
 
         async function waitAndClick(selector) {
             await page.evaluate((selector) => document.querySelector(selector).click(), selector);
@@ -772,6 +774,7 @@ export default class AuctionYahooService {
         console.log(' ### password');
         const password = await page.waitForSelector('#passwd');
         await password.type(account.password);
+        await Utils.sleep(1000);
 
         console.log(' #### Submit');
         await waitAndClick('#btnSubmit');
