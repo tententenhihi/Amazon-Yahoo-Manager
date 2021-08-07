@@ -760,18 +760,29 @@ export default class AuctionYahooService {
         console.log(' ### username ');
         const username = await page.waitForSelector('#username');
         await username.type(account.yahoo_id);
+        await Utils.sleep(1000);
+
         async function waitAndClick(selector) {
             await page.evaluate((selector) => document.querySelector(selector).click(), selector);
         }
+
+        console.log(' ##### btnNext ');
         await waitAndClick('#btnNext');
+
+        // await page.click('#btnNext');
+        await Utils.sleep(1000);
+
+        console.log(' ### password');
         const password = await page.waitForSelector('#passwd');
         await password.type(account.password);
-        console.log(' #### Submit ####');
-        await waitAndClick('#btnSubmit');
         await Utils.sleep(1000);
+
+        console.log(' #### Submit');
+        await waitAndClick('#btnSubmit');
         const find = await page.waitForSelector('input[type=text]', { timeout: 30000 });
+        await Utils.sleep(1000);
         const cookies = await page.cookies();
-        console.log(' #### cookies: ', cookies);
+
 
         if (cookies.length > 4) {
             console.log(' ======== SUCCESS ======= ');
