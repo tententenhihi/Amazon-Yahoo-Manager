@@ -61,19 +61,19 @@ export default class ProxyService {
         if (!proxy) {
             return {
                 status: 'ERROR',
-                statusMessage: 'Proxy not found!',
+                statusMessage: 'プロキシが見つかりません！ ',
             };
         } else {
             if (proxy.status === 'die') {
                 return {
                     status: 'ERROR',
-                    statusMessage: 'Proxy is died',
+                    statusMessage: 'プロキシが壊れた',
                 };
             }
             if (proxy.status === 'lock') {
                 return {
                     status: 'ERROR',
-                    statusMessage: 'Proxy is locked',
+                    statusMessage: 'プロキシがロックされています ',
                 };
             }
             let checkLive = await this.checkLiveProxy(proxy);
@@ -81,7 +81,7 @@ export default class ProxyService {
                 await this.updateProxy({ _id: proxy._id, status: 'die' });
                 return {
                     status: 'ERROR',
-                    statusMessage: 'Proxy is died',
+                    statusMessage: 'プロキシが壊れた',
                 };
             } else {
                 return {

@@ -724,7 +724,7 @@ export default class AuctionYahooService {
 
         let sock5 = `http://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`;
         const newProxyUrl = await proxyChain.anonymizeProxy(sock5);
-        const args = [
+        let args = [
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-infobars',
@@ -735,14 +735,18 @@ export default class AuctionYahooService {
             `--proxy-server=${newProxyUrl}`,
         ];
 
-        if (Fs.existsSync('./tmp')) {
-            Fs.rmdirSync('./tmp', { recursive: true });
+        if (config.get('env') === 'development') {
+            args.pop();
         }
+
+        // if (Fs.existsSync('./tmp')) {
+        //     Fs.rmdirSync('./tmp', { recursive: true });
+        // }
         const options = {
             args,
             headless: true,
             ignoreHTTPSErrors: true,
-            userDataDir: './tmp',
+            // userDataDir: './tmp',
         };
 
         const browser = await puppeteer.launch(options);
@@ -782,21 +786,27 @@ export default class AuctionYahooService {
         await Utils.sleep(1000);
         const cookies = await page.cookies();
 
-
         if (cookies.length > 4) {
             console.log(' ======== SUCCESS ======= ');
             await browser.close();
-            return cookies
+            let cookie = cookies
                 .map(function (c) {
                     return `${c.name}=${c.value}`;
                 })
                 .join('; ');
+            return {
+                status: 'SUCCESS',
+                cookie,
+            };
         } else {
             const data = await page.evaluate(() => document.querySelector('*').outerHTML);
             Fs.writeFileSync('preview.html', data);
             console.log(' ======== Failse ======= ');
             await browser.close();
-            throw new Error('Can not get cookies:', page.url());
+            return {
+                status: 'ERROR',
+                message: 'エラー。 管理者に連絡する ',
+            };
         }
     }
 

@@ -40,7 +40,12 @@
                   <div v-else style="color:red">
                     認証未
                   </div>
-                  <button class="btn btn-sm btn-info" @click="onReAuth(account)">再認証</button>
+                  <button
+                    class="btn btn-sm btn-info"
+                    @click="onReAuth(account)"
+                  >
+                    再認証
+                  </button>
                 </td>
                 <!-- <td>{{ account.status }}</td> -->
                 <!-- <td>{{ account.statusMessage }}</td> -->
@@ -103,7 +108,7 @@
           <label class="col-sm-4 control-label">パスワード: </label>
           <div class="col-sm-7">
             <input
-              type="password"
+              type="text"
               class="form-control input-sm"
               v-model="password"
               id="yahoo_password"
@@ -127,8 +132,8 @@
 
 <script>
 import YahooAccountApi from "@/services/YahooAccountApi";
-import { mapGetters } from 'vuex';
-const PROXY_STATUS_DIE = 'die'
+import { mapGetters } from "vuex";
+const PROXY_STATUS_DIE = "die";
 export default {
   name: "YahooAccounts",
   data() {
@@ -137,41 +142,55 @@ export default {
       account: {
         name: "",
         yahoo_id: "",
-        password: "",
+        password: ""
       },
       name: "",
       yahooId: "",
       password: "",
       editId: "",
-      tableAccount: null,
+      tableAccount: null
     };
   },
   async mounted() {
     await this.getListAccount();
-    this.createDatatable()
+    this.createDatatable();
   },
   computed: {
     qtyAccount() {
       return this.accounts.length;
     },
     ...mapGetters({
-      selectedYahooAccount: 'getSelectedYahooAccount'
+      selectedYahooAccount: "getSelectedYahooAccount"
     }),
-    isDieProxy () {
-      return this.selectedYahooAccount.proxy && this.selectedYahooAccount.proxy.length
-        ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE : false
+    isDieProxy() {
+      return this.selectedYahooAccount.proxy &&
+        this.selectedYahooAccount.proxy.length
+        ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE
+        : false;
     }
   },
   methods: {
-    createDatatable () {
+    createDatatable() {
       let self = this;
       if (self.$("#accountTable").DataTable()) {
-        self.$("#accountTable").DataTable().destroy();
+        self
+          .$("#accountTable")
+          .DataTable()
+          .destroy();
       }
       self.$nextTick(() => {
         self.$("#accountTable").DataTable({
           initComplete: function() {
-            $(this.api().table().container()).find('input').parent().wrap('<form>').parent().attr('autocomplete', 'off');
+            $(
+              this.api()
+                .table()
+                .container()
+            )
+              .find("input")
+              .parent()
+              .wrap("<form>")
+              .parent()
+              .attr("autocomplete", "off");
           },
           responsive: true,
           language: {
@@ -189,13 +208,13 @@ export default {
               sFirst: "先頭",
               sLast: "最終",
               sNext: "次",
-              sPrevious: "前",
+              sPrevious: "前"
             },
             oAria: {
               sSortAscending: ": 列を昇順に並べ替えるにはアクティブにする",
-              sSortDescending: ": 列を降順に並べ替えるにはアクティブにする",
-            },
-          },
+              sSortDescending: ": 列を降順に並べ替えるにはアクティブにする"
+            }
+          }
         });
       });
     },
@@ -223,31 +242,35 @@ export default {
       let credential = {
         name: this.name,
         yahoo_id: this.yahooId,
-        password: this.password,
+        password: this.password
       };
       if (this.editId) {
         credential._id = this.editId;
         let result = await YahooAccountApi.update(credential);
         if (result && result.status === 200) {
-          this.onCloseModal();
           let index = this.accounts.findIndex(
-            (account) => account._id === result.data._id
+            account => account._id === result.data.account._id
           );
-          this.$set(this.accounts, index, result.data)
-          this.$store.commit('SET_YAHOO_ACCOUNT', this.accounts)
-          this.createDatatable()
+          this.$set(this.accounts, index, result.data.account);
+          this.$store.commit("SET_YAHOO_ACCOUNT", this.accounts);
+          this.createDatatable();
+        } else {
+          await this.getListAccount();
         }
+        this.onCloseModal();
       } else {
         let result = await YahooAccountApi.create(credential);
         if (result && result.status === 200) {
-          this.onCloseModal();
-          this.accounts.push(result.data);
+          this.accounts.push(result.data.account);
           if (this.accounts.length == 1) {
-            this.$store.commit('SET_SELECTED_YAHOO_ACCOUNT', this.accounts[0])
+            this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", this.accounts[0]);
           }
-          this.$store.commit('SET_YAHOO_ACCOUNT', this.accounts)
-          this.createDatatable()
+          this.$store.commit("SET_YAHOO_ACCOUNT", this.accounts);
+          this.createDatatable();
+        } else {
+          await this.getListAccount();
         }
+        this.onCloseModal();
       }
     },
     onConfirmDeleteAccount(account, index) {
@@ -261,31 +284,49 @@ export default {
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
           confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  キャンセル',
+          cancelButtonText: '<i class="fa fa-times"></i>  キャンセル'
         })
-        .then(async (result) => {
+        .then(async result => {
           if (result.isConfirmed) {
             let res = await YahooAccountApi.delete(account);
             if (res && res.status == 200) {
               self.accounts.splice(index, 1);
-              self.$store.commit('SET_YAHOO_ACCOUNT', self.accounts)
+              self.$store.commit("SET_YAHOO_ACCOUNT", self.accounts);
               if (this.selectedYahooAccount._id === account._id) {
-                this.$store.commit('SET_SELECTED_YAHOO_ACCOUNT', this.accounts[0] || {})
+                this.$store.commit(
+                  "SET_SELECTED_YAHOO_ACCOUNT",
+                  this.accounts[0] || {}
+                );
               }
-              self.createDatatable()
-              self.$swal.fire(
-                "削除",
-                "削除成功",
-                "success"
-              );
+              self.createDatatable();
+              self.$swal.fire("削除", "削除成功", "success");
             }
           }
         });
     },
-    async onReAuth (account) {
-      let result = await YahooAccountApi.update(account);
+    async onReAuth(account) {
+      let result = await YahooAccountApi.update({
+        _id: account._id,
+        type: "RE_AUTH"
+      });
+      if (result.status === 200) {
+        let newData = result.data.account;
+        this.accounts = this.accounts.map(item => {
+          if (item._id === newData._id) {
+            return newData;
+          }
+          return item;
+        });
+      } else {
+        this.accounts = this.accounts.map(item => {
+          if (item._id === account._id) {
+            return { ...account, status: "ERROR" };
+          }
+          return item;
+        });
+      }
     }
-  },
+  }
 };
 </script>
 

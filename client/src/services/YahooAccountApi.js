@@ -7,10 +7,14 @@ export default {
     return Api.get(`${prefix}/get-list`);
   },
   create(credentials) {
-    return Api.post(`${prefix}/create-new`, credentials);
+    return Api.post(`${prefix}/create-new`, credentials, {
+      timeout: 5 * 60 * 1000
+    });
   },
   update(credentials) {
-    return Api.post(`${prefix}/edit/${credentials._id}`, credentials);
+    return Api.post(`${prefix}/edit/${credentials._id}`, credentials, {
+      timeout: 5 * 60 * 1000
+    });
   },
   delete(credentials) {
     return Api.post(`${prefix}/delete/${credentials._id}`, credentials);

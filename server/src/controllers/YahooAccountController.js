@@ -6,7 +6,6 @@ import bcrypt from 'bcryptjs';
 import QueueLoginYahooAuction from '../services/QueueLoginYahooAuction';
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
 import mongoose from 'mongoose';
-
 import ProductInfomationDefaultSchema from '../models/ProductInfomationDefaultModel';
 import AuctionPublicSettingSchema from '../models/AuctionPublicSettingModel';
 import ProductGlobalSettingSchema from '../models/ProductGlobalSettingModel';
@@ -14,8 +13,7 @@ import TradeMessageTemplateSchema from '../models/TradeMessageTemplateModel';
 import RatingTemplateSchema from '../models/RatingTemplateModel';
 import AuctionPublicSettingService from '../services/AuctionPublicSettingService';
 import ProductGlobalSettingService from '../services/ProductGlobalSettingService';
-import TradeMessageTemplateService from '../services/TradeMessageTemplateService';
-import RatingTemplateService from '../services/RatingTemplateService';
+import AccountYahooService from '../services/AccountYahooService';
 
 class YahooAccountController {
     static async getListAccount(req, res) {
@@ -58,14 +56,18 @@ class YahooAccountController {
                     let proxy = await ProxySchema.findOne({ status: 'live' });
                     newAccount.proxy_id = proxy._id;
 
-                    let result = await newAccount.save();
+                    await newAccount.save();
                     proxy.status = 'used';
                     await proxy.save();
 
-                    await ProductInfomationDefaultService.get(user._id, result._doc._id);
+                    await ProductInfomationDefaultService.get(user._id, newAccount._doc._id);
 
-                    QueueLoginYahooAuction.addNew(newAccount);
-                    response.success200(result._doc);
+                    let result = await AccountYahooService.getCookie(newAccount._id);
+                    if (result.status === 'ERROR') {
+                        return response.error400({ message: result.message });
+                    } else {
+                        return response.success200({ account: result.data });
+                    }
                 }
             } else {
                 return response.error400({ message: 'パラメータが必要です。' });
@@ -77,27 +79,45 @@ class YahooAccountController {
 
     static async editAccount(req, res) {
         let response = new Response(res);
-        const { name, yahoo_id, password } = req.body;
+        const { name, yahoo_id, password, type } = req.body;
         const { _id } = req.params;
         try {
-            if (name && yahoo_id && password) {
-                let existAccount = await YahooAccountModel.findById(_id);
-                if (!existAccount) {
-                    return response.error404({ ...req.body, message: 'Account not found' });
+            if (type === 'RE_AUTH') {
+                let result = await AccountYahooService.getCookie(_id);
+                if (result.status === 'ERROR') {
+                    return response.error400({ message: result.message });
                 } else {
-                    existAccount.name = name;
-                    existAccount.yahoo_id = yahoo_id;
-                    existAccount.password = password;
-                    existAccount.hash_password = bcrypt.hashSync(password, 10);
-                    let result = await existAccount.save();
-                    QueueLoginYahooAuction.addNew(existAccount);
-                    response.success200(result._doc);
+                    return response.success200({ account: result.data });
                 }
             } else {
-                response.error400();
+                if (name && yahoo_id && password) {
+                    let existAccount = await YahooAccountModel.findById(_id);
+                    if (!existAccount) {
+                        return response.error404({ ...req.body, message: 'Account not found' });
+                    } else {
+                        existAccount.name = name;
+                        if (existAccount.yahoo_id !== yahoo_id.trim() || existAccount.password !== password.trim()) {
+                            existAccount.yahoo_id = yahoo_id;
+                            existAccount.password = password;
+                            existAccount.hash_password = bcrypt.hashSync(password, 10);
+                            await existAccount.save();
+                            let result = await AccountYahooService.getCookie(existAccount._id);
+                            if (result.status === 'ERROR') {
+                                return response.error400({ message: result.message });
+                            } else {
+                                return response.success200({ account: result.data });
+                            }
+                        } else {
+                            let result = await existAccount.save();
+                            return response.success200({ account: result._doc });
+                        }
+                    }
+                } else {
+                    return response.error400();
+                }
             }
         } catch (error) {
-            response.error500(error);
+            return response.error500(error);
         }
     }
 
