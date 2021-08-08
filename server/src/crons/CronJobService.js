@@ -9,6 +9,7 @@ import CronHistoryModel from '../models/CronHistoryModel';
 import ProductYahooAuctionService from '../services/ProductYahooAuctionService';
 import ProductYahooSellingService from '../services/ProductYahooSellingService';
 import ProductYahooFinishedService from '../services/ProductYahooFinishedService';
+import UserService from '../services/UserService';
 
 let listCronJob = [];
 const CronJob = require('cron').CronJob;
@@ -24,14 +25,24 @@ export default class CronJobService {
         cron.schedule('0 0 0 * * *', async () => {
             CronJobService.startGetPointAuctionOfAccount();
         });
+        cron.schedule('0 0 0 * * *', async () => {
+            CronJobService.resetYahooAccount();
+        });
+    }
+    static async resetYahooAccount() {
+        console.log(' ========== resetYahooAccount ==========');
+        let listYahooAcount = await AccountYahooService.find({});
+        for (const account of listYahooAcount) {
+            account.count_error = 0;
+            await account.save();
+        }
     }
     static async startGetPointAuctionOfAccount() {
         console.log(' ====== START Get Point yahoo account ======');
-
         let listAccountYahoo = await AccountYahooService.find({});
         for (let i = 0; i < listAccountYahoo.length; i++) {
             const accountYahoo = listAccountYahoo[i];
-            if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
+            if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie && !accountYahoo.is_lock) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
                     let point = await AuctionYahooService.getPointAuction(accountYahoo.cookie, proxyResult.data);
@@ -48,7 +59,8 @@ export default class CronJobService {
         let listAccountYahoo = await AccountYahooService.find({});
         for (let i = 0; i < listAccountYahoo.length; i++) {
             const accountYahoo = listAccountYahoo[i];
-            if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
+            let is_lock_user = await UserService.checkUser_Lock_Exprired(accountYahoo.user_id);
+            if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie && !accountYahoo.is_lock) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
                     try {
@@ -234,6 +246,12 @@ export default class CronJobService {
                     cronNewList = new CronJob(
                         timeCron,
                         async function () {
+                            let is_lock_user = await UserService.checkUser_Lock_Exprired(schedule.user_id);
+                            let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(schedule.yahoo_account_id);
+                            if (is_lock_account || is_lock_user) {
+                                console.log(' ========== cronNewList Locked ==========');
+                                return;
+                            }
                             let results = await ProductYahooService.startUploadProductInListFolderId(
                                 schedule.user_id,
                                 schedule.yahoo_account_id,
@@ -247,6 +265,7 @@ export default class CronJobService {
                                     user_id: schedule.user_id,
                                     yahoo_account_id: schedule.yahoo_account_id,
                                 };
+                                await AccountYahooService.setUpCountError(schedule.yahoo_account_id, newCronHistory.error_count);
                                 await CronHistoryModel.create(newCronHistory);
                             }
                         },
@@ -279,6 +298,13 @@ export default class CronJobService {
                     cronRelist = new CronJob(
                         timeCron,
                         async function () {
+                            let is_lock_user = await UserService.checkUser_Lock_Exprired(schedule.user_id);
+                            let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(schedule.yahoo_account_id);
+                            if (is_lock_account || is_lock_user) {
+                                console.log(' ========== cronRelist Locked ==========');
+                                return;
+                            }
+
                             let results = await ProductYahooService.startReSubmitProduct(schedule.user_id, schedule.yahoo_account_id);
                             if (results.length > 0) {
                                 let newCronHistory = {
@@ -288,7 +314,7 @@ export default class CronJobService {
                                     user_id: schedule.user_id,
                                     yahoo_account_id: schedule.yahoo_account_id,
                                 };
-
+                                await AccountYahooService.setUpCountError(schedule.yahoo_account_id, newCronHistory.error_count);
                                 await CronHistoryModel.create(newCronHistory);
                             }
                         },
@@ -314,13 +340,19 @@ export default class CronJobService {
                 }
             }
 
-            // Cron calenda
+            // Cron calendar
             if (schedule.calendar_list_setting && schedule.new_list_auto && schedule.calendar_target_folder.length > 0) {
                 let timeCron = `0 ${schedule.new_list_start_time_minute} ${schedule.new_list_start_time_hour} * * *`;
                 if (!cronCalendar) {
                     cronCalendar = new CronJob(
                         timeCron,
                         async function () {
+                            let is_lock_user = await UserService.checkUser_Lock_Exprired(schedule.user_id);
+                            let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(schedule.yahoo_account_id);
+                            if (is_lock_account || is_lock_user) {
+                                console.log(' ========== cronCalendar Locked ==========');
+                                return;
+                            }
                             let results = await ProductYahooService.startUploadProductByCalendar(
                                 schedule.user_id,
                                 schedule.yahoo_account_id,
@@ -334,6 +366,7 @@ export default class CronJobService {
                                     user_id: schedule.user_id,
                                     yahoo_account_id: schedule.yahoo_account_id,
                                 };
+                                await AccountYahooService.setUpCountError(schedule.yahoo_account_id, newCronHistory.error_count);
                                 await CronHistoryModel.create(newCronHistory);
                             }
                         },

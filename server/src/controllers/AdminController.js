@@ -1,22 +1,20 @@
 import bcrypt from 'bcryptjs';
-import Utils from '../utils/Utils';
 import Response from '../utils/Response';
 import UserModel from '../models/UserModel';
 import VerifyCodeSchema from '../models/VerifyCodeModel';
 import ProxyModel from '../models/ProxyModel';
-import AsinAmazonService from '../services/AsinAmazonService';
+import BlacklistAsinService from '../services/BlacklistAsinService';
 import YahooAccountModel from '../models/YahooAccount';
 import AuctionPublicSettingModel from '../models/AuctionPublicSettingModel'
 import CategoryModel from '../models/CategoryModel'
 import FolderModel from '../models/FolderModel'
-import ProductAmazonModel from '../models/ProductAmazonModel'
 import ProductGlobalSettingModel from '../models/ProductGlobalSettingModel'
 import ProductInfomationDefaultModel from '../models/ProductInfomationDefaultModel'
 import ProductYahooEndedModel from '../models/ProductYahooEndedModel'
 import ProductYahooModel from '../models/ProductYahooModel'
 import RatingTemplateModel from '../models/RatingTemplateModel'
 import TradeMessageTemplateModel from '../models/TradeMessageTemplateModel'
-import SearchCodeModel from '../models/SearchCodeAmazonModel'
+import AsinModel from '../models/BlacklistAsinModel'
 
 import { sendEmail } from '../helpers/sendEmail';
 
@@ -28,14 +26,13 @@ const deleteUserData = async (userId) => {
         await AuctionPublicSettingModel.deleteMany({user_id: userId})
         await CategoryModel.deleteMany({user_id: userId})
         await FolderModel.deleteMany({user_id: userId})
-        await ProductAmazonModel.deleteMany({idUser: userId})
         await ProductGlobalSettingModel.deleteMany({user_id: userId})
         await ProductInfomationDefaultModel.deleteMany({user_id: userId})
         await ProductYahooEndedModel.deleteMany({user_id: userId})
         await ProductYahooModel.deleteMany({user_id: userId})
         await RatingTemplateModel.deleteMany({user_id: userId})
         await TradeMessageTemplateModel.deleteMany({user_id: userId})
-        await SearchCodeModel.deleteMany({idUser: userId})
+        await AsinModel.deleteMany({idUser: userId})
     } catch (error) {
         throw new Error(error.message)
     }
@@ -111,7 +108,8 @@ class AdminController {
     static async updateUser(req, res) {
         let response = new Response(res);
         try {
-            const { password, name, status, expired_at, note, re_password } = req.body;
+
+            const { password, name, status, expired_at, note, re_password, maxYahooAccount } = req.body;
             const { user_id } = req.params;
             let user = await UserModel.findById(user_id);
             if (user) {
@@ -119,6 +117,7 @@ class AdminController {
                 user.status = status;
                 user.expired_at = expired_at;
                 user.note = note;
+                user.maxYahooAccount = maxYahooAccount;
                 if (password) {
                     if (password != re_password) {
                         return response.error400({ message: 'パスワード（確認）に一貫性がありません' });
@@ -215,7 +214,7 @@ class AdminController {
     static async getWhiteListAsin(req, res) {
         let response = new Response(res);
         try {
-            let white_list = await AsinAmazonService.getWhiteList();
+            let white_list = await BlacklistAsinService.getWhiteList();
             return response.success200({ white_list });
         } catch (error) {
             console.log(error);
@@ -226,7 +225,7 @@ class AdminController {
     static async getBlackListAsin(req, res) {
         let response = new Response(res);
         try {
-            let black_list = await AsinAmazonService.getBlackList();
+            let black_list = await BlacklistAsinService.getBlackList();
             return response.success200({ black_list });
         } catch (error) {
             console.log(error);
@@ -239,7 +238,7 @@ class AdminController {
         try {
             let { asin, type, reason_for_prohibition } = req.body;
             let data = { asin, type, reason_for_prohibition };
-            let result = await AsinAmazonService.create(data);
+            let result = await BlacklistAsinService.create(data);
             return response.success200({ asin: result });
         } catch (error) {
             console.log(error);
@@ -251,7 +250,7 @@ class AdminController {
         let response = new Response(res);
         try {
             let { _id } = req.params;
-            let result = await AsinAmazonService.delete(_id);
+            let result = await BlacklistAsinService.delete(_id);
             return response.success200({ success: result });
         } catch (error) {
             console.log(error);

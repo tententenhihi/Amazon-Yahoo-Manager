@@ -422,6 +422,12 @@ export default {
       return this.LISTING_PROGRESS.find(item => item.value === progress)
         .display;
     }
+  },
+  created() {
+    const selectedYahooAccount = this.$store.state.selectedYahooAccount;
+    if (selectedYahooAccount && selectedYahooAccount.is_lock) {
+      this.$routes.push({ name: "YahooAccounts" });
+    }
   }
 };
 </script>

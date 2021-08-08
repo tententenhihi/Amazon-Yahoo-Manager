@@ -2,7 +2,6 @@
   <div>
     <v-system-bar color="#6777ef" height="48px" class="app-bar">
       <v-spacer></v-spacer>
-
       <v-menu
         transition="slide-y-transition"
         rounded

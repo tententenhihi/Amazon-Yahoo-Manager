@@ -20,18 +20,6 @@ export default class AmazonController {
         }
     }
 
-    static async getInfoProductByASIN(req, res) {
-        let response = new Response(res);
-        try {
-            let asin = req.body.asin;
-            let productInfo = await ProductAmazonService.getProductByAsin(asin);
-            return response.success200({ productInfo });
-        } catch (error) {
-            console.log(error);
-            return response.error500(error);
-        }
-    }
-
     static async createProduct(req, res) {
         let response = new Response(res);
         try {
@@ -54,7 +42,7 @@ export default class AmazonController {
             if (!data.delivery) {
                 response.error400({ message: '配達は必須です' });
             }
-            if (!data.countProduct) {
+            if (!data.count) {
                 response.error400({ message: '品数は必須です' });
             }
             if (!data.description) {
@@ -82,19 +70,6 @@ export default class AmazonController {
             let profit = 0;
             let price = 0;
 
-            if (infoProfitDefault && basecost) {
-                if (infoProfitDefault.yahoo_auction_profit_type == 0) {
-                    profit = (basecost * infoProfitDefault.yahoo_auction_price_profit) / 100;
-                } else {
-                    profit = infoProfitDefault.yahoo_auction_static_profit;
-                }
-                price = basecost + profit + infoProfitDefault.amazon_shipping;
-                price = price / (1 - infoProfitDefault.yahoo_auction_fee / 100);
-                price = Math.ceil(price);
-                profit = Math.ceil(profit);
-            } else {
-                price = basecost;
-            }
 
             if (data.shipping) {
                 price += parseFloat(data.shipping.toString());
@@ -131,7 +106,7 @@ export default class AmazonController {
             if (!data.delivery) {
                 response.error400({ message: '配達は必須です' });
             }
-            if (!data.countProduct) {
+            if (!data.count) {
                 response.error400({ message: '品数は必須です' });
             }
             if (!data.description) {
@@ -163,22 +138,6 @@ export default class AmazonController {
             let profit = 0;
             let price = 0;
 
-            if (infoProfitDefault && basecost) {
-                if (infoProfitDefault.yahoo_auction_profit_type == 0) {
-                    profit = (basecost * infoProfitDefault.yahoo_auction_price_profit) / 100;
-                } else {
-                    profit = infoProfitDefault.yahoo_auction_static_profit;
-                }
-                price = basecost + profit + infoProfitDefault.amazon_shipping;
-                price = price / (1 - infoProfitDefault.yahoo_auction_fee / 100);
-                price = Math.ceil(price);
-                profit = Math.ceil(profit);
-            } else {
-                price = basecost;
-            }
-            if (data.shipping) {
-                price += parseFloat(data.shipping.toString());
-            }
             data = { ...data, basecost, profit, price };
             let result = await ProductAmazonService.update(_id, data);
             if (result) {
@@ -248,7 +207,6 @@ export default class AmazonController {
                     return response.error400({ message: 'Not found amazon product.!' });
                 }
                 productAmazon.folder_id = folder_id;
-                productAmazon.is_convert_yahoo = true;
                 productAmazon.basecost = parseInt(productAmazon.basecost) || 0;
                 productAmazon.profit = parseInt(productAmazon.profit) || 0;
                 productAmazon.price = parseInt(productAmazon.price) || 0;
@@ -289,7 +247,6 @@ export default class AmazonController {
                     asin_amazon: productAmazon.asin,
                     images: productAmazon.images,
                     user_id: productAmazon.idUser,
-                    foreign_key: productAmazon._id,
                     product_yahoo_title: title,
                     yahoo_account_id: productAmazon.yahoo_account_id,
                     start_price: parseInt(productAmazon.price) || 0,
@@ -303,9 +260,8 @@ export default class AmazonController {
                     product_amazon_id: productAmazon._id,
                     created: Date.now(),
                     listing_status: 'NOT_LISTED',
-                    count_product: productAmazon.countProduct && productAmazon.countProduct > 1 ? productAmazon.countProduct : 1,
+                    count_product: productAmazon.count && productAmazon.count > 1 ? productAmazon.count : 1,
                     amazon_shipping_fee: productAmazon.shipping,
-                    yahooAuctionFee: defaultSetting.yahoo_auction_fee || 10,
                     _id: null,
                 };
                 await ProductYahooService.create(productYahoo);

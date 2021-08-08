@@ -135,10 +135,11 @@ export default class AuctionYahooService {
             console.log(' ========= START UPLOAD YAHOO ========= ');
             // Check Data
             if (!productData.yahoo_auction_category_id || productData.yahoo_auction_category_id === '0') {
-                return {
-                    status: 'ERROR',
-                    statusMessage: 'カテゴリーは必須です',
-                };
+                productData.yahoo_auction_category_id = 26395;
+                // return {
+                //     status: 'ERROR',
+                //     statusMessage: 'カテゴリーは必須です',
+                // };
             }
             if (!productData.start_price) {
                 return {
@@ -375,7 +376,7 @@ export default class AuctionYahooService {
                 bidCreditLimit: productData.bid_credit_limit,
                 AutoExtension: productData.auto_extension,
                 numResubmit: productData.num_resubmit,
-                ReservePrice: productData.reserve_price,
+                // ReservePrice: productData.reserve_price,
 
                 Description: descrionUpload || productData.description,
                 Description_rte: descrionUpload || productData.description,

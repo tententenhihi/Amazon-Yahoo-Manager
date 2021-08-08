@@ -32,12 +32,12 @@
         </div>
         <div class="sidebar-menu pt-10">
           <ul>
-            <li class="sidebar-dropdown">
+            <!-- <li class="sidebar-dropdown">
               <router-link :to="{ name: 'Dashboard' }">
                 <i class="fa fa-home"></i>
                 <span>ダッシュボード</span>
               </router-link>
-            </li>
+            </li> -->
             <li class="sidebar-dropdown">
               <router-link :to="{ name: 'AsinManagement' }">
                 <i class="fa fa-shopping-cart"></i>
@@ -45,11 +45,16 @@
               </router-link>
             </li>
             <li class="sidebar-dropdown">
-              <a href="#" @click="showDropdown(2)">
+              <!-- <a href="#" @click="showDropdown(2)">
                 <i class="fa fa-check-square"></i>
                 <span>出品管理</span>
-              </a>
-              <div
+              </a> -->
+              <router-link :to="'/yahoo-auction-products'">
+                <i class="fa fa-calendar"></i>
+                <span>Y!オーク取扱商品管理</span>
+              </router-link>
+
+              <!-- <div
                 class="sidebar-submenu"
                 :class="{ 'd-block': dropdownOpen == 2 }"
               >
@@ -67,9 +72,9 @@
                     </router-link>
                   </li>
                 </ul>
-              </div>
+              </div> -->
             </li>
-            <li class="sidebar-dropdown">
+            <li class="sidebar-dropdown" v-if="!isLockAccount">
               <a href="#" @click="showDropdown(4)">
                 <i class="fa fa-list"></i>
                 <span>出品した商品管理</span>
@@ -234,8 +239,14 @@ export default {
   },
   computed: {
     ...mapGetters({
-      userInfo: "getUserInfo"
-    })
+      userInfo: "getUserInfo",
+      selectedYahooAccount: "getSelectedYahooAccount"
+    }),
+    isLockAccount() {
+      if (this.selectedYahooAccount && this.selectedYahooAccount.is_lock) {
+        return true;
+      } else return false;
+    }
   },
   methods: {
     onClickLogout() {

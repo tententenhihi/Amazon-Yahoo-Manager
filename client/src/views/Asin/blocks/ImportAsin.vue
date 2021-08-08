@@ -1,19 +1,36 @@
 <template>
   <div class="mx-20 mt-30">
-    <div class="form-group row">
+    <!-- <div class="form-group row">
       <label class="font-weight-bold col-xl-2 col-md-3 col-sm-4 mt-10" for="group-id">ASINグループID (*): </label>
       <input type="text" class="form-control col-xl-4 col-md-5 col-sm-6" placeholder="ASINグループIDを入力"
         id="group-id" v-model="groupId">
-    </div>
+    </div> -->
     <div class="row my-20">
-      <textarea class="form-control col-md-6" id="" cols="30" rows="10"
-        placeholder="ASINを入力、一行で一つだけです。" v-model="asinString"></textarea>
+      <textarea
+        class="form-control col-md-6"
+        id=""
+        cols="30"
+        rows="10"
+        placeholder="ASINを入力、一行で一つだけです。"
+        v-model="asinString"
+      ></textarea>
       <div class="col-md-4 mt-10">
-        <button class="btn btn-common btn-info mb-10" @click="$refs.inputCSV.click()">
+        <button
+          class="btn btn-common btn-info mb-10"
+          @click="$refs.inputCSV.click()"
+        >
           CSVインポート
         </button>
-        <input ref="inputCSV" hidden type="file" name="" accept=".txt" id="" @change="onSelectFileCSV" />
-        <br>
+        <input
+          ref="inputCSV"
+          hidden
+          type="file"
+          name=""
+          accept=".txt"
+          id=""
+          @change="onSelectFileCSV"
+        />
+        <br />
         <button class="btn btn-common btn-success" @click="onClickAddAsin">
           プロセスへ
         </button>
@@ -23,23 +40,23 @@
 </template>
 
 <script>
-import AsinApi from '@/services/asinApi'
-import { mapGetters } from 'vuex';
+import AsinApi from "@/services/asinApi";
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'ImportAsin',
+  name: "ImportAsin",
   data() {
     return {
       asinString: "",
-      groupId: "",
+      // groupId: "",
       isErrorGroupId: false,
       isErrorasinString: false
     };
   },
   computed: {
     ...mapGetters({
-      selectedYahooAccount: 'getSelectedYahooAccount'
-    }),
+      selectedYahooAccount: "getSelectedYahooAccount"
+    })
   },
   methods: {
     async readFileText(file) {
@@ -74,14 +91,14 @@ export default {
     },
     async onClickAddAsin() {
       try {
-        if (!this.groupId || this.groupId.trim() === "") {
-          this.isErrorGroupId = true;
-          return this.$swal.fire({
-            icon: "error",
-            title: "エラー",
-            text: "接続エラー!"
-          });
-        }
+        // if (!this.groupId || this.groupId.trim() === "") {
+        //   this.isErrorGroupId = true;
+        //   return this.$swal.fire({
+        //     icon: "error",
+        //     title: "エラー",
+        //     text: "接続エラー!"
+        //   });
+        // }
         if (!this.asinString || this.asinString.trim() === "") {
           this.isErrorasinString = true;
           return this.$swal.fire({
@@ -93,10 +110,14 @@ export default {
         let listCode = this.asinString
           .split("\n")
           .filter(item => item.trim() != "");
-        let res = await AsinApi.add({ listCode, groupId: this.groupId, yahoo_account_id: this.selectedYahooAccount._id });
+        let res = await AsinApi.add({
+          listCode,
+          // groupId: this.groupId,
+          yahoo_account_id: this.selectedYahooAccount._id
+        });
         if (res && res.status === 200) {
           this.asinString = "";
-          this.groupId = "";
+          // this.groupId = "";
           await this.$emit("getListAsin");
           this.$swal.fire({
             icon: "success",
@@ -112,9 +133,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

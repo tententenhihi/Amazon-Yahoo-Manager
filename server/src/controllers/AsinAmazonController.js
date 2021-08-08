@@ -1,10 +1,10 @@
 import QueueGetProductAmazon from '../services/QueueGetProductAmazon';
-import CodeSearchAmazonService from '../services/SearchCodeAmazonService';
+import BlacklistAsinService from '../services/BlacklistAsinService';
 import AsinAmazonService from '../services/AsinAmazonService';
 import Response from '../utils/Response';
-import Utils from '../utils/Utils'
+import Utils from '../utils/Utils';
 
-export default class CodeSearchAmazonController {
+export default class AsinAmazonController {
     static async getBlackList(req, res) {
         let response = new Response(res);
         try {
@@ -13,55 +13,68 @@ export default class CodeSearchAmazonController {
             //     ...req.body,
             //     idUser: user._id,
             // };
-            // let listSearchCode = await CodeSearchAmazonService.get(payload);
-            return response.success200({ listSearchCodeBlackList: [] });
+            // let listAsin = await AsinAmazonService.get(payload);
+            return response.success200({ listAsinBlackList: [] });
         } catch (error) {
             console.log(error);
             return response.error500(error);
         }
     }
+
     static async get(req, res) {
         let response = new Response(res);
         try {
             let user = req.user;
-            let {yahoo_account_id} = req.params
+            // let { yahoo_account_id } = req.params;
             let payload = {
                 ...req.body,
                 idUser: user._id,
-                yahoo_account_id
+                // yahoo_account_id,
             };
-            let listSearchCode = await CodeSearchAmazonService.get(payload);
-            let getBackList = await AsinAmazonService.getBlackList()
-            return response.success200({ listSearchCode, black_list: getBackList });
+            let listAsin = await AsinAmazonService.get(payload, user._id);
+            let getBackList = await BlacklistAsinService.getBlackList();
+            return response.success200({ listAsin, black_list: getBackList });
         } catch (error) {
             console.log(error);
             return response.error500(error);
         }
     }
+
     static async add(req, res) {
         let response = new Response(res);
         try {
             let user = req.user;
             let listCode = req.body.listCode;
-            let groupId = req.body.groupId;
+            // let groupId = req.body.groupId;
             let type = req.body.type;
-            let yahoo_account_id = req.body.yahoo_account_id
+            let yahoo_account_id = req.body.yahoo_account_id;
             if (!type) {
                 type = 'ASIN';
             }
-            if (listCode && listCode.length > 0 && groupId) {
-                let listSearchCodeNew = [];
-                let queryKey = Utils.generateKey()
+            if (
+                listCode &&
+                listCode.length > 0
+                // && groupId
+            ) {
+                let listAsinNew = [];
+                let queryKey = Utils.generateKey();
                 for (let i = 0; i < listCode.length; i++) {
                     const code = listCode[i];
-                    let newSearchCodeData = { code, idUser: user._id, type, groupId, yahoo_account_id, query_key: queryKey };
-                    let newSearchCode = await CodeSearchAmazonService.add(newSearchCodeData);
-                    QueueGetProductAmazon.addNew(newSearchCode);
-                    listSearchCodeNew.push(newSearchCode);
+                    let newAsinData = {
+                        code,
+                        idUser: user._id,
+                        type,
+                        // groupId,
+                        yahoo_account_id,
+                        query_key: queryKey,
+                    };
+                    let newAsin = await AsinAmazonService.add(newAsinData);
+                    QueueGetProductAmazon.addNew(newAsin);
+                    listAsinNew.push(newAsin);
                 }
-                return response.success200({ listSearchCodeNew });
+                return response.success200({ listAsinNew });
             }
-            return response.error400({ message: 'data sai.!' });
+            return response.error400({ message: 'データエラー' });
         } catch (error) {
             console.log(error);
             return response.error500(error);
@@ -74,7 +87,7 @@ export default class CodeSearchAmazonController {
             if (req.body) {
                 return response.success200({});
             }
-            return response.error400({ message: 'data sai.!' });
+            return response.error400({ message: 'データエラー' });
         } catch (error) {
             console.log(error);
             return response.error500(error);
@@ -85,11 +98,11 @@ export default class CodeSearchAmazonController {
         let response = new Response(res);
         try {
             let user = req.user;
-            if (req.body.idSearchCode) {
-                let result = await CodeSearchAmazonService.delete(req.body.idSearchCode, user._id);
+            if (req.body.idAsin) {
+                let result = await AsinAmazonService.delete(req.body.idAsin, user._id);
                 return response.success200({ result });
             }
-            return response.error400({ message: 'data sai.!' });
+            return response.error400({ message: 'データエラー' });
         } catch (error) {
             console.log(error);
             return response.error500(error);

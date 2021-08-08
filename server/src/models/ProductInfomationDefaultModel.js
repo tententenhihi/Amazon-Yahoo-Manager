@@ -14,7 +14,7 @@ var ProductInfomationDefault = new Schema({
     },
     status: {
         type: String,
-        default: 'used',
+        default: 'new',
     },
     status_comment: {
         type: String,
@@ -34,7 +34,7 @@ var ProductInfomationDefault = new Schema({
     },
     closing_time: {
         type: Number,
-        default: 0,
+        default: 23,
     },
     retpolicy: {
         type: String,
@@ -58,15 +58,15 @@ var ProductInfomationDefault = new Schema({
     },
     auto_extension: {
         type: String,
-        default: 'no',
+        default: 'yes',
     },
     close_early: {
         type: String,
-        default: 'no',
+        default: 'yes',
     },
     num_resubmit: {
         type: Number,
-        default: 0,
+        default: 1,
     },
     ship_time: {
         type: String,
@@ -77,20 +77,20 @@ var ProductInfomationDefault = new Schema({
         default: 'buyer',
     },
     location: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 23,
     },
     city: {
         type: String,
-        default: '',
+        default: '千代田区',
     },
     ship_name1: {
         type: String,
-        default: '',
+        default: 'ヤマト運輸',
     },
     ship_fee1: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 1300,
     },
     ship_name2: {
         type: String,
@@ -114,7 +114,7 @@ var ProductInfomationDefault = new Schema({
     },
     ship_schedule: {
         type: Number,
-        default: 1,
+        default: 7,
     },
     featured_amount: {
         type: String,
@@ -136,43 +136,44 @@ var ProductInfomationDefault = new Schema({
         type: String,
         default: 'no',
     },
-    extra_stock: {
-        type: Number,
-        default: 0,
-    },
 
     // caculate profit
-    profit: {
-        type: Number,
-        default: 0,
+    list_profit: {
+        type: Array,
+        default: [
+            {
+                price: 1,
+                persent_profit: '20%',
+            },
+            {
+                price: 5000,
+                persent_profit: '20%',
+            },
+            {
+                price: 7000,
+                persent_profit: '20%',
+            },
+            {
+                price: 10000,
+                persent_profit: '20%',
+            },
+            {
+                price: 999999,
+                persent_profit: '20%',
+            },
+        ],
     },
     yahoo_auction_shipping: {
         type: Number,
-        default: 0,
-    },
-    makeshop_shipping: {
-        type: Number,
-        default: 0,
-    },
-    amazon_shipping: {
-        type: Number,
-        default: 0,
+        default: 1300,
     },
     yahoo_auction_fee: {
         type: Number,
-        default: 0,
+        default: 10,
     },
-    yahoo_auction_profit_type: {
+    profit_stop: {
         type: Number,
-        default: 0,
-    },
-    yahoo_auction_price_profit: {
-        type: Number,
-        default: 0,
-    },
-    yahoo_auction_static_profit: {
-        type: Number,
-        default: 0,
+        default: 200,
     },
     yahoo_auction_bid_price: {
         type: Number,

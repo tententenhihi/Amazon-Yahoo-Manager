@@ -87,7 +87,7 @@ export default {
       try {
         let res = await AsinApi.get();
         if (res && res.status === 200) {
-          this.listAsin = res.data.listSearchCode;
+          this.listAsin = res.data.listAsin;
         }
       } catch (error) {
         this.$swal.fire({

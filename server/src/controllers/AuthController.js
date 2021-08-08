@@ -62,13 +62,13 @@ class AuthController {
                 }
                 if (userLogin) {
                     if (userLogin.status === 'LOCKED') {
-                        return response.error400({ message: 'アカウントがロックされました' });
+                        return response.success200({ locked: true });
                     }
                     if (!userLogin.verified_at) {
                         return response.error400({ message: 'アカウントの有効化についてはメールを確認してください' });
                     }
                     if (userLogin.expired_at && new Date(userLogin.expired_at).getTime() <= new Date().getTime()) {
-                        return response.error400({ message: '使用期間が切れました。管理者に連絡してください' });
+                        return response.success200({ exprired: true });
                     }
                     let checkPassword = userLogin.comparePassword(password);
                     if (checkPassword) {

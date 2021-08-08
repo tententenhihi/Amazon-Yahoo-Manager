@@ -502,6 +502,12 @@ export default {
       this.isCheckAllProduct = false;
       this.selectedProduct = [];
     }
+  },
+  created() {
+    const selectedYahooAccount = this.$store.state.selectedYahooAccount;
+    if (selectedYahooAccount && selectedYahooAccount.is_lock) {
+      this.$routes.push({ name: "YahooAccounts" });
+    }
   }
 };
 </script>

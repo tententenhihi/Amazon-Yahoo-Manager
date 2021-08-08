@@ -3,7 +3,7 @@ import AuthRouter from './AuthRouter';
 import UserRouter from './UserRouter';
 import FileRouter from './FileRouter';
 import AmazonRouter from './AmazonRouter';
-import SearchCodeRouter from './SearchCodeRouter';
+import AsinRouter from './AsinRouter';
 import ProductAmazonRouter from './ProductAmazonRouter';
 import YahooAccountRouter from './YahooAccountRouter';
 import ProductGlobalSettingRouter from './ProductGlobalSettingRouter';
@@ -31,7 +31,7 @@ router.get('/', function (req, res, next) {
 router.use('/auth', AuthRouter);
 router.use('/file', FileRouter);
 router.use('/api/v1/amazon', AmazonRouter);
-router.use('/api/v1/amazon/search-code', SearchCodeRouter);
+router.use('/api/v1/amazon/asin', AsinRouter);
 router.use('/api/v1/amazon/product', ProductAmazonRouter);
 router.use('/api/v1/yahoo-account', YahooAccountRouter);
 router.use('/api/v1/product-global-setting', ProductGlobalSettingRouter);

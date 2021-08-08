@@ -35,10 +35,10 @@ class YahooAccountController {
         let user = req.user;
         try {
             if (name && yahoo_id && password) {
-                let quantityAccount = await YahooAccountModel.find({ user_id: user._id }).countDocuments();
+                let quantityAccount = await YahooAccountModel.find({ user_id: user._id, is_lock: false }).countDocuments();
                 user = await UserModel.findById(user._id);
                 if (quantityAccount >= user.maxYahooAccount) {
-                    return response.error404({ ...req.body, message: 'Your Account is maximum.You can not create new account' });
+                    return response.error404({ ...req.body, message: 'アカウントは最大です。新しいアカウントを作成することはできません。 ' });
                 }
                 let isExistAccount = await YahooAccountModel.findOne({
                     yahoo_id: yahoo_id,
@@ -79,8 +79,10 @@ class YahooAccountController {
 
     static async editAccount(req, res) {
         let response = new Response(res);
-        const { name, yahoo_id, password, type } = req.body;
+        const { name, yahoo_id, password, type, is_lock } = req.body;
         const { _id } = req.params;
+        let user = req.user;
+
         try {
             if (type === 'RE_AUTH') {
                 let result = await AccountYahooService.getCookie(_id);
@@ -93,9 +95,20 @@ class YahooAccountController {
                 if (name && yahoo_id && password) {
                     let existAccount = await YahooAccountModel.findById(_id);
                     if (!existAccount) {
-                        return response.error404({ ...req.body, message: 'Account not found' });
+                        return response.error404({ ...req.body, message: 'アカウントが見つかりませんでした' });
                     } else {
+                        if (!is_lock) {
+                            let quantityAccount = await YahooAccountModel.find({ user_id: user._id, is_lock: false }).countDocuments();
+                            user = await UserModel.findById(user._id);
+                            if (quantityAccount >= user.maxYahooAccount) {
+                                return response.error400({
+                                    ...req.body,
+                                    message: '枠を解除すると契約数をオーバーします。アカウント枠を追加購入してください。',
+                                });
+                            }
+                        }
                         existAccount.name = name;
+                        existAccount.is_lock = is_lock;
                         if (existAccount.yahoo_id !== yahoo_id.trim() || existAccount.password !== password.trim()) {
                             existAccount.yahoo_id = yahoo_id;
                             existAccount.password = password;

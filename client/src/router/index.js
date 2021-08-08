@@ -14,10 +14,6 @@ const ChangePassword = () => import("@/views/users/ChangePassword.vue");
 
 const AsinManagement = () => import("@/views/Asin/AsinManagement.vue");
 
-const ProductAmazon = () => import("@/views/ProductAmazon");
-const CreateProductAmazon = () =>
-  import("@/views/ProductAmazon/CreateProductAmazon.vue");
-
 const YahooAuctionProducts = () => import("@/views/product-yahoo/ProductLocal");
 const CreateProductYahooLocal = () =>
   import("@/views/product-yahoo/ProductLocal/CreateProductLocal.vue");
@@ -87,23 +83,6 @@ const router = new Router({
       component: ResetPassword
     },
     {
-      path: "/",
-      alias: "/dashboard",
-      name: "Dashboard",
-      component: Dashboard,
-      meta: {
-        requiredAuth: true
-      }
-    },
-    {
-      path: "/asin",
-      name: "asin",
-      component: Asin,
-      meta: {
-        requiredAuth: true
-      }
-    },
-    {
       path: "/yahoo-accounts",
       name: "YahooAccounts",
       component: YahooAccounts,
@@ -122,26 +101,17 @@ const router = new Router({
       }
     },
     {
-      path: "/asin-management",
-      name: "AsinManagement",
+      path: "/",
+      name: "AsinManagements",
       component: AsinManagement,
       meta: {
         requiredAuth: true
       }
     },
     {
-      path: "/amazon-products",
-      name: "AmazonProducts",
-      component: ProductAmazon,
-      meta: {
-        requiredAuth: true,
-        type: "product"
-      }
-    },
-    {
-      path: "/product/:id",
-      name: "CreateProductAmazon",
-      component: CreateProductAmazon,
+      path: "/asin-management",
+      name: "AsinManagement",
+      component: AsinManagement,
       meta: {
         requiredAuth: true
       }
@@ -381,6 +351,16 @@ const router = new Router({
 const waitForStorageToBeReady = async (to, from, next) => {
   const authUser = store.state.isUserLoggedIn;
   const user = store.state.user;
+  const selectedYahooAccount = store.state.selectedYahooAccount;
+  if (
+    (to.path === "/yahoo-auction-finished" ||
+      to.path === "/yahoo-auction-trades" ||
+      to.path === "/yahoo-auction-sellings") &&
+    selectedYahooAccount &&
+    selectedYahooAccount.is_lock
+  ) {
+    return next({ name: "YahooAccounts" });
+  }
   if (
     ((to.name !== "Login" && to.meta.requiredAuth) || to.name === null) &&
     !authUser
@@ -390,13 +370,13 @@ const waitForStorageToBeReady = async (to, from, next) => {
     if (user.type == "admin") {
       next();
     } else {
-      next({ name: "Dashboard" });
+      next({ name: "AsinManagement" });
     }
   } else if (!to.meta.isAdmin && authUser && user.type == "admin") {
     next({ name: "AdminUsers" });
   } else {
     if ((to.name === null || to.name === "Login") && authUser) {
-      next({ name: "Dashboard" });
+      next({ name: "AsinManagement" });
     }
     next();
   }

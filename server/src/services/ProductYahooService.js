@@ -1,19 +1,110 @@
-import ProductYahooSchema from '../models/ProductYahooModel';
+import ProductYahooModel from '../models/ProductYahooModel';
 import ProductAmazonSchema from '../models/ProductAmazonModel';
 import AccountYahooService from '../services/AccountYahooService';
 import ProxyService from '../services/ProxyService';
 import AuctionYahooService from '../services/AuctionYahooService';
 import fs from 'fs';
+import fsExtra from 'fs-extra';
+
 import mongoose from 'mongoose';
 import ProductYahooAuctionService from './ProductYahooAuctionService';
 import ProductGlobalSettingService from './ProductGlobalSettingService';
+import ProductInfomationDefaultService from './ProductInfomationDefaultService';
+import CategoryService from './CategoryService';
+
 import Utils from '../utils/Utils';
 var isCalendarUploading = false;
 
 export default class ProductYahooService {
+    static async calculatorPrice(defaultSetting, import_price, amazon_shipping_fee) {
+        //Tỷ suất lơi nhuận
+        let profitPersent = '';
+        for (let i = 0; i < defaultSetting.list_profit.length; i++) {
+            const item_profile = defaultSetting.list_profit[i];
+            if (item_profile.price < import_price) {
+                if (i == 0) {
+                    profitPersent = defaultSetting.list_profit[i].persent_profit;
+                } else {
+                    profitPersent = defaultSetting.list_profit[i - 1].persent_profit;
+                }
+                break;
+            }
+            if (i === defaultSetting.list_profit.length - 1) {
+                profitPersent = defaultSetting.list_profit[i].persent_profit;
+            }
+        }
+
+        //Phí gửi ở yahoo
+        let ship_fee_yahoo = defaultSetting.yahoo_auction_shipping;
+        //Phí giao dịch ở yahoo
+        let fee_auction_yahoo = 0.1; // 10% default
+        //Giá sản phẩm bán
+        let price = 0;
+        //Giá khởi điểm (Nếu tính là <= 0 thì để là 1)
+        let start_price = 0;
+        //Số tiền nhận về
+        let amount_received = 0;
+        //Lợi nhuận gộp
+        let gross_profit = 0;
+        //Lợi nhuận thực tế
+        let actual_profit = 0;
+        //Giá mua luôn
+        let bid_or_buy_price = 0;
+        // Nguyên giá
+        let original_price = import_price + amazon_shipping_fee;
+
+        if (profitPersent.endsWith('%')) {
+            profitPersent = profitPersent.replace('%', '');
+            profitPersent = parseFloat(profitPersent.toString().trim());
+            price = parseInt(import_price / (1 - profitPersent / 100 - fee_auction_yahoo / 100));
+
+            start_price = price - ship_fee_yahoo;
+            if (start_price <= 0) {
+                start_price = 1;
+            }
+
+            amount_received = price - parseInt(price * fee_auction_yahoo);
+
+            gross_profit = price - original_price;
+
+            actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
+
+            bid_or_buy_price = price + defaultSetting.yahoo_auction_bid_price;
+        } else if (profitPersent.startsWith('/')) {
+            profitPersent = profitPersent.replace('/', '');
+            profitPersent = parseInt(profitPersent.toString().trim());
+
+            price = parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * (1 + fee_auction_yahoo));
+
+            start_price = price - ship_fee_yahoo;
+            if (start_price <= 0) {
+                start_price = 1;
+            }
+
+            amount_received = price - parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * fee_auction_yahoo);
+
+            gross_profit = price - original_price;
+
+            actual_profit =
+                gross_profit - ship_fee_yahoo - parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * fee_auction_yahoo);
+
+            bid_or_buy_price = price + defaultSetting.yahoo_auction_bid_price;
+        }
+
+        return {
+            import_price,
+            price,
+            start_price,
+            bid_or_buy_price,
+            amount_received,
+            gross_profit,
+            actual_profit,
+            original_price,
+        };
+    }
     static async find(data) {
         try {
-            let result = await ProductYahooSchema.find(data);
+            let result = await ProductYahooModel.find(data);
             return result;
         } catch (error) {
             console.log(error);
@@ -22,7 +113,7 @@ export default class ProductYahooService {
     }
     static async get(idUser, yahoo_account_id) {
         try {
-            let result = await ProductYahooSchema.find({ user_id: idUser, yahoo_account_id });
+            let result = await ProductYahooModel.find({ user_id: idUser, yahoo_account_id });
             return result;
         } catch (error) {
             console.log(error);
@@ -31,7 +122,7 @@ export default class ProductYahooService {
     }
     static async create(data) {
         try {
-            let product = await ProductYahooSchema.create(data);
+            let product = await ProductYahooModel.create(data);
             return product;
         } catch (error) {
             console.log(error);
@@ -40,7 +131,7 @@ export default class ProductYahooService {
     }
     static async findOne(data) {
         try {
-            let product = await ProductYahooSchema.findOne(data);
+            let product = await ProductYahooModel.findOne(data);
             return product;
         } catch (error) {
             console.log(error);
@@ -49,7 +140,7 @@ export default class ProductYahooService {
     }
     static async update(_id, data) {
         try {
-            let product = await ProductYahooSchema.findOneAndUpdate({ _id: _id }, data, { new: true });
+            let product = await ProductYahooModel.findOneAndUpdate({ _id: _id }, data, { new: true });
             return product._doc;
         } catch (error) {
             console.log(error);
@@ -58,7 +149,7 @@ export default class ProductYahooService {
     }
     static async show(productId) {
         try {
-            let product = await ProductYahooSchema.findById(productId);
+            let product = await ProductYahooModel.findById(productId);
             if (!product) {
                 throw new Error('Product not found');
             } else {
@@ -71,7 +162,7 @@ export default class ProductYahooService {
     }
     static async delete(productId) {
         try {
-            let product = await ProductYahooSchema.findById(productId);
+            let product = await ProductYahooModel.findById(productId);
             if (!product) {
                 throw new Error('Product not found');
             } else {
@@ -79,7 +170,6 @@ export default class ProductYahooService {
                     let productAmazon = await ProductAmazonSchema.findById(product.product_amazon_id);
                     if (productAmazon) {
                         productAmazon.folder_id = '';
-                        productAmazon.is_convert_yahoo = false;
                         await productAmazon.save();
                     }
                 }
@@ -104,7 +194,7 @@ export default class ProductYahooService {
         try {
             for (let index = 0; index < ids.length; index++) {
                 const id = ids[index];
-                let product = await ProductYahooSchema.findById(id);
+                let product = await ProductYahooModel.findById(id);
                 if (!product) {
                     throw new Error('Product not found');
                 } else {
@@ -124,7 +214,7 @@ export default class ProductYahooService {
         try {
             for (let index = 0; index < ids.length; index++) {
                 const id = ids[index];
-                let product = await ProductYahooSchema.findById(id);
+                let product = await ProductYahooModel.findById(id);
                 if (!product) {
                     throw new Error('Product not found');
                 } else {
@@ -144,7 +234,7 @@ export default class ProductYahooService {
         try {
             for (let index = 0; index < ids.length; index++) {
                 const id = ids[index];
-                let product = await ProductYahooSchema.findById(id);
+                let product = await ProductYahooModel.findById(id);
                 if (!product) {
                     throw new Error('Product not found');
                 } else {
@@ -178,7 +268,7 @@ export default class ProductYahooService {
                 }
 
                 for (const folder_id of new_list_target_folder) {
-                    let listProduct = await ProductYahooSchema.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
+                    let listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
 
                     for (let index = 0; index < listProduct.length; index++) {
                         const productYahooData = listProduct[index];
@@ -246,7 +336,7 @@ export default class ProductYahooService {
                     if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
                         let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                         if (proxyResult.status === 'SUCCESS') {
-                            let listProduct = await ProductYahooSchema.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
+                            let listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
                             for (let index = 0; index < listProduct.length; index++) {
                                 const productYahooData = listProduct[index];
                                 let dataUpdate = {};
@@ -363,5 +453,95 @@ export default class ProductYahooService {
             }
         }
         return result;
+    }
+
+    static async createFromAmazonProduct(productAmazon, user_id, yahoo_account_id) {
+        //Dùng cate amazon Check xem có trong mapping k
+        let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id });
+        if (!cateAmazon) {
+            cateAmazon = await CategoryService.create({
+                user_id,
+                amazon_cate_id: productAmazon.category_id,
+                asin: productAmazon.asin,
+            });
+        }
+        let cate_yahoo = cateAmazon.yahoo_cate_id || '0';
+
+        // Cắt title
+        let title = productAmazon.name;
+        if (title && title.length > 65) {
+            title = title.substring(0, 65);
+        }
+
+        // Data default
+        let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
+
+        //Giá sản phẩm gốc
+        let import_price = productAmazon.price;
+
+        let dataCalculatorProduct = await this.calculatorPrice(defaultSetting, import_price, productAmazon.ship_fee);
+        console.log(' #### dataCalculatorProduct: ', dataCalculatorProduct);
+        let productYahoo = {
+            ...defaultSetting._doc,
+            ...dataCalculatorProduct,
+            id_category_amazon: productAmazon.category_id,
+            description: productAmazon.description,
+            asin_amazon: productAmazon.asin,
+            images: productAmazon.images,
+            product_amazon_id: productAmazon._id,
+            count_product: productAmazon.count || 1,
+            amazon_shipping_fee: productAmazon.ship_fee,
+            ship_fee1: defaultSetting.yahoo_auction_shipping,
+            user_id: user_id,
+            product_yahoo_title: title,
+            yahoo_account_id: yahoo_account_id,
+            product_model: 'AMAZON',
+            yahoo_auction_category_id: cate_yahoo,
+            created: Date.now(),
+            listing_status: 'NOT_LISTED',
+            _id: null,
+        };
+        delete productYahoo._id;
+        let newProduct = new ProductYahooModel(productYahoo);
+        //Download image;
+        let newImages = [];
+        for (let i = 0; i < productAmazon.images.length; i++) {
+            const imageLink = productAmazon.images[i];
+            let saveFolder = 'uploads/yahoo-products/' + newProduct._id;
+            let saveImage = 'yahoo-products/' + newProduct._id + '/image-' + i + '.jpg';
+            await fsExtra.ensureDirSync(saveFolder);
+            let check = await Utils.downloadFile(imageLink, 'uploads/' + saveImage);
+            if (check) {
+                newImages.push(saveImage);
+            }
+        }
+        newProduct.images = newImages;
+        await newProduct.save();
+        // await ProductYahooService.create(productYahoo);
+    }
+    static async UpdateCalculatorPrice(productInfomationDefault) {
+        let listProduct = await ProductYahooModel.find({
+            user_id: productInfomationDefault.user_id,
+            yahoo_account_id: productInfomationDefault.yahoo_account_id,
+        });
+        for (let productYahoo of listProduct) {
+            // Product chưa đc user change
+            if (!productYahoo.is_user_change) {
+                //Giá sản phẩm gốc
+                let import_price = productYahoo.import_price;
+                let amazon_shipping_fee = productYahoo.amazon_shipping_fee;
+                let dataCalculatorProduct = await this.calculatorPrice(productInfomationDefault, import_price, amazon_shipping_fee);
+
+                delete productInfomationDefault._id;
+                let dataUpdate = {
+                    ...productYahoo._doc,
+                    ...productInfomationDefault,
+                    ...dataCalculatorProduct,
+                    _id: productYahoo._id,
+                    created: productYahoo.created,
+                };
+                await this.update(productYahoo._id, dataUpdate);
+            }
+        }
     }
 }

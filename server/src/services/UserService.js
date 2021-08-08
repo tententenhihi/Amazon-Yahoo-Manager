@@ -2,6 +2,22 @@ import UserModel from '../models/UserModel';
 import bcrypt from 'bcryptjs';
 
 class UserService {
+    static async checkUser_Lock_Exprired(userId) {
+        let user = await UserModel.findById(userId);
+        if (user) {
+            return true;
+        }
+        if (user.status === 'LOCKED') {
+            return true;
+        }
+        if (!user.verified_at) {
+            return true;
+        }
+        if (user.expired_at && new Date(user.expired_at).getTime() <= new Date().getTime()) {
+            return true;
+        }
+        return false;
+    }
     static async checkUserLive(userId) {
         try {
             let user = await UserModel.findById(userId);

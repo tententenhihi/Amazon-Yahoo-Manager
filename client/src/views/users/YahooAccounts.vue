@@ -1,12 +1,15 @@
 <template>
   <div>
     <div class="wrapper-content">
-      <div class="box-header">
-        <i class="fa fa-list mr-2"></i>アカウント一覧
-        <button
-          class="btn btn-add-account"
-          @click="onOpenModalAccount(account)"
+      <div
+        class="box-header"
+        style="display: flex;justify-content: space-between;"
+      >
+        <span><i class="fa fa-list mr-2"></i>アカウント一覧</span>
+        <span class="font-weight-bold fs-lg">
+          契約枠数（{{ countAccountActive }}/{{ maxYahooAccount }}）</span
         >
+        <button class="btn btn-success" @click="onOpenModalAccount()">
           <i class="fa fa-plus"></i> アカウントを追加
         </button>
       </div>
@@ -16,13 +19,15 @@
           <div class="alert alert-danger" v-if="isDieProxy">
             現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
           </div>
-          <table id="accountTable" class="display pt-20 mb-20">
+          <table id="accountTable" class="display pt-20 mb-20" :key="keyTable">
             <thead class="thead-purple">
               <tr>
                 <th scope="col">No</th>
                 <th scope="col">名前</th>
                 <th scope="col">Yahoo! オークID</th>
                 <th scope="col">ステータス</th>
+                <th scope="col">使用中</th>
+
                 <!-- <th scope="col">Status</th> -->
                 <!-- <th scope="col">Status Message</th> -->
                 <th scope="col">変更</th>
@@ -46,6 +51,24 @@
                   >
                     再認証
                   </button>
+                </td>
+                <td>
+                  <div v-if="account.is_lock">
+                    <input
+                      v-model="account.is_lock"
+                      type="checkbox"
+                      name="is_lock"
+                      id="is_lock"
+                      onclick="return false;"
+                    />
+                    取引のみに使用中
+                  </div>
+                  <div v-else>
+                    枠使用中
+                  </div>
+                  <div
+                    style="position: absolute; top: 0; left: 0; right: 0; border: 0;"
+                  ></div>
                 </td>
                 <!-- <td>{{ account.status }}</td> -->
                 <!-- <td>{{ account.statusMessage }}</td> -->
@@ -115,6 +138,24 @@
             />
           </div>
         </div>
+        <div v-if="editId" class="form-group form-line text-center">
+          <label class="col-sm-4 control-label"> </label>
+          <input
+            v-model="is_lock"
+            type="checkbox"
+            class="mr-2"
+            name="is_lock"
+            id="is_lock"
+          />
+          <label class="font-weight-bold" @click="is_lock = !is_lock">
+            取引のみに使用中
+          </label>
+        </div>
+        <div v-if="is_lock">
+          <span style="color: red" class="fs-md">
+            取引のみに使用にチェックが入った状態で保存をすると、出品中の商品が自動で削除され■取り扱い商品管理■アカウント設定■出金管理■出品した商品管理■取り扱い商品管理のみが表示され、監視の停止・自動出品の停止されます。よろしいですか？
+          </span>
+        </div>
       </template>
       <template v-slot:button>
         <div class="button-group">
@@ -138,6 +179,7 @@ export default {
   name: "YahooAccounts",
   data() {
     return {
+      keyTable: 0,
       accounts: [],
       account: {
         name: "",
@@ -148,6 +190,7 @@ export default {
       yahooId: "",
       password: "",
       editId: "",
+      is_lock: false,
       tableAccount: null
     };
   },
@@ -160,8 +203,15 @@ export default {
       return this.accounts.length;
     },
     ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
+      userInfo: "getUserInfo"
     }),
+    maxYahooAccount() {
+      return this.userInfo.maxYahooAccount;
+    },
+    countAccountActive() {
+      return this.accounts.filter(item => !item.is_lock).length;
+    },
     isDieProxy() {
       return this.selectedYahooAccount.proxy &&
         this.selectedYahooAccount.proxy.length
@@ -224,6 +274,7 @@ export default {
       this.yahooId = "";
       this.password = "";
       this.editId = "";
+      this.is_lock = false;
     },
     async getListAccount() {
       let result = await YahooAccountApi.get();
@@ -232,17 +283,30 @@ export default {
       }
     },
     onOpenModalAccount(account) {
-      this.name = account.name;
-      this.yahooId = account.yahoo_id;
-      this.password = account.password;
-      this.editId = account._id;
+      if (account) {
+        this.name = account.name;
+        this.yahooId = account.yahoo_id;
+        this.password = account.password;
+        this.is_lock = account.is_lock;
+        this.editId = account._id;
+      } else {
+        if (this.countAccountActive >= this.maxYahooAccount) {
+          this.$swal.fire({
+            icon: "error",
+            title:
+              "アカウントは最大です。新しいアカウントを作成することはできません。 "
+          });
+          return;
+        }
+      }
       this.$refs.modalInfoAccount.openModal();
     },
     async onSaveAccount() {
       let credential = {
         name: this.name,
         yahoo_id: this.yahooId,
-        password: this.password
+        password: this.password,
+        is_lock: this.is_lock
       };
       if (this.editId) {
         credential._id = this.editId;
@@ -253,6 +317,12 @@ export default {
           );
           this.$set(this.accounts, index, result.data.account);
           this.$store.commit("SET_YAHOO_ACCOUNT", this.accounts);
+          if (this.selectedYahooAccount._id === credential._id) {
+            this.$store.commit(
+              "SET_SELECTED_YAHOO_ACCOUNT",
+              result.data.account
+            );
+          }
           this.createDatatable();
         } else {
           await this.getListAccount();
@@ -262,14 +332,15 @@ export default {
         let result = await YahooAccountApi.create(credential);
         if (result && result.status === 200) {
           this.accounts.push(result.data.account);
-          if (this.accounts.length == 1) {
-            this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", this.accounts[0]);
-          }
-          this.$store.commit("SET_YAHOO_ACCOUNT", this.accounts);
-          this.createDatatable();
         } else {
           await this.getListAccount();
         }
+        if (this.accounts.length == 1) {
+          this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", this.accounts[0]);
+        }
+        this.$store.commit("SET_YAHOO_ACCOUNT", this.accounts);
+        this.createDatatable();
+        this.keyTable++;
         this.onCloseModal();
       }
     },
@@ -333,5 +404,73 @@ export default {
 <style scoped>
 #accountTable_length {
   margin-bottom: 20px;
+}
+
+/* The container */
+.container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: #2196f3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 </style>

@@ -18,7 +18,7 @@ var User = new Schema({
     },
     verified_at: {
         type: Date,
-        default: ''
+        default: '',
     },
     password: {
         type: String,
@@ -47,13 +47,7 @@ var User = new Schema({
         type: String,
         trim: true,
     },
-    gender: {
-        type: Boolean,
-    },
     avatar: {
-        type: String,
-    },
-    address: {
         type: String,
     },
     provider: {
@@ -62,20 +56,13 @@ var User = new Schema({
         trim: true,
         required: true,
     },
-    idSocial: {
-        type: String,
-    },
     status: {
         type: String,
         default: 'LIVE',
     },
-    idGroup: {
-        type: String,
-        default: '',
-    },
     maxYahooAccount: {
         type: Number,
-        default: 1
+        default: 1,
     },
     userId: { type: Number, default: 1 },
     seq: { type: Number, default: 1 },
@@ -93,7 +80,7 @@ User.plugin(autoIncrement.plugin, {
     model: 'User',
     field: 'userId',
     startAt: 1,
-    incrementBy: 1
+    incrementBy: 1,
 });
 var UserSchema = mongoose.model('User', User);
 module.exports = UserSchema;

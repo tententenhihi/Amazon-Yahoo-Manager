@@ -329,8 +329,8 @@
                 </div>
               </td>
               <td class="text-center">
-                {{ product.profit ? product.profit.toLocaleString("ja-JP") : 0
-                }}{{ product.profit ? "円" : "" }}
+                {{ product.actual_profit ? product.actual_profit.toLocaleString("ja-JP") : 0
+                }}{{ product.actual_profit ? "円" : "" }}
               </td>
               <td class="text-center">{{ product.count_product }}</td>
               <td class="text-center">
@@ -371,7 +371,9 @@
                   class="label label-danger"
                   >なし</span
                 >
-                <span v-else class="label label-info">はい</span>
+                <span v-else class="label label-info">{{
+                  product.image_overlay_index + 1
+                }}</span>
               </td>
               <td class="text-center">
                 {{
@@ -556,13 +558,6 @@
             <span style="color: red">入力最大は65文字</span>
           </div>
         </div>
-
-        <!-- :value="
-              selectedEditProduct.product_yahoo_title &&
-              selectedEditProduct.product_yahoo_title.length > 65
-                ? selectedEditProduct.product_yahoo_title.substring(0, 65)
-                : selectedEditProduct.product_yahoo_title
-            " -->
         <div class="form-group">
           <label for="">カテゴリーID</label>
           <input

@@ -42,47 +42,20 @@
                 <transition name="fade">
                   <div>
                     <div class="row">
-                      <div class="col-5 text-align-end mt-2">残り在庫 :</div>
-                      <div class="col-3">
-                        <input
-                          type="text"
-                          pattern="\d*"
-                          class="form-control"
-                          :maxlength="1"
-                          :min="0"
-                          :max="1"
-                          v-model="product.extra_stock"
-                        />
-                      </div>
-                      <div class="col-4">
-                        以下になったら、出品停止
-                        <p>
-                          <small>
-                            アマゾンapiの仕様変更により ツール側も <br />
-                            在庫は0以外入力できない仕様に変更されました <br />
-                            在庫ありなしのみとなります。
-                          </small>
-                        </p>
-                      </div>
-                    </div>
-                    <div class="row">
                       <div class="col-5 text-align-end mt-2">
-                        利益 <small>(円)</small> :
+                        利益 :(円)を割ったら出品停止 :
                       </div>
                       <div class="col-3">
                         <input
                           type="number"
                           class="form-control"
-                          v-model="product.profit"
+                          v-model="product.profit_stop"
                         />
-                      </div>
-                      <div class="col-4 mt-2">
-                        以下になったら、出品停止
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-5 text-align-end mt-2">
-                        ヤフオクで設定する　送料一律 <small>(円)</small> :
+                        Amazonで設定する　送料一律 （円）取得価格が出品者だった場合に自動で割り当てておく送料 <small>(円)</small> :
                       </div>
                       <div class="col-3">
                         <input
@@ -92,94 +65,119 @@
                         />
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-5 text-align-end mt-2">
-                        MakeShopで設定する　送料一律 <small>(円)</small> :
+                    <div>
+                      <div class="row">
+                        <div class="col-5 text-align-end mt-2 font-weight-bold">
+                          <span>利益設定: </span>
+                        </div>
                       </div>
-                      <div class="col-3">
-                        <input
-                          type="number"
-                          class="form-control"
-                          v-model="product.makeshop_shipping"
-                        />
+                      <div class="row align-items-center m-0">
+                        <div class="col-5 text-align-end">
+                          レンジ１ :
+                        </div>
+                        <div class="col-7">
+                          <div class="row m-0">
+                            <input
+                              type="number"
+                              style="width: 150px"
+                              class="form-control mr-3"
+                              v-model="product.list_profit[0].price"
+                            />
+                            <input
+                              style="width: 150px"
+                              type="text"
+                              class="form-control"
+                              v-model="product.list_profit[0].persent_profit"
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-5 text-align-end mt-2">
-                        Amazonで設定する　送料一律 <small>(円)</small> :
+
+                      <div class="row align-items-center m-0">
+                        <div class="col-5 text-align-end">
+                          レンジ2 :
+                        </div>
+                        <div class="col-7">
+                          <div class="row ">
+                            <input
+                              type="number"
+                              style="width: 150px"
+                              class="form-control mr-3"
+                              v-model="product.list_profit[1].price"
+                            />
+                            <input
+                              style="width: 150px"
+                              type="text"
+                              class="form-control"
+                              v-model="product.list_profit[1].persent_profit"
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div class="col-3">
-                        <input
-                          type="number"
-                          class="form-control"
-                          v-model="product.amazon_shipping"
-                        />
+                      <div class="row align-items-center m-0">
+                        <div class="col-5 text-align-end">
+                          レンジ3 :
+                        </div>
+                        <div class="col-7">
+                          <div class="row m-0">
+                            <input
+                              type="number"
+                              style="width: 150px"
+                              class="form-control mr-3"
+                              v-model="product.list_profit[2].price"
+                            />
+                            <input
+                              style="width: 150px"
+                              type="text"
+                              class="form-control"
+                              v-model="product.list_profit[2].persent_profit"
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-5 text-align-end mt-2">
-                        ヤフオク手数料 <small>(%)</small> :
+
+                      <div class="row align-items-center m-0">
+                        <div class="col-5 text-align-end">
+                          レンジ4 :
+                        </div>
+                        <div class="col-7">
+                          <div class="row ">
+                            <input
+                              type="number"
+                              style="width: 150px"
+                              class="form-control mr-3"
+                              v-model="product.list_profit[3].price"
+                            />
+                            <input
+                              style="width: 150px"
+                              type="text"
+                              class="form-control"
+                              v-model="product.list_profit[3].persent_profit"
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div class="col-3">
-                        <input
-                          type="number"
-                          class="form-control"
-                          v-model="product.yahoo_auction_fee"
-                        />
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div
-                        class="col-5 text-align-end mt-2"
-                        style="display: flex; justify-content: flex-end; align-items: baseline;"
-                      >
-                        <input
-                          type="radio"
-                          v-model="product.yahoo_auction_profit_type"
-                          id="price-profit"
-                          :value="0"
-                        />
-                        <label class="ml-10" for="price-profit"
-                          >ヤフオクの販売価格設定する　利益率
-                          <small>(%)</small> :</label
-                        >
-                      </div>
-                      <div class="col-3">
-                        <input
-                          type="number"
-                          class="form-control"
-                          v-model="product.yahoo_auction_price_profit"
-                        />
-                      </div>
-                      <div class="col-4 mt-2">
-                        乗せた金額を自動生成
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div
-                        class="col-5 text-align-end mt-2"
-                        style="display: flex; justify-content: flex-end; align-items: baseline;"
-                      >
-                        <input
-                          type="radio"
-                          v-model="product.yahoo_auction_profit_type"
-                          id="static-profit"
-                          :value="1"
-                        />
-                        <label class="ml-10" for="static-profit"
-                          >ヤフオクの販売価格設定する　利益金額
-                          <small>(円)</small> :</label
-                        >
-                      </div>
-                      <div class="col-3">
-                        <input
-                          type="number"
-                          class="form-control"
-                          v-model="product.yahoo_auction_static_profit"
-                        />
-                      </div>
-                      <div class="col-4 mt-2">
-                        乗せた金額を自動生成
+
+                      <div class="row align-items-center m-0">
+                        <div class="col-5 text-align-end">
+                          レンジ5 :
+                        </div>
+                        <div class="col-7">
+                          <div class="row m-0">
+                            <input
+                              type="number"
+                              style="width: 150px"
+                              class="form-control mr-3"
+                              v-model="product.list_profit[4].price"
+                            />
+                            <input
+                              style="width: 150px"
+                              type="text"
+                              class="form-control"
+                              v-model="product.list_profit[4].persent_profit"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div class="row">

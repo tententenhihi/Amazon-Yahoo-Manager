@@ -9,23 +9,24 @@ export default class KeepaService {
             if (res && res.status === 200 && res.data.products.length > 0) {
                 let listProduct = res.data.products;
                 let productData = listProduct[0];
-                let description = '';
+                let features = '';
                 if (Array.isArray(productData.features)) {
                     productData.features.map((item) => {
-                        description += item + '\n';
+                        features += item + '\n';
                     });
                 } else {
-                    description = productData.features
+                    features = productData.features;
                 }
                 productData = {
                     asin,
                     url: `https://www.amazon.co.jp/dp/${asin}`,
                     name: productData.title,
                     category_id: productData.categories[0],
-                    images: productData.imagesCSV.split(',').map((item) => 'https://images-na.ssl-images-amazon.com/images/I/' + item),
-                    description: description,
-                    basecost: 0,
-                    profit: 0,
+                    images:
+                        (productData.imagesCSV && productData.imagesCSV.split(',').map((item) => 'https://images-na.ssl-images-amazon.com/images/I/' + item)) ||
+                        [],
+                    description: features,
+                    description: (productData.description && productData.description.replace(/\n+/g, '\n')) || features,
                     price: 0,
                 };
                 return {
@@ -33,11 +34,13 @@ export default class KeepaService {
                     data: productData,
                 };
             }
+            console.log(' ####### KeepaService: ', res.status);
             return {
                 status: 'ERROR',
                 message: 'Product not found.!',
             };
         } catch (error) {
+            console.log(' ####### KeepaService: ', error);
             return {
                 status: 'ERROR',
                 message: 'Keepa: ' + error.message,

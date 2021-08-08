@@ -1,44 +1,51 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var autoIncrement = require('mongoose-auto-increment');
 
-var AsinAmazonSchema = new Schema({
-    asin: {
+var AsinAmazon = new Schema({
+    code: {
         type: String,
+        require: true,
+        trim: true,
+    },
+    idUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
     },
-    asin_id: {
-        type: Number,
-        default: 1
+    yahoo_account_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'YahooAccount',
+        require: true,
     },
-    seq: {
-        type: Number,
-        default: 1
+    isProductGeted: {
+        type: Boolean,
+        require: true,
+        default: false,
     },
     type: {
         type: String,
         require: true,
-        default: 'BLACK',
-        enum: ['BLACK', 'WHITE'],
+        default: 'ASIN',
+        enum: ['ASIN', 'KEYWORD'],
     },
-    reason_for_prohibition: {
+    status: {
+        type: String,
+        require: true,
+        default: 'CREATED',
+        enum: ['CREATED', 'ERROR', 'SUCCESS'],
+    },
+    statusMessage: {
+        type: String,
+    },
+    query_key: {
         type: String,
         default: ''
     },
     created: {
         type: Date,
         default: Date.now,
-    }
+    },
 });
 
-
-autoIncrement.initialize(mongoose.connection);
-AsinAmazonSchema.plugin(autoIncrement.plugin, {
-    model: 'AsinAmazonSchema',
-    field: 'asin_id',
-    startAt: 1,
-    incrementBy: 1
-});
-
-var AsinAmazon = mongoose.model('AsinAmazon', AsinAmazonSchema);
+var AsinAmazon = mongoose.model('AsinAmazon', AsinAmazon);
 module.exports = AsinAmazon;

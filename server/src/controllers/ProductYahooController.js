@@ -19,6 +19,10 @@ export default class ProductYahooController {
             console.log(' #### user_id: ', user_id);
             console.log(' #### ids: ', ids);
 
+            let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(yahoo_account_id);
+            if (is_lock_account) {
+                return response.error400({ message: 'ヤフーアカウントが機能しない ' });
+            }
             let results = [];
             let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
             if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
@@ -84,6 +88,7 @@ export default class ProductYahooController {
                     user_id: user_id,
                     yahoo_account_id: yahoo_account_id,
                 };
+                await AccountYahooService.setUpCountError(yahoo_account_id, newCronHistory.error_count);
                 await CronHistoryModel.create(newCronHistory);
             }
 
@@ -201,6 +206,34 @@ export default class ProductYahooController {
                         data.images[index] = await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' });
                     }
                 }
+            }
+            data.is_user_change = true;
+            let current_product = await ProductYahooService.findOne({ _id: _id });
+
+            data.start_price = parseInt(data.start_price);
+            data.ship_fee1 = parseInt(data.ship_fee1);
+            data.bid_or_buy_price = parseInt(data.bid_or_buy_price);
+
+            if (current_product.start_price !== data.start_price) {
+                let fee_auction_yahoo = 0.1;
+                let price = data.start_price + data.ship_fee1;
+                let amount_received = price - parseInt(price * fee_auction_yahoo);
+                let gross_profit = price - current_product.original_price;
+                let actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
+                let bid_or_buy_price = 0;
+                if (current_product.bid_or_buy_price !== data.bid_or_buy_price) {
+                    bid_or_buy_price = data.bid_or_buy_price;
+                } else {
+                    bid_or_buy_price = price + (current_product.bid_or_buy_price - current_product.price);
+                }
+                data = {
+                    ...data,
+                    price,
+                    amount_received,
+                    gross_profit,
+                    actual_profit,
+                    bid_or_buy_price,
+                };
             }
             let result = await ProductYahooService.update(_id, data);
             response.success200({ result });

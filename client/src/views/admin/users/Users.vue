@@ -35,7 +35,11 @@
                 <td>{{ user.name }}</td>
                 <td>{{ displayStatus(user.status) }}</td>
                 <td>
-                  {{ user.yahooaccounts.length + "/" + user.maxYahooAccount }}
+                  {{
+                    user.yahooaccounts.filter(item => !item.is_lock).length +
+                      "/" +
+                      user.maxYahooAccount
+                  }}
                 </td>
                 <td>{{ $moment(user.expired_at).format("DD-MM-YYYY") }}</td>
                 <td>
@@ -172,7 +176,6 @@
               type="date"
               class="form-control input-sm"
               v-model="expired_at"
-              :min="minExpiredAt"
             />
           </div>
         </div>

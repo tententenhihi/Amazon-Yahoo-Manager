@@ -100,7 +100,7 @@
                   <div class="col-8">
                     <input
                       type="text"
-                      v-model="product.foreign_key"
+                      v-model="product.asin"
                       class="form-control"
                     />
                   </div>
@@ -878,7 +878,7 @@ export default {
       product: {
         folder_id: "",
         product_model: "",
-        foreign_key: "",
+        asin: "",
         product_yahoo_title: "",
         yahoo_auction_category_id: "",
         start_price: "",

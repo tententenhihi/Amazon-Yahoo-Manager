@@ -70,7 +70,7 @@ export default {
       try {
         let res = await AsinApi.get(this.selectedYahooAccount._id);
         if (res && res.status === 200) {
-          this.listAsin = res.data.listSearchCode;
+          this.listAsin = res.data.listAsin;
           this.listAsin = [...this.listAsin]
           this.blackList = res.data.black_list
           this.blackList = [...this.blackList]

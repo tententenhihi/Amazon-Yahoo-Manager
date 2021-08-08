@@ -1,7 +1,62 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var Product = new Schema({
+var ProductYahoo = new Schema({
+    // Giá gốc
+    import_price: {
+        type: Number,
+        required: false,
+    },
+    // Nguyên giá
+    original_price: {
+        type: Number,
+        required: false,
+    },
+    //Giá sản phẩm bán
+    price: {
+        type: Number,
+        required: false,
+    },
+    //Giá khởi điểm (Nếu tính là <= 0 thì để là 1) = Xuất hàng
+    start_price: {
+        type: Number,
+        required: false,
+    },
+
+    //Giá mua luôn
+    bid_or_buy_price: {
+        type: Number,
+        required: false,
+    },
+
+    //Số tiền nhận về
+    amount_received: {
+        type: Number,
+        required: false,
+    },
+    //Lợi nhuận gộp
+    gross_profit: {
+        type: Number,
+        required: false,
+    },
+    //Lợi nhuận thực tế
+    actual_profit: {
+        type: Number,
+        required: false,
+    },
+    // phí ship amazon
+    amazon_shipping_fee: {
+        type: Number,
+        default: 0,
+    },
+    profit_stop: {
+        type: Number,
+        default: 0,
+    },
+    is_user_change: {
+        type: Boolean,
+        default: false,
+    },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -19,28 +74,16 @@ var Product = new Schema({
     folder_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Folder',
-        required: true,
     },
     product_amazon_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ProductAmazon',
     },
-    yahooAuctionFee: {
-        type: Number,
-        default: 10,
-    },
     product_model: {
         type: String,
         default: '',
     },
-    foreign_key: {
-        type: String,
-        default: '',
-    },
-    amazon_shipping_fee: {
-        type: Number,
-        default: 0,
-    },
+
     product_yahoo_title: {
         type: String,
         required: true,
@@ -49,18 +92,7 @@ var Product = new Schema({
         type: String,
         required: true,
     },
-    start_price: {
-        type: Number,
-        required: false,
-    },
-    bid_or_buy_price: {
-        type: Number,
-        required: false,
-    },
-    import_price: {
-        type: Number,
-        required: false,
-    },
+
     status: {
         type: String,
         default: 'new',
@@ -121,10 +153,7 @@ var Product = new Schema({
         type: Number,
         default: 0,
     },
-    reserve_price: {
-        type: Number,
-        defaul: 0,
-    },
+
     description: {
         type: String,
         default: '',
@@ -220,9 +249,6 @@ var Product = new Schema({
         type: Number,
         default: 1,
     },
-    profit: {
-        type: String,
-    },
     listing_status: {
         type: String,
         enum: ['NOT_LISTED', 'UNDER_EXHIBITION'],
@@ -264,5 +290,5 @@ var Product = new Schema({
     },
 });
 
-var ProductYahooSchema = mongoose.model('ProductYahoo', Product);
+var ProductYahooSchema = mongoose.model('ProductYahoo', ProductYahoo);
 module.exports = ProductYahooSchema;

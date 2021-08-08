@@ -4,7 +4,7 @@ import ProductInfomationDefaultController from '../controllers/ProductInfomation
 var ProductInfomationDefaultRouter = express.Router();
 
 ProductInfomationDefaultRouter.route('/:yahoo_account_id').get(ProductInfomationDefaultController.get);
-ProductInfomationDefaultRouter.route('/update/:_id').post(ProductInfomationDefaultController.updateProduct);
-ProductInfomationDefaultRouter.route('/delete/:_id').post(ProductInfomationDefaultController.deleteProduct);
+ProductInfomationDefaultRouter.route('/update/:_id').post(ProductInfomationDefaultController.update);
+ProductInfomationDefaultRouter.route('/delete/:_id').post(ProductInfomationDefaultController.delete);
 
 export default ProductInfomationDefaultRouter;

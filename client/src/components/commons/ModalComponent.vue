@@ -1,11 +1,16 @@
 <template>
-  <div class="modal fade show" :ref="ref" :id="idModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div
+    class="modal fade show"
+    :ref="ref"
+    :id="idModal"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
     <div class="modal-dialog" role="document" :class="classModalDialog">
       <div class="modal-content modal-success">
         <div class="modal-header" v-if="isModalHeader">
-          <div class="title">
-            <slot name="header"></slot>
-          </div>
+          <slot name="header"></slot>
         </div>
         <div class="modal-body py-20" v-if="isModalBody">
           <slot></slot>
@@ -19,15 +24,15 @@
 </template>
 
 <script>
-import modalMixin from './modalMixin';
+import modalMixin from "./modalMixin";
 
 export default {
   mixins: [modalMixin],
-  name: 'ModalSuccess',
+  name: "ModalSuccess",
   props: {
     idModal: {
       type: String,
-      default: 'idModal'
+      default: "idModal"
     },
     isModalHeader: {
       type: Boolean,
@@ -39,26 +44,23 @@ export default {
     },
     classModalDialog: {
       type: String,
-      default: ''
+      default: ""
     },
     styleModalFooter: {
       type: String,
-      default: ''
+      default: ""
     }
   },
-  data () {
+  data() {
     return {
-      ref: 'modalComponent'
-    }
+      ref: "modalComponent"
+    };
   },
-  computed: {
-  },
-}
+  computed: {}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
 <style>
 @media (min-width: 992px) {
   .modal-lg {

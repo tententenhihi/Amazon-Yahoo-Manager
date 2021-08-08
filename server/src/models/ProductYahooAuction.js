@@ -25,17 +25,88 @@ var Product = new Schema({
         type: Number,
         default: 1,
     },
-    yahooAuctionFee: {
-        type: Number,
-        default: 10,
-    },
     product_buy_count: {
         type: Number,
         default: 1,
     },
+    ship_info: {
+        type: String,
+    },
+    progress: {
+        type: String,
+        enum: [
+            'address_inputing',
+            'postage_inputing',
+            'bundle_requested',
+            'bundle_accepted',
+            'money_received',
+            'preparation_for_shipment',
+            'shipping',
+            'complete',
+        ],
+        default: 'address_inputing',
+    },
+    message_list: {
+        type: Array,
+        default: [],
+    },
+    rating_list: {
+        type: Array,
+        default: [],
+    },
+    
+    //============================================
+    // Giá gốc
+    import_price: {
+        type: Number,
+        required: false,
+    },
+    // Nguyên giá
+    original_price: {
+        type: Number,
+        required: false,
+    },
+    //Giá sản phẩm bán
+    price: {
+        type: Number,
+        required: false,
+    },
+    //Giá khởi điểm (Nếu tính là <= 0 thì để là 1) = Xuất hàng
+    start_price: {
+        type: Number,
+        required: false,
+    },
+
+    //Giá mua luôn
+    bid_or_buy_price: {
+        type: Number,
+        required: false,
+    },
+
+    //Số tiền nhận về
+    amount_received: {
+        type: Number,
+        required: false,
+    },
+    //Lợi nhuận gộp
+    gross_profit: {
+        type: Number,
+        required: false,
+    },
+    //Lợi nhuận thực tế
+    actual_profit: {
+        type: Number,
+        required: false,
+    },
+    // phí ship amazon
     amazon_shipping_fee: {
         type: Number,
         default: 0,
+    },
+
+    is_user_change: {
+        type: Boolean,
+        default: false,
     },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -54,16 +125,16 @@ var Product = new Schema({
     folder_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Folder',
-        required: true,
+    },
+    product_amazon_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ProductAmazon',
     },
     product_model: {
         type: String,
         default: '',
     },
-    foreign_key: {
-        type: String,
-        default: '',
-    },
+
     product_yahoo_title: {
         type: String,
         required: true,
@@ -72,18 +143,7 @@ var Product = new Schema({
         type: String,
         required: true,
     },
-    start_price: {
-        type: Number,
-        required: false,
-    },
-    bid_or_buy_price: {
-        type: Number,
-        required: false,
-    },
-    import_price: {
-        type: Number,
-        required: false,
-    },
+
     status: {
         type: String,
         default: 'new',
@@ -98,7 +158,11 @@ var Product = new Schema({
     },
     quantity: {
         type: Number,
-        default: 1,
+        default: 3,
+    },
+    quantity_check: {
+        type: Number,
+        default: 0,
     },
     duration: {
         type: Number,
@@ -140,6 +204,7 @@ var Product = new Schema({
         type: Number,
         default: 0,
     },
+
     description: {
         type: String,
         default: '',
@@ -153,8 +218,8 @@ var Product = new Schema({
         default: 'buyer',
     },
     location: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 18,
     },
     city: {
         type: String,
@@ -212,6 +277,15 @@ var Product = new Schema({
         type: String,
         default: 'no',
     },
+    aID: {
+        type: String,
+    },
+    oldAID: {
+        type: String,
+    },
+    idBuyer: {
+        type: String,
+    },
     note: {
         type: String,
         default: '',
@@ -224,36 +298,44 @@ var Product = new Schema({
     },
     count_product: {
         type: Number,
-        default: 3,
+        default: 1,
     },
-    ship_info: {
+    listing_status: {
+        type: String,
+        enum: ['NOT_LISTED', 'UNDER_EXHIBITION'],
+        default: 'NOT_LISTED',
+    },
+    upload_status: {
+        type: String,
+        enum: ['NEW', 'ERROR', 'SUCCESS'],
+        default: 'NEW',
+    },
+    upload_status_message: {
         type: String,
     },
-    profit: {
+    watch_stock: {
         type: String,
+        enum: ['0', '1'],
+        default: '0',
     },
-    progress: {
+    watch_profit: {
         type: String,
-        enum: [
-            'address_inputing',
-            'postage_inputing',
-            'bundle_requested',
-            'bundle_accepted',
-            'money_received',
-            'preparation_for_shipment',
-            'shipping',
-            'complete',
-        ],
-        default: 'address_inputing',
+        enum: ['0', '1'],
+        default: '0',
     },
-    message_list: {
-        type: Array,
-        default: [],
+    watch_only_prime: {
+        type: String,
+        enum: ['0', '1'],
+        default: '0',
     },
-    rating_list: {
-        type: Array,
-        default: [],
+    extra_stock: {
+        type: Number,
+        default: 0,
     },
+    image_overlay_index: {
+        type: Number,
+    },
+
     created: {
         type: Date,
         default: Date.now,

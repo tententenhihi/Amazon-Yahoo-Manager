@@ -3,6 +3,19 @@ import ProxyService from './ProxyService';
 import AuctionYahooService from './AuctionYahooService';
 
 export default class AccountYahooService {
+    static async checkAccountYahoo_Lock(id) {
+        try {
+            let account = await YahooAccountSchema.findById(id);
+            return account.is_lock;
+        } catch (error) {
+            return true;
+        }
+    }
+    static async setUpCountError(id, count_error) {
+        let userData = await YahooAccountSchema.findById(id);
+        userData.count_error += count_error;
+        await userData.save();
+    }
     static async findById(id) {
         try {
             let account = await YahooAccountSchema.findById(id);
@@ -62,6 +75,8 @@ export default class AccountYahooService {
                     data: accountData,
                 };
             } else {
+                accountData.status = 'ERROR';
+                await accountData.save();
                 return {
                     status: 'ERROR',
                     message: resultGetCookie.message,
@@ -70,6 +85,7 @@ export default class AccountYahooService {
         } else {
             accountData.status = proxyResult.status;
             accountData.statusMessage = proxyResult.statusMessage;
+            await accountData.save();
             return {
                 status: 'ERROR',
                 message: proxyResult.statusMessage,

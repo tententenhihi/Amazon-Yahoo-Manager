@@ -1,12 +1,12 @@
 import Axios from 'axios';
 import ProductAmazonSchema from '../models/ProductAmazonModel';
-import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
+import KeepaService from '../services/KeepaService';
 import Utils from '../utils/Utils';
 import Path from 'path';
 import FsExtra from 'fs-extra';
 const cheerio = require('cheerio');
 
-const parseDataProductHTML = async (html, yahoo_account_id) => {
+const parseDataProductHTML = async (html) => {
     let productInfo = [];
     let $ = cheerio.load(html);
 
@@ -33,8 +33,14 @@ const parseDataProductHTML = async (html, yahoo_account_id) => {
     } else {
         countProduct = 999;
     }
-    let delivery = $($('#mir-layout-DELIVERY_BLOCK-slot-DELIVERY_MESSAGE')['0']).text().replace(/\n/g, '').trim();
-    if (!delivery) {
+    let ship_fee = $($('#mir-layout-DELIVERY_BLOCK-slot-DELIVERY_MESSAGE')['0']).text().replace(/\n/g, '').trim();
+    if (ship_fee) {
+        let resultRegex = ship_fee.match(/￥\d+/);
+        if (resultRegex && resultRegex[0]) {
+            ship_fee = resultRegex[0].replace('￥', '');
+        } else {
+            ship_fee = 0;
+        }
         // delivery = $('#x').text().trim();
     }
     //#main-image-container > ul > li.image.item.itemNo1.maintain-height.selected > span > span > div > img
@@ -105,49 +111,40 @@ const parseDataProductHTML = async (html, yahoo_account_id) => {
             }
         }
     }
-
-    let infoProfitDefault = await ProductInfomationDefaultService.findOne({ yahoo_account_id });
-
-    priceProduct = priceProduct.replace(/\D+/g, '').trim();
-    // giá gốc
-    let basecost = parseFloat(priceProduct);
-    if (!basecost) {
-        basecost = 0;
-    }
-    let profit = 0;
-    let price = 0;
-
-    if (infoProfitDefault && basecost) {
-        if (infoProfitDefault.yahoo_auction_profit_type == 0) {
-            profit = (basecost * infoProfitDefault.yahoo_auction_price_profit) / 100;
-        } else {
-            profit = infoProfitDefault.yahoo_auction_static_profit;
-        }
-        //infoProfitDefault.yahoo_auction_shipping +
-        price = basecost + profit + infoProfitDefault.amazon_shipping;
-        price = price / (1 - infoProfitDefault.yahoo_auction_fee / 100);
-        price = Math.ceil(price);
-        profit = Math.ceil(profit);
-    }
-
     let description = '';
     productInfo.map((item) => {
         description += item.name + ': ' + item.value + '\n';
     });
 
+    if (priceProduct.includes('-')) {
+        let p1 = priceProduct.split('-')[0].replace(/\D+/g, '').trim();
+        let p2 = priceProduct.split('-')[1].replace(/\D+/g, '').trim();
+        if (p1 && p2) {
+            if (p1 > p2) {
+                priceProduct = p1;
+            } else {
+                priceProduct = p2;
+            }
+        } else if (p1) {
+            priceProduct = p1;
+        } else if (p2) {
+            priceProduct = p2;
+        }
+    }
     let product = {
         asin,
         category_id: category,
         name: nameProduct,
-        basecost,
-        profit,
-        price,
-        delivery,
+        price: priceProduct.replace(/\D+/g, '').trim(),
+        ship_fee,
         images: imageProduct,
         description,
-        countProduct,
+        count: countProduct,
     };
     return product;
+
+
+    // }
 };
 export default class ProductAmazonService {
     static async get(idUser, yahoo_account_id) {
@@ -159,7 +156,7 @@ export default class ProductAmazonService {
             throw new Error(' Error ProductAmazonService-get: ' + error.message);
         }
     }
-    static async getProductByAsin(asinModel) {
+    static async getProductByAsin(asin) {
         try {
             let headers = {
                 Connection: 'keep-alive',
@@ -176,50 +173,19 @@ export default class ProductAmazonService {
                 referer: 'https://www.amazon.co.jp/',
                 cookie: 'session-id=355-9411992-8927462; ubid-acbjp=358-2559061-1954248; _msuuid_jniwozxj70=20FE642B-44E7-472D-8572-AC7BF6C52ABB; s_nr=1626597474251-Repeat; s_vnum=2056111718284%26vn%3D3; s_dslv=1626597474252; session-token=bINct6PryD+mpdo6GUl9K+W8kUDIB6lsVDli8b2X/k3yxm11VQaIVJzeequ4GP1nbXYIVYM79oFfLUZ3yCu3gxc7gnVai0SLkx89B3xLqDpgX7UT1BMiz9eNnwiofJguAfeiBNX+dwwr5T4JEFWGO3/hGB9tPZPklhpbvKb1lQaSLa1lok+8LyK98hQrrobt; lc-acbjp=ja_JP; i18n-prefs=JPY; session-id-time=2082726001l; csm-hit=tb:s-89X7M97HHF6DW8Z8YC3D|1626670418895&t:1626670420277&adb:adblk_yes',
             };
-            let requestAmazon = await Axios.get(`https://www.amazon.co.jp/dp/${asinModel.code}`, { headers });
-
-            let product = await parseDataProductHTML(requestAmazon.data, asinModel.yahoo_account_id);
-            if (!product) {
-                return {
-                    type: 'ERROR',
-                    message: 'Not found any product',
-                };
-            }
-            product.url = `https://www.amazon.co.jp/dp/${asinModel.code}`;
-            return {
-                type: 'SUCCESS',
-                data: product,
-            };
+            let url = `https://www.amazon.co.jp/dp/${asin}`;
+            let requestAmazon = await Axios.get(url, { headers });
+            let productDataAmazon = await parseDataProductHTML(requestAmazon.data);
+            return productDataAmazon;
         } catch (error) {
-            // console.log(' #### ERROR ProductAmazonService getProductByAsin: ', error);
-            return {
-                type: 'ERROR',
-                message: error.message,
-            };
+            console.log(' ######## ERROR getProductByAsin: ', error);
+            return null;
         }
     }
     static async create(data) {
         try {
             let newProduct = await ProductAmazonSchema(data);
-            let listImage = [];
-            for (let i = 0; i < data.images.length; i++) {
-                const image = data.images[i];
-                console.log(image);
-                if (image.startsWith('http')) {
-                    let folderSave = 'amazon-product/' + newProduct._id + '/';
-                    await FsExtra.ensureDirSync('uploads/' + folderSave);
-                    let saveImage = folderSave + 'image' + i + '.jpg';
-                    let check = Utils.downloadFile(image, 'uploads/' + saveImage);
-                    if (check) {
-                        saveImage = listImage.push(saveImage);
-                    }
-                } else {
-                    listImage.push(image);
-                }
-            }
-            newProduct.images = listImage;
             await newProduct.save();
-            console.log(newProduct);
             return newProduct;
         } catch (error) {
             console.log(error);
