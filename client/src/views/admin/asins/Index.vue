@@ -42,7 +42,7 @@
             </thead>
             <tbody>
               <tr v-for="(item, index) in tableData" :key="index">
-                <td>{{ item.asin_id }}</td>
+                <td>{{ index + 1 }}</td>
                 <td>{{ item.asin }}</td>
                 <td>{{ item.reason_for_prohibition }}</td>
                 <td>

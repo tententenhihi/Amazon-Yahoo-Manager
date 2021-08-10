@@ -1,15 +1,10 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var autoIncrement = require('mongoose-auto-increment');
 
 var BlacklistAsin = new Schema({
     asin: {
         type: String,
         required: true,
-    },
-    asin_id: {
-        type: Number,
-        default: 1,
     },
     seq: {
         type: Number,
@@ -29,14 +24,6 @@ var BlacklistAsin = new Schema({
         type: Date,
         default: Date.now,
     },
-});
-
-autoIncrement.initialize(mongoose.connection);
-BlacklistAsin.plugin(autoIncrement.plugin, {
-    model: 'BlacklistAsin',
-    field: 'asin_id',
-    startAt: 1,
-    incrementBy: 1,
 });
 
 var AsinAmazon = mongoose.model('BlacklistAsin', BlacklistAsin);

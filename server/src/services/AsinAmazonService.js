@@ -53,6 +53,7 @@ export default class AsinAmazonService {
     }
     static async add(addData) {
         try {
+            console.log(addData);
             let newAsin = new AsinSchema(addData);
             await newAsin.save();
             return newAsin;

@@ -50,7 +50,7 @@
             <li class="sidebar-dropdown">
               <router-link :to="{name: 'AdminYahooAccounts'}">
                 <i class="fa fa-list"></i>
-                <span>アカウント一覧</span>
+                <span>プロキシ割り当て管理</span>
               </router-link>
             </li>
             <li class="sidebar-dropdown">

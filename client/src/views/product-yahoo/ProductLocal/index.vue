@@ -159,14 +159,14 @@
           @click="$refs.modalSelectFolder.openModal()"
           class="btn btn-primary"
         >
-          フォルダ移動
+          <i class="far fa-folder-open mr-1"></i> フォルダ移動
         </button>
         <button
           :disabled="!selectedProducts.length"
           @click="$refs.modalDeleteProduct.openModal()"
           class="btn btn-danger mx-10"
         >
-          削除
+          <i class="far fa-trash-alt mr-1"></i> 削除
         </button>
         <!-- <button
           :disabled="!selectedProducts.length"
@@ -195,14 +195,32 @@
           @click="openModalOverLayImage"
           class="btn btn-info"
         >
-          写真を挿入
+          <i class="far fa-images mr-1"></i>写真を挿入
         </button>
         <button
           :disabled="!selectedProducts.length"
           @click="onUploadYahooNow"
-          class="btn btn-info"
+          class="btn btn-success mx-10 px-4"
         >
-          出品
+          Yahoo!オークへ出品
+        </button>
+
+        <button
+          :disabled="!selectedProducts.length"
+          @click="onImportCSV"
+          class="btn btn-info mx-10 px-3"
+          style="float: right;"
+        >
+          <i class="fa fa-upload mr-1"></i>インポート
+        </button>
+
+        <button
+          :disabled="!selectedProducts.length"
+          @click="onExportCSV"
+          class="btn btn-info mx-10 px-3"
+          style="float: right;"
+        >
+          <i class="fa fa-download mr-1"></i>エクスポート
         </button>
       </div>
       <div class="px-10 table-responsive">
@@ -285,7 +303,7 @@
                   style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
               </td>
-              <td  width="200">
+              <td width="200">
                 <a :href="`/yahoo-auction-products/${product._id}`">{{
                   product.product_yahoo_title
                 }}</a>
@@ -850,6 +868,12 @@ export default {
     }
   },
   methods: {
+    async onImportCSV() {
+
+    },
+    async onExportCSV() {
+
+    },
     async onChangeTitlte(value, text) {
       if (
         this.selectedEditProduct &&
