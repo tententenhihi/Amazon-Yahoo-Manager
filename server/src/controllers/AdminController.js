@@ -263,10 +263,8 @@ class AdminController {
         let response = new Response(res);
         try {
             let { _id } = req.params;
-            console.log(' #### _id: ', _id);
             if (_id === 'all') {
                 let result = await ProxyModel.updateMany({ status: 'lock' }, { status: 'live' });
-                console.log(result);
                 let proxies = await ProxyModel.find();
                 return response.success200({ proxies });
             } else {

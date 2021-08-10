@@ -21,10 +21,6 @@ const getProductByAsin = async (listAsinModel, cb) => {
                 await asinModel.save();
             } else {
                 let productAmazon = await ProductAmazonService.findOne({ asin: asinModel.code });
-
-                //productAmazon = null
-                productAmazon = null;
-
                 if (productAmazon) {
                     await ProductYahooService.createFromAmazonProduct(productAmazon, asinModel.idUser, asinModel.yahoo_account_id);
                     asinModel.isProductGeted = true;
@@ -50,10 +46,6 @@ const getProductByAsin = async (listAsinModel, cb) => {
         while (listAsin && listAsin.length > 0 && count <= listAsin.length) {
             let newListAsin = listAsin.slice(currentIndex, count);
             let result = await KeepaService.findProduct(newListAsin);
-
-            //return
-            return;
-
             if (result.status === 'SUCCESS') {
                 for (const itemData of result.data) {
                     if (itemData.status === 'SUCCESS') {

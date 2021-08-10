@@ -14,6 +14,7 @@ yarn-error.log*
 *.sln
 /public/users
 /public/
-/uploads/
+/uploads/products
+/uploads/yahoo-products
 .env
 /tmp

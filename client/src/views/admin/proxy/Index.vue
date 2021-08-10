@@ -42,7 +42,10 @@
             検索
           </button>
         </div>
-        <div class="row align-items-center" style="justify-content: space-between;">
+        <div
+          class="row align-items-center"
+          style="justify-content: space-between;"
+        >
           <paginate
             v-if="pageCount"
             v-model="page"
@@ -57,7 +60,7 @@
           </paginate>
           <div>
             <button class="btn btn-success px-4 mr-3" @click="onUnLockAllProxy">
-              Giải phóng toàn bộ proxy khóa
+              停止のプロキシを全て開放
             </button>
           </div>
         </div>

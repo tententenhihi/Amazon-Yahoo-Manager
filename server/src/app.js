@@ -16,6 +16,7 @@ import BrightDataService from './services/BrightDataService';
 import CronJobService from './crons/CronJobService';
 import ImageInsertionService from './services/ImageInsertionService';
 import ProductYahooService from './services/ProductYahooService';
+import Utils from './utils/Utils';
 require('dotenv').config();
 
 const app = express();
@@ -65,8 +66,6 @@ let initData = async () => {
         Fs.mkdirSync('uploads/yahoo-products');
     }
     console.log('Server Started.!');
-    ImageInsertionService.initData();
-
     // let results = await ProductYahooService.startUploadProductInListFolderId('60f3aaa13c13e41abc49cec2', '60f3adcc3c13e41abc49cee2', [
     //     '6102d217bce59130b4f972d1',
     // ]);
