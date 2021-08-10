@@ -1,9 +1,7 @@
 import Axios from 'axios';
 import ProductAmazonSchema from '../models/ProductAmazonModel';
-import KeepaService from '../services/KeepaService';
 import Utils from '../utils/Utils';
 import Path from 'path';
-import FsExtra from 'fs-extra';
 const cheerio = require('cheerio');
 
 const parseDataProductHTML = async (html) => {

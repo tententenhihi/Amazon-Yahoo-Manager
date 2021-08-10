@@ -16,6 +16,13 @@ import Utils from '../utils/Utils';
 var isCalendarUploading = false;
 
 export default class ProductYahooService {
+    static async checkProfitToStopUpload(defaultSetting, import_price, amazon_shipping_fee) {
+        let dataprofit = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee);
+        if (dataprofit.actual_profit <= defaultSetting.profit_stop) {
+            return true;
+        }
+        return false;
+    }
     static async calculatorPrice(defaultSetting, import_price, amazon_shipping_fee) {
         //Tỷ suất lơi nhuận
         let profitPersent = '';
@@ -52,11 +59,11 @@ export default class ProductYahooService {
         let bid_or_buy_price = 0;
         // Nguyên giá
         let original_price = import_price + amazon_shipping_fee;
-
         if (profitPersent.endsWith('%')) {
             profitPersent = profitPersent.replace('%', '');
             profitPersent = parseFloat(profitPersent.toString().trim());
-            price = parseInt(import_price / (1 - profitPersent / 100 - fee_auction_yahoo / 100));
+            profitPersent = profitPersent / 100;
+            price = parseInt(import_price / (1 - profitPersent - fee_auction_yahoo));
 
             start_price = price - ship_fee_yahoo;
             if (start_price <= 0) {
@@ -70,8 +77,8 @@ export default class ProductYahooService {
             actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
 
             bid_or_buy_price = price + defaultSetting.yahoo_auction_bid_price;
-        } else if (profitPersent.startsWith('/')) {
-            profitPersent = profitPersent.replace('/', '');
+        } else if (profitPersent.startsWith('\\')) {
+            profitPersent = profitPersent.replace('\\', '');
             profitPersent = parseInt(profitPersent.toString().trim());
 
             price = parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * (1 + fee_auction_yahoo));
@@ -85,8 +92,7 @@ export default class ProductYahooService {
 
             gross_profit = price - original_price;
 
-            actual_profit =
-                gross_profit - ship_fee_yahoo - parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * fee_auction_yahoo);
+            actual_profit = gross_profit - ship_fee_yahoo - parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * fee_auction_yahoo);
 
             bid_or_buy_price = price + defaultSetting.yahoo_auction_bid_price;
         }
@@ -267,6 +273,8 @@ export default class ProductYahooService {
                     await Utils.sleep(5000);
                 }
 
+                let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
+
                 for (const folder_id of new_list_target_folder) {
                     let listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
 
@@ -274,6 +282,37 @@ export default class ProductYahooService {
                         const productYahooData = listProduct[index];
                         let dataUpdate = {};
 
+                        let isStopUpload = false;
+
+                        if (productYahooData.is_user_change) {
+                            let price = productYahooData.start_price + defaultSetting.yahoo_auction_shipping;
+                            let gross_profit = price - productYahooData.original_price;
+                            let actual_profit = gross_profit - defaultSetting.yahoo_auction_shipping;
+                            console.log(' ############# actual_profit: ', actual_profit);
+                            if (actual_profit <= defaultSetting.profit_stop) {
+                                isStopUpload = true;
+                            }
+                        } else {
+                            isStopUpload = await ProductYahooService.checkProfitToStopUpload(
+                                defaultSetting,
+                                productYahooData.import_price,
+                                productYahooData.amazon_shipping_fee
+                            );
+                        }
+                        console.log(' ==================== isStopUpload =========================== ');
+                        if (isStopUpload) {
+                            let newResult = {
+                                product_created: productYahooData.created,
+                                product_id: productYahooData._id,
+                                product_aID: '',
+                                message: '低利益',
+                                created: Date.now(),
+                                success: 'ERROR',
+                            };
+                            result.push(newResult);
+                            console.log(' ================ isStopUpload LOW PROFIT =============== ');
+                            continue;
+                        }
                         let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
                             yahooAccount.user_id,
                             yahooAccount._id,
@@ -340,6 +379,27 @@ export default class ProductYahooService {
                             for (let index = 0; index < listProduct.length; index++) {
                                 const productYahooData = listProduct[index];
                                 let dataUpdate = {};
+
+                                let isStopUpload = await ProductYahooService.checkProfitToStopUpload(
+                                    user_id,
+                                    yahoo_account_id,
+                                    productYahooData.import_price,
+                                    productYahooData.amazon_shipping_fee
+                                );
+
+                                if (isStopUpload) {
+                                    let newResult = {
+                                        product_created: productYahooData.created,
+                                        product_id: productYahooData._id,
+                                        product_aID: '',
+                                        message: '低利益',
+                                        created: Date.now(),
+                                        success: 'ERROR',
+                                    };
+                                    result.push(newResult);
+                                    console.log(' ================ isStopUpload LOW PROFIT =============== ');
+                                    continue;
+                                }
 
                                 let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
                                     yahooAccount.user_id,
@@ -411,6 +471,26 @@ export default class ProductYahooService {
                     for (let index = 0; index < listProduct.length; index++) {
                         const productYahooData = listProduct[index];
                         let dataUpdate = {};
+
+                        let isStopUpload = await ProductYahooService.checkProfitToStopUpload(
+                            user_id,
+                            yahoo_account_id,
+                            productYahooData.import_price,
+                            productYahooData.amazon_shipping_fee
+                        );
+                        if (isStopUpload) {
+                            let newResult = {
+                                product_created: productYahooData.created,
+                                product_id: productYahooData._id,
+                                product_aID: '',
+                                message: '低利益',
+                                created: Date.now(),
+                                success: 'ERROR',
+                            };
+                            result.push(newResult);
+                            console.log(' ================ isStopUpload LOW PROFIT =============== ');
+                            continue;
+                        }
 
                         let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
                             yahooAccount.user_id,
@@ -489,7 +569,7 @@ export default class ProductYahooService {
             asin_amazon: productAmazon.asin,
             images: productAmazon.images,
             product_amazon_id: productAmazon._id,
-            count_product: productAmazon.count || 1,
+            count: productAmazon.count,
             amazon_shipping_fee: productAmazon.ship_fee,
             ship_fee1: defaultSetting.yahoo_auction_shipping,
             user_id: user_id,

@@ -7,5 +7,7 @@ ProductYahooSellingRouter.route('/get/:yahoo_account_id').get(ProductYahooSellin
 ProductYahooSellingRouter.route('/delete/:_id').post(ProductYahooSellingController.deleteProduct);
 ProductYahooSellingRouter.route('/delete-multiple/').post(ProductYahooSellingController.deleteMultipleProduct);
 ProductYahooSellingRouter.route('/set-note').post(ProductYahooSellingController.setNote);
+ProductYahooSellingRouter.route('/refresh-data-yahoo').post(ProductYahooSellingController.refreshDataYahoo);
+
 
 export default ProductYahooSellingRouter;

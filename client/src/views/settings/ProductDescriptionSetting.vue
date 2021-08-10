@@ -9,7 +9,7 @@
         <div class="form-group row mb-40">
           <label for="product-detail" class="col-sm-3 col-form-label">商品詳細 :</label>
           <div class="col-sm-8">
-            <input type="text" v-model="setting.product_detail" class="form-control" id="product-detail" placeholder="(商品の商品詳細文が入る)" readonly>
+            <input type="text" class="form-control" id="product-detail" placeholder="(商品の商品詳細文が入る)" readonly>
           </div>
         </div>
         <div class="form-group row mb-40">

@@ -18,7 +18,9 @@
             />
           </div>
         </div>
-        <button class="btn btn-primary" @click="onSearchProduct">検索</button>
+        <button class="btn btn-primary px-4" @click="onSearchProduct">
+          検索
+        </button>
         <button class="btn btn-default" @click="clearSearchProduct">
           リセット
         </button>
@@ -30,9 +32,10 @@
         <button
           class="btn btn-primary my-10"
           style="position: absolute; top: -15px; right: 0; margin-bottom: -10px;"
-          @click="getListProduct()"
+          @click="refreshDataYahoo()"
         >
-          <i class="fa fa-refresh"></i> 最新の情報を反映する
+          <i class="fa fa-sync-alt" style="font-size: 12px"></i>
+          最新の情報を反映する
         </button>
         <button
           :disabled="!selectedProduct.length"
@@ -481,6 +484,21 @@ export default {
           this.page -= 1;
         }
       }
+    },
+    async refreshDataYahoo() {
+      let res = await ProductYahooSellingApi.refreshDataYahoo({
+        yahoo_account_id: this.yahooAccountId
+      });
+      if (res && res.status === 200) {
+        this.products = res.data.products;
+        this.searchProducts = this.products;
+        this.$swal.fire({
+          icon: "success",
+          title: "追加成功",
+          timer: 500,
+          showConfirmButton: false
+        });
+      }
     }
   },
   watch: {
@@ -519,8 +537,6 @@ export default {
   },
   created() {
     const selectedYahooAccount = this.$store.state.selectedYahooAccount;
-      console.log(" ########### selectedYahooAccount: ", selectedYahooAccount);
-
     if (selectedYahooAccount && selectedYahooAccount.is_lock) {
       this.$routes.push({ name: "YahooAccounts" });
     }

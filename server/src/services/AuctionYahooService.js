@@ -33,8 +33,7 @@ export default class AuctionYahooService {
         try {
             let headers = {
                 cookie,
-                'user-agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15',
                 origin: 'https://auctions.yahoo.co.jp',
                 authority: 'auctions.yahoo.co.jp',
                 'Accept-Encoding': 'gzip, deflate, br',
@@ -60,7 +59,9 @@ export default class AuctionYahooService {
             if (textPoints && textPoints.length > 0) {
                 for (const nodeP of textPoints) {
                     if ($(nodeP).text().includes('現在の評価ポイント')) {
-                        return $(nodeP).text().replace('現在の評価ポイント', '').trim();
+                        let point = $(nodeP).text().replace('現在の評価ポイント', '').trim();
+                        point = point.replace(/\D+/g, '');
+                        return point;
                     }
                 }
             }
@@ -201,9 +202,9 @@ export default class AuctionYahooService {
 
             let headers = {
                 cookie,
-                'user-agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15',
                 origin: 'https://auctions.yahoo.co.jp',
+                referer: 'https://auctions.yahoo.co.jp/sell/jp/show/submit',
                 authority: 'auctions.yahoo.co.jp',
                 'Accept-Encoding': 'gzip, deflate, br',
                 Connection: 'keep-alive',
@@ -260,41 +261,49 @@ export default class AuctionYahooService {
             // Upload Image and get thumbnail
             let payloadImage = {};
             for (let i = 0; i < listImage.length; i++) {
-                const formData = new FormData();
-                const buffer = Fs.createReadStream(listImage[i]);
+                try {
+                    const formData = new FormData();
+                    const buffer = Fs.createReadStream(listImage[i]);
 
-                formData.append('files[0]', buffer, `photo${i}.jpg`);
-                formData.append('.crumb', keys.img_crumb);
-                const resImage = await axios.post(`https://auctions.yahoo.co.jp/img/images/new`, formData, {
-                    headers: {
-                        ...headers,
-                        ...formData.getHeaders(),
-                    },
-                    // proxy: proxyConfig,
-                });
-
-                payloadImage[`image_comment${i + 1}`] = '';
-                payloadImage[`ImageFullPath${i + 1}`] = resImage.data.images[0].url;
-                payloadImage[`ImageWidth${i + 1}`] = resImage.data.images[0].width;
-                payloadImage[`ImageHeight${i + 1}`] = resImage.data.images[0].height;
-
-                // Set Thumbnail is first image
-                if (i === 0) {
-                    let urlImage = resImage.data.images[0].url;
-                    const form = new FormData();
-                    form.append('path', urlImage);
-                    form.append('.crumb', keys.img_crumb);
-
-                    const configs = {
+                    formData.append('files[0]', buffer, `photo${i}.jpg`);
+                    formData.append('.crumb', keys.img_crumb);
+                    const resImage = await axios.post(`https://auctions.yahoo.co.jp/img/images/new`, formData, {
                         headers: {
-                            ...form.getHeaders(),
-                            cookie: cookie,
+                            ...headers,
+                            ...formData.getHeaders(),
                         },
-                        proxy: proxyConfig,
-                    };
-                    const resThumbnail = await axios.post('https://auctions.yahoo.co.jp/img/images/new', form, configs);
-                    payloadImage = { ...payloadImage, thumbNail: resThumbnail.data.thumbnail };
-                }
+                        // proxy: proxyConfig,
+                    });
+                    payloadImage[`image_comment${i + 1}`] = '';
+                    payloadImage[`ImageFullPath${i + 1}`] = resImage.data.images[0].url;
+                    payloadImage[`ImageWidth${i + 1}`] = resImage.data.images[0].width;
+                    payloadImage[`ImageHeight${i + 1}`] = resImage.data.images[0].height;
+
+                    // Set Thumbnail is first image
+                    if (!payloadImage.thumbNail && payloadImage.thumbNail !== '') {
+                        let urlImage = resImage.data.images[0].url;
+                        const form = new FormData();
+                        form.append('path', urlImage);
+                        form.append('.crumb', keys.img_crumb);
+
+                        const configs = {
+                            headers: {
+                                ...form.getHeaders(),
+                                cookie: cookie,
+                            },
+                            proxy: proxyConfig,
+                        };
+                        const resThumbnail = await axios.post('https://auctions.yahoo.co.jp/img/images/new', form, configs);
+                        payloadImage = { ...payloadImage, thumbNail: resThumbnail.data.thumbnail };
+                    }
+                } catch (error) {}
+            }
+
+            if (payloadImage.length < 0) {
+                return {
+                    status: 'ERROR',
+                    statusMessage: 'エラー画像 ',
+                };
             }
 
             let now = new Date();
@@ -313,11 +322,6 @@ export default class AuctionYahooService {
             // }
             productData.sales_mode = 'auction';
 
-            //p861707070
-            let productTitle = productData.product_yahoo_title;
-            if (productTitle.length > 74) {
-                productTitle = productTitle.substring(0, 74);
-            }
             // PREVIEW
             let previewParams = {
                 aID: '',
@@ -343,9 +347,17 @@ export default class AuctionYahooService {
                 submit_description: 'html',
                 dskPayment: 'ypmOK',
                 shippinginput: 'now',
-                is_yahuneko_nekoposu_ship: 'yes',
-                is_yahuneko_taqbin_ship: 'no',
-                is_jp_yupacket_official_ship: 'no',
+                is_yahuneko_nekoposu_ship: '',
+                is_yahuneko_taqbin_compact_ship: '',
+                is_yahuneko_taqbin_ship: '',
+                is_jp_yupacket_official_ship: '',
+                is_jp_yupack_official_ship: '',
+                hokkaidoshipping1: '',
+                okinawashipping1: '',
+                isolatedislandshipping1: '',
+                shipmethod: 'other',
+
+                is_other_ship: 'yes',
                 submitUnixtime: Date.now(),
                 markdown_ratio: 0,
                 promoteCtoOfficial_shipMethod: 'クリックポスト',
@@ -355,7 +367,7 @@ export default class AuctionYahooService {
                 promoteNon_STANDARDtoOfficial_shipMethod: '定形外郵便',
 
                 ...payloadImage,
-                Title: productTitle,
+                Title: productData.product_yahoo_title,
                 category: productData.yahoo_auction_category_id,
                 salesmode: productData.sales_mode,
                 StartPrice: productData.start_price,
@@ -405,7 +417,7 @@ export default class AuctionYahooService {
             let payload = Qs.stringify(previewParams);
             headers = {
                 ...headers,
-                referer: 'https://auctions.yahoo.co.jp/sell/jp/show/submit',
+                referer: 'https://auctions.yahoo.co.jp/sell/jp/show/preview',
                 'Content-Type': 'application/x-www-form-urlencoded',
             };
             let resPreview = await axios.post(`https://auctions.yahoo.co.jp/sell/jp/show/preview`, payload, {
@@ -469,6 +481,12 @@ export default class AuctionYahooService {
                     aID,
                     thumbnail,
                 };
+            } else if (resSubmit.data.includes('仮出品とは、出品手続きされたオークションを、Yahoo! JAPANが確認させていただくためのものです。')) {
+                return {
+                    status: 'SUCCESS',
+                    aID: '',
+                    thumbnail,
+                };
             } else {
                 let message = $('strong').text();
                 return {
@@ -487,6 +505,7 @@ export default class AuctionYahooService {
     }
 
     static async getProductAuctionEnded(usernameYahoo, cookie, proxy, getAidOnly) {
+        let listProduct = [];
         try {
             let proxyConfig = {
                 host: proxy.host,
@@ -510,14 +529,14 @@ export default class AuctionYahooService {
             let $ = cheerio.load(response.data);
 
             let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
-            let listProduct = [];
             for (const row of rowTable) {
                 let aID = $(row).find('td:nth-child(2)').text().trim();
+                let title = $(row).find('td:nth-child(3)').text().replace('未使用','').replace('...', '').trim();
                 let idBuyer = $(row).find('td:nth-child(6)').text().trim().replace('-', '');
                 let time_end = $(row).find('td:nth-child(5)').text().trim();
                 let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '').replace('-', '');
                 if (aID && aID !== '商品ID' && aID.trim() !== '') {
-                    listProduct.push({ aID, idBuyer, time_end, price_end });
+                    listProduct.push({ aID, idBuyer, time_end, price_end, title });
                 }
             }
             if (getAidOnly) {
@@ -604,13 +623,14 @@ export default class AuctionYahooService {
                     }
                 }
             }
-            return listProduct;
         } catch (error) {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
         }
+        return listProduct;
     }
 
-    static async getProductAuctionFinished(usernameYahoo, cookie, proxy) {
+    static async getProductAuctionFinished(cookie, proxy) {
+        let listProduct = [];
         try {
             let proxyConfig = {
                 host: proxy.host,
@@ -623,25 +643,6 @@ export default class AuctionYahooService {
             if (config.get('env') === 'development') {
                 proxyConfig = null;
             }
-
-            // let response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=1', {
-            //     headers: {
-            //         cookie,
-            //     },
-            //     proxy: proxyConfig,
-            // });
-
-            // let $ = cheerio.load(response.data);
-
-            // let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
-            // let listProduct = [];
-            // for (const row of rowTable) {
-            //     let aID = $(row).find('td:nth-child(2)').text().trim();
-            //     if (aID && aID !== '商品ID' && aID.trim() !== '') {
-            //         listProduct.push(aID);
-            //     }
-            // }
-
             let response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0', {
                 headers: {
                     cookie,
@@ -650,10 +651,10 @@ export default class AuctionYahooService {
             });
 
             let $ = cheerio.load(response.data);
-            let listProduct = [];
             let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
             for (const row of rowTable) {
                 let aID = $(row).find('td:nth-child(2)').text().trim();
+                let title = $(row).find('td:nth-child(3)').text().replace('未使用','').replace('...', '').trim();
                 let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '');
                 let time_end = $(row).find('td:nth-child(5)').text().trim().replace('-', '');
 
@@ -662,16 +663,17 @@ export default class AuctionYahooService {
                         aID,
                         price_end,
                         time_end,
+                        title,
                     });
                 }
             }
-            return listProduct;
         } catch (error) {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
         }
+        return listProduct;
     }
 
-    static async getProductAuctionSelling(usernameYahoo, cookie, proxy) {
+    static async getProductAuctionSelling(cookie, proxy) {
         let proxyConfig = {
             host: proxy.host,
             port: proxy.port,
@@ -698,6 +700,7 @@ export default class AuctionYahooService {
         let listProduct = [];
         for (const row of rowTable) {
             let aID = $(row).find('td:nth-child(1)').text();
+            let title = $(row).find('td:nth-child(2)').text().replace('未使用','').replace('...', '').trim();
             let price_end = $(row).find('td:nth-child(3)').text().trim().replace(/\D+/g, '');
             let negotiate = $(row).find('td:nth-child(4)').text().trim().replace('-', '');
             let flower = $(row).find('td:nth-child(5)').text().trim().replace(/\D+/g, '');
@@ -714,6 +717,7 @@ export default class AuctionYahooService {
                     buyer_count,
                     idBuyer,
                     time_end,
+                    title,
                 });
             }
         }
@@ -816,8 +820,7 @@ export default class AuctionYahooService {
         try {
             let headers = {
                 cookie,
-                'user-agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15',
                 origin: 'https://auctions.yahoo.co.jp',
                 authority: 'auctions.yahoo.co.jp',
                 'Accept-Encoding': 'gzip, deflate, br',

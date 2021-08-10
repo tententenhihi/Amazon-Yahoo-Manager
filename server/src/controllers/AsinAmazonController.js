@@ -69,9 +69,9 @@ export default class AsinAmazonController {
                         query_key: queryKey,
                     };
                     let newAsin = await AsinAmazonService.add(newAsinData);
-                    QueueGetProductAmazon.addNew(newAsin);
                     listAsinNew.push(newAsin);
                 }
+                QueueGetProductAmazon.addNew(listAsinNew);
                 return response.success200({ listAsinNew });
             }
             return response.error400({ message: 'データエラー' });

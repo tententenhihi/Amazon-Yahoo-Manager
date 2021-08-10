@@ -15,10 +15,6 @@ export default class ProductYahooController {
         try {
             let { ids, yahoo_account_id } = req.body;
             let user_id = req.user._id;
-            console.log(' #### ids: ', ids);
-            console.log(' #### user_id: ', user_id);
-            console.log(' #### ids: ', ids);
-
             let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(yahoo_account_id);
             if (is_lock_account) {
                 return response.error400({ message: 'ヤフーアカウントが機能しない ' });
@@ -58,6 +54,9 @@ export default class ProductYahooController {
                         let message = '出品に成功しました';
                         if (uploadAuctionResult.status === 'ERROR') {
                             message = uploadAuctionResult.statusMessage;
+                        }
+                        if (uploadAuctionResult.status === 'SUCCESS' && !uploadAuctionResult.aID) {
+                            message = '仮出品とは、出品手続きされたオークションを、Yahoo! JAPANが確認させていただくためのものです。';
                         }
                         let newResult = {
                             product_created: productYahooData.created,

@@ -245,7 +245,7 @@ var ProductYahoo = new Schema({
     id_category_amazon: {
         type: String,
     },
-    count_product: {
+    count: {
         type: Number,
         default: 1,
     },

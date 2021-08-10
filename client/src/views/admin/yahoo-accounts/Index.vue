@@ -21,7 +21,7 @@
               <input type="text" class="form-control" id="proxy" v-model="searchProxy">
             </div>
           </div>
-          <button class="btn btn-primary" @click="searchYahooAccount">検索</button>
+          <button class="btn btn-primary px-4" @click="searchYahooAccount">検索</button>
         </div>
         <paginate
           v-if="pageCount > 1"

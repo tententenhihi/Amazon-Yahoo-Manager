@@ -24,7 +24,7 @@ export default class AsinAmazonService {
                     item.asins = element;
                     item.countAsin = element.length;
                     for (const ele of element) {
-                        if (ele.isProductGeted) {
+                        if (ele.status === 'SUCCESS') {
                             item.countAsinGetProductSuccess++;
                         }
                     }

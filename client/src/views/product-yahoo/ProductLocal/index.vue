@@ -141,7 +141,9 @@
             </div>
           </div> -->
 
-          <button class="btn btn-primary" @click="onSearchProduct">検索</button>
+          <button class="btn btn-primary px-4" @click="onSearchProduct">
+            検索
+          </button>
           <button class="btn btn-default" @click="clearSearchProduct">
             リセット
           </button>
@@ -222,13 +224,13 @@
               <th>
                 <input type="checkbox" v-model="isCheckAllProduct" />
               </th>
-              <th class="text-center">画像</th>
+              <th class="text-center" width="200">画像</th>
               <th>Y！オーク商品の名前</th>
-              <th class="text-center" width="60">期間<br />(日)<br /></th>
+              <!-- <th class="text-center" width="60">期間<br />(日)<br /></th> -->
               <th class="text-center" width="100">開始価格<br /></th>
               <th class="text-center" width="100">即決価格<br /></th>
               <th class="text-center" width="70">送料<br /></th>
-              <th class="text-center" width="70">出品停止<br />在庫数<br /></th>
+              <!-- <th class="text-center" width="70">出品停止<br />在庫数<br /></th> -->
               <th class="text-center" width="60">数量<br /></th>
               <th class="text-center" width="70">仕入元の<br />値段</th>
               <th class="text-center" width="100">
@@ -283,12 +285,12 @@
                   style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
               </td>
-              <td>
+              <td  width="200">
                 <a :href="`/yahoo-auction-products/${product._id}`">{{
                   product.product_yahoo_title
                 }}</a>
               </td>
-              <td class="text-center">{{ product.duration }}</td>
+              <!-- <td class="text-center">{{ product.duration }}</td> -->
               <td class="text-center">
                 {{
                   product.start_price
@@ -310,7 +312,7 @@
                     : "-"
                 }}{{ product.ship_fee1 ? "円" : "" }}
               </td>
-              <td class="text-center">{{ product.quantity_check }}</td>
+              <!-- <td class="text-center">{{ product.quantity_check }}</td> -->
               <td class="text-center">{{ product.quantity }}</td>
               <td class="text-center">
                 {{
@@ -329,10 +331,13 @@
                 </div>
               </td>
               <td class="text-center">
-                {{ product.actual_profit ? product.actual_profit.toLocaleString("ja-JP") : 0
+                {{
+                  product.actual_profit
+                    ? product.actual_profit.toLocaleString("ja-JP")
+                    : 0
                 }}{{ product.actual_profit ? "円" : "" }}
               </td>
-              <td class="text-center">{{ product.count_product }}</td>
+              <td class="text-center">{{ product.count }}</td>
               <td class="text-center">
                 <span
                   v-if="product.listing_status === 'UNDER_EXHIBITION'"
@@ -1158,11 +1163,11 @@ export default {
       let res = await ProductYahooApi.uploadProductNow(params);
       if (res && res.status === 200) {
         let results = res.data.results;
-        results.map(item => {
-          if (item.success) {
-          } else {
-          }
-        });
+        // results.map(item => {
+        //   if (item.success) {
+        //   } else {
+        //   }
+        // });
 
         let html = `
         <div>
@@ -1176,10 +1181,13 @@ export default {
           }</span>
         </div>
         `;
-
         this.isCheckAllProduct = false;
         this.selectedProducts = this.selectedProducts.map(item => {
-          item.listing_status = "UNDER_EXHIBITION";
+          for (const result of results) {
+            if (result.product_id === item._id && result.success) {
+              item.listing_status = "UNDER_EXHIBITION";
+            }
+          }
           return item;
         });
         this.selectedProducts = [];

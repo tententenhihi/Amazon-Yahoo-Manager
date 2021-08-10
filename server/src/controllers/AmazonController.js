@@ -70,7 +70,6 @@ export default class AmazonController {
             let profit = 0;
             let price = 0;
 
-
             if (data.shipping) {
                 price += parseFloat(data.shipping.toString());
             }
@@ -238,7 +237,7 @@ export default class AmazonController {
                 if (title && title.length > 65) {
                     title = title.substring(0, 65);
                 }
-                
+
                 let productYahoo = {
                     ...defaultSetting._doc,
                     id_category_amazon: productAmazon.category_id,
@@ -260,7 +259,7 @@ export default class AmazonController {
                     product_amazon_id: productAmazon._id,
                     created: Date.now(),
                     listing_status: 'NOT_LISTED',
-                    count_product: productAmazon.count && productAmazon.count > 1 ? productAmazon.count : 1,
+                    count: productAmazon.count,
                     amazon_shipping_fee: productAmazon.shipping,
                     _id: null,
                 };

@@ -7,5 +7,6 @@ ProductYahooFinishedRouter.route('/get/:yahoo_account_id').get(ProductYahooFinis
 ProductYahooFinishedRouter.route('/delete/:_id').post(ProductYahooFinishedController.deleteProduct);
 ProductYahooFinishedRouter.route('/delete-multiple/').post(ProductYahooFinishedController.deleteMultipleProduct);
 ProductYahooFinishedRouter.route('/set-note').post(ProductYahooFinishedController.setNote);
+ProductYahooFinishedRouter.route('/refresh-data-yahoo').post(ProductYahooFinishedController.refreshDataYahoo);
 
 export default ProductYahooFinishedRouter;

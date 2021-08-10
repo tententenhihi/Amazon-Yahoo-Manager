@@ -14,6 +14,7 @@ import RatingTemplateSchema from '../models/RatingTemplateModel';
 import AuctionPublicSettingService from '../services/AuctionPublicSettingService';
 import ProductGlobalSettingService from '../services/ProductGlobalSettingService';
 import AccountYahooService from '../services/AccountYahooService';
+import ProxyService from '../services/ProxyService';
 
 class YahooAccountController {
     static async getListAccount(req, res) {
@@ -140,6 +141,9 @@ class YahooAccountController {
         try {
             if (_id) {
                 let existAccount = await YahooAccountModel.findById(_id);
+                if (existAccount.proxy_id) {
+                    await ProxyService.updateProxy(existAccount.proxy_id, { status: 'lock' });
+                }
                 if (!existAccount) {
                     return response.error404({ message: 'Account not found' });
                 } else {

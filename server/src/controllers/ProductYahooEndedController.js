@@ -6,6 +6,17 @@ import AccountYahooService from '../services/AccountYahooService';
 import ProxyService from '../services/ProxyService';
 
 export default class ProductYahooEndedController {
+    static async refreshDataYahoo(req, res) {
+        let response = new Response(res);
+        try {
+            let { yahoo_account_id } = req.body;
+            let products = await ProductYahooEndedService.refreshDataYahoo(yahoo_account_id);
+            return response.success200({ products });
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
     static async get(req, res) {
         let response = new Response(res);
         try {

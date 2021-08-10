@@ -36,7 +36,9 @@
           </div>
         </div>
 
-        <button class="btn btn-primary" @click="onSearchProduct">検索</button>
+        <button class="btn btn-primary px-4" @click="onSearchProduct">
+          検索
+        </button>
         <button class="btn btn-default" @click="clearSearchProduct">
           リセット
         </button>
@@ -44,6 +46,17 @@
       <div class="alert alert-danger" v-if="isDieProxy">
         現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
       </div>
+      <div class="group-button py-20 position-relative">
+        <button
+          class="btn btn-primary my-10"
+          style="position: absolute; top: -15px; right: 0; margin-bottom: -10px;"
+          @click="refreshDataYahoo()"
+        >
+          <i class="fa fa-sync-alt" style="font-size: 12px"></i>
+          最新の情報を反映する
+        </button>
+      </div>
+
       <div class="table-responsive">
         <paginate
           v-if="pageCount > 1"
@@ -279,6 +292,21 @@ export default {
     }
   },
   methods: {
+    async refreshDataYahoo() {
+      let res = await ProductYahooEndedApi.refreshDataYahoo({
+        yahoo_account_id: this.yahooAccountId
+      });
+      if (res && res.status === 200) {
+        this.products = res.data.products;
+        this.searchProducts = this.products;
+        this.$swal.fire({
+          icon: "success",
+          title: "追加成功",
+          timer: 500,
+          showConfirmButton: false
+        });
+      }
+    },
     getPriceEnd(product) {
       if (product.price_end) {
         return product.price_end.toLocaleString("ja-JP") + "円";

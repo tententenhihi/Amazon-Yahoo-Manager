@@ -34,5 +34,10 @@ export default {
   },
   delete(id) {
     return Api.post(`${prefix}/delete/${id}`);
+  },
+  refreshDataYahoo(credentials) {
+    return Api.post(`${prefix}/refresh-data-yahoo`, credentials, {
+      timeout: 5 * 60 * 1000
+    });
   }
 };

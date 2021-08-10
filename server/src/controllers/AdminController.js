@@ -5,16 +5,16 @@ import VerifyCodeSchema from '../models/VerifyCodeModel';
 import ProxyModel from '../models/ProxyModel';
 import BlacklistAsinService from '../services/BlacklistAsinService';
 import YahooAccountModel from '../models/YahooAccount';
-import AuctionPublicSettingModel from '../models/AuctionPublicSettingModel'
-import CategoryModel from '../models/CategoryModel'
-import FolderModel from '../models/FolderModel'
-import ProductGlobalSettingModel from '../models/ProductGlobalSettingModel'
-import ProductInfomationDefaultModel from '../models/ProductInfomationDefaultModel'
-import ProductYahooEndedModel from '../models/ProductYahooEndedModel'
-import ProductYahooModel from '../models/ProductYahooModel'
-import RatingTemplateModel from '../models/RatingTemplateModel'
-import TradeMessageTemplateModel from '../models/TradeMessageTemplateModel'
-import AsinModel from '../models/BlacklistAsinModel'
+import AuctionPublicSettingModel from '../models/AuctionPublicSettingModel';
+import CategoryModel from '../models/CategoryModel';
+import FolderModel from '../models/FolderModel';
+import ProductGlobalSettingModel from '../models/ProductGlobalSettingModel';
+import ProductInfomationDefaultModel from '../models/ProductInfomationDefaultModel';
+import ProductYahooEndedModel from '../models/ProductYahooEndedModel';
+import ProductYahooModel from '../models/ProductYahooModel';
+import RatingTemplateModel from '../models/RatingTemplateModel';
+import TradeMessageTemplateModel from '../models/TradeMessageTemplateModel';
+import AsinModel from '../models/BlacklistAsinModel';
 
 import { sendEmail } from '../helpers/sendEmail';
 
@@ -22,21 +22,21 @@ const saltRounds = 10;
 
 const deleteUserData = async (userId) => {
     try {
-        await YahooAccountModel.deleteMany({user_id: userId})
-        await AuctionPublicSettingModel.deleteMany({user_id: userId})
-        await CategoryModel.deleteMany({user_id: userId})
-        await FolderModel.deleteMany({user_id: userId})
-        await ProductGlobalSettingModel.deleteMany({user_id: userId})
-        await ProductInfomationDefaultModel.deleteMany({user_id: userId})
-        await ProductYahooEndedModel.deleteMany({user_id: userId})
-        await ProductYahooModel.deleteMany({user_id: userId})
-        await RatingTemplateModel.deleteMany({user_id: userId})
-        await TradeMessageTemplateModel.deleteMany({user_id: userId})
-        await AsinModel.deleteMany({idUser: userId})
+        await YahooAccountModel.deleteMany({ user_id: userId });
+        await AuctionPublicSettingModel.deleteMany({ user_id: userId });
+        await CategoryModel.deleteMany({ user_id: userId });
+        await FolderModel.deleteMany({ user_id: userId });
+        await ProductGlobalSettingModel.deleteMany({ user_id: userId });
+        await ProductInfomationDefaultModel.deleteMany({ user_id: userId });
+        await ProductYahooEndedModel.deleteMany({ user_id: userId });
+        await ProductYahooModel.deleteMany({ user_id: userId });
+        await RatingTemplateModel.deleteMany({ user_id: userId });
+        await TradeMessageTemplateModel.deleteMany({ user_id: userId });
+        await AsinModel.deleteMany({ idUser: userId });
     } catch (error) {
-        throw new Error(error.message)
+        throw new Error(error.message);
     }
-}
+};
 class AdminController {
     static async getAllUsers(req, res) {
         let response = new Response(res);
@@ -108,7 +108,6 @@ class AdminController {
     static async updateUser(req, res) {
         let response = new Response(res);
         try {
-
             const { password, name, status, expired_at, note, re_password, maxYahooAccount } = req.body;
             const { user_id } = req.params;
             let user = await UserModel.findById(user_id);
@@ -166,7 +165,9 @@ class AdminController {
         let response = new Response(res);
         try {
             let proxies = await ProxyModel.find();
-            return response.success200({ proxies });
+            let listYahooAccount = await YahooAccountModel.find({});
+
+            return response.success200({ proxies, listYahooAccount });
         } catch {
             return response.error500(res);
         }
@@ -252,6 +253,27 @@ class AdminController {
             let { _id } = req.params;
             let result = await BlacklistAsinService.delete(_id);
             return response.success200({ success: result });
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
+
+    static async unLockProxy(req, res) {
+        let response = new Response(res);
+        try {
+            let { _id } = req.params;
+            console.log(' #### _id: ', _id);
+            if (_id === 'all') {
+                let result = await ProxyModel.updateMany({ status: 'lock' }, { status: 'live' });
+                console.log(result);
+                let proxies = await ProxyModel.find();
+                return response.success200({ proxies });
+            } else {
+                let result = await ProxyModel.findByIdAndUpdate(_id, { status: 'live' });
+                await YahooAccountModel.findOneAndUpdate({ proxy_id: _id }, { proxy_id: null });
+                return response.success200({ proxies: result });
+            }
         } catch (error) {
             console.log(error);
             return response.error500(error);

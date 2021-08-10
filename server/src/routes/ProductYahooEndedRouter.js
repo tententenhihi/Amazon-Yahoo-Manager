@@ -12,6 +12,7 @@ ProductYahooEndedRouter.route('/delete-buyer').post(ProductYahooEndedController.
 ProductYahooEndedRouter.route('/send-message').post(ProductYahooEndedController.sendMessage);
 ProductYahooEndedRouter.route('/send-rating').post(ProductYahooEndedController.sendRating);
 ProductYahooEndedRouter.route('/set-note').post(ProductYahooEndedController.setNote);
+ProductYahooEndedRouter.route('/refresh-data-yahoo').post(ProductYahooEndedController.refreshDataYahoo);
 
 
 export default ProductYahooEndedRouter;

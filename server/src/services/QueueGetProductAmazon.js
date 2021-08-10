@@ -6,64 +6,137 @@ import ProductYahooService from './ProductYahooService';
 import KeepaService from './KeepaService';
 
 let queueGetInfoProduct = null;
-const getProductByAsin = async (inputData, cb) => {
+const getProductByAsin = async (listAsinModel, cb) => {
     try {
         console.log(' ==== Start getProductByAsin ==== ');
+        let newListAsinModel = [];
+        let listAsin = [];
+        for (let asinModel of listAsinModel) {
+            let checkBlackList = await BlacklistAsinService.findOne({ type: 'BLACK', asin: asinModel.code });
 
-        let checkBlackList = await BlacklistAsinService.findOne({ type: 'BLACK', asin: inputData.code });
-        if (!checkBlackList) {
-            let asin = inputData.code;
-            // Check Exist Product
-            let productAmazon = await ProductAmazonService.findOne({ asin });
-            if (!productAmazon) {
-                let amazonData = await ProductAmazonService.getProductByAsin(asin);
-                let keepaData = await KeepaService.findProduct(asin);
-                keepaData = keepaData.data;
+            if (checkBlackList) {
+                asinModel.isProductGeted = false;
+                asinModel.status = 'ERROR';
+                asinModel.statusMessage = 'ブラックリスト';
+                await asinModel.save();
+            } else {
+                let productAmazon = await ProductAmazonService.findOne({ asin: asinModel.code });
 
-                let productData = {
-                    ...amazonData,
-                    ...keepaData,
-                    description: amazonData.description || keepaData.description,
-                    price: amazonData.price || keepaData.price,
-                    category_id: (keepaData && keepaData.category_id) || amazonData.category_id,
-                    name: (keepaData && keepaData.name) || amazonData.name,
-                };
-                console.log(productData);
-                productAmazon = await ProductAmazonService.create(productData);
+                //productAmazon = null
+                productAmazon = null;
+
+                if (productAmazon) {
+                    await ProductYahooService.createFromAmazonProduct(productAmazon, asinModel.idUser, asinModel.yahoo_account_id);
+                    asinModel.isProductGeted = true;
+                    asinModel.status = 'SUCCESS';
+                    asinModel.statusMessage = 'プロキシ変更';
+                    await asinModel.save();
+                } else {
+                    listAsin.push(asinModel.code);
+                    newListAsinModel.push(asinModel);
+                }
             }
-            // Create Product Yahoo
-            await ProductYahooService.createFromAmazonProduct(productAmazon, inputData.idUser, inputData.yahoo_account_id);
-            await AsinAmazonService.update(inputData._id, inputData.idUser, { isProductGeted: true, status: 'SUCCESS' });
-        } else {
-            await AsinAmazonService.update(inputData._id, inputData.idUser, {
-                isProductGeted: false,
-                status: 'ERROR',
-                statusMessage: 'ブラックリスト',
-            });
         }
+
+        let count = 0;
+        let currentIndex = 0;
+
+        if (listAsin.length > 100) {
+            count = 100;
+        } else {
+            count = listAsin.length;
+        }
+        let index = 0;
+        while (listAsin && listAsin.length > 0 && count <= listAsin.length) {
+            let newListAsin = listAsin.slice(currentIndex, count);
+            let result = await KeepaService.findProduct(newListAsin);
+
+            //return
+            return;
+
+            if (result.status === 'SUCCESS') {
+                for (const itemData of result.data) {
+                    if (itemData.status === 'SUCCESS') {
+                        await ProductAmazonService.create(itemData.data);
+                        await ProductYahooService.createFromAmazonProduct(
+                            itemData.data,
+                            newListAsinModel[index].idUser,
+                            newListAsinModel[index].yahoo_account_id
+                        );
+                    }
+                    newListAsinModel[index].status = itemData.status;
+                    newListAsinModel[index].statusMessage = itemData.message;
+                    await newListAsinModel[index].save();
+
+                    index++;
+                }
+            } else {
+                for (const item of newListAsin) {
+                    newListAsinModel[index].status = 'ERROR';
+                    newListAsinModel[index].statusMessage = result.message;
+                    await newListAsinModel[index].save();
+                    index++;
+                }
+            }
+            currentIndex = count;
+            let sub = listAsin.length - count;
+            if (sub > 0) {
+                if (sub > 100) {
+                    count += 100;
+                } else {
+                    count += sub;
+                }
+            } else {
+                console.log(' ============== break ===============');
+
+                break;
+            }
+        }
+
+        // let listResultKeepa = await KeepaService.findProduct(listAsin);
+        // let listDataAsinResult = [];
+
+        // for (const result of listResultKeepa) {
+        //     if (result.status === 'ERROR') {
+        //         for (const itemData of result.data) {
+        //             listDataAsinResult.push({
+        //                 status: result.status,
+        //                 message: result.message,
+        //                 asin: itemData.asin,
+        //             });
+        //         }
+        //     } else {
+        //         for (const itemData of result.data) {
+        //             listDataAsinResult.push({
+        //                 status: itemData.status,
+        //                 message: itemData.message,
+        //                 asin: itemData.asin,
+        //                 data: itemData.data,
+        //             });
+        //         }
+        //     }
+        // }
+
+        // console.log(' ######### listDataAsinResult: ', listDataAsinResult);
+        // console.log(' ######### listDataAsinResult: ', listDataAsinResult.length);
+
         console.log(' ==== End ====');
-        cb(null, inputData);
+        cb(null, listAsinModel);
     } catch (error) {
-        console.log(' ### Error Queue getProductByAsin: ', error);
-        await AsinAmazonService.update(inputData._id, inputData.idUser, {
-            isProductGeted: false,
-            status: 'ERROR',
-            statusMessage: 'エラー: ' + error.message,
-        });
         cb({ error });
     }
 };
 export default class QueueGetProductAmazon {
     constructor() {
         if (!queueGetInfoProduct) {
-            queueGetInfoProduct = new Queue(getProductByAsin, { concurrent: 5, autoResume: true, cancelIfRunning: true });
+            queueGetInfoProduct = new Queue(getProductByAsin, { concurrent: 1, autoResume: true, cancelIfRunning: true });
         }
     }
 
-    static async addNew(data) {
-        if (!data) {
+    static async addNew(listAsinModel) {
+        if (!listAsinModel) {
             return;
         }
-        queueGetInfoProduct.push(data);
+        queueGetInfoProduct.push(listAsinModel);
     }
 }

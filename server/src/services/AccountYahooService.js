@@ -65,7 +65,6 @@ export default class AccountYahooService {
                 await accountData.save();
                 setTimeout(async () => {
                     let point = await AuctionYahooService.getPointAuction(resultGetCookie.cookie, proxy);
-                    point = point.replace(/\D+/g, '');
                     accountData.auction_point = point;
                     await accountData.save();
                     console.log(' === Get point success === ');

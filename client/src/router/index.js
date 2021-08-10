@@ -1,13 +1,11 @@
 import Vue from "vue";
 import Router from "vue-router";
 import store from "../store/store";
-import Asin from "../views/Asin/index.vue";
 
 const Login = () => import("@/views/auth/Login.vue");
 const ForgotPassword = () => import("@/views/auth/ForgotPassword.vue");
 const ResetPassword = () => import("@/views/auth/ResetPassword.vue");
 
-const Dashboard = () => import("@/views/Dashboard.vue");
 
 const YahooAccounts = () => import("@/views/users/YahooAccounts.vue");
 const ChangePassword = () => import("@/views/users/ChangePassword.vue");

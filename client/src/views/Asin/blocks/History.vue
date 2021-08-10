@@ -59,29 +59,33 @@
         {{ selectedGroup.yahoo_id }}
       </template>
       <template>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>コード</th>
-              <th>状態</th>
-              <th>メッセージ</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(asin, index) in selectedGroup.asins"
-              :key="asin.code + '-' + index"
-            >
-              <td>{{ asin.code }}</td>
-              <td
-                :class="asin.isProductGeted ? 'status-success' : 'status-fail'"
+        <div style=" overflow-y: scroll; max-height: 500px; ">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>コード</th>
+                <th>状態</th>
+                <th>メッセージ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(asin, index) in selectedGroup.asins"
+                :key="asin.code + '-' + index"
               >
-                {{ asin.status }}
-              </td>
-              <td>{{ asin.statusMessage }}</td>
-            </tr>
-          </tbody>
-        </table>
+                <td>{{ asin.code }}</td>
+                <td
+                  :class="
+                    asin.isProductGeted ? 'status-success' : 'status-fail'
+                  "
+                >
+                  {{ asin.status }}
+                </td>
+                <td>{{ asin.statusMessage }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </template>
       <template v-slot:button>
         <button

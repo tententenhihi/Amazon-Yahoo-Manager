@@ -4,9 +4,6 @@ import bcrypt from 'bcryptjs';
 class UserService {
     static async checkUser_Lock_Exprired(userId) {
         let user = await UserModel.findById(userId);
-        if (user) {
-            return true;
-        }
         if (user.status === 'LOCKED') {
             return true;
         }

@@ -55,7 +55,9 @@
                     </div>
                     <div class="row">
                       <div class="col-5 text-align-end mt-2">
-                        Amazonで設定する　送料一律 （円）取得価格が出品者だった場合に自動で割り当てておく送料 <small>(円)</small> :
+                        Amazonで設定する　送料一律
+                        （円）取得価格が出品者だった場合に自動で割り当てておく送料
+                        <small>(円)</small> :
                       </div>
                       <div class="col-3">
                         <input
@@ -65,7 +67,8 @@
                         />
                       </div>
                     </div>
-                    <div>
+
+                    <div v-if="product.list_profit">
                       <div class="row">
                         <div class="col-5 text-align-end mt-2 font-weight-bold">
                           <span>利益設定: </span>

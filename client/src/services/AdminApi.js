@@ -1,38 +1,41 @@
 import Api from "./api";
-const prefix = '/api/v1/admin'
+const prefix = "/api/v1/admin";
 
 export default {
-  getUsers () {
+  getUsers() {
     return Api.get(prefix + "/users");
   },
-  createUser (data) {
+  createUser(data) {
     return Api.post(prefix + "/users/create", data);
   },
-  updateUser (data) {
+  updateUser(data) {
     return Api.post(prefix + "/users/update/" + data._id, data);
   },
-  deleteUser (data) {
+  deleteUser(data) {
     return Api.post(prefix + "/users/delete/" + data._id, data);
   },
-  getProxies () {
+  getProxies() {
     return Api.get(prefix + "/proxies");
   },
-  getYahooAccounts () {
+  getYahooAccounts() {
     return Api.get(prefix + "/yahoo-accounts");
   },
-  setProxyToYahooAccount (data) {
+  setProxyToYahooAccount(data) {
     return Api.post(prefix + "/set-proxy-to-yahoo-account", data);
   },
-  getBlackListAsin () {
-    return Api.get(prefix + "/get-black-list-asin")
+  getBlackListAsin() {
+    return Api.get(prefix + "/get-black-list-asin");
   },
-  getWhiteListAsin () {
-    return Api.get(prefix + "/get-white-list-asin")
+  getWhiteListAsin() {
+    return Api.get(prefix + "/get-white-list-asin");
   },
-  createAsin (data) {
-    return Api.post(prefix + "/create-asin", data)
+  createAsin(data) {
+    return Api.post(prefix + "/create-asin", data);
   },
-  deleteAsin (id) {
-    return Api.post(prefix + "/delete-asin/" + id)
+  deleteAsin(id) {
+    return Api.post(prefix + "/delete-asin/" + id);
+  },
+  unLockProxy(id) {
+    return Api.post(prefix + "/unlock-proxy/" + id);
   }
 };
