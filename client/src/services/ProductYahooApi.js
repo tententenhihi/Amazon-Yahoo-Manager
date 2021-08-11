@@ -35,5 +35,8 @@ export default {
     return Api.post(`${prefix}/upload-product-yahoo-now`, data, {
       timeout: 5 * 60 * 1000
     });
+  },
+  updateDataByCsv(data) {
+    return Api.post(`${prefix}/update-data-csv`, data);
   }
 };

@@ -9,7 +9,79 @@ import ProductYahooAuctionService from '../services/ProductYahooAuctionService';
 import CronHistoryModel from '../models/CronHistoryModel';
 import ProductGlobalSettingService from '../services/ProductGlobalSettingService';
 
+const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
+    let current_product = await ProductYahooService.findOne({ _id: dataUpdate._id });
+    let yahooAccount = await AccountYahooService.findById(current_product.yahoo_account_id);
+
+    if (!yahooAccount || yahooAccount.auction_point <= 10) {
+        dataUpdate.quantity = 1;
+    }
+    if (files && dataUpdate.image_length) {
+        for (let index = 0; index < dataUpdate.image_length; index++) {
+            const element = files[`image-` + index];
+            if (element) {
+                dataUpdate.images[index] = await UploadFile(element, { disk: 'yahoo-products/' + yahooAccount.user_id + '/' });
+            }
+        }
+    }
+    dataUpdate.is_user_change = true;
+
+    dataUpdate.start_price = parseInt(dataUpdate.start_price);
+    dataUpdate.ship_fee1 = parseInt(dataUpdate.ship_fee1);
+    dataUpdate.bid_or_buy_price = parseInt(dataUpdate.bid_or_buy_price);
+
+    if (current_product.start_price !== dataUpdate.start_price) {
+        let fee_auction_yahoo = 0.1;
+        let price = dataUpdate.start_price + dataUpdate.ship_fee1;
+        let amount_received = price - parseInt(price * fee_auction_yahoo);
+        let gross_profit = price - current_product.original_price;
+        let actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
+        let bid_or_buy_price = 0;
+        if (current_product.bid_or_buy_price !== dataUpdate.bid_or_buy_price) {
+            bid_or_buy_price = dataUpdate.bid_or_buy_price;
+        } else {
+            bid_or_buy_price = price + (current_product.bid_or_buy_price - current_product.price);
+        }
+        dataUpdate = {
+            ...dataUpdate,
+            price,
+            amount_received,
+            gross_profit,
+            actual_profit,
+            bid_or_buy_price,
+        };
+    }
+    let result = await ProductYahooService.update(dataUpdate._id, dataUpdate);
+    return result;
+};
+
 export default class ProductYahooController {
+    static async updateDataCSV(req, res) {
+        let response = new Response(res);
+        try {
+            let { listProduct } = req.body;
+            console.log(listProduct);
+            if (listProduct) {
+                let listResult = [];
+                for (const data of listProduct) {
+                    try {
+                        // Data default
+                        console.log(data);
+                        let newData = await updateProductWithCaculatorProfit(data);
+                        // let newData = await ProductYahooService.update(dataUpdate._id, data);
+                        listResult.push(newData);
+                    } catch (error) {}
+                }
+                return response.success200({ listResult });
+            } else {
+                return response.error400({ message: '更新失敗' });
+            }
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
+
     static async uploadProductYahooNow(req, res) {
         let response = new Response(res);
         try {
@@ -188,53 +260,7 @@ export default class ProductYahooController {
             let user = req.user;
             const { _id } = req.params;
             let payload = JSON.parse(req.body.payload);
-
-            let yahooAccount = await AccountYahooService.findById(payload.yahoo_account_id);
-            if (!yahooAccount || yahooAccount.auction_point <= 10) {
-                payload.quantity = 1;
-            }
-
-            let data = {
-                user_id: user._id,
-                ...payload,
-            };
-            if (req.files && payload.image_length) {
-                for (let index = 0; index < payload.image_length; index++) {
-                    const element = req.files[`image-` + index];
-                    if (element) {
-                        data.images[index] = await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' });
-                    }
-                }
-            }
-            data.is_user_change = true;
-            let current_product = await ProductYahooService.findOne({ _id: _id });
-
-            data.start_price = parseInt(data.start_price);
-            data.ship_fee1 = parseInt(data.ship_fee1);
-            data.bid_or_buy_price = parseInt(data.bid_or_buy_price);
-
-            if (current_product.start_price !== data.start_price) {
-                let fee_auction_yahoo = 0.1;
-                let price = data.start_price + data.ship_fee1;
-                let amount_received = price - parseInt(price * fee_auction_yahoo);
-                let gross_profit = price - current_product.original_price;
-                let actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
-                let bid_or_buy_price = 0;
-                if (current_product.bid_or_buy_price !== data.bid_or_buy_price) {
-                    bid_or_buy_price = data.bid_or_buy_price;
-                } else {
-                    bid_or_buy_price = price + (current_product.bid_or_buy_price - current_product.price);
-                }
-                data = {
-                    ...data,
-                    price,
-                    amount_received,
-                    gross_profit,
-                    actual_profit,
-                    bid_or_buy_price,
-                };
-            }
-            let result = await ProductYahooService.update(_id, data);
+            let result = await updateProductWithCaculatorProfit({ _id, ...payload }, req.files);
             response.success200({ result });
         } catch (error) {
             console.log(error);
@@ -305,7 +331,9 @@ export default class ProductYahooController {
             const { ids } = req.body;
             for (let index = 0; index < ids.length; index++) {
                 const _id = ids[index];
-                await ProductYahooService.delete(_id);
+                try {
+                    await ProductYahooService.delete(_id);
+                } catch (error) {}
             }
             return response.success200({ success: true });
         } catch (error) {

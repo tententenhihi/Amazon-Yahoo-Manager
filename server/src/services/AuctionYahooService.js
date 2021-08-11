@@ -178,20 +178,22 @@ export default class AuctionYahooService {
             let listImageOverlay = [];
             if (productData.image_overlay_index != null) {
                 let listImageOverlayOfAccountYahoo = await ImageInsertionService.get(productData.user_id, productData.yahoo_account_id);
-                listImageOverlayOfAccountYahoo = listImageOverlayOfAccountYahoo.images;
-                let imageOverlay = 'uploads/' + listImageOverlayOfAccountYahoo[productData.image_overlay_index];
-                for (const imageInput of listImage) {
-                    let saveImage =
-                        'uploads/yahoo-products/' +
-                        productData._id +
-                        '/' +
-                        path.basename(imageInput).replace(path.extname(imageInput), '') +
-                        '_' +
-                        `overlay_500x500.jpg`;
-                    await waterMark(imageInput, imageOverlay, saveImage);
-                    listImageOverlay.push(saveImage);
+                if (productData.image_overlay_index > 0 && productData.image_overlay_index <= listImageOverlayOfAccountYahoo.length) {
+                    listImageOverlayOfAccountYahoo = listImageOverlayOfAccountYahoo.images;
+                    let imageOverlay = 'uploads/' + listImageOverlayOfAccountYahoo[productData.image_overlay_index - 1];
+                    for (const imageInput of listImage) {
+                        let saveImage =
+                            'uploads/yahoo-products/' +
+                            productData._id +
+                            '/' +
+                            path.basename(imageInput).replace(path.extname(imageInput), '') +
+                            '_' +
+                            `overlay_500x500.jpg`;
+                        await waterMark(imageInput, imageOverlay, saveImage);
+                        listImageOverlay.push(saveImage);
+                    }
+                    listImage = listImageOverlay;
                 }
-                listImage = listImageOverlay;
             }
 
             if (listImage.length === 0) {
@@ -531,7 +533,7 @@ export default class AuctionYahooService {
             let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
             for (const row of rowTable) {
                 let aID = $(row).find('td:nth-child(2)').text().trim();
-                let title = $(row).find('td:nth-child(3)').text().replace('未使用','').replace('...', '').trim();
+                let title = $(row).find('td:nth-child(3)').text().replace('未使用', '').replace('...', '').trim();
                 let idBuyer = $(row).find('td:nth-child(6)').text().trim().replace('-', '');
                 let time_end = $(row).find('td:nth-child(5)').text().trim();
                 let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '').replace('-', '');
@@ -654,7 +656,7 @@ export default class AuctionYahooService {
             let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
             for (const row of rowTable) {
                 let aID = $(row).find('td:nth-child(2)').text().trim();
-                let title = $(row).find('td:nth-child(3)').text().replace('未使用','').replace('...', '').trim();
+                let title = $(row).find('td:nth-child(3)').text().replace('未使用', '').replace('...', '').trim();
                 let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '');
                 let time_end = $(row).find('td:nth-child(5)').text().trim().replace('-', '');
 
@@ -700,7 +702,7 @@ export default class AuctionYahooService {
         let listProduct = [];
         for (const row of rowTable) {
             let aID = $(row).find('td:nth-child(1)').text();
-            let title = $(row).find('td:nth-child(2)').text().replace('未使用','').replace('...', '').trim();
+            let title = $(row).find('td:nth-child(2)').text().replace('未使用', '').replace('...', '').trim();
             let price_end = $(row).find('td:nth-child(3)').text().trim().replace(/\D+/g, '');
             let negotiate = $(row).find('td:nth-child(4)').text().trim().replace('-', '');
             let flower = $(row).find('td:nth-child(5)').text().trim().replace(/\D+/g, '');

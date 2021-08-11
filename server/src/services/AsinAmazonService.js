@@ -6,7 +6,7 @@ var _ = require('lodash');
 export default class AsinAmazonService {
     static async get(filter, user_id) {
         try {
-            let listAsin = await AsinSchema.find(filter);
+            let listAsin = await AsinSchema.find(filter).sort({ created: -1 });
             //group
             let listGroup = _.groupBy(listAsin, function (item) {
                 return item.query_key;

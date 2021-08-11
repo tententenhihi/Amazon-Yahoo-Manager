@@ -13,6 +13,8 @@ ProductYahooRouter.route('/change-product-folder').post(ProductYahooController.c
 ProductYahooRouter.route('/delete-multiple-product').post(ProductYahooController.deleteMultipleProduct);
 ProductYahooRouter.route('/set-image-overlay').post(ProductYahooController.setImageOverlay);
 ProductYahooRouter.route('/upload-product-yahoo-now').post(ProductYahooController.uploadProductYahooNow);
+ProductYahooRouter.route('/update-data-csv').post(ProductYahooController.updateDataCSV);
+
 
 
 

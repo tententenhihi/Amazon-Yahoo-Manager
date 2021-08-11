@@ -76,7 +76,7 @@ export default class ProductYahooEndedService {
     }
     static async get(idUser, yahoo_account_id) {
         try {
-            let result = await ProductYahooEndedModel.find({ user_id: idUser, yahoo_account_id });
+            let result = await ProductYahooEndedModel.find({ user_id: idUser, yahoo_account_id }).sort({ created: -1 });;
             return result;
         } catch (error) {
             console.log(error);

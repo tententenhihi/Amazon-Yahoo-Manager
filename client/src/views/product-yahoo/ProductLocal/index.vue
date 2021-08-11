@@ -205,23 +205,63 @@
           Yahoo!オークへ出品
         </button>
 
+        <JsonCSV
+          style="display: contents;"
+          :data="selectedProducts"
+          :fields="[
+            '_id',
+            'product_yahoo_title',
+            'start_price',
+            'bid_or_buy_price',
+            'ship_fee1',
+            'quantity',
+            'import_price',
+            'count',
+            'image_overlay_index',
+            'note',
+            'description',
+            'yahoo_auction_category_id'
+          ]"
+          :labels="{
+            _id: 'ID',
+            product_yahoo_title: 'Y！オーク商品の名前',
+            start_price: '開始価格',
+            bid_or_buy_price: '即決価格',
+            ship_fee1: '送料',
+            quantity: '数量',
+            import_price: '仕入元の値段',
+            count: '仕入元の在庫数',
+            image_overlay_index: '画像挿入',
+            note: '備考',
+            description: '商品詳細',
+            yahoo_auction_category_id: 'ヤフーカテゴリID'
+          }"
+        >
+          <button
+            :disabled="!selectedProducts.length"
+            class="btn btn-info mx-10 px-3"
+            style="float: right;"
+          >
+            <i class="fa fa-download mr-1"></i>エクスポート
+          </button>
+        </JsonCSV>
+
         <button
-          :disabled="!selectedProducts.length"
-          @click="onImportCSV"
+          @click="$refs.inputCSV.click()"
           class="btn btn-info mx-10 px-3"
           style="float: right;"
         >
           <i class="fa fa-upload mr-1"></i>インポート
         </button>
-
-        <button
-          :disabled="!selectedProducts.length"
-          @click="onExportCSV"
-          class="btn btn-info mx-10 px-3"
-          style="float: right;"
-        >
-          <i class="fa fa-download mr-1"></i>エクスポート
-        </button>
+        <input
+          hidden
+          type="file"
+          ref="inputCSV"
+          accept=".csv"
+          name="inputCSV"
+          id="inputCSV"
+          @change="onUploadFileCSV"
+        />
       </div>
       <div class="px-10 table-responsive">
         <paginate
@@ -242,10 +282,10 @@
               <th>
                 <input type="checkbox" v-model="isCheckAllProduct" />
               </th>
-              <th class="text-center" width="200">画像</th>
+              <th width="120">画像</th>
               <th>Y！オーク商品の名前</th>
               <!-- <th class="text-center" width="60">期間<br />(日)<br /></th> -->
-              <th class="text-center" width="100">開始価格<br /></th>
+              <th class="text-center" width="200">開始価格<br /></th>
               <th class="text-center" width="100">即決価格<br /></th>
               <th class="text-center" width="70">送料<br /></th>
               <!-- <th class="text-center" width="70">出品停止<br />在庫数<br /></th> -->
@@ -395,7 +435,7 @@
                   >なし</span
                 >
                 <span v-else class="label label-info">{{
-                  product.image_overlay_index + 1
+                  product.image_overlay_index
                 }}</span>
               </td>
               <td class="text-center">
@@ -453,12 +493,12 @@
                 v-model="selectedImageIndex"
                 class="form-check-input"
                 type="radio"
-                :value="index"
+                :value="index + 1"
                 name="flexRadioDefault"
                 id="flexRadioDefault1"
               />
               <img
-                @click="selectedImageIndex = index"
+                @click="selectedImageIndex = index + 1"
                 for="flexRadioDefault1"
                 style="cursor: pointer; border:1px solid gray; margin-left: 10px"
                 width="100px"
@@ -678,6 +718,7 @@ import ProductYahooApi from "@/services/ProductYahooApi";
 import FolderApi from "@/services/FolderApi";
 import { mapGetters } from "vuex";
 import ImageInsertionApi from "@/services/ImageInsertionApi";
+import JsonCSV from "vue-json-csv";
 
 const PRODUCT_STATUS = [
   { display: "中古", value: "used" },
@@ -804,6 +845,9 @@ const PROXY_STATUS_DIE = "die";
 
 export default {
   name: "YahooAuctionProducts",
+  components: {
+    JsonCSV
+  },
   data() {
     return {
       products: [],
@@ -868,11 +912,93 @@ export default {
     }
   },
   methods: {
-    async onImportCSV() {
+    readFileText(file) {
+      return new Promise((resolve, reject) => {
+        try {
+          let reader = new FileReader();
+          reader.onload = async function(e) {
+            let arrLines = e.target.result.split("\n");
+            let contentCsv = arrLines.slice(1, arrLines.length);
+            let productList = [];
+            contentCsv.forEach(line => {
+              if (line) {
+                line = line
+                  .replace("\r", "")
+                  .replace("\n", "")
+                  .trim();
+                let pros = line.trim().split(",");
+                let start_price = pros[2].replace(/\D+/, "");
+                let bid_or_buy_price = pros[3].replace(/\D+/, "");
+                let ship_fee1 = pros[4].replace(/\D+/, "");
+                let quantity = pros[5].replace(/\D+/, "");
+                let import_price = pros[6].replace(/\D+/, "");
+                let count = pros[7].replace(/\D+/, "");
+                let image_overlay_index = pros[8].replace(/\D+/, "");
+                start_price = start_price ? parseInt(start_price) : start_price;
+                bid_or_buy_price = bid_or_buy_price
+                  ? parseInt(bid_or_buy_price)
+                  : bid_or_buy_price;
+                ship_fee1 = ship_fee1 ? parseInt(ship_fee1) : ship_fee1;
+                quantity = quantity ? parseInt(quantity) : quantity;
+                import_price = import_price
+                  ? parseInt(import_price)
+                  : import_price;
+                count = count ? parseInt(count) : count;
+                image_overlay_index = image_overlay_index
+                  ? parseInt(image_overlay_index)
+                  : image_overlay_index;
 
+                let data = {
+                  _id: pros[0],
+                  product_yahoo_title: pros[1],
+                  start_price,
+                  bid_or_buy_price,
+                  ship_fee1,
+                  quantity,
+                  import_price,
+                  count,
+                  image_overlay_index,
+                  note: pros[9],
+                  description: pros[10],
+                  yahoo_auction_category_id: pros[11]
+                };
+                productList.push(data);
+              }
+            });
+            resolve(productList);
+          };
+          reader.readAsText(file);
+        } catch (error) {
+          reject(error);
+        }
+      });
     },
-    async onExportCSV() {
-
+    async onUploadFileCSV(event) {
+      let files = event.target.files;
+      let listProduct = [];
+      for (const file of files) {
+        let data = await this.readFileText(file);
+        listProduct = [...listProduct, ...data];
+      }
+      if (listProduct.length > 0) {
+        let res = await ProductYahooApi.updateDataByCsv({ listProduct });
+        if (res && res.status === 200) {
+          let listResult = res.data.listResult;
+          this.products = this.products.map(item => {
+            let newData = listResult.find(x => x._id === item._id);
+            if (newData) {
+              return newData;
+            }
+            return item;
+          });
+          this.searchProducts = this.products;
+          this.$swal.fire({
+            icon: "success",
+            title: "更新成功"
+          });
+        }
+      }
+      event.target.value = "";
     },
     async onChangeTitlte(value, text) {
       if (

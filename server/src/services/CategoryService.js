@@ -3,7 +3,8 @@ import ProductYahooSchema from "../models/ProductYahooModel";
 export default class CategoryService {
   static async get (userId) {
     try {
-      let result = await Category.find({user_id: userId, is_success_yahoo_cate_id: false});
+
+      let result = await Category.find({user_id: userId, is_success_yahoo_cate_id: false}).sort({ created_at: -1 });;
       return result;
     } catch (error) {
       console.log(error);

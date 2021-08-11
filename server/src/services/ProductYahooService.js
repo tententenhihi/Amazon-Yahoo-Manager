@@ -119,7 +119,7 @@ export default class ProductYahooService {
     }
     static async get(idUser, yahoo_account_id) {
         try {
-            let result = await ProductYahooModel.find({ user_id: idUser, yahoo_account_id });
+            let result = await ProductYahooModel.find({ user_id: idUser, yahoo_account_id }).sort({ created: -1 });
             return result;
         } catch (error) {
             console.log(error);
@@ -579,6 +579,7 @@ export default class ProductYahooService {
             yahoo_auction_category_id: cate_yahoo,
             created: Date.now(),
             listing_status: 'NOT_LISTED',
+            image_overlay_index: null,
             _id: null,
         };
         delete productYahoo._id;
