@@ -16,7 +16,7 @@ export default class ProductYahooFinishedService {
                 if (proxyResult.status === 'SUCCESS') {
                     let listProductFinished = await AuctionYahooService.getProductAuctionFinished(accountYahoo.cookie, proxyResult.data);
                     let listProductInDB = await ProductYahooFinishedService.find({ yahoo_account_id: accountYahoo._id });
-                    console.log(' ##### startGetProductYahoo getProductAuctionFinished: ', listProductFinished);
+                    // console.log(' ##### startGetProductYahoo getProductAuctionFinished: ', listProductFinished);
                     // tạo , update product
                     for (let j = 0; j < listProductFinished.length; j++) {
                         const product = listProductFinished[j];
@@ -27,7 +27,7 @@ export default class ProductYahooFinishedService {
                             let productYahoo = await ProductYahooAuctionService.findOne({ aID: product.aID });
                             if (!productYahoo && product.title) {
                                 productYahoo = await ProductYahooAuctionService.findOne({
-                                    product_yahoo_title: { $regex: product.title.replace(/\(/g, '\\(') },
+                                    product_yahoo_title: { $regex: product.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)') },
                                 });
                             }
                             if (productYahoo) {

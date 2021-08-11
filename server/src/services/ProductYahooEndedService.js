@@ -4,12 +4,12 @@ import ProxyService from './ProxyService';
 import AuctionYahooService from './AuctionYahooService';
 import ProductYahooAuctionService from './ProductYahooAuctionService';
 import AccountYahooService from './AccountYahooService';
+import mongoose from 'mongoose';
 
 export default class ProductYahooEndedService {
     static async refreshDataYahoo(yahoo_account_id) {
         let listProduct = [];
         try {
-            console.log(' ========================= ');
             let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
             let is_lock_user = await UserService.checkUser_Lock_Exprired(accountYahoo.user_id);
             if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie && !accountYahoo.is_lock) {
@@ -18,18 +18,20 @@ export default class ProductYahooEndedService {
                     let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data);
                     let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
 
-                    console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
+                    // console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
                     // tạo , update product
                     for (let j = 0; j < listProductEnded.length; j++) {
                         const product = listProductEnded[j];
+                        console.log(product);
                         //Check Xem có trong db chưa.
                         let productExisted = listProductEndedInDB.find((item) => item.aID === product.aID);
                         //chưa có thì tạo mới.
                         if (!productExisted) {
                             let productYahoo = await ProductYahooAuctionService.findOne({ aID: product.aID });
                             if (!productYahoo && product.title) {
+                                let regex = product.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
                                 productYahoo = await ProductYahooAuctionService.findOne({
-                                    product_yahoo_title: { $regex: product.title.replace(/\(/g, '\\(') },
+                                    product_yahoo_title: { $regex: regex },
                                 });
                             }
                             if (productYahoo) {
@@ -40,6 +42,20 @@ export default class ProductYahooEndedService {
                                 };
                                 newProductYahooEnded = await ProductYahooEndedService.create(newProductYahooEnded);
                                 listProduct.push(newProductYahooEnded);
+                            } else {
+                                let infoProductEnded = await AuctionYahooService.getDetailInfoProductEnded(product.aID, accountYahoo.cookie, proxyResult.data);
+                                if (infoProductEnded) {
+                                    infoProductEnded = {
+                                        ...infoProductEnded,
+                                        ...product,
+                                        yahoo_account_id,
+                                        user_id: accountYahoo.user_id,
+                                    };
+
+                                    let newProductYahooEnded = await ProductYahooEndedService.create(infoProductEnded);
+                                    listProduct.push(newProductYahooEnded);
+                                    // console.log(' #### newProductYahooEnded: ', newProductYahooEnded);
+                                }
                             }
                         } else {
                             let newProductYahooEnded = await ProductYahooEndedService.update(productExisted._id, product);

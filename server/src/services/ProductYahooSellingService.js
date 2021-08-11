@@ -27,7 +27,7 @@ export default class ProductYahooSellingService {
                             let productYahoo = await ProductYahooAuctionService.findOne({ aID: product.aID });
                             if (!productYahoo && product.title) {
                                 productYahoo = await ProductYahooAuctionService.findOne({
-                                    product_yahoo_title: { $regex: product.title.replace(/\(/g, '\\(') },
+                                    product_yahoo_title: { $regex: product.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)') },
                                 });
                             }
                             if (productYahoo) {

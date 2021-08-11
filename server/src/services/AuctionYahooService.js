@@ -177,7 +177,6 @@ export default class AuctionYahooService {
 
             let listImageOverlay = [];
             if (productData.image_overlay_index != null) {
-
                 let listImageOverlayOfAccountYahoo = await ImageInsertionService.get(productData.user_id, productData.yahoo_account_id);
                 console.log(listImageOverlayOfAccountYahoo);
                 if (productData.image_overlay_index > 0 && productData.image_overlay_index <= listImageOverlayOfAccountYahoo.images.length) {
@@ -1214,6 +1213,107 @@ export default class AuctionYahooService {
                     message: 'ERROR: ' + response.status,
                 };
             }
+        }
+    }
+
+    static async getDetailInfoProductEnded(aID_Product, cookie, proxy) {
+        try {
+            let proxyConfig = {
+                host: proxy.host,
+                port: proxy.port,
+                auth: {
+                    username: proxy.username,
+                    password: proxy.password,
+                },
+            };
+            if (config.get('env') === 'development') {
+                proxyConfig = null;
+            }
+            let resProduct = await axios.get(`https://auctions.yahoo.co.jp/sell/jp/show/resubmit?aID=${aID_Product}`, {
+                headers: {
+                    cookie,
+                },
+                proxy: proxyConfig,
+            });
+            let $ = cheerio.load(resProduct.data);
+
+            let aID = $('input[name="aID"]').val();
+            let oldAID = $('input[name="oldAID"]').val();
+            let mode = $('input[name="mode"]').val();
+            let category = $('input[name="category"]').val();
+
+            let md5 = $('input[name="md5"]').val();
+            let crumb = $('input[name=".crumb"]').val();
+            let retpolicy_comment = $('input[name="retpolicy_comment"]').val();
+            let title = $('#fleaTitleForm').val();
+
+            let istatus = $('select[name="istatus"]').val();
+
+            let Description = $('input[name="Description"]').val();
+            let loc_cd = $('select[name="loc_cd"]').val();
+            let auc_shipping_who = $('#auc_shipping_who').val();
+            let shipschedule = $('#shipschedule').val();
+            let StartPrice = $('#auc_StartPrice_auction').val();
+
+            let Duration = $('#Duration').val();
+            let tmpClosingYMD = $('#tmpClosingYMD').val();
+            let tmpClosingTime = $('#tmpClosingTime').val();
+
+            let thumbNail = $('#thumbNail').val();
+            let img_crumb = $('#img_crumb').val();
+
+            let ImageFullPath1 = $('#auc_image_fullpath1').val();
+            let ImageFullPath2 = $('#auc_image_fullpath2').val();
+            let ImageFullPath3 = $('#auc_image_fullpath3').val();
+            let ImageFullPath4 = $('#auc_image_fullpath4').val();
+            let ImageFullPath5 = $('#auc_image_fullpath5').val();
+            let ImageFullPath6 = $('#auc_image_fullpath6').val();
+            let ImageFullPath7 = $('#auc_image_fullpath7').val();
+            let ImageFullPath8 = $('#auc_image_fullpath8').val();
+            let ImageFullPath9 = $('#auc_image_fullpath9').val();
+            let ImageFullPath10 = $('#auc_image_fullpath10').val();
+            let ypoint = $('input[name="ypoint"]').val();
+
+            let images = [
+                ImageFullPath1,
+                ImageFullPath2,
+                ImageFullPath3,
+                ImageFullPath4,
+                ImageFullPath5,
+                ImageFullPath6,
+                ImageFullPath7,
+                ImageFullPath8,
+                ImageFullPath9,
+                ImageFullPath10,
+            ];
+            images = images.filter((item) => item.trim() !== '');
+            let productData = {
+                aID,
+                oldAID,
+                images,
+                product_model: mode,
+                yahoo_auction_category_id: category,
+                md5,
+                crumb,
+                retpolicy_comment,
+                product_yahoo_title: title,
+                status: istatus,
+                description: Description,
+                location: loc_cd,
+                shipping: auc_shipping_who,
+                ship_schedule: shipschedule,
+                start_price: StartPrice,
+                duration: Duration,
+                tmpClosingTime,
+                thumbNail,
+                img_crumb,
+                ypoint,
+                tmpClosingYMD,
+            };
+            return productData;
+        } catch (error) {
+            console.log(error);
+            return null;
         }
     }
 }
