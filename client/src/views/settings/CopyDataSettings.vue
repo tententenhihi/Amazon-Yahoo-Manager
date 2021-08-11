@@ -22,7 +22,11 @@
             >{{ folder.name }}</option
           >
         </select>
-        <button class="btn btn-info mb-1 px-3" @click="onCopyData">
+        <button
+          v-if="!adminViewUser"
+          class="btn btn-info mb-1 px-3"
+          @click="onCopyData"
+        >
           確認
         </button>
       </div>
@@ -51,7 +55,8 @@ export default {
   computed: {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
-      listYahooAccount: "getYahooAccount"
+      listYahooAccount: "getYahooAccount",
+      adminViewUser: "getAdminViewUser"
     })
   },
 

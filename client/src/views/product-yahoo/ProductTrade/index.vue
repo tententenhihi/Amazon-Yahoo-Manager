@@ -46,7 +46,7 @@
       <div class="alert alert-danger" v-if="isDieProxy">
         現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
       </div>
-      <div class="group-button py-20 position-relative">
+      <div class="group-button py-20 position-relative" v-if="!adminViewUser">
         <button
           class="btn btn-primary my-10"
           style="position: absolute; top: -15px; right: 0; margin-bottom: -10px;"
@@ -166,7 +166,7 @@
                 <div class="field-note">
                   <p>{{ product.note }}</p>
                 </div>
-                <div>
+                <div v-if="!adminViewUser">
                   <button
                     class="btn btn-info"
                     @click="onOpenModalNote(product)"
@@ -190,7 +190,7 @@
                 {{ getExpectShiping(product) }}
               </td>
 
-              <td>
+              <td v-if="!adminViewUser">
                 <button
                   class="btn btn-md btn-info mb-1 mr-1"
                   @click="addMessage(product)"
@@ -270,7 +270,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
+      adminViewUser: "getAdminViewUser"
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;

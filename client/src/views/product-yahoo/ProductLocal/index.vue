@@ -2,7 +2,7 @@
   <div class="wrapper-content">
     <div class="box-header">
       <i class="fa fa-list mr-2"></i>Y!オーク取扱商品管理
-      <button class="btn btn-add-account" @click="goToFormProduct(0)">
+      <button v-if="!adminViewUser" class="btn btn-add-account" @click="goToFormProduct(0)">
         <i class="fa fa-plus"></i> 新規追加
       </button>
     </div>
@@ -153,7 +153,7 @@
       <div class="alert alert-danger mx-10" v-if="isDieProxy">
         現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
       </div>
-      <div class="group-button px-10 py-20">
+      <div class="group-button p-10" v-if="!adminViewUser">
         <button
           :disabled="!selectedProducts.length"
           @click="$refs.modalSelectFolder.openModal()"
@@ -453,7 +453,7 @@
               </td>
               <td class="text-center">{{ product.asin_amazon }}</td>
               <td class="text-center">{{ product.note }}</td>
-              <td class="text-center">
+              <td class="text-center" v-if="!adminViewUser">
                 <button
                   class="btn btn-md btn-warning mb-1 mr-1"
                   @click="onEditProduct(product, index)"
@@ -513,7 +513,7 @@
       </template>
       <template v-slot:button>
         <div class="button-group">
-          <button class="btn btn-success mr-1" @click="onSaveImageOverlay">
+          <button class="btn btn-success mr-1 px-4" @click="onSaveImageOverlay">
             保存
           </button>
           <button class="btn btn-default" @click="onCloseModal">
@@ -692,7 +692,7 @@
       </template>
       <template v-slot:button>
         <div class="button-group">
-          <button class="btn btn-primary mr-1" @click="onSaveEditProduct()">
+          <button class="btn btn-primary mr-1 px-4" @click="onSaveEditProduct()">
             保存
           </button>
           <button
@@ -890,7 +890,9 @@ export default {
   computed: {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
-      userInfo: "getUserInfo"
+      userInfo: "getUserInfo",
+      adminViewUser: "getAdminViewUser"
+
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;

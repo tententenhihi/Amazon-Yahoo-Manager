@@ -14,7 +14,7 @@
         placeholder="ASINを入力、一行で一つだけです。"
         v-model="asinString"
       ></textarea>
-      <div class="col-md-4 mt-10">
+      <div class="col-md-4 mt-10" v-if="!adminViewUser">
         <button
           class="btn btn-common btn-info mb-10"
           @click="$refs.inputCSV.click()"
@@ -55,7 +55,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
+      adminViewUser: "getAdminViewUser"
     })
   },
   methods: {

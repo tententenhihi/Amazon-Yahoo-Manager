@@ -1,4 +1,4 @@
-import Api from "./api";
+import Api from "./apiAdmin";
 const prefix = "/api/v1/admin";
 
 export default {

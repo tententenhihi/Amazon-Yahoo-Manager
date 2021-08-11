@@ -2,8 +2,12 @@
   <div class="wrapper-content">
     <div class="box-header">
       取引ナビテンプレート管理
-      <button class="btn btn-add-account" @click="goToFormTradeMessageTemplate(0)">
-        <i class="fa fa-plus"></i>  追加
+      <button
+        class="btn btn-add-account"
+        v-if="!adminViewUser"
+        @click="goToFormTradeMessageTemplate(0)"
+      >
+        <i class="fa fa-plus"></i> 追加
       </button>
     </div>
     <hr class="mt-10" />
@@ -18,10 +22,14 @@
           :prev-text="'«'"
           :next-text="'»'"
           :container-class="'pagination'"
-          :page-class="'page-item'">
+          :page-class="'page-item'"
+        >
         </paginate>
         <div class="table-responsive">
-          <table class="table table-striped display pt-20 mb-20" style="width: 100%">
+          <table
+            class="table table-striped display pt-20 mb-20"
+            style="width: 100%"
+          >
             <thead class="thead-purple">
               <tr>
                 <th scope="col">テンプレート名</th>
@@ -34,11 +42,16 @@
                 <td>{{ template.name }}</td>
                 <td style="white-space: pre;">{{ template.content }}</td>
                 <td>
-                  <button class="btn btn-md btn-warning mb-1 mr-1"
-                    @click="goToFormTradeMessageTemplate(template._id)">
+                  <button
+                    class="btn btn-md btn-warning mb-1 mr-1"
+                    @click="goToFormTradeMessageTemplate(template._id)"
+                  >
                     <i class="fa fa-edit"></i> 編集
                   </button>
-                  <button class="btn btn-md btn-danger mb-1 mr-1" @click="onConfirmDelete(template, index)">
+                  <button
+                    class="btn btn-md btn-danger mb-1 mr-1"
+                    @click="onConfirmDelete(template, index)"
+                  >
                     <i class="fa fa-trash"></i> 削除
                   </button>
                 </td>
@@ -52,32 +65,36 @@
 </template>
 
 <script>
-import TradeMessageTemplateApi from '@/services/TradeMessageTemplateApi'
-import { mapGetters } from 'vuex'
+import TradeMessageTemplateApi from "@/services/TradeMessageTemplateApi";
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'TradeMessageTemplateList',
-  data () {
+  name: "TradeMessageTemplateList",
+  data() {
     return {
       templates: [],
       page: 1
-    }
+    };
   },
-  async mounted () {
+  async mounted() {
     await this.getListTradeMessageTemplate();
   },
   computed: {
-    tableData () {
-      return this.templates.slice((this.page - 1) * this.$constants.PAGE_SIZE, this.page * this.$constants.PAGE_SIZE)
+    tableData() {
+      return this.templates.slice(
+        (this.page - 1) * this.$constants.PAGE_SIZE,
+        this.page * this.$constants.PAGE_SIZE
+      );
     },
-    pageCount () {
-      return Math.ceil(this.templates.length / this.$constants.PAGE_SIZE)
+    pageCount() {
+      return Math.ceil(this.templates.length / this.$constants.PAGE_SIZE);
     },
     ...mapGetters({
-      selectedYahooAccount: 'getSelectedYahooAccount'
+      selectedYahooAccount: "getSelectedYahooAccount",
+      adminViewUser: "getAdminViewUser"
     }),
-    yahooAccountId () {
-      return this.selectedYahooAccount._id
+    yahooAccountId() {
+      return this.selectedYahooAccount._id;
     }
   },
   methods: {
@@ -106,16 +123,18 @@ export default {
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
           confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  番号',
+          cancelButtonText: '<i class="fa fa-times"></i>  番号'
         })
-        .then(async (result) => {
+        .then(async result => {
           if (result.isConfirmed) {
             let res = await TradeMessageTemplateApi.delete(template._id);
             if (res && res.status == 200) {
-              let findIndex = this.templates.findIndex(item => item._id === template._id)
+              let findIndex = this.templates.findIndex(
+                item => item._id === template._id
+              );
               self.templates.splice(findIndex, 1);
               if (self.tableData.length === 0) {
-                self.page -= 1
+                self.page -= 1;
               }
               self.$swal.fire(
                 "削除しました！",
@@ -126,11 +145,11 @@ export default {
           }
         });
     },
-    goToFormTradeMessageTemplate (id) {
-      this.$router.push({name: 'FormTradeMessageTemplate', params: {id} })
-    },
+    goToFormTradeMessageTemplate(id) {
+      this.$router.push({ name: "FormTradeMessageTemplate", params: { id } });
+    }
   }
-}
+};
 </script>
 
 <style scoped>

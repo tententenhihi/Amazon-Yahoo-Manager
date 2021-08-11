@@ -9,7 +9,11 @@
         <span class="font-weight-bold fs-lg">
           契約枠数（{{ countAccountActive }}/{{ maxYahooAccount }}）</span
         >
-        <button class="btn btn-success" @click="onOpenModalAccount()">
+        <button
+          v-if="!adminViewUser"
+          class="btn btn-success"
+          @click="onOpenModalAccount()"
+        >
           <i class="fa fa-plus"></i> アカウントを追加
         </button>
       </div>
@@ -46,6 +50,7 @@
                     認証未
                   </div>
                   <button
+                    v-if="!adminViewUser"
                     class="btn btn-sm btn-info"
                     @click="onReAuth(account)"
                   >
@@ -72,7 +77,7 @@
                 </td>
                 <!-- <td>{{ account.status }}</td> -->
                 <!-- <td>{{ account.statusMessage }}</td> -->
-                <td>
+                <td v-if="!adminViewUser">
                   <button
                     class="btn btn-md btn-warning mb-1"
                     @click="onOpenModalAccount(account, index)"
@@ -204,9 +209,13 @@ export default {
     },
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
-      userInfo: "getUserInfo"
+      userInfo: "getUserInfo",
+      adminViewUser: "getAdminViewUser"
     }),
     maxYahooAccount() {
+      if (!this.userInfo) {
+        return 0;
+      }
       return this.userInfo.maxYahooAccount;
     },
     countAccountActive() {
@@ -290,6 +299,12 @@ export default {
         this.is_lock = account.is_lock;
         this.editId = account._id;
       } else {
+        this.name = "";
+        this.yahooId = "";
+        this.password = "";
+        this.editId = "";
+        this.is_lock = false;
+
         if (this.countAccountActive >= this.maxYahooAccount) {
           this.$swal.fire({
             icon: "error",

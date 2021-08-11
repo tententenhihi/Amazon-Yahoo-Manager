@@ -38,6 +38,12 @@
                 <span>ダッシュボード</span>
               </router-link>
             </li> -->
+            <li class="sidebar-dropdown" v-if="isAdmin">
+              <router-link :to="{ name: 'AdminUsers' }">
+                <i class="fas fa-arrow-left"></i>
+                <span>管理者に戻る</span>
+              </router-link>
+            </li>
             <li class="sidebar-dropdown">
               <router-link :to="{ name: 'AsinManagement' }">
                 <i class="fa fa-shopping-cart"></i>
@@ -228,7 +234,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 export default {
   props: ["currentRouter"],
   data() {
@@ -238,10 +244,14 @@ export default {
     };
   },
   computed: {
+    ...mapState(["adminViewUser"]),
     ...mapGetters({
       userInfo: "getUserInfo",
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
     }),
+    isAdmin() {
+      return this.adminViewUser
+    },
     isLockAccount() {
       if (this.selectedYahooAccount && this.selectedYahooAccount.is_lock) {
         return true;

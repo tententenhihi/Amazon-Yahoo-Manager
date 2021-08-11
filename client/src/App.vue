@@ -31,6 +31,8 @@ export default {
   },
   computed: {
     ...mapState(["isUserLoggedIn"]),
+    ...mapState(["adminViewUser"]),
+    ...mapState(["isAdmin"]),
     layout() {
       return (this.$route.meta.layout || "normal") + "-layout";
     },
@@ -43,7 +45,10 @@ export default {
     this.$eventBus.$on("showLoading", this.onShowLoading);
   },
   async mounted() {
-    if (this.isUserLoggedIn) {
+    if (
+      (this.isUserLoggedIn && !this.isAdmin) ||
+      (this.isAdmin && this.adminViewUser)
+    ) {
       await this.getListAccount();
       this.checkExistYahooAccount();
     }
@@ -67,8 +72,15 @@ export default {
     },
     checkExistYahooAccount() {
       const NO_NEED_VALIDATE_ROUTER = ["YahooAccounts", "ChangePassword"];
+
+      // console.log(" #### 11111111111111: ", this.isUserLoggedIn);
+      // console.log(" #### 22222222222222: ", this.userInfo.type !== "admin");
+      // console.log(" #### 33333333333333: ", !this.selectedYahooAccount._id);
+
       if (
+        !this.adminViewUser &&
         this.isUserLoggedIn &&
+        this.userInfo &&
         this.userInfo.type !== "admin" &&
         !this.selectedYahooAccount._id
       ) {

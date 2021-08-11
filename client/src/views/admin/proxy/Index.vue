@@ -170,7 +170,7 @@ export default {
           );
           if (accountUsed) {
             return `<div class="text-center" style="display: inline-block;">
-            <div class="bg-success text-white p-1" style="width: 100px; border-radius:2px"><span >${accountUsed.yahoo_id}</span></div></br>${accountUsed.accountId}</div>`;
+            <div class="bg-success text-white p-1" style="width: 100px; border-radius:2px"><span >${accountUsed.yahoo_id}</span></div><div class="pt-1">${accountUsed.accountId}</div></div>`;
           } else {
             return `<div class=" text-center bg-warning text-white p-1" style="width: 100px; border-radius:2px"> <span>ロック</span></div>`;
           }

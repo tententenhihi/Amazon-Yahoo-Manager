@@ -2,7 +2,12 @@
   <div class="wrapper-content">
     <div class="box-header">
       評価テンプレート管理
-      <button class="btn btn-add-account" @click="goToFormRatingTemplate(0)">
+
+      <button
+        class="btn btn-add-account"
+        v-if="!adminViewUser"
+        @click="goToFormRatingTemplate(0)"
+      >
         <i class="fa fa-plus"></i> 追加
       </button>
     </div>
@@ -18,7 +23,8 @@
           :prev-text="'«'"
           :next-text="'»'"
           :container-class="'pagination'"
-          :page-class="'page-item'">
+          :page-class="'page-item'"
+        >
         </paginate>
         <div class="table-responsive">
           <table class="table table-striped display pt-20 mb-20">
@@ -36,11 +42,16 @@
                 <td>{{ displayRating(template.rating) }}</td>
                 <td style="white-space: pre;">{{ template.content }}</td>
                 <td>
-                  <button class="btn btn-md btn-warning mb-1 mr-1"
-                    @click="goToFormRatingTemplate(template._id)">
+                  <button
+                    class="btn btn-md btn-warning mb-1 mr-1"
+                    @click="goToFormRatingTemplate(template._id)"
+                  >
                     <i class="fa fa-edit"></i> 編集
                   </button>
-                  <button class="btn btn-md btn-danger mb-1 mr-1" @click="onConfirmDelete(template, index)">
+                  <button
+                    class="btn btn-md btn-danger mb-1 mr-1"
+                    @click="onConfirmDelete(template, index)"
+                  >
                     <i class="fa fa-trash"></i> 削除
                   </button>
                 </td>
@@ -54,44 +65,48 @@
 </template>
 
 <script>
-import RatingTemplateApi from '@/services/RatingTemplateApi'
-import { mapGetters } from 'vuex'
+import RatingTemplateApi from "@/services/RatingTemplateApi";
+import { mapGetters } from "vuex";
 const RATING_LIST = [
-  { value: 'veryGood', display: '非常に良い' },
-  { value: 'good', display: '良い' },
-  { value: 'normal', display: 'どちらでもない' },
-  { value: 'bad', display: '悪い' },
-  { value: 'veryBad', display: '非常に悪い' },
-]
+  { value: "veryGood", display: "非常に良い" },
+  { value: "good", display: "良い" },
+  { value: "normal", display: "どちらでもない" },
+  { value: "bad", display: "悪い" },
+  { value: "veryBad", display: "非常に悪い" }
+];
 export default {
-  name: 'RatingTemplateList',
-  data () {
+  name: "RatingTemplateList",
+  data() {
     return {
       templates: [],
       RATING_LIST,
       page: 1
-    }
+    };
   },
-  async mounted () {
+  async mounted() {
     await this.getListRatingTemplate();
   },
   computed: {
-    tableData () {
-      return this.templates.slice((this.page - 1) * this.$constants.PAGE_SIZE, this.page * this.$constants.PAGE_SIZE)
+    tableData() {
+      return this.templates.slice(
+        (this.page - 1) * this.$constants.PAGE_SIZE,
+        this.page * this.$constants.PAGE_SIZE
+      );
     },
-    pageCount () {
-      return Math.ceil(this.templates.length / this.$constants.PAGE_SIZE)
+    pageCount() {
+      return Math.ceil(this.templates.length / this.$constants.PAGE_SIZE);
     },
     ...mapGetters({
-      selectedYahooAccount: 'getSelectedYahooAccount'
+      selectedYahooAccount: "getSelectedYahooAccount",
+      adminViewUser: "getAdminViewUser"
     }),
-    yahooAccountId () {
-      return this.selectedYahooAccount._id
+    yahooAccountId() {
+      return this.selectedYahooAccount._id;
     }
   },
   methods: {
-    displayRating (rating) {
-      return this.RATING_LIST.find(item => item.value === rating).display
+    displayRating(rating) {
+      return this.RATING_LIST.find(item => item.value === rating).display;
     },
     async getListRatingTemplate() {
       try {
@@ -118,16 +133,18 @@ export default {
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
           confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  番号',
+          cancelButtonText: '<i class="fa fa-times"></i>  番号'
         })
-        .then(async (result) => {
+        .then(async result => {
           if (result.isConfirmed) {
             let res = await RatingTemplateApi.delete(template._id);
             if (res && res.status == 200) {
-              let findIndex = this.templates.findIndex(item => item._id === template._id)
+              let findIndex = this.templates.findIndex(
+                item => item._id === template._id
+              );
               self.templates.splice(findIndex, 1);
               if (self.tableData.length === 0) {
-                self.page -= 1
+                self.page -= 1;
               }
               self.$swal.fire(
                 "削除しました！",
@@ -138,11 +155,11 @@ export default {
           }
         });
     },
-    goToFormRatingTemplate (id) {
-      this.$router.push({name: 'FormRatingTemplate', params: {id} })
-    },
+    goToFormRatingTemplate(id) {
+      this.$router.push({ name: "FormRatingTemplate", params: { id } });
+    }
   }
-}
+};
 </script>
 
 <style scoped>

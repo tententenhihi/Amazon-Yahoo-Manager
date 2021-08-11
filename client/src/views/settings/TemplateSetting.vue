@@ -31,7 +31,7 @@
           </li>
         </ul>
       </div>
-      <div class="row justify-content-center">
+      <div class="row justify-content-center" v-if="!adminViewUser">
         <button class="btn btn-success" @click="onSelectTemplate">
           <i class="fa fa-save"> 保存</i>
         </button>
@@ -56,7 +56,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
+      adminViewUser: "getAdminViewUser"
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
@@ -74,7 +75,7 @@ export default {
       this.setting.template = this.selectedTemplate;
       let res = await ProductGlobalSettingApi.update(this.setting);
       if (res && res.status == 200) {
-        this.$swal.fire("Successful!", "更新が成功しました", "success");
+        this.$swal.fire("成功!", "更新が成功しました", "success");
       }
     }
   }

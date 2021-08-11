@@ -7,7 +7,10 @@
     <div class="box-content">
       <div class="px-30 py-20">
         <div class="title">
-          <i class="fa fa-list"></i> 未設定カテゴリ一覧 <small><i>ヤフーカテゴリID未登録のデータのみを表示しています</i></small>
+          <i class="fa fa-list"></i> 未設定カテゴリ一覧
+          <small
+            ><i>ヤフーカテゴリID未登録のデータのみを表示しています</i></small
+          >
         </div>
         <p class="mb-10">
           <i>
@@ -23,10 +26,14 @@
           :prev-text="'«'"
           :next-text="'»'"
           :container-class="'pagination'"
-          :page-class="'page-item'">
+          :page-class="'page-item'"
+        >
         </paginate>
         <div class="table-responsive">
-          <table class="table table-striped display pt-20 mb-20" style="width: 100%">
+          <table
+            class="table table-striped display pt-20 mb-20"
+            style="width: 100%"
+          >
             <thead class="thead-purple">
               <tr>
                 <th scope="col">アマゾンカテゴリID</th>
@@ -39,11 +46,18 @@
               <tr v-for="(category, index) in tableData" :key="index">
                 <td>{{ category.amazon_cate_id }}</td>
                 <td>
-                  <input type="number" v-model="category.yahoo_cate_id" class="form-control" />
+                  <input
+                    type="number"
+                    v-model="category.yahoo_cate_id"
+                    class="form-control"
+                  />
                 </td>
                 <td>{{ category.asin }}</td>
-                <td>
-                  <button class="btn btn-md btn-success" @click="onUpdateCategory(category)">
+                <td v-if="!adminViewUser">
+                  <button
+                    class="btn btn-md btn-success"
+                    @click="onUpdateCategory(category)"
+                  >
                     カテゴリを更新する
                   </button>
                 </td>
@@ -57,28 +71,35 @@
 </template>
 
 <script>
-import CategoryApi from '@/services/CategoryApi'
-import ProductYahooApi from '@/services/ProductYahooApi'
+import CategoryApi from "@/services/CategoryApi";
+import ProductYahooApi from "@/services/ProductYahooApi";
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'Categories',
-  data () {
+  name: "Categories",
+  data() {
     return {
       categories: [],
       page: 1,
       yahooAuctionCategory: null
-    }
+    };
   },
-  async mounted () {
+  async mounted() {
     await this.getCategories();
   },
   computed: {
-    tableData () {
-      return this.categories.slice((this.page - 1) * this.$constants.PAGE_SIZE, this.page * this.$constants.PAGE_SIZE)
+    ...mapGetters({
+      adminViewUser: "getAdminViewUser"
+    }),
+    tableData() {
+      return this.categories.slice(
+        (this.page - 1) * this.$constants.PAGE_SIZE,
+        this.page * this.$constants.PAGE_SIZE
+      );
     },
-    pageCount () {
-      return Math.ceil(this.categories.length / this.$constants.PAGE_SIZE)
-    },
+    pageCount() {
+      return Math.ceil(this.categories.length / this.$constants.PAGE_SIZE);
+    }
   },
   methods: {
     async getCategories() {
@@ -95,36 +116,42 @@ export default {
         });
       }
     },
-    async onUpdateCategory (category) {
+    async onUpdateCategory(category) {
       let resCheckCateYahoo = await ProductYahooApi.checkCategoryYahoo({
         category_id: category.yahoo_cate_id
-      })
-      if (resCheckCateYahoo && resCheckCateYahoo.status === 200 && resCheckCateYahoo.data.category ) {
-        this.yahooAuctionCategory = resCheckCateYahoo.data.category
+      });
+      if (
+        resCheckCateYahoo &&
+        resCheckCateYahoo.status === 200 &&
+        resCheckCateYahoo.data.category
+      ) {
+        this.yahooAuctionCategory = resCheckCateYahoo.data.category;
         let res = await CategoryApi.update(category);
         if (res && res.status == 200) {
           this.$swal.fire({
             icon: "success",
             title: "更新されました",
             timer: 500,
-            showConfirmButton: false,
+            showConfirmButton: false
           });
-          let findIndex = this.categories.findIndex(item => item._id === res.data._id)
-          this.categories.splice(findIndex, 1)
+          let findIndex = this.categories.findIndex(
+            item => item._id === res.data._id
+          );
+          this.categories.splice(findIndex, 1);
           if (this.tableData.length === 0) {
-            this.page -= 1
+            this.page -= 1;
           }
         }
       } else {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: 'カテゴリーのエラー'
+          text: "カテゴリーのエラー"
         });
       }
-    },
+    }
   }
-}
+};
 </script>
 
 <style scoped>

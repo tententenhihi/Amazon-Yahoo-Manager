@@ -28,21 +28,21 @@
       <div class="alert alert-danger" v-if="isDieProxy">
         現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
       </div>
-      <div class="group-button py-20 position-relative">
-        <button
-          class="btn btn-primary my-10"
-          style="position: absolute; top: -15px; right: 0; margin-bottom: -10px;"
-          @click="refreshDataYahoo()"
-        >
-          <i class="fa fa-sync-alt" style="font-size: 12px"></i>
-          最新の情報を反映する
-        </button>
+      <div
+        class="group-button position-relative pb-2"
+        style="justify-content: space-between; display: flex;"
+        v-if="!adminViewUser"
+      >
         <button
           :disabled="!selectedProduct.length"
           @click="$refs.modalDeleteProduct.openModal()"
-          class="btn btn-danger px-3"
+          class="btn btn-danger"
         >
           削除
+        </button>
+        <button class="btn btn-primary " @click="refreshDataYahoo()">
+          <i class="fa fa-sync-alt" style="font-size: 12px"></i>
+          最新の情報を反映する
         </button>
       </div>
       <div class="table-responsive">
@@ -170,7 +170,7 @@
               <td>
                 {{ getExpectShiping(product) }}
               </td>
-              <td>
+              <td v-if="!adminViewUser">
                 <button
                   class="btn btn-md btn-danger mb-1 mr-1"
                   @click="deleteProduct(product)"
@@ -198,7 +198,7 @@
         ></textarea>
       </template>
       <template v-slot:button>
-        <button class="btn btn-primary" @click="onSaveNote">
+        <button class="btn btn-primary px-4" @click="onSaveNote">
           保存
         </button>
         <button class="btn btn-default" @click="oncloseModal()">
@@ -263,7 +263,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
+      adminViewUser: "getAdminViewUser"
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;

@@ -202,7 +202,7 @@
                 </transition>
               </div>
             </div>
-            <div class="row mt-20 justify-content-center">
+            <div class="row mt-20 justify-content-center" v-if="!adminViewUser">
               <button
                 class="btn btn-success mb-1 mr-1"
                 @click="onSaveProduct(1)"
@@ -753,7 +753,7 @@
                 </transition>
               </div>
             </div>
-            <div class="row mt-20 justify-content-center">
+            <div class="row mt-20 justify-content-center" v-if="!adminViewUser">
               <button
                 class="btn btn-success mb-1 mr-1"
                 @click="onSaveProduct()"
@@ -931,7 +931,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
+      adminViewUser: "getAdminViewUser"
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;

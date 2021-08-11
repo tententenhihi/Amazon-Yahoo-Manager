@@ -6,7 +6,6 @@ const Login = () => import("@/views/auth/Login.vue");
 const ForgotPassword = () => import("@/views/auth/ForgotPassword.vue");
 const ResetPassword = () => import("@/views/auth/ResetPassword.vue");
 
-
 const YahooAccounts = () => import("@/views/users/YahooAccounts.vue");
 const ChangePassword = () => import("@/views/users/ChangePassword.vue");
 
@@ -348,6 +347,8 @@ const router = new Router({
 
 const waitForStorageToBeReady = async (to, from, next) => {
   const authUser = store.state.isUserLoggedIn;
+  const admin = store.state.admin;
+  const adminViewUser = store.state.adminViewUser;
   const user = store.state.user;
   const selectedYahooAccount = store.state.selectedYahooAccount;
   if (
@@ -365,7 +366,7 @@ const waitForStorageToBeReady = async (to, from, next) => {
   ) {
     next({ name: "Login" });
   } else if (to.meta.isAdmin && authUser) {
-    if (user.type == "admin") {
+    if (user.type == "admin" || (admin && adminViewUser)) {
       next();
     } else {
       next({ name: "AsinManagement" });

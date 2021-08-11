@@ -43,19 +43,27 @@
                 </td>
                 <td>{{ $moment(user.expired_at).format("DD-MM-YYYY") }}</td>
                 <td>
-                  <button
-                    class="btn btn-md btn-warning mb-1"
-                    @click="onOpenModalUser(user, index)"
-                  >
-                    <i class="fa fa-edit"></i> 修正
-                  </button>
-                  <br />
-                  <button
-                    class="btn btn-md btn-danger"
-                    @click="onConfirmDeleteUser(user, index)"
-                  >
-                    <i class="fa fa-trash"></i> 削除
-                  </button>
+                  <div class="row">
+                    <button
+                      class="btn btn-sm btn-primary mt-1"
+                      @click="onAdminLogin(user, index)"
+                    >
+                      管理者ログイン
+                    </button>
+                    <button
+                      class="btn btn-sm btn-warning mx-2 mt-1"
+                      @click="onOpenModalUser(user, index)"
+                    >
+                      <i class="fa fa-edit"></i> 修正
+                    </button>
+                    <br />
+                    <button
+                      class="btn btn-sm btn-danger mt-1"
+                      @click="onConfirmDeleteUser(user, index)"
+                    >
+                      <i class="fa fa-trash"></i> 削除
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -196,6 +204,8 @@
 
 <script>
 import AdminApi from "@/services/AdminApi";
+import YahooAccountApi from "@/services/YahooAccountApi";
+
 const STATUS_USER = [
   { value: "LIVE", display: "活動中" },
   { value: "LOCKED", display: "ロック" }
@@ -252,6 +262,22 @@ export default {
     }
   },
   methods: {
+    async onAdminLogin(user, index) {
+      console.log(" #### onAdminLogin: ", user);
+      await this.$store.dispatch("setAdminViewUser", true);
+      await this.$store.dispatch("adminSetUserData", user);
+
+      let result = await YahooAccountApi.get();
+      if (result && result.status === 200) {
+        let accounts = result.data.accounts || [];
+
+        await this.$store.dispatch("setYahooAccount", accounts);
+        if (accounts && accounts.length > 0) {
+          this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", accounts[0]);
+        }
+      }
+      this.$router.push({ name: "YahooAccounts" });
+    },
     displayStatus(status) {
       return this.STATUS_USER.find(item => item.value === status).display;
     },

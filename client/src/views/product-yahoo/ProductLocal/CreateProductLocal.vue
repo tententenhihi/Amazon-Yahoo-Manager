@@ -739,7 +739,7 @@
           </div>
         </div>
         <div class="row mt-20">
-          <button class="btn btn-success mb-1 mr-1" @click="onSaveProduct()">
+          <button class="btn btn-success mb-1 mr-1 px-4" @click="onSaveProduct()">
             保存
           </button>
           <router-link
