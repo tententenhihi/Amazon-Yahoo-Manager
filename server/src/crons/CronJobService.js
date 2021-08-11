@@ -24,6 +24,7 @@ export default class CronJobService {
         // cron.schedule('*/5 * * * *', async () => {
         //     CronJobService.startGetProductYahoo();
         // });
+        CronJobService.cronDeleteAuctionProductFinished();
 
         cron.schedule('0 0 0 * * *', async () => {
             CronJobService.startGetPointAuctionOfAccount();
@@ -80,12 +81,15 @@ export default class CronJobService {
         let listAccountYahoo = await AccountYahooService.find({});
         for (let i = 0; i < listAccountYahoo.length; i++) {
             const accountYahoo = listAccountYahoo[i];
-            if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie && !accountYahoo.is_lock) {
-                let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
-                if (proxyResult.status === 'SUCCESS') {
-                    let listProductFinished = await AuctionYahooService.getProductAuctionFinished(accountYahoo.cookie, proxyResult.data);
-                    let listaID = listProductFinished.map((item) => item.aID);
-                    let result = await AuctionYahooService.deleteProductFinished(listaID, accountYahoo.cookie, proxyResult.data);
+            let scheduleData = await AuctionPublicSettingModel.findOne({ yahoo_account_id: accountYahoo._id });
+            if (scheduleData && scheduleData.auction_delete) {
+                if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie && !accountYahoo.is_lock) {
+                    let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
+                    if (proxyResult.status === 'SUCCESS') {
+                        let listProductFinished = await AuctionYahooService.getProductAuctionFinished(accountYahoo.cookie, proxyResult.data);
+                        let listaID = listProductFinished.map((item) => item.aID);
+                        let result = await AuctionYahooService.deleteProductFinished(listaID, accountYahoo.cookie, proxyResult.data);
+                    }
                 }
             }
         }
@@ -124,7 +128,6 @@ export default class CronJobService {
             if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie && !accountYahoo.is_lock) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    
                     try {
                         let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data);
                         let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
@@ -165,7 +168,6 @@ export default class CronJobService {
                     } catch (error) {
                         console.log(' ### getProductAuctionEnded: ', error);
                     }
-                  
 
                     try {
                         let listProductFinished = await AuctionYahooService.getProductAuctionFinished(accountYahoo.cookie, proxyResult.data);
