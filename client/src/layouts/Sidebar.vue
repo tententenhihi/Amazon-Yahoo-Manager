@@ -44,7 +44,7 @@
                 <span>管理者に戻る</span>
               </router-link>
             </li>
-            <li class="sidebar-dropdown">
+            <li class="sidebar-dropdown" v-if="!isLockAccount">
               <router-link :to="{ name: 'AsinManagement' }">
                 <i class="fa fa-shopping-cart"></i>
                 <span>ASIN管理</span>
@@ -167,25 +167,25 @@
                 </ul>
               </div>
             </li>
-            <li class="sidebar-dropdown">
+            <li class="sidebar-dropdown" v-if="!isLockAccount">
               <router-link :to="{ name: 'FolderManagement' }">
                 <i class="fa fa-folder"></i>
                 <span>フォルダ管理</span>
               </router-link>
             </li>
-            <li class="sidebar-dropdown">
+            <li class="sidebar-dropdown" v-if="!isLockAccount">
               <router-link :to="{ name: 'ImageInsertion' }">
                 <i class="fa fa-file-image"></i>
                 <span>画像挿入設定</span>
               </router-link>
             </li>
-            <li class="sidebar-dropdown">
+            <li class="sidebar-dropdown" v-if="!isLockAccount">
               <router-link :to="{ name: 'Categories' }">
                 <i class="fa fa-bookmark"></i>
                 <span>カテゴリ管理</span>
               </router-link>
             </li>
-            <li class="sidebar-dropdown">
+            <li class="sidebar-dropdown" v-if="!isLockAccount">
               <router-link :to="{ name: 'Logs' }">
                 <i class="fa fa-archive"></i>
                 <span>出品ログ</span>

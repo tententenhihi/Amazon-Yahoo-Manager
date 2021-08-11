@@ -1,4 +1,4 @@
-import AsinSchema from '../models/AsinAmazonModel';
+import AsinAmazonModel from '../models/AsinAmazonModel';
 import AccountYahooService from './AccountYahooService';
 
 var _ = require('lodash');
@@ -6,7 +6,7 @@ var _ = require('lodash');
 export default class AsinAmazonService {
     static async get(filter, user_id) {
         try {
-            let listAsin = await AsinSchema.find(filter).sort({ created: -1 });
+            let listAsin = await AsinAmazonModel.find(filter).sort({ created: -1 });
             //group
             let listGroup = _.groupBy(listAsin, function (item) {
                 return item.query_key;
@@ -53,8 +53,7 @@ export default class AsinAmazonService {
     }
     static async add(addData) {
         try {
-            console.log(addData);
-            let newAsin = new AsinSchema(addData);
+            let newAsin = new AsinAmazonModel(addData);
             await newAsin.save();
             return newAsin;
         } catch (error) {
@@ -62,9 +61,19 @@ export default class AsinAmazonService {
             throw new Error(' Error AsinAmazonService-add: ' + error.message);
         }
     }
+    static async addMany(listData) {
+        try {
+            let newAsin = await AsinAmazonModel.insertMany(listData);
+            return newAsin;
+        } catch (error) {
+            console.log(error);
+            throw new Error(' Error AsinAmazonService-add: ' + error.message);
+        }
+    }
+
     static async update(idAsin, idUser, updateData) {
         try {
-            let result = await AsinSchema.findOneAndUpdate({ _id: idAsin, idUser }, updateData, { new: true });
+            let result = await AsinAmazonModel.findOneAndUpdate({ _id: idAsin, idUser }, updateData, { new: true });
             return result;
         } catch (error) {
             console.log(error);
@@ -73,7 +82,7 @@ export default class AsinAmazonService {
     }
     static async delete(idAsin, idUser) {
         try {
-            let result = await AsinSchema.findOneAndDelete({ _id: idAsin, idUser });
+            let result = await AsinAmazonModel.findOneAndDelete({ _id: idAsin, idUser });
             return result != null;
         } catch (error) {
             console.log(error);

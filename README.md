@@ -13,6 +13,14 @@ cd /root/Amazon-Yahoo-Manager; git pull origin main; cd client/; npm run build; 
 # Set timezone
 timedatectl set-timezone "Asia/Tokyo"
 
+# Fix Mongodb 32MB Ram => 320MB
+db.adminCommand({setParameter: 1, internalQueryExecMaxBlockingSortBytes: 335544320})
+
+# Fix ram
+export NODE_OPTIONS=--max-old-space-size=8192
+# Win
+set NODE_OPTIONS=--max_old_space_size=8192
+
 
 sudo apt install wget; wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash ; source ~/.profile ; nvm install 12.14.0; sudo apt install npm; sudo apt install unzip ; sudo apt install unrar;sudo apt install git ;git config --global credential.helper store; git clone https://github.com/bacnt2412/Amazon-Yahoo-Manager.git; export NODE_OPTIONS=--max-old-space-size=8192; sudo ln -s /usr/bin/python3 /usr/bin/python; sudo timedatectl set-timezone Asia/Ho_Chi_Minh; sudo apt install ufw ; sudo ufw enable; sudo ufw status; sudo ufw allow ssh; sudo ufw allow http; sudo ufw allow https; npm install -g pm2; sudo apt install nginx; apt install libnss3-dev libgdk-pixbuf2.0-dev libgtk-3-dev libxss-dev;cd /etc/nginx/sites-enabled/; rm -r default; export NODE_ENV=production
 

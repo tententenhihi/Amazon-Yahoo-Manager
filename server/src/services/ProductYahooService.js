@@ -3,14 +3,15 @@ import ProductAmazonSchema from '../models/ProductAmazonModel';
 import AccountYahooService from '../services/AccountYahooService';
 import ProxyService from '../services/ProxyService';
 import AuctionYahooService from '../services/AuctionYahooService';
+import KeepaService from '../services/KeepaService';
 import fs from 'fs';
 import fsExtra from 'fs-extra';
-
 import mongoose from 'mongoose';
 import ProductYahooAuctionService from './ProductYahooAuctionService';
 import ProductGlobalSettingService from './ProductGlobalSettingService';
 import ProductInfomationDefaultService from './ProductInfomationDefaultService';
 import CategoryService from './CategoryService';
+import moment from 'moment';
 
 import Utils from '../utils/Utils';
 var isCalendarUploading = false;
@@ -59,6 +60,11 @@ export default class ProductYahooService {
         let bid_or_buy_price = 0;
         // Nguyên giá
         let original_price = import_price + amazon_shipping_fee;
+
+        if (defaultSetting.yahoo_auction_bid_price > 0) {
+            bid_or_buy_price = defaultSetting.yahoo_auction_bid_price;
+        }
+
         if (profitPersent.endsWith('%')) {
             profitPersent = profitPersent.replace('%', '');
             profitPersent = parseFloat(profitPersent.toString().trim());
@@ -76,7 +82,9 @@ export default class ProductYahooService {
 
             actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
 
-            bid_or_buy_price = price + defaultSetting.yahoo_auction_bid_price;
+            if (bid_or_buy_price === 0) {
+                bid_or_buy_price = price + defaultSetting.yahoo_auction_bid_price;
+            }
         } else if (profitPersent.startsWith('\\')) {
             profitPersent = profitPersent.replace('\\', '');
             profitPersent = parseInt(profitPersent.toString().trim());
@@ -94,7 +102,9 @@ export default class ProductYahooService {
 
             actual_profit = gross_profit - ship_fee_yahoo - parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * fee_auction_yahoo);
 
-            bid_or_buy_price = price + defaultSetting.yahoo_auction_bid_price;
+            if (bid_or_buy_price === 0) {
+                bid_or_buy_price = price + defaultSetting.yahoo_auction_bid_price;
+            }
         }
 
         return {
@@ -259,7 +269,7 @@ export default class ProductYahooService {
     static async startUploadProductInListFolderId(user_id, yahoo_account_id, new_list_target_folder) {
         console.log(Date.now());
 
-        console.log(' ######### Start Cron job: startUploadProductInListFolderId ');
+        console.log(' ######### Start Cron Upload Sản phẩm trong folder: ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
         console.log(' ### yahoo_account_id: ', yahoo_account_id);
         console.log(' ### new_list_target_folder: ', new_list_target_folder);
 
@@ -288,7 +298,6 @@ export default class ProductYahooService {
                             let price = productYahooData.start_price + defaultSetting.yahoo_auction_shipping;
                             let gross_profit = price - productYahooData.original_price;
                             let actual_profit = gross_profit - defaultSetting.yahoo_auction_shipping;
-                            console.log(' ############# actual_profit: ', actual_profit);
                             if (actual_profit <= defaultSetting.profit_stop) {
                                 isStopUpload = true;
                             }
@@ -299,7 +308,24 @@ export default class ProductYahooService {
                                 productYahooData.amazon_shipping_fee
                             );
                         }
-                        console.log(' ==================== isStopUpload =========================== ');
+
+                        if (!isStopUpload) {
+                            // Kiểm tra hết hàng
+                            console.log(' ########## productYahooData.asin_amazon ########## ', productYahooData.asin_amazon);
+                            let resultKeep = await KeepaService.findProduct([productYahooData.asin_amazon]);
+                            if (resultKeep.status === 'SUCCESS' && resultKeep.data && resultKeep.data.length > 0 && resultKeep.data[0].status === 'SUCCESS') {
+                                let dataKeepa = resultKeep.data[0].data;
+                                if (dataKeepa.count === 0) {
+                                    isStopUpload = true;
+                                }
+                            }
+
+                            if (isStopUpload) {
+                                console.log(' ================ Dừng xuất hàng. Sản phẩm đã hết hàng =============== ');
+                            }
+                        } else {
+                            console.log(' ================ Dừng xuất hàng. Sản phẩm lợi nhuận thấp =============== ');
+                        }
                         if (isStopUpload) {
                             let newResult = {
                                 product_created: productYahooData.created,
@@ -307,10 +333,9 @@ export default class ProductYahooService {
                                 product_aID: '',
                                 message: '低利益',
                                 created: Date.now(),
-                                success: 'ERROR',
+                                success: false,
                             };
                             result.push(newResult);
-                            console.log(' ================ isStopUpload LOW PROFIT =============== ');
                             continue;
                         }
                         let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
@@ -362,7 +387,7 @@ export default class ProductYahooService {
         isCalendarUploading = true;
         try {
             console.log(Date.now());
-            console.log(' ######### Start Cron job: startUploadProductByCalendar ');
+            console.log(' ############# Start Cron job Uploa Sản phẩm theo Calendar: ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
             let result = [];
             //Get day of month
             let today = new Date();
@@ -452,7 +477,7 @@ export default class ProductYahooService {
 
     static async startReSubmitProduct(user_id, yahoo_account_id) {
         console.log(Date.now());
-        console.log(' ######### Start Cron job: startReSubmitProduct ');
+        console.log(' ######### Start Cron job ReSubmit - Upload lại sản phẩm ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
         console.log(' ### yahoo_account_id: ', yahoo_account_id);
         // console.log(' ### new_list_target_folder: ', listAid);
 
@@ -560,7 +585,6 @@ export default class ProductYahooService {
         let import_price = productAmazon.price;
 
         let dataCalculatorProduct = await this.calculatorPrice(defaultSetting, import_price, productAmazon.ship_fee);
-        console.log(' #### dataCalculatorProduct: ', dataCalculatorProduct);
         let productYahoo = {
             ...defaultSetting._doc,
             ...dataCalculatorProduct,
@@ -611,8 +635,9 @@ export default class ProductYahooService {
                 //Giá sản phẩm gốc
                 let import_price = productYahoo.import_price;
                 let amazon_shipping_fee = productYahoo.amazon_shipping_fee;
-                let dataCalculatorProduct = await this.calculatorPrice(productInfomationDefault, import_price, amazon_shipping_fee);
 
+                let dataCalculatorProduct = await this.calculatorPrice(productInfomationDefault, import_price, amazon_shipping_fee);
+                console.log(dataCalculatorProduct);
                 delete productInfomationDefault._id;
                 let dataUpdate = {
                     ...productYahoo._doc,

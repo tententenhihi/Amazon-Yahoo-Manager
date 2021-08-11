@@ -28,6 +28,7 @@ export default class ProductInfomationDefaultController {
             };
 
             let result = await ProductInfomationDefaultService.update(_id, data);
+            console.log(' ######### result: ', result);
             ProductYahooService.UpdateCalculatorPrice(result);
 
             if (result) {

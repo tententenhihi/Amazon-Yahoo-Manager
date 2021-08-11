@@ -231,7 +231,7 @@ export default {
             if (response.data.userData.type === "admin") {
               this.$router.push({ name: "AdminUsers" });
             } else {
-              this.$router.push("/");
+              this.$router.push("/yahoo-accounts");
             }
           }
         }

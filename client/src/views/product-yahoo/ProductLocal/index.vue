@@ -675,7 +675,7 @@
             class="form-control"
             id=""
             cols="30"
-            rows="5"
+            rows="7"
             v-model="selectedEditProduct.description"
           ></textarea>
         </div>
@@ -685,7 +685,7 @@
             class="form-control"
             id=""
             cols="30"
-            rows="5"
+            rows="2"
             v-model="selectedEditProduct.note"
           ></textarea>
         </div>

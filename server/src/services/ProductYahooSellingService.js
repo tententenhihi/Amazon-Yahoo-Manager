@@ -24,11 +24,11 @@ export default class ProductYahooSellingService {
                         let productExisted = listProductInDB.find((item) => item.aID === product.aID);
                         //chưa có thì tạo mới.
                         if (!productExisted) {
-                            console.log(product);
-
                             let productYahoo = await ProductYahooAuctionService.findOne({ aID: product.aID });
                             if (!productYahoo && product.title) {
-                                productYahoo = await ProductYahooAuctionService.findOne({ product_yahoo_title: { $regex: product.title } });
+                                productYahoo = await ProductYahooAuctionService.findOne({
+                                    product_yahoo_title: { $regex: product.title.replace(/\(/g, '\\(') },
+                                });
                             }
                             if (productYahoo) {
                                 let newProductYahooEnded = {

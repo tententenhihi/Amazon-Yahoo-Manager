@@ -307,9 +307,11 @@ export default {
 
         if (this.countAccountActive >= this.maxYahooAccount) {
           this.$swal.fire({
-            icon: "error",
-            title:
-              "アカウントは最大です。新しいアカウントを作成することはできません。 "
+            icon: "warning",
+            title: `<div>
+              枠を解除すると契約数をオーバーします。アカウント枠を追加購入してください。<br>
+＊新規で取引のみに使用のアカウントは追加できません。もともと登録していたアカウントを取引のみに変更することのみできます。
+</div>`
           });
           return;
         }

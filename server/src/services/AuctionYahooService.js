@@ -177,8 +177,10 @@ export default class AuctionYahooService {
 
             let listImageOverlay = [];
             if (productData.image_overlay_index != null) {
+
                 let listImageOverlayOfAccountYahoo = await ImageInsertionService.get(productData.user_id, productData.yahoo_account_id);
-                if (productData.image_overlay_index > 0 && productData.image_overlay_index <= listImageOverlayOfAccountYahoo.length) {
+                console.log(listImageOverlayOfAccountYahoo);
+                if (productData.image_overlay_index > 0 && productData.image_overlay_index <= listImageOverlayOfAccountYahoo.images.length) {
                     listImageOverlayOfAccountYahoo = listImageOverlayOfAccountYahoo.images;
                     let imageOverlay = 'uploads/' + listImageOverlayOfAccountYahoo[productData.image_overlay_index - 1];
                     for (const imageInput of listImage) {
@@ -794,8 +796,10 @@ export default class AuctionYahooService {
         const cookies = await page.cookies();
 
         if (cookies.length > 4) {
+            try {
+                await browser.close();
+            } catch (error) {}
             console.log(' ======== SUCCESS ======= ');
-            await browser.close();
             let cookie = cookies
                 .map(function (c) {
                     return `${c.name}=${c.value}`;
@@ -809,7 +813,9 @@ export default class AuctionYahooService {
             const data = await page.evaluate(() => document.querySelector('*').outerHTML);
             Fs.writeFileSync('preview.html', data);
             console.log(' ======== Failse ======= ');
-            await browser.close();
+            try {
+                await browser.close();
+            } catch (error) {}
             return {
                 status: 'ERROR',
                 message: 'エラー。 管理者に連絡する ',

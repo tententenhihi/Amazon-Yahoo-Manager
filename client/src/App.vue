@@ -38,7 +38,8 @@ export default {
     },
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
-      userInfo: "getUserInfo"
+      userInfo: "getUserInfo",
+      listYahooAccount: "getYahooAccount"
     })
   },
   created() {
@@ -61,7 +62,12 @@ export default {
       let result = await YahooAccountApi.get();
       if (result && result.status === 200) {
         let accounts = result.data.accounts || [];
+        let infoUser = result.data.infoUser || [];
         await this.$store.dispatch("setYahooAccount", accounts);
+        await this.$store.dispatch("setUser", infoUser);
+        if (accounts.length > 0) {
+          this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", accounts[0]);
+        }
       } else if (result.status === 401) {
         await this.$store.dispatch("setUser", null);
         this.$router.push({ name: "Login" });
@@ -71,7 +77,7 @@ export default {
       this.isLoading = value;
     },
     checkExistYahooAccount() {
-      const NO_NEED_VALIDATE_ROUTER = ["YahooAccounts", "ChangePassword"];
+      const NO_NEED_VALIDATE_ROUTER = ["ChangePassword"];
 
       // console.log(" #### 11111111111111: ", this.isUserLoggedIn);
       // console.log(" #### 22222222222222: ", this.userInfo.type !== "admin");
@@ -89,6 +95,26 @@ export default {
           this.$swal.fire({
             icon: "warning",
             title: "ヤフーのアカウントを設定してください"
+          });
+        }
+      }
+      if (
+        !this.adminViewUser &&
+        this.isUserLoggedIn &&
+        this.userInfo &&
+        this.userInfo.type !== "admin" &&
+        this.listYahooAccount &&
+        this.userInfo.maxYahooAccount <
+          this.listYahooAccount.filter(item => !item.is_lock).length
+      ) {
+        if (!NO_NEED_VALIDATE_ROUTER.includes(this.$route.name)) {
+          if (this.$route.name !== "YahooAccounts") {
+            this.$router.push({ name: "YahooAccounts" });
+          }
+          this.$swal.fire({
+            icon: "warning",
+            title: `契約数をオーバーしている場合、契約数をオーバーしています。<br>
+アカウントを削除して減らすか、取引のみに使用にチェックをして契約数を合わせてください。`
           });
         }
       }

@@ -3,6 +3,7 @@ import BlacklistAsinService from '../services/BlacklistAsinService';
 import AsinAmazonService from '../services/AsinAmazonService';
 import Response from '../utils/Response';
 import Utils from '../utils/Utils';
+import AccountYahooService from '../services/AccountYahooService';
 
 export default class AsinAmazonController {
     static async getBlackList(req, res) {
@@ -68,11 +69,22 @@ export default class AsinAmazonController {
                         yahoo_account_id,
                         query_key: queryKey,
                     };
-                    let newAsin = await AsinAmazonService.add(newAsinData);
-                    listAsinNew.push(newAsin);
+                    listAsinNew.push(newAsinData);
                 }
-                QueueGetProductAmazon.addNew(listAsinNew);
-                return response.success200({ listAsinNew });
+                console.log(' ############ listAsinNew: ', listAsinNew.length);
+                let newAsin = await AsinAmazonService.addMany(listAsinNew);
+                QueueGetProductAmazon.addNew(newAsin);
+                let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
+                console.log(' ================================= ');
+                return response.success200({
+                    newAsin: {
+                        asins: newAsin,
+                        countAsin: newAsin.length,
+                        countAsinGetProductSuccess: 0,
+                        yahoo_account_id: yahoo_account_id,
+                        yahoo_id: accountYahoo.yahoo_id,
+                    },
+                });
             }
             return response.error400({ message: 'データエラー' });
         } catch (error) {

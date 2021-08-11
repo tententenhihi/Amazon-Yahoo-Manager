@@ -28,7 +28,9 @@ export default class ProductYahooEndedService {
                         if (!productExisted) {
                             let productYahoo = await ProductYahooAuctionService.findOne({ aID: product.aID });
                             if (!productYahoo && product.title) {
-                                productYahoo = await ProductYahooAuctionService.findOne({ product_yahoo_title: { $regex: product.title } });
+                                productYahoo = await ProductYahooAuctionService.findOne({
+                                    product_yahoo_title: { $regex: product.title.replace(/\(/g, '\\(') },
+                                });
                             }
                             if (productYahoo) {
                                 let newProductYahooEnded = {
@@ -76,7 +78,7 @@ export default class ProductYahooEndedService {
     }
     static async get(idUser, yahoo_account_id) {
         try {
-            let result = await ProductYahooEndedModel.find({ user_id: idUser, yahoo_account_id }).sort({ created: -1 });;
+            let result = await ProductYahooEndedModel.find({ user_id: idUser, yahoo_account_id }).sort({ created: -1 });
             return result;
         } catch (error) {
             console.log(error);

@@ -111,15 +111,25 @@ export default {
         let listCode = this.asinString
           .split("\n")
           .filter(item => item.trim() != "");
+        if (listCode.length > 10000) {
+          this.$swal.fire({
+            icon: "error",
+            title: "エラー",
+            text: "最大10.000ASINまでしか追加できません !"
+          });
+          return;
+        }
         let res = await AsinApi.add({
           listCode,
           // groupId: this.groupId,
           yahoo_account_id: this.selectedYahooAccount._id
         });
         if (res && res.status === 200) {
+          let newAsin = res.data.newAsin;
+
           this.asinString = "";
           // this.groupId = "";
-          await this.$emit("getListAsin");
+          await this.$emit("pushNewAsin", newAsin);
           this.$swal.fire({
             icon: "success",
             title: "成功.!"

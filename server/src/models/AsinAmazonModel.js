@@ -47,5 +47,5 @@ var AsinAmazon = new Schema({
     },
 });
 
-var AsinAmazon = mongoose.model('AsinAmazon', AsinAmazon);
-module.exports = AsinAmazon;
+var AsinAmazonModel = mongoose.model('AsinAmazon', AsinAmazon);
+module.exports = AsinAmazonModel;

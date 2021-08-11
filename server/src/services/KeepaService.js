@@ -4,7 +4,6 @@ import Utils from '../utils/Utils';
 const getData = async (listAsin) => {
     let listResult = [];
     try {
-        console.log(' ========= getData ========= ');
         let token = `82stsotg8m0qivjvcbsvn08f1t229kilkljgvi6057buv80631tbtlgdvtinj6e9`;
         let url = `https://api.keepa.com/product?key=${token}&domain=5&asin=${listAsin.join(',')}&offers=20&stock=1&rating=1`;
         let res = null;

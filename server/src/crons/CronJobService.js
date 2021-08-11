@@ -12,6 +12,7 @@ import ProductYahooFinishedService from '../services/ProductYahooFinishedService
 import UserService from '../services/UserService';
 import KeepaService from '../services/KeepaService';
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
+import moment from 'moment';
 
 let listCronJob = [];
 const CronJob = require('cron').CronJob;
@@ -24,7 +25,6 @@ export default class CronJobService {
         // cron.schedule('*/5 * * * *', async () => {
         //     CronJobService.startGetProductYahoo();
         // });
-        CronJobService.cronDeleteAuctionProductFinished();
 
         cron.schedule('0 0 0 * * *', async () => {
             CronJobService.startGetPointAuctionOfAccount();
@@ -38,7 +38,7 @@ export default class CronJobService {
         });
     }
     static async checkProductOriginalForAuctionProductSelling() {
-        console.log(' ====== START CRON Theo dõi product selling ======');
+        console.log(' ====== START CRON Theo dõi product selling ======: ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
         let listAccountYahoo = await AccountYahooService.find({});
         for (let i = 0; i < listAccountYahoo.length; i++) {
             const accountYahoo = listAccountYahoo[i];
@@ -77,7 +77,7 @@ export default class CronJobService {
     }
 
     static async cronDeleteAuctionProductFinished() {
-        console.log(' ====== START CRON Xóa Product Finised ko có người mua ======');
+        console.log(' ====== START CRON Xóa Product Finised ko có người mua ======', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
         let listAccountYahoo = await AccountYahooService.find({});
         for (let i = 0; i < listAccountYahoo.length; i++) {
             const accountYahoo = listAccountYahoo[i];
@@ -95,7 +95,7 @@ export default class CronJobService {
         }
     }
     static async resetYahooAccount() {
-        console.log(' ========== resetYahooAccount ==========');
+        console.log(' ========== resetYahooAccount ==========', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
         let listYahooAcount = await AccountYahooService.find({});
         for (const account of listYahooAcount) {
             account.count_error = 0;
@@ -103,7 +103,7 @@ export default class CronJobService {
         }
     }
     static async startGetPointAuctionOfAccount() {
-        console.log(' ====== START Get Point yahoo account ======');
+        console.log(' ====== START Get Point yahoo account ======', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
         let listAccountYahoo = await AccountYahooService.find({});
         for (let i = 0; i < listAccountYahoo.length; i++) {
             const accountYahoo = listAccountYahoo[i];

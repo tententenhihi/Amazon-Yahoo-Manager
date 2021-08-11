@@ -48,7 +48,7 @@ const downloadFile = async (url, saveFile, onProgress, idVideo) => {
     if (!isUrlEndcoded(url)) {
         url = encodeURI(url);
     }
-    console.log(' ==========  START DOWNLOAD: ', url);
+    // console.log(' ==========  START DOWNLOAD: ', url);
 
     try {
         let result = await new Promise((resolve, reject) => {
@@ -111,7 +111,7 @@ const downloadFile = async (url, saveFile, onProgress, idVideo) => {
             });
         }
         if (result) {
-            console.log(' =========  FINISH DOWNLOAD  =========');
+            // console.log(' =========  FINISH DOWNLOAD  =========');
         }
         return result;
     } catch (error) {

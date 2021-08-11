@@ -3,7 +3,6 @@ import UserModel from '../models/UserModel';
 import ProxySchema from '../models/ProxyModel';
 import Response from '../utils/Response';
 import bcrypt from 'bcryptjs';
-import QueueLoginYahooAuction from '../services/QueueLoginYahooAuction';
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
 import mongoose from 'mongoose';
 import ProductInfomationDefaultSchema from '../models/ProductInfomationDefaultModel';
@@ -16,6 +15,38 @@ import ProductGlobalSettingService from '../services/ProductGlobalSettingService
 import AccountYahooService from '../services/AccountYahooService';
 import ProxyService from '../services/ProxyService';
 
+const createDataDefault = async (user_id, yahoo_account_id) => {
+    await ProductInfomationDefaultSchema.create({
+        user_id,
+        yahoo_account_id,
+    });
+    await ProductGlobalSettingSchema.create({
+        user_id,
+        yahoo_account_id,
+    });
+    await TradeMessageTemplateSchema.create({
+        user_id,
+        yahoo_account_id,
+        name: '発送しました',
+        content: `商品発送いたしました。到着までしばらくお待ちください。届きましたら、評価よりご連絡ください。
+        なお、作業円滑化のため、追跡番号連絡や時間指定はできませんのでご了承ください。
+        1週間過ぎても商品が届かない場合はご連絡ください。
+        以上、ありがとうございました。
+        私から製品を購入していただきました方限定で、毎月3万～100万のお小遣いを得る丸秘術を無料でメール配信しております。
+        
+        https://december-ex.com/rg/5218/1/
+        LINE@:https://line.me/R/ti/p/%40603mwfiu`,
+    });
+
+    await RatingTemplateSchema.create({
+        user_id,
+        yahoo_account_id,
+        name: '非常に良い',
+        rating: '非常に良い',
+        content: 'スムーズに取引できました。ありがとうございました。',
+    });
+};
+
 class YahooAccountController {
     static async getListAccount(req, res) {
         let response = new Response(res);
@@ -25,7 +56,8 @@ class YahooAccountController {
                 { $match: { user_id: mongoose.Types.ObjectId(user._id) } },
                 { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxy' } },
             ]);
-            response.success200({ accounts });
+            let infoUser = await UserModel.findById(user._id);
+            response.success200({ accounts, infoUser });
         } catch (error) {
             response.error500(error);
         }
@@ -61,7 +93,7 @@ class YahooAccountController {
                     proxy.status = 'used';
                     await proxy.save();
 
-                    await ProductInfomationDefaultService.get(user._id, newAccount._doc._id);
+                    await createDataDefault(user._id, newAccount._doc._id);
 
                     let result = await AccountYahooService.getCookie(newAccount._id);
                     if (result.status === 'ERROR') {

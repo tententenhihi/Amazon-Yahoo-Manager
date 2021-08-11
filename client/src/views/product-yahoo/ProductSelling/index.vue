@@ -105,22 +105,22 @@
               <td class="text-center">{{ product.aID }}</td>
               <td class="text-center" width="100">
                 <img
-                  v-if="product.thumbnail"
+                  v-if="product.images && product.images.length"
                   :src="
-                    product.thumbnail.includes('http')
-                      ? product.thumbnail
-                      : SERVER_HOST_UPLOAD + product.thumbnail
+                    product.images[0].includes('http')
+                      ? product.images[0]
+                      : SERVER_HOST_UPLOAD + product.images[0]
                   "
                   style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
               </td>
               <td class="text-center" width="100">
                 <img
-                  v-if="product.images && product.images.length"
+                  v-if="product.thumbnail"
                   :src="
-                    product.images[0].includes('http')
-                      ? product.images[0]
-                      : SERVER_HOST_UPLOAD + product.images[0]
+                    product.thumbnail.includes('http')
+                      ? product.thumbnail
+                      : SERVER_HOST_UPLOAD + product.thumbnail
                   "
                   style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
@@ -502,8 +502,13 @@ export default {
       }
     }
   },
+  updated() {
+      console.log(' 44444444444444444 ');
+
+  },
   watch: {
     isCheckAllProduct() {
+      console.log(' 1111111111111111 ');
       if (this.isCheckAllProduct) {
         let data = [...this.tableData];
         let filterPro = data.filter(item => {
@@ -517,6 +522,8 @@ export default {
       }
     },
     selectedProduct() {
+      console.log(' 222222222222222 ');
+
       if (
         this.selectedProduct.length &&
         this.selectedProduct.length ==
@@ -532,6 +539,8 @@ export default {
       }
     },
     page() {
+      console.log(' 3333333333333333 ');
+
       this.isCheckAllProduct = false;
       this.selectedProduct = [];
     }

@@ -46,7 +46,7 @@
           role="tabpanel"
           aria-labelledby="import-tab"
         >
-          <ImportAsin @getListAsin="getListAsin" />
+          <ImportAsin @pushNewAsin="pushNewAsin" />
         </div>
         <div
           class="tab-pane fade"
@@ -54,7 +54,7 @@
           role="tabpanel"
           aria-labelledby="history-tab"
         >
-          <History :listAsin="listAsin" />
+          <History :listAsin="listAsin" :key="keyUpdate" />
         </div>
         <div
           class="tab-pane fade"
@@ -84,6 +84,7 @@ export default {
   },
   data() {
     return {
+      keyUpdate: 0,
       isLoading: false,
       listAsin: [],
       blackList: [],
@@ -108,6 +109,13 @@ export default {
     })
   },
   methods: {
+    pushNewAsin(newListAsin) {
+      console.log(newListAsin);
+      this.listAsin = [newListAsin, ...this.listAsin];
+      console.log(this.listAsin);
+
+      this.keyUpdate++;
+    },
     async getListAsin() {
       try {
         let res = await AsinApi.get(this.selectedYahooAccount._id);

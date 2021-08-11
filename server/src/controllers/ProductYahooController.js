@@ -30,27 +30,26 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     dataUpdate.ship_fee1 = parseInt(dataUpdate.ship_fee1);
     dataUpdate.bid_or_buy_price = parseInt(dataUpdate.bid_or_buy_price);
 
-    if (current_product.start_price !== dataUpdate.start_price) {
-        let fee_auction_yahoo = 0.1;
-        let price = dataUpdate.start_price + dataUpdate.ship_fee1;
-        let amount_received = price - parseInt(price * fee_auction_yahoo);
-        let gross_profit = price - current_product.original_price;
-        let actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
-        let bid_or_buy_price = 0;
-        if (current_product.bid_or_buy_price !== dataUpdate.bid_or_buy_price) {
-            bid_or_buy_price = dataUpdate.bid_or_buy_price;
-        } else {
-            bid_or_buy_price = price + (current_product.bid_or_buy_price - current_product.price);
-        }
-        dataUpdate = {
-            ...dataUpdate,
-            price,
-            amount_received,
-            gross_profit,
-            actual_profit,
-            bid_or_buy_price,
-        };
+    let fee_auction_yahoo = 0.1;
+    let price = dataUpdate.start_price + dataUpdate.ship_fee1;
+    let amount_received = price - parseInt(price * fee_auction_yahoo);
+    let gross_profit = price - current_product.original_price;
+    let actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
+    let bid_or_buy_price = 0;
+    if (current_product.bid_or_buy_price !== dataUpdate.bid_or_buy_price) {
+        bid_or_buy_price = dataUpdate.bid_or_buy_price;
+    } else {
+        bid_or_buy_price = price + (current_product.bid_or_buy_price - current_product.price);
     }
+    dataUpdate = {
+        ...dataUpdate,
+        price,
+        amount_received,
+        gross_profit,
+        actual_profit,
+        bid_or_buy_price,
+    };
+    
     let result = await ProductYahooService.update(dataUpdate._id, dataUpdate);
     return result;
 };
@@ -66,7 +65,6 @@ export default class ProductYahooController {
                 for (const data of listProduct) {
                     try {
                         // Data default
-                        console.log(data);
                         let newData = await updateProductWithCaculatorProfit(data);
                         // let newData = await ProductYahooService.update(dataUpdate._id, data);
                         listResult.push(newData);
