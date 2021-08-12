@@ -24,7 +24,6 @@ var showError = res => {
         icon: "error",
         title: `サーバー接続のエラーが発生しました。管理者に連絡しください。`
       });
-      console.log(res);
       break;
     case 400:
       if (res && res.data && res.data.isActive === false) {

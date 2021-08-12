@@ -503,12 +503,9 @@ export default {
     }
   },
   updated() {
-      console.log(' 44444444444444444 ');
-
   },
   watch: {
     isCheckAllProduct() {
-      console.log(' 1111111111111111 ');
       if (this.isCheckAllProduct) {
         let data = [...this.tableData];
         let filterPro = data.filter(item => {
@@ -522,8 +519,6 @@ export default {
       }
     },
     selectedProduct() {
-      console.log(' 222222222222222 ');
-
       if (
         this.selectedProduct.length &&
         this.selectedProduct.length ==
@@ -539,8 +534,6 @@ export default {
       }
     },
     page() {
-      console.log(' 3333333333333333 ');
-
       this.isCheckAllProduct = false;
       this.selectedProduct = [];
     }

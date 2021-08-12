@@ -78,11 +78,6 @@ export default {
     },
     checkExistYahooAccount() {
       const NO_NEED_VALIDATE_ROUTER = ["ChangePassword"];
-
-      // console.log(" #### 11111111111111: ", this.isUserLoggedIn);
-      // console.log(" #### 22222222222222: ", this.userInfo.type !== "admin");
-      // console.log(" #### 33333333333333: ", !this.selectedYahooAccount._id);
-
       if (
         !this.adminViewUser &&
         this.isUserLoggedIn &&

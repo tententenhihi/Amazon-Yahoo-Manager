@@ -112,7 +112,11 @@ class AuthController {
                         ]);
                         return response.success200({
                             message: 'Authentication successful!',
-                            userData: userLogin,
+                            userData: {
+                                ...userLogin._doc,
+                                password: null,
+                                hash_password: null,
+                            },
                             yahooAccount: yahooAccount,
                         });
                     }

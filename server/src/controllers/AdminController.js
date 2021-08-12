@@ -265,6 +265,14 @@ class AdminController {
             let { _id } = req.params;
             if (_id === 'all') {
                 let result = await ProxyModel.updateMany({ status: 'lock' }, { status: 'live' });
+                let listAccountYahoo = await YahooAccountModel.find({});
+                let listProxyUsed = await ProxyModel.find({ status: 'used' });
+                let listProxyAccountYahoo = listAccountYahoo.map((item) => item.proxy_id.toString());
+                for (const proxyUsed of listProxyUsed) {
+                    if (!listProxyAccountYahoo.includes(proxyUsed._id.toString())) {
+                        await ProxyModel.findByIdAndUpdate(proxyUsed._id, { status: 'live' });
+                    }
+                }
                 let proxies = await ProxyModel.find();
                 return response.success200({ proxies });
             } else {

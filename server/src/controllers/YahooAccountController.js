@@ -56,7 +56,7 @@ class YahooAccountController {
                 { $match: { user_id: mongoose.Types.ObjectId(user._id) } },
                 { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxy' } },
             ]);
-            let infoUser = await UserModel.findById(user._id);
+            let infoUser = await UserModel.findById(user._id, { password: 0, hash_password: 0 });
             response.success200({ accounts, infoUser });
         } catch (error) {
             response.error500(error);
@@ -194,9 +194,6 @@ class YahooAccountController {
         let response = new Response(res);
         try {
             const { yahoo_account_id, account_id_selected } = req.body;
-
-            console.log('yahoo_account_id: ', yahoo_account_id);
-            console.log('account_id_selected: ', account_id_selected);
 
             let user = req.user;
             let existAccount = await YahooAccountModel.findById(yahoo_account_id);

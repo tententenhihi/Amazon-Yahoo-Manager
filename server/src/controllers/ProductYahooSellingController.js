@@ -46,7 +46,6 @@ export default class ProductYahooSellingController {
                         } else {
                             result = await AuctionYahooService.cancelAuction(productDelete.aID, yahooAccount.cookie, proxyResult.data);
                         }
-                        console.log(' ########## result: ', result);
                         if (result.status === 'SUCCESS') {
                             await ProductYahooSellingService.delete(_id);
                             return response.success200({ success: true });

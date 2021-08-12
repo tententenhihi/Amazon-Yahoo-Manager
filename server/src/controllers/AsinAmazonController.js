@@ -71,11 +71,9 @@ export default class AsinAmazonController {
                     };
                     listAsinNew.push(newAsinData);
                 }
-                console.log(' ############ listAsinNew: ', listAsinNew.length);
                 let newAsin = await AsinAmazonService.addMany(listAsinNew);
                 QueueGetProductAmazon.addNew(newAsin);
                 let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
-                console.log(' ================================= ');
                 return response.success200({
                     newAsin: {
                         asins: newAsin,

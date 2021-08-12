@@ -53,7 +53,6 @@ export default {
     setYahooAccount(event) {
       let idAccount = event.target.value;
       let account = this.yahooAccount.find(item => item._id === idAccount);
-      console.log(" ########### setYahooAccount: ", account);
       this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", account);
       this.$emit("onChangeYahooAccount");
     }

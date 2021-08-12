@@ -7,7 +7,6 @@ import ProxyService from '../services/ProxyService';
 import AuctionPublicSettingModel from '../models/AuctionPublicSettingModel';
 import CronHistoryModel from '../models/CronHistoryModel';
 import ProductYahooAuctionService from '../services/ProductYahooAuctionService';
-import ProductYahooSellingService from '../services/ProductYahooSellingService';
 import ProductYahooFinishedService from '../services/ProductYahooFinishedService';
 import UserService from '../services/UserService';
 import KeepaService from '../services/KeepaService';
@@ -25,7 +24,6 @@ export default class CronJobService {
         // cron.schedule('*/5 * * * *', async () => {
         //     CronJobService.startGetProductYahoo();
         // });
-
         cron.schedule('0 0 0 * * *', async () => {
             CronJobService.startGetPointAuctionOfAccount();
             CronJobService.resetYahooAccount();
@@ -210,7 +208,6 @@ export default class CronJobService {
                         console.log(' ### getProductAuctionFinished: ', error);
                     }
                 } else {
-                    console.log(proxyResult);
                 }
             }
         }
@@ -258,7 +255,6 @@ export default class CronJobService {
                 } else {
                     timeCron = `0 ${schedule.new_list_start_time_minute} ${schedule.new_list_start_time_hour} * * ${schedule.new_list_day_of_week - 1}`;
                 }
-                console.log(timeCron);
                 if (!cronNewList) {
                     cronNewList = new CronJob(
                         timeCron,

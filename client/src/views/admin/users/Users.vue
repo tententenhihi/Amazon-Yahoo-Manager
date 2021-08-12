@@ -263,7 +263,6 @@ export default {
   },
   methods: {
     async onAdminLogin(user, index) {
-      console.log(" #### onAdminLogin: ", user);
       await this.$store.dispatch("setAdminViewUser", true);
       await this.$store.dispatch("adminSetUserData", user);
 

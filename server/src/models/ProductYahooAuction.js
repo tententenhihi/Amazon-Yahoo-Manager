@@ -54,7 +54,7 @@ var Product = new Schema({
         type: Array,
         default: [],
     },
-    
+
     //============================================
     // Giá gốc
     import_price: {
@@ -277,15 +277,6 @@ var Product = new Schema({
         type: String,
         default: 'no',
     },
-    aID: {
-        type: String,
-    },
-    oldAID: {
-        type: String,
-    },
-    idBuyer: {
-        type: String,
-    },
     note: {
         type: String,
         default: '',
@@ -335,7 +326,10 @@ var Product = new Schema({
     image_overlay_index: {
         type: Number,
     },
-
+    is_relist: {
+        type: Boolean,
+        default: false,
+    },
     created: {
         type: Date,
         default: Date.now,

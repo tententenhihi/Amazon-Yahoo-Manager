@@ -25,7 +25,7 @@ class UserService {
     }
     static async findUser(filter) {
         try {
-            let user = await UserModel.findOne(filter);
+            let user = await UserModel.findOne(filter, { password: 0, hash_password: 0 });
             return user;
         } catch (error) {
             console.log(error);

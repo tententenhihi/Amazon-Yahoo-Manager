@@ -150,7 +150,6 @@ export default {
         if (res && res.status === 200) {
           this.accounts = res.data.accounts;
           this.proxies = res.data.proxies;
-          console.log(this.accounts);
           this.searchData = this.accounts
         }
       } catch (error) {

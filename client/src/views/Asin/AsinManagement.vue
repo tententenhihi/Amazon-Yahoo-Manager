@@ -110,10 +110,7 @@ export default {
   },
   methods: {
     pushNewAsin(newListAsin) {
-      console.log(newListAsin);
       this.listAsin = [newListAsin, ...this.listAsin];
-      console.log(this.listAsin);
-
       this.keyUpdate++;
     },
     async getListAsin() {

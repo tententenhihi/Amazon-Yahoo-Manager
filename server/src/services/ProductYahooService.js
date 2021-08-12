@@ -17,6 +17,37 @@ import Utils from '../utils/Utils';
 var isCalendarUploading = false;
 
 export default class ProductYahooService {
+    static async checkStopUpload(productYahooData, defaultSetting) {
+        let isStopUpload = false;
+
+        if (productYahooData.is_user_change) {
+            let price = productYahooData.start_price + defaultSetting.yahoo_auction_shipping;
+            let gross_profit = price - productYahooData.original_price;
+            let actual_profit = gross_profit - defaultSetting.yahoo_auction_shipping;
+            if (actual_profit <= defaultSetting.profit_stop) {
+                isStopUpload = true;
+            }
+        } else {
+            isStopUpload = await this.checkProfitToStopUpload(defaultSetting, productYahooData.import_price, productYahooData.amazon_shipping_fee);
+        }
+
+        if (!isStopUpload && productYahooData.asin_amazon) {
+            // Kiểm tra hết hàng
+            let resultKeep = await KeepaService.findProduct([productYahooData.asin_amazon]);
+            if (resultKeep.status === 'SUCCESS' && resultKeep.data && resultKeep.data.length > 0 && resultKeep.data[0].status === 'SUCCESS') {
+                let dataKeepa = resultKeep.data[0].data;
+                if (dataKeepa.count === 0) {
+                    isStopUpload = true;
+                }
+            }
+            if (isStopUpload) {
+                console.log(' ================ Dừng xuất hàng. Sản phẩm đã hết hàng =============== ');
+            }
+        } else {
+            console.log(' ================ Dừng xuất hàng. Sản phẩm lợi nhuận thấp =============== ');
+        }
+        return isStopUpload;
+    }
     static async checkProfitToStopUpload(defaultSetting, import_price, amazon_shipping_fee) {
         let dataprofit = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee);
         if (dataprofit.actual_profit <= defaultSetting.profit_stop) {
@@ -61,9 +92,7 @@ export default class ProductYahooService {
         // Nguyên giá
         let original_price = import_price + amazon_shipping_fee;
 
-        if (defaultSetting.yahoo_auction_bid_price > 0) {
-            bid_or_buy_price = defaultSetting.yahoo_auction_bid_price;
-        }
+        // bid_or_buy_price = defaultSetting.yahoo_auction_bid_price;
 
         if (profitPersent.endsWith('%')) {
             profitPersent = profitPersent.replace('%', '');
@@ -82,9 +111,7 @@ export default class ProductYahooService {
 
             actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
 
-            if (bid_or_buy_price === 0) {
-                bid_or_buy_price = price + defaultSetting.yahoo_auction_bid_price;
-            }
+            bid_or_buy_price = start_price + defaultSetting.yahoo_auction_bid_price;
         } else if (profitPersent.startsWith('\\')) {
             profitPersent = profitPersent.replace('\\', '');
             profitPersent = parseInt(profitPersent.toString().trim());
@@ -102,9 +129,9 @@ export default class ProductYahooService {
 
             actual_profit = gross_profit - ship_fee_yahoo - parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * fee_auction_yahoo);
 
-            if (bid_or_buy_price === 0) {
-                bid_or_buy_price = price + defaultSetting.yahoo_auction_bid_price;
-            }
+            // if (bid_or_buy_price === 0) {
+            bid_or_buy_price = start_price + defaultSetting.yahoo_auction_bid_price;
+            // }
         }
 
         return {
@@ -267,8 +294,6 @@ export default class ProductYahooService {
     }
 
     static async startUploadProductInListFolderId(user_id, yahoo_account_id, new_list_target_folder) {
-        console.log(Date.now());
-
         console.log(' ######### Start Cron Upload Sản phẩm trong folder: ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
         console.log(' ### yahoo_account_id: ', yahoo_account_id);
         console.log(' ### new_list_target_folder: ', new_list_target_folder);
@@ -292,40 +317,8 @@ export default class ProductYahooService {
                         const productYahooData = listProduct[index];
                         let dataUpdate = {};
 
-                        let isStopUpload = false;
+                        let isStopUpload = await this.checkStopUpload(productYahooData, defaultSetting);
 
-                        if (productYahooData.is_user_change) {
-                            let price = productYahooData.start_price + defaultSetting.yahoo_auction_shipping;
-                            let gross_profit = price - productYahooData.original_price;
-                            let actual_profit = gross_profit - defaultSetting.yahoo_auction_shipping;
-                            if (actual_profit <= defaultSetting.profit_stop) {
-                                isStopUpload = true;
-                            }
-                        } else {
-                            isStopUpload = await ProductYahooService.checkProfitToStopUpload(
-                                defaultSetting,
-                                productYahooData.import_price,
-                                productYahooData.amazon_shipping_fee
-                            );
-                        }
-
-                        if (!isStopUpload) {
-                            // Kiểm tra hết hàng
-                            console.log(' ########## productYahooData.asin_amazon ########## ', productYahooData.asin_amazon);
-                            let resultKeep = await KeepaService.findProduct([productYahooData.asin_amazon]);
-                            if (resultKeep.status === 'SUCCESS' && resultKeep.data && resultKeep.data.length > 0 && resultKeep.data[0].status === 'SUCCESS') {
-                                let dataKeepa = resultKeep.data[0].data;
-                                if (dataKeepa.count === 0) {
-                                    isStopUpload = true;
-                                }
-                            }
-
-                            if (isStopUpload) {
-                                console.log(' ================ Dừng xuất hàng. Sản phẩm đã hết hàng =============== ');
-                            }
-                        } else {
-                            console.log(' ================ Dừng xuất hàng. Sản phẩm lợi nhuận thấp =============== ');
-                        }
                         if (isStopUpload) {
                             let newResult = {
                                 product_created: productYahooData.created,
@@ -352,7 +345,7 @@ export default class ProductYahooService {
                             proxyResult.data,
                             descrionUpload
                         );
-                        console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
+                        // console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                         dataUpdate.aID = uploadAuctionResult.aID;
@@ -386,7 +379,6 @@ export default class ProductYahooService {
     static async startUploadProductByCalendar(user_id, yahoo_account_id, calendar_target_folder) {
         isCalendarUploading = true;
         try {
-            console.log(Date.now());
             console.log(' ############# Start Cron job Uploa Sản phẩm theo Calendar: ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
             let result = [];
             //Get day of month
@@ -400,17 +392,13 @@ export default class ProductYahooService {
                     if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
                         let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                         if (proxyResult.status === 'SUCCESS') {
+                            let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
                             let listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
                             for (let index = 0; index < listProduct.length; index++) {
                                 const productYahooData = listProduct[index];
                                 let dataUpdate = {};
 
-                                let isStopUpload = await ProductYahooService.checkProfitToStopUpload(
-                                    user_id,
-                                    yahoo_account_id,
-                                    productYahooData.import_price,
-                                    productYahooData.amazon_shipping_fee
-                                );
+                                let isStopUpload = await this.checkStopUpload(productYahooData, defaultSetting);
 
                                 if (isStopUpload) {
                                     let newResult = {
@@ -419,10 +407,9 @@ export default class ProductYahooService {
                                         product_aID: '',
                                         message: '低利益',
                                         created: Date.now(),
-                                        success: 'ERROR',
+                                        success: false,
                                     };
                                     result.push(newResult);
-                                    console.log(' ================ isStopUpload LOW PROFIT =============== ');
                                     continue;
                                 }
 
@@ -440,7 +427,7 @@ export default class ProductYahooService {
                                     proxyResult.data,
                                     descrionUpload
                                 );
-                                console.log(' ### startUploadProductByCalendar uploadAuctionResult: ', uploadAuctionResult);
+                                // console.log(' ### startUploadProductByCalendar uploadAuctionResult: ', uploadAuctionResult);
                                 dataUpdate.upload_status = uploadAuctionResult.status;
                                 dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                                 dataUpdate.aID = uploadAuctionResult.aID;
@@ -476,9 +463,7 @@ export default class ProductYahooService {
     }
 
     static async startReSubmitProduct(user_id, yahoo_account_id) {
-        console.log(Date.now());
-        console.log(' ######### Start Cron job ReSubmit - Upload lại sản phẩm ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
-        console.log(' ### yahoo_account_id: ', yahoo_account_id);
+        console.log(' ######### Start Cron job ReSubmit - Upload lại sản phẩm: ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
         // console.log(' ### new_list_target_folder: ', listAid);
 
         let result = [];
@@ -486,23 +471,22 @@ export default class ProductYahooService {
         if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
             if (proxyResult.status === 'SUCCESS') {
+                let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
                 let listProductFinished = await AuctionYahooService.getProductAuctionFinished(yahooAccount.cookie, proxyResult.data);
                 let listProductEnded = await AuctionYahooService.getProductAuctionEnded('', yahooAccount.cookie, proxyResult.data, true);
                 listProductFinished = [...listProductFinished, ...listProductEnded];
-                console.log(' ###### listProductFinished: ', listProductFinished);
+                for (const productAuction of listProductFinished) {
+                    let productYahooData = await ProductYahooAuctionService.findOne({ user_id, yahoo_account_id, aID: productAuction.aID });
 
-                for (const aID of listProductFinished) {
-                    let listProduct = await ProductYahooAuctionService.find({ user_id, yahoo_account_id, aID });
-                    for (let index = 0; index < listProduct.length; index++) {
-                        const productYahooData = listProduct[index];
+                    if (!productYahooData && productAuction.title) {
+                        let regex = productAuction.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+                        productYahooData = await ProductYahooAuctionService.findOne({
+                            product_yahoo_title: { $regex: regex },
+                        });
+                    }
+                    if (productYahooData && !productYahooData.is_relist) {
                         let dataUpdate = {};
-
-                        let isStopUpload = await ProductYahooService.checkProfitToStopUpload(
-                            user_id,
-                            yahoo_account_id,
-                            productYahooData.import_price,
-                            productYahooData.amazon_shipping_fee
-                        );
+                        let isStopUpload = await this.checkStopUpload(productYahooData, defaultSetting);
                         if (isStopUpload) {
                             let newResult = {
                                 product_created: productYahooData.created,
@@ -510,13 +494,11 @@ export default class ProductYahooService {
                                 product_aID: '',
                                 message: '低利益',
                                 created: Date.now(),
-                                success: 'ERROR',
+                                success: false,
                             };
                             result.push(newResult);
-                            console.log(' ================ isStopUpload LOW PROFIT =============== ');
                             continue;
                         }
-
                         let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
                             yahooAccount.user_id,
                             yahooAccount._id,
@@ -524,22 +506,24 @@ export default class ProductYahooService {
                             productYahooData.description,
                             productYahooData.note
                         );
-
                         let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(
                             yahooAccount.cookie,
                             productYahooData,
                             proxyResult.data,
                             descrionUpload
                         );
-                        console.log(' ###  uploadAuctionResult: ', uploadAuctionResult);
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                         dataUpdate.aID = uploadAuctionResult.aID;
                         if (uploadAuctionResult.status === 'SUCCESS') {
-                            dataUpdate.listing_status = 'UNDER_EXHIBITION';
-                            await ProductYahooAuctionService.create({ ...productYahooData._doc, ...dataUpdate });
+                            let newProductYahooAuction = {
+                                ...productYahooData._doc,
+                                ...dataUpdate,
+                                _id: null,
+                            };
+                            await ProductYahooAuctionService.create(newProductYahooAuction);
+                            await ProductYahooAuctionService.update(productYahooData._id, { is_relist: true });
                         }
-                        await ProductYahooService.update(productYahooData._id, dataUpdate);
                         let message = '出品に成功しました';
                         if (uploadAuctionResult.status === 'ERROR') {
                             message = uploadAuctionResult.statusMessage;
@@ -553,6 +537,8 @@ export default class ProductYahooService {
                             success: uploadAuctionResult.status === 'SUCCESS',
                         };
                         result.push(newResult);
+                    } else {
+                        console.log(' ############## Không tìm thấy sản phẩm hoặc sản phẩm đã relist: ', productAuction.aID);
                     }
                 }
             }
@@ -637,7 +623,6 @@ export default class ProductYahooService {
                 let amazon_shipping_fee = productYahoo.amazon_shipping_fee;
 
                 let dataCalculatorProduct = await this.calculatorPrice(productInfomationDefault, import_price, amazon_shipping_fee);
-                console.log(dataCalculatorProduct);
                 delete productInfomationDefault._id;
                 let dataUpdate = {
                     ...productYahoo._doc,

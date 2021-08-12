@@ -285,7 +285,7 @@
               <th width="120">画像</th>
               <th>Y！オーク商品の名前</th>
               <!-- <th class="text-center" width="60">期間<br />(日)<br /></th> -->
-              <th class="text-center" width="200">開始価格<br /></th>
+              <th class="text-center" width="100">開始価格<br /></th>
               <th class="text-center" width="100">即決価格<br /></th>
               <th class="text-center" width="70">送料<br /></th>
               <!-- <th class="text-center" width="70">出品停止<br />在庫数<br /></th> -->

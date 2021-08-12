@@ -178,7 +178,6 @@ export default class AuctionYahooService {
             let listImageOverlay = [];
             if (productData.image_overlay_index != null) {
                 let listImageOverlayOfAccountYahoo = await ImageInsertionService.get(productData.user_id, productData.yahoo_account_id);
-                console.log(listImageOverlayOfAccountYahoo);
                 if (productData.image_overlay_index > 0 && productData.image_overlay_index <= listImageOverlayOfAccountYahoo.images.length) {
                     listImageOverlayOfAccountYahoo = listImageOverlayOfAccountYahoo.images;
                     let imageOverlay = 'uploads/' + listImageOverlayOfAccountYahoo[productData.image_overlay_index - 1];

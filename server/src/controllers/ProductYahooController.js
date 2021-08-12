@@ -8,6 +8,7 @@ import AuctionYahooService from '../services/AuctionYahooService';
 import ProductYahooAuctionService from '../services/ProductYahooAuctionService';
 import CronHistoryModel from '../models/CronHistoryModel';
 import ProductGlobalSettingService from '../services/ProductGlobalSettingService';
+import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
 
 const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     let current_product = await ProductYahooService.findOne({ _id: dataUpdate._id });
@@ -49,7 +50,7 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         actual_profit,
         bid_or_buy_price,
     };
-    
+
     let result = await ProductYahooService.update(dataUpdate._id, dataUpdate);
     return result;
 };
@@ -59,7 +60,6 @@ export default class ProductYahooController {
         let response = new Response(res);
         try {
             let { listProduct } = req.body;
-            console.log(listProduct);
             if (listProduct) {
                 let listResult = [];
                 for (const data of listProduct) {
@@ -94,8 +94,27 @@ export default class ProductYahooController {
             if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
+
+                    let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
+
                     for (const product_id of ids) {
                         let productYahooData = await ProductYahooService.findOne({ _id: product_id });
+
+                        let isStopUpload = await ProductYahooService.checkStopUpload(productYahooData, defaultSetting);
+
+                        if (isStopUpload) {
+                            let newResult = {
+                                product_created: productYahooData.created,
+                                product_id: productYahooData._id,
+                                product_aID: '',
+                                message: '低利益',
+                                created: Date.now(),
+                                success: false,
+                            };
+                            results.push(newResult);
+                            continue;
+                        }
+
                         let dataUpdate = {};
                         let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
                             yahooAccount.user_id,
@@ -110,7 +129,7 @@ export default class ProductYahooController {
                             proxyResult.data,
                             descrionUpload
                         );
-                        console.log(' ###  uploadAuctionResult: ', uploadAuctionResult);
+
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                         dataUpdate.aID = uploadAuctionResult.aID;
@@ -233,8 +252,6 @@ export default class ProductYahooController {
             response.success200({ result });
         } catch (error) {
             console.log(error);
-            console.log(error.response);
-
             response.error500(error);
         }
     }
@@ -262,8 +279,6 @@ export default class ProductYahooController {
             response.success200({ result });
         } catch (error) {
             console.log(error);
-            console.log(error.response);
-
             response.error500(error);
         }
     }

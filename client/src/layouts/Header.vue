@@ -124,7 +124,6 @@ export default {
     },
     ...mapActions(["setLang"]),
     ConvertLang(lang) {
-      console.log(lang);
       this.setLang(lang);
     }
   }

@@ -10,6 +10,15 @@ export default class ProductYahooAuctionService {
             throw new Error('Product Yahoo Service-get: ' + error.message);
         }
     }
+    static async update(_id, data) {
+        try {
+            let newData = await ProductYahooAuction.findByIdAndUpdate(_id, data, { new: true });
+            return newData;
+        } catch (error) {
+            console.log(error);
+            throw new Error(error.message);
+        }
+    }
     static async create(data) {
         try {
             data._id = null;

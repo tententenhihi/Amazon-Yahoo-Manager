@@ -48,7 +48,6 @@ export default class AmazonController {
             if (!data.description) {
                 response.error400({ message: '説明は必須です' });
             }
-            console.log(data);
             if (req.files && data.image_length) {
                 for (let index = 0; index < data.image_length; index++) {
                     const element = req.files[`image-` + index];
@@ -59,7 +58,6 @@ export default class AmazonController {
             } else {
                 return response.error400({ message: '画像は必須です' });
             }
-            console.log(' ============== ');
             // profit
             let infoProfitDefault = await ProductInfomationDefaultService.findOne({ yahoo_account_id: data.yahoo_account_id });
             // giá gốc
