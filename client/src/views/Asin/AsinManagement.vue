@@ -54,7 +54,11 @@
           role="tabpanel"
           aria-labelledby="history-tab"
         >
-          <History :listAsin="listAsin" :key="keyUpdate" />
+          <History
+            @deleteAsin="deleteAsin"
+            :listAsin="listAsin"
+            :key="keyUpdate"
+          />
         </div>
         <div
           class="tab-pane fade"
@@ -109,6 +113,12 @@ export default {
     })
   },
   methods: {
+    deleteAsin(data) {
+      let query_keys = data.query_keys;
+      this.listAsin = this.listAsin.filter(
+        item => !query_keys.includes(item.query_key)
+      );
+    },
     pushNewAsin(newListAsin) {
       this.listAsin = [newListAsin, ...this.listAsin];
       this.keyUpdate++;

@@ -8,5 +8,7 @@ AsinRouter.route('/get-blacklist').get(AsinAmazonController.getBlackList);
 AsinRouter.route('/add').post(AsinAmazonController.add);
 AsinRouter.route('/update').post(AsinAmazonController.update);
 AsinRouter.route('/delete').post(AsinAmazonController.delete);
+AsinRouter.route('/delete-multi').post(AsinAmazonController.deleteMulti);
+
 
 export default AsinRouter;

@@ -240,7 +240,7 @@
                     中古・その他を選んだ場合、必ず上記に状態を全角15文字以内で記載して下さい。
                   </div>
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                   <div class="col-4 text-align-end">値下げ交渉 :</div>
                   <div class="col-8">
                     <select class="form-control" v-model="product.offer">
@@ -248,7 +248,7 @@
                       <option value="yes">あり</option>
                     </select>
                   </div>
-                </div>
+                </div> -->
                 <div class="row">
                   <div class="col-4 text-align-end">個数 :</div>
                   <div class="col-8">
@@ -648,7 +648,7 @@
               </div>
             </transition>
 
-            <div class="row item-info">
+            <!-- <div class="row item-info">
               <span @click="isShowChargedOption = !isShowChargedOption"
                 >::: 有料オプション :::</span
               >
@@ -735,7 +735,7 @@
                   </div>
                 </div>
               </div>
-            </transition>
+            </transition> -->
           </div>
         </div>
         <div class="row mt-20">

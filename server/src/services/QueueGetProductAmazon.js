@@ -6,9 +6,11 @@ import ProductYahooService from './ProductYahooService';
 import KeepaService from './KeepaService';
 
 let queueGetInfoProduct = null;
-const getProductByAsin = async (listAsinModel, cb) => {
+const getProductByAsin = async (dataInput, cb) => {
     try {
-        console.log(' ==== Start getProductByAsin ==== ');
+        let listAsinModel = dataInput.newAsin;
+        let isUpdateAmazonProduct = dataInput.isUpdateAmazonProduct;
+
         let newListAsinModel = [];
         let listAsin = [];
         for (let asinModel of listAsinModel) {
@@ -20,6 +22,11 @@ const getProductByAsin = async (listAsinModel, cb) => {
                 asinModel.statusMessage = 'ブラックリスト';
                 await asinModel.save();
             } else {
+                if (isUpdateAmazonProduct) {
+                    listAsin.push(asinModel.code);
+                    newListAsinModel.push(asinModel);
+                    continue;
+                }
                 let productAmazon = await ProductAmazonService.findOne({ asin: asinModel.code });
                 if (productAmazon) {
                     await ProductYahooService.createFromAmazonProduct(productAmazon, asinModel.idUser, asinModel.yahoo_account_id);
@@ -49,7 +56,16 @@ const getProductByAsin = async (listAsinModel, cb) => {
             if (result.status === 'SUCCESS') {
                 for (const itemData of result.data) {
                     if (itemData.status === 'SUCCESS') {
-                        await ProductAmazonService.create(itemData.data);
+                        if (isUpdateAmazonProduct) {
+                            let checkUpdate = await ProductAmazonService.findOne({ asin: itemData.data.asin });
+                            if (checkUpdate) {
+                                await ProductAmazonService.update(checkUpdate._id, itemData.data);
+                            } else {
+                                await ProductAmazonService.create(itemData.data);
+                            }
+                        } else {
+                            await ProductAmazonService.create(itemData.data);
+                        }
                         await ProductYahooService.createFromAmazonProduct(
                             itemData.data,
                             newListAsinModel[index].idUser,
@@ -115,6 +131,7 @@ const getProductByAsin = async (listAsinModel, cb) => {
         console.log(' ==== End ====');
         cb(null, listAsinModel);
     } catch (error) {
+        console.log(error);
         cb({ error });
     }
 };

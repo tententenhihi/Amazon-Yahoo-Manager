@@ -12,6 +12,7 @@ import UserService from '../services/UserService';
 import KeepaService from '../services/KeepaService';
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
 import moment from 'moment';
+import AsinAmazonModel from '../models/AsinAmazonModel';
 
 let listCronJob = [];
 const CronJob = require('cron').CronJob;
@@ -20,10 +21,19 @@ const CronTime = require('cron').CronTime;
 export default class CronJobService {
     static async startCron() {
         CronJobService.startUploadProductYahoo();
-        // CronJobService.startGetProductYahoo();
-        // cron.schedule('*/5 * * * *', async () => {
-        //     CronJobService.startGetProductYahoo();
-        // });
+        cron.schedule('0 0 0 1 * *', async () => {
+            console.log(' ########### CRON JOB Delete Asin ########### ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
+            let listAsin = await AsinAmazonModel.find();
+            for (const asin of listAsin) {
+                let dateAsin = new Date(asin.created);
+                let now = new Date();
+                dateAsin.setDate(30);
+                if (dateAsin < now) {
+                    await AsinAmazonModel.deleteOne({ _id: asin._id });
+                }
+            }
+        });
+
         cron.schedule('0 0 0 * * *', async () => {
             CronJobService.startGetPointAuctionOfAccount();
             CronJobService.resetYahooAccount();

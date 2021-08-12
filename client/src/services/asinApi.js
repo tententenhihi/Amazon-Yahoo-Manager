@@ -19,5 +19,8 @@ export default {
   },
   delete(credentials) {
     return Api.post("/api/v1/amazon/asin/delete", credentials);
+  },
+  deleteMulti(credentials) {
+    return Api.post("/api/v1/amazon/asin/delete-multi", credentials);
   }
 };

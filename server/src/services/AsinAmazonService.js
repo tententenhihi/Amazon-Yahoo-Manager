@@ -23,6 +23,7 @@ export default class AsinAmazonService {
                     item.yahoo_account_id = element[0].yahoo_account_id;
                     item.asins = element;
                     item.countAsin = element.length;
+                    item.query_key = (element.length > 0 && element[0].query_key) || 0;
                     for (const ele of element) {
                         if (ele.status === 'SUCCESS') {
                             item.countAsinGetProductSuccess++;
@@ -64,6 +65,16 @@ export default class AsinAmazonService {
     static async addMany(listData) {
         try {
             let newAsin = await AsinAmazonModel.insertMany(listData);
+            return newAsin;
+        } catch (error) {
+            console.log(error);
+            throw new Error(' Error AsinAmazonService-add: ' + error.message);
+        }
+    }
+
+    static async deleteMany(filter) {
+        try {
+            let newAsin = await AsinAmazonModel.deleteMany(filter);
             return newAsin;
         } catch (error) {
             console.log(error);

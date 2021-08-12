@@ -556,7 +556,7 @@ export default class ProductYahooService {
                 asin: productAmazon.asin,
             });
         }
-        let cate_yahoo = cateAmazon.yahoo_cate_id || '0';
+        let cate_yahoo = cateAmazon.yahoo_cate_id || '26395';
 
         // Cắt title
         let title = productAmazon.name;

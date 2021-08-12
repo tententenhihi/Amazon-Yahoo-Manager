@@ -35,6 +35,19 @@ const getData = async (listAsin) => {
                     let count = 0;
                     let images = [];
                     let description = '';
+                    let title = '';
+                    if (productData.title) {
+                        title = productData.title;
+                        if (productData.color) {
+                            title = productData.color + ' ' + title;
+                        }
+                        if (productData.size) {
+                            title = productData.size + ' ' + title;
+                        }
+                    }
+                    if (title.length > 65) {
+                        title = title.substring(0, 65);
+                    }
                     if (productData.liveOffersOrder && productData.liveOffersOrder.length > 0 && productData.offers && productData.offers.length > 0) {
                         let liveOffersOrder = productData.liveOffersOrder[0];
                         let offer = productData.offers[liveOffersOrder];
@@ -48,22 +61,31 @@ const getData = async (listAsin) => {
                     if (productData.imagesCSV) {
                         images = productData.imagesCSV.split(',').map((item) => 'https://images-na.ssl-images-amazon.com/images/I/' + item);
                     }
-                    if (productData.description) {
-                        description = productData.description.replace(/\n+/g, '\n');
-                    } else {
+                    if (productData.features) {
                         if (Array.isArray(productData.features)) {
                             productData.features.map((item) => {
-                                description += item + '\n';
+                                description += '・' + item + '\n';
                             });
                         } else {
                             description = productData.features;
+                            description = productData.features.replace(/\n+/g, '\n');
+                            description = description
+                                .split('\n')
+                                .map((item) => '・' + item)
+                                .join('\n');
                         }
+                    } else {
+                        description = productData.description.replace(/\n+/g, '\n');
+                        description = description
+                            .split('\n')
+                            .map((item) => '・' + item)
+                            .join('\n');
                     }
                     result = {
                         asin: productData.asin,
                         data: {
                             asin: productData.asin,
-                            name: productData.title,
+                            name: title,
                             category_id: productData.categories[0],
                             description,
                             images,

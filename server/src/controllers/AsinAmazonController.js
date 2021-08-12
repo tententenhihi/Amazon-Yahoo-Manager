@@ -6,6 +6,23 @@ import Utils from '../utils/Utils';
 import AccountYahooService from '../services/AccountYahooService';
 
 export default class AsinAmazonController {
+    static async deleteMulti(req, res) {
+        let response = new Response(res);
+        try {
+            let user = req.user;
+            if (req.body.query_keys) {
+                for (const query_key of req.body.query_keys) {
+                    let result = await AsinAmazonService.deleteMany({ query_key }, user._id);
+                }
+                return response.success200({});
+            }
+            return response.error400({ message: 'データエラー' });
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
+
     static async getBlackList(req, res) {
         let response = new Response(res);
         try {
@@ -49,6 +66,8 @@ export default class AsinAmazonController {
             // let groupId = req.body.groupId;
             let type = req.body.type;
             let yahoo_account_id = req.body.yahoo_account_id;
+            let checkUpdateAsin = req.body.checkUpdateAsin;
+
             if (!type) {
                 type = 'ASIN';
             }
@@ -72,7 +91,10 @@ export default class AsinAmazonController {
                     listAsinNew.push(newAsinData);
                 }
                 let newAsin = await AsinAmazonService.addMany(listAsinNew);
-                QueueGetProductAmazon.addNew(newAsin);
+                QueueGetProductAmazon.addNew({
+                    isUpdateAmazonProduct: checkUpdateAsin,
+                    newAsin,
+                });
                 let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
                 return response.success200({
                     newAsin: {
