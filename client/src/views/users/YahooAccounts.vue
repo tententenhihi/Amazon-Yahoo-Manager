@@ -148,11 +148,16 @@
           <input
             v-model="is_lock"
             type="checkbox"
+            style="cursor: pointer; width: 15px; height: 15px;"
             class="mr-2"
             name="is_lock"
             id="is_lock"
           />
-          <label class="font-weight-bold" @click="is_lock = !is_lock">
+          <label
+            class="font-weight-bold"
+            style="cursor: pointer"
+            @click="is_lock = !is_lock"
+          >
             取引のみに使用中
           </label>
         </div>

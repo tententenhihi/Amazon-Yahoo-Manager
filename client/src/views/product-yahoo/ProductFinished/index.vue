@@ -38,7 +38,7 @@
           @click="$refs.modalDeleteProduct.openModal()"
           class="btn btn-danger"
         >
-          削除
+          <i class="far fa-trash-alt mr-1"></i> 削除
         </button>
         <button class="btn btn-primary " @click="refreshDataYahoo()">
           <i class="fa fa-sync-alt" style="font-size: 12px"></i>
@@ -66,6 +66,7 @@
                   class="checkall"
                   type="checkbox"
                   v-model="isCheckAllProduct"
+                  style="cursor: pointer; width: 15px; height: 15px;"
                 />
               </th>
               <th class="text-center" width="120">オークションID</th>
@@ -91,6 +92,7 @@
               <td class="text-center" width="50">
                 <input
                   type="checkbox"
+                  style="cursor: pointer; width: 15px; height: 15px;"
                   :id="product._id"
                   :disabled="!!product.idBuyer"
                   v-model="selectedProduct"
@@ -175,7 +177,7 @@
                   class="btn btn-md btn-danger mb-1 mr-1"
                   @click="deleteProduct(product)"
                 >
-                  削除
+                  <i class="far fa-trash-alt mr-1"></i> 削除
                 </button>
               </td>
             </tr>
@@ -300,18 +302,15 @@ export default {
       return "-";
     },
     getExpectInCome(product) {
-      let yahooFee = product.price_end * (product.yahooAuctionFee / 100);
-      let income = product.price_end + product.ship_fee1 - yahooFee;
-      income = income * product.product_buy_count;
+      let income = product.amount_received;
       if (income) {
+        income = income * product.product_buy_count;
         return income.toLocaleString("ja-JP") + "円";
       }
       return "-";
     },
     getPersentProfit(product) {
-      let profitExpect =
-        product.price_end + product.ship_fee1 - product.import_price;
-      let persent = profitExpect / (product.price_end + product.ship_fee1);
+      let persent = product.actual_profit / product.price;
       persent = parseFloat(persent.toFixed(2)) * 100;
       persent = parseFloat(persent).toFixed(0);
       if (persent) {
@@ -320,7 +319,7 @@ export default {
       return "-";
     },
     getYahooFee(product) {
-      let yahooFee = product.price_end * (product.yahooAuctionFee / 100);
+      let yahooFee = product.price_end * 0.1;
       if (yahooFee) {
         yahooFee = yahooFee * product.product_buy_count;
         return yahooFee.toLocaleString("ja-JP") + "円";
@@ -328,7 +327,7 @@ export default {
       return "-";
     },
     getPriceOriginal(product) {
-      let priceOriginal = (product.import_price += product.amazon_shipping_fee);
+      let priceOriginal = product.import_price + product.amazon_shipping_fee;
       if (priceOriginal) {
         priceOriginal = priceOriginal * product.product_buy_count;
         return priceOriginal.toLocaleString("ja-JP") + "円";
@@ -336,10 +335,9 @@ export default {
       return "-";
     },
     getProfitExpect(product) {
-      let profit =
-        (product.price_end + product.ship_fee1 - product.import_price) *
-        product.product_buy_count;
+      let profit = product.actual_profit;
       if (profit) {
+        profit = profit * product.product_buy_count;
         return profit.toLocaleString("ja-JP") + "円";
       }
       return "-";
@@ -439,6 +437,9 @@ export default {
               if (this.tableData.length === 0) {
                 this.page -= 1;
               }
+              this.selectedProduct = this.selectedProduct.filter(
+                item => item._id !== product._id
+              );
               self.$swal.fire(
                 "削除しました！",
                 "商品が削除されました。",
@@ -449,9 +450,11 @@ export default {
         });
     },
     async onDeleteMultipleProduct() {
+      console.log();
       let params = {
         ids: this.selectedProduct.map(item => item._id)
       };
+      console.log(' ##### params: ', params);
       let res = await ProductYahooFinishedApi.deleteMultiple(params);
       if (res && res.status === 200) {
         this.selectedProduct.forEach(item => {

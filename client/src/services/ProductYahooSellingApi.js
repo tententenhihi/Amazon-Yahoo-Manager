@@ -6,18 +6,22 @@ export default {
   },
   setNote(credentials) {
     return Api.post(`${prefix}/set-note`, credentials, {
-      timeout: 60 * 1000
+      timeout: 15 * 60 * 1000
     });
   },
   delete(id) {
-    return Api.post(`${prefix}/delete/${id}`);
+    return Api.post(`${prefix}/delete/${id}`, {
+      timeout: 15 * 60 * 1000
+    });
   },
   deleteMultiple(ids) {
-    return Api.post(`${prefix}/delete-multiple`, ids);
+    return Api.post(`${prefix}/delete-multiple`, ids, {
+      timeout: 15 * 60 * 1000
+    });
   },
   refreshDataYahoo(credentials) {
     return Api.post(`${prefix}/refresh-data-yahoo`, credentials, {
-      timeout: 5 * 60 * 1000
+      timeout: 15 * 60 * 1000
     });
-  },
+  }
 };

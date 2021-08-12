@@ -74,7 +74,7 @@
           <thead class="thead-purple">
             <tr>
               <th class="text-center">
-                <input class="checkall" type="checkbox" />
+                <input class="checkall" type="checkbox" style="cursor: pointer; width: 15px; height: 15px;" />
               </th>
               <th class="text-center" width="120">オークションID</th>
               <th class="text-center" width="110">出品画像</th>
@@ -87,19 +87,19 @@
               <th class="text-center">状態</th>
               <th width="150">メモ</th>
               <th class="text-center" width="100">予定受取金額</th>
-              <th width="200">発送先</th>
-              <th width="200">仕入れ価格</th>
-              <th width="200">想定利益</th>
-              <th width="200">落札手数料</th>
-              <th width="200">利益率</th>
-              <th width="200">予定送料</th>
-              <th width="100"></th>
+              <th width="110" class="text-center">発送先</th>
+              <th width="120" class="text-center">仕入れ価格</th>
+              <th width="110" class="text-center">想定利益</th>
+              <th width="110" class="text-center">落札手数料</th>
+              <th width="110" class="text-center">利益率</th>
+              <th width="110" class="text-center">予定送料</th>
+              <th width="110"></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(product, index) in tableData" :key="index">
               <td class="text-center" width="50">
-                <input type="checkbox" name="" id="" />
+                <input type="checkbox" name="" id="" style="cursor: pointer; width: 15px; height: 15px;"/>
               </td>
               <td class="text-center">{{ product.aID }}</td>
               <td class="text-center" width="100">
@@ -177,16 +177,16 @@
               </td>
               <td class="text-center">{{ getExpectInCome(product) }}</td>
 
-              <td v-html="getShipInfo(product)"></td>
+              <td class="text-center" v-html="getShipInfo(product)"></td>
 
-              <td>{{ getPriceOriginal(product) }}</td>
-              <td>{{ getProfitExpect(product) }}</td>
+              <td class="text-center">{{ getPriceOriginal(product) }}</td>
+              <td class="text-center">{{ getProfitExpect(product) }}</td>
 
-              <td>{{ getYahooFee(product) }}</td>
+              <td class="text-center">{{ getYahooFee(product) }}</td>
 
-              <td>{{ getPersentProfit(product) }}</td>
+              <td class="text-center">{{ getPersentProfit(product) }}</td>
 
-              <td>
+              <td class="text-center">
                 {{ getExpectShiping(product) }}
               </td>
 
@@ -331,18 +331,16 @@ export default {
       return "-";
     },
     getPersentProfit(product) {
-      let profitExpect =
-        product.price_end + product.ship_fee1 - product.import_price;
-      let persent = profitExpect / (product.price_end + product.ship_fee1);
-      persent = parseFloat(persent.toFixed(2)) * 100;
-      persent = parseFloat(persent).toFixed(0);
+      let persent = product.actual_profit / product.price;
       if (persent) {
+        persent = parseFloat(persent.toFixed(2)) * 100;
+        persent = parseFloat(persent).toFixed(0);
         return persent + "%";
       }
       return "-";
     },
     getYahooFee(product) {
-      let yahooFee = product.price_end * (product.yahooAuctionFee / 100);
+      let yahooFee = product.price_end * 0.1;
       if (yahooFee) {
         yahooFee = yahooFee * product.product_buy_count;
         return yahooFee.toLocaleString("ja-JP") + "円";
@@ -350,7 +348,7 @@ export default {
       return "-";
     },
     getPriceOriginal(product) {
-      let priceOriginal = (product.import_price += product.amazon_shipping_fee);
+      let priceOriginal = product.import_price + product.amazon_shipping_fee;
       if (priceOriginal) {
         priceOriginal = priceOriginal * product.product_buy_count;
         return priceOriginal.toLocaleString("ja-JP") + "円";
@@ -358,10 +356,9 @@ export default {
       return "-";
     },
     getProfitExpect(product) {
-      let profit =
-        (product.price_end + product.ship_fee1 - product.import_price) *
-        product.product_buy_count;
+      let profit = product.actual_profit;
       if (profit) {
+        profit = profit * product.product_buy_count;
         return profit.toLocaleString("ja-JP") + "円";
       }
       return "-";

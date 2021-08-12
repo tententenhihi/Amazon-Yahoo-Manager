@@ -22,7 +22,6 @@ export default class ProductYahooEndedService {
                     // tạo , update product
                     for (let j = 0; j < listProductEnded.length; j++) {
                         const product = listProductEnded[j];
-                        console.log(product);
                         //Check Xem có trong db chưa.
                         let productExisted = listProductEndedInDB.find((item) => item.aID === product.aID);
                         //chưa có thì tạo mới.

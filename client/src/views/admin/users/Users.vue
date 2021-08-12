@@ -134,6 +134,7 @@
             <div class="form-check">
               <input
                 type="checkbox"
+                style="cursor: pointer; width: 15px; height: 15px;"
                 v-model="isResetPassword"
                 class="form-check-input"
                 id="is-change-pass"

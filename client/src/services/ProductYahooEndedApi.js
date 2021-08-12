@@ -37,7 +37,7 @@ export default {
   },
   refreshDataYahoo(credentials) {
     return Api.post(`${prefix}/refresh-data-yahoo`, credentials, {
-      timeout: 5 * 60 * 1000
+      timeout: 15 * 60 * 1000
     });
   }
 };

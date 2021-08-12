@@ -2,7 +2,11 @@
   <div class="wrapper-content">
     <div class="box-header">
       <i class="fa fa-list mr-2"></i>Y!オーク取扱商品管理
-      <button v-if="!adminViewUser" class="btn btn-add-account" @click="goToFormProduct(0)">
+      <button
+        v-if="!adminViewUser"
+        class="btn btn-add-account"
+        @click="goToFormProduct(0)"
+      >
         <i class="fa fa-plus"></i> 新規追加
       </button>
     </div>
@@ -279,8 +283,12 @@
         <table class="table  table-hover" style="width: 100%">
           <thead class="thead-purple">
             <tr>
-              <th>
-                <input type="checkbox" v-model="isCheckAllProduct" />
+              <th class="text-center">
+                <input
+                  type="checkbox"
+                  v-model="isCheckAllProduct"
+                  style="cursor: pointer; width: 15px; height: 15px;"
+                />
               </th>
               <th width="120">画像</th>
               <th>Y！オーク商品の名前</th>
@@ -310,10 +318,10 @@
               <th class="text-center" width="70">
                 ヤフー<br />カテゴリ<br />ID<br />(出品予定)
               </th>
-              <th width="120">
+              <th class="text-center" width="120">
                 紐付け情報
               </th>
-              <th width="120">
+              <th width="120" class="text-center">
                 備考
               </th>
               <th width="120">
@@ -325,12 +333,18 @@
           <tbody>
             <tr v-for="(product, index) in tableData" :key="product._id">
               <td class="text-center" width="50">
+                <!-- <div
+                  style="cursor: pointer; height: 50px; display: flex; justify-content: center; align-items: center;"
+                  @click="$refs.checkBox.click()"
+                > -->
                 <input
                   type="checkbox"
+                  style="cursor: pointer; width: 15px; height: 15px;"
                   v-model="selectedProducts"
                   :value="product"
                   :id="product._id"
                 />
+                <!-- </div> -->
               </td>
               <td width="120">
                 <img
@@ -692,7 +706,10 @@
       </template>
       <template v-slot:button>
         <div class="button-group">
-          <button class="btn btn-primary mr-1 px-4" @click="onSaveEditProduct()">
+          <button
+            class="btn btn-primary mr-1 px-4"
+            @click="onSaveEditProduct()"
+          >
             保存
           </button>
           <button
@@ -892,7 +909,6 @@ export default {
       selectedYahooAccount: "getSelectedYahooAccount",
       userInfo: "getUserInfo",
       adminViewUser: "getAdminViewUser"
-
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
@@ -978,10 +994,20 @@ export default {
     async onUploadFileCSV(event) {
       let files = event.target.files;
       let listProduct = [];
-      for (const file of files) {
-        let data = await this.readFileText(file);
-        listProduct = [...listProduct, ...data];
+
+      const file = files[0];
+
+      if (file.type !== "application/vnd.ms-excel") {
+        return this.$swal.fire({
+          icon: "error",
+          title: "エラー",
+          text:
+            "CSVファイルしかアップ出来ません。CSVファイルを選択してください。!"
+        });
       }
+
+      let data = await this.readFileText(file);
+      listProduct = [...listProduct, ...data];
       if (listProduct.length > 0) {
         let res = await ProductYahooApi.updateDataByCsv({ listProduct });
         if (res && res.status === 200) {
@@ -1109,6 +1135,10 @@ export default {
               if (this.tableData.length === 0) {
                 this.page -= 1;
               }
+
+              this.selectedProducts = this.selectedProducts.filter(
+                item => item._id !== product._id
+              );
               self.$swal.fire(
                 "削除しました！",
                 "商品が削除されました。",

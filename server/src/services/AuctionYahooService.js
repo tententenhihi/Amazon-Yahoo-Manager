@@ -604,27 +604,30 @@ export default class AuctionYahooService {
 
                 product.message_list = listMessage;
                 product.ship_info = shipInfo;
+                
             }
+
             // Get count buyer
-            for (let i = 0; i < listProduct.length; i++) {
-                let product = listProduct[i];
-                let url = `https://page.auctions.yahoo.co.jp/jp/auction/${product.aID}`;
-                response = await axios.get(url, {
-                    headers: {
-                        cookie,
-                    },
-                    proxy: proxyConfig,
-                });
-                $ = cheerio.load(response.data);
-                //message
-                let buyer_count = $('#l-sub > div.ProductInformation > ul > li:nth-child(1) > div > ul > li:nth-child(1) > dl > dd').text();
-                if (buyer_count) {
-                    buyer_count = buyer_count.replace(/\D+/g, '');
-                    if (buyer_count) {
-                        product.buyer_count = buyer_count;
-                    }
-                }
-            }
+            // for (let i = 0; i < listProduct.length; i++) {
+            //     let product = listProduct[i];
+            //     let url = `https://page.auctions.yahoo.co.jp/jp/auction/${product.aID}`;
+            //     response = await axios.get(url, {
+            //         headers: {
+            //             cookie,
+            //         },
+            //         proxy: proxyConfig,
+            //     });
+            //     $ = cheerio.load(response.data);
+            //     //message
+            //     let buyer_count = $('#l-sub > div.ProductInformation > ul > li:nth-child(1) > div > ul > li:nth-child(1) > dl > dd').text();
+            //     if (buyer_count) {
+            //         buyer_count = buyer_count.replace(/\D+/g, '');
+            //         if (buyer_count) {
+            //             product.buyer_count = buyer_count;
+            //         }
+            //     }
+            //     console.log(' ################## buyer_count: ', buyer_count);
+            // }
         } catch (error) {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
         }

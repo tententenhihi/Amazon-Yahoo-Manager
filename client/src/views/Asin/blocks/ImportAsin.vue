@@ -26,7 +26,7 @@
           hidden
           type="file"
           name=""
-          accept=".txt"
+          accept=".csv"
           id=""
           @change="onSelectFileCSV"
         />
@@ -77,11 +77,17 @@ export default {
     async onSelectFileCSV(event) {
       try {
         let files = event.target.files;
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          this.asinString = await this.readFileText(file);
+        const file = files[0];
+        if (file.type !== "application/vnd.ms-excel") {
+          return this.$swal.fire({
+            icon: "error",
+            title: "エラー",
+            text:
+              "CSVファイルしかアップ出来ません。CSVファイルを選択してください。!"
+          });
         }
-        event.target.value = "";
+        console.log(file);
+        this.asinString = await this.readFileText(file);
       } catch (error) {
         this.$swal.fire({
           icon: "error",
@@ -89,6 +95,7 @@ export default {
           text: error.message
         });
       }
+      event.target.value = "";
     },
     async onClickAddAsin() {
       try {

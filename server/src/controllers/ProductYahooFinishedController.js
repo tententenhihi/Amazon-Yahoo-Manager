@@ -67,6 +67,8 @@ export default class ProductYahooFinishedController {
             const { ids } = req.body;
             let listaID = [];
             let yahoo_account_id = null;
+            console.log(' ######### ', ids);
+
             for (let index = 0; index < ids.length; index++) {
                 let productD = await ProductYahooFinishedService.findById(ids[index]);
                 yahoo_account_id = productD.yahoo_account_id;
@@ -97,6 +99,7 @@ export default class ProductYahooFinishedController {
 
             return response.success200({ success: true });
         } catch (error) {
+            console.log(error);
             response.error500(error);
         }
     }

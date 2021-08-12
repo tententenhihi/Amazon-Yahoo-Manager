@@ -7,7 +7,7 @@ const get = async (req, res) => {
     try {
         let user = req.user;
         let { yahoo_account_id } = req.body;
-        let crons = await CronHistoryModel.find({ user_id: user._id, yahoo_account_id });
+        let crons = await CronHistoryModel.find({ user_id: user._id, yahoo_account_id }).sort({ created: -1});
         return response.success200({ crons });
     } catch (error) {
         console.log(error);
