@@ -92,6 +92,7 @@
                     <i class="fa fa-trash"></i> 削除
                   </button>
                 </td>
+                <td v-else></td>
               </tr>
             </tbody>
           </table>

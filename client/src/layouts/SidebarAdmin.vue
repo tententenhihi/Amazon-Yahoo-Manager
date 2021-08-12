@@ -83,6 +83,7 @@ export default {
   methods: {
     onClickLogout() {
       this.$store.dispatch("setUser", null);
+      this.$store.dispatch("logout");
       this.$router.push({ path: "/login" });
     },
   }
