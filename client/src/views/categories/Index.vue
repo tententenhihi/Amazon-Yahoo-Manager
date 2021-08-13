@@ -53,7 +53,7 @@
                   />
                 </td>
                 <td>{{ category.asin }}</td>
-                <td v-if="!adminViewUser">
+                <td>
                   <button
                     class="btn btn-md btn-success"
                     @click="onUpdateCategory(category)"

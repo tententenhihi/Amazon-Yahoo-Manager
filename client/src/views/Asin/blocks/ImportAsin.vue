@@ -20,7 +20,6 @@
       <div
         class="col-md-4 mt-10"
         style="place-self: flex-end;"
-        v-if="!adminViewUser"
       >
         <div style="display: flex; align-items: center;margin-bottom:10px">
           <input

@@ -93,7 +93,7 @@
           <button class="btn btn-primary mt-20" @click="addRating">
             評価を送信
           </button>
-          <button class="btn btn-info mt-20" @click="backToList">後ろ</button>
+          <button class="btn btn-info mt-20" @click="backToList">もどる</button>
         </ValidationObserver>
       </div>
     </div>
@@ -190,7 +190,7 @@ export default {
       }
     },
     backToList() {
-      this.$router.push({ name: "YahooAuctionTrade" });
+      this.$router.go(-1);
     }
   }
 };

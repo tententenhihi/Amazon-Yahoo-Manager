@@ -41,7 +41,7 @@
             </div>
           </div>
         </div>
-        <div class="row mt-20 justify-content-center" v-if="!adminViewUser">
+        <div class="row mt-20 justify-content-center">
           <button
             class="btn btn-success mb-1 mr-1 px-4"
             @click="onSaveImages()"

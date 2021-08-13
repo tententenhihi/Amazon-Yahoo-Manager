@@ -37,6 +37,61 @@
             role="tabpanel"
             aria-labelledby="auto-generate-tab"
           >
+            <!-- <table>
+              <tr>
+                <td>
+                  <span>利益 :(円)を割ったら出品停止 :</span>
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    class="form-control"
+                    v-model="product.profit_stop"
+                  />
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <span>
+                    Amazonで設定する　送料一律（円）<br />取得価格が出品者だった場合に自動で割り当てておく送料
+                  </span>
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    class="form-control"
+                    v-model="product.yahoo_auction_shipping"
+                  />
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>利益設定:</td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <span>
+                    レンジ１ :
+                  </span>
+                </td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </table> -->
+
             <div class="form-row mt-20">
               <div class="col-lg-9 col-12">
                 <transition name="fade">
@@ -55,8 +110,8 @@
                     </div>
                     <div class="row">
                       <div class="col-5 text-align-end mt-2">
-                        Amazonで設定する　送料一律
-                        （円）取得価格が出品者だった場合に自動で割り当てておく送料
+                        Amazonで設定する　送料一律（円）<br />
+                        取得価格が出品者だった場合に自動で割り当てておく送料
                         <small>(円)</small> :
                       </div>
                       <div class="col-3">
@@ -79,7 +134,7 @@
                           レンジ１ :
                         </div>
                         <div class="col-7">
-                          <div class="row m-0">
+                          <div class="row m-0 align-items-center">
                             <input
                               type="number"
                               style="width: 150px"
@@ -92,6 +147,11 @@
                               class="form-control"
                               v-model="product.list_profit[0].persent_profit"
                             />
+                            <span class="ml-2">
+                              10％とすると、10%の利益率で計算（%）
+                              <br />
+                              \500とすると、500円の利益で計算（\）
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -114,6 +174,10 @@
                               class="form-control"
                               v-model="product.list_profit[1].persent_profit"
                             />
+                            <span class="ml-2">
+                              自由に数字を変えてください。
+                              <br />また、レンジごとに、円、％と分けられますか？
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -126,15 +190,20 @@
                             <input
                               type="number"
                               style="width: 150px"
-                              class="form-control mr-3"
+                              class="form-control mr-3 my-1"
                               v-model="product.list_profit[2].price"
                             />
                             <input
                               style="width: 150px"
                               type="text"
-                              class="form-control"
+                              class="form-control my-1"
                               v-model="product.list_profit[2].persent_profit"
                             />
+                            <span class="ml-2">
+                              たとえば、<br />
+                              1～1000円の仕入れ額の商品の場合　20％<br />
+                              1001円から2000円の仕入れ額の商品の場合　500円<br />
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -202,7 +271,7 @@
                 </transition>
               </div>
             </div>
-            <div class="row mt-20 justify-content-center" v-if="!adminViewUser">
+            <div class="row mt-20 justify-content-center">
               <button
                 class="btn btn-success mb-1 mr-1"
                 @click="onSaveProduct(1)"
@@ -266,7 +335,7 @@
                         中古・その他を選んだ場合、必ず上記に状態を全角15文字以内で記載して下さい。
                       </div>
                     </div>
-                    
+
                     <div class="row">
                       <div class="col-4 text-align-end">個数 :</div>
                       <div class="col-8">
@@ -745,7 +814,7 @@
                 </transition> -->
               </div>
             </div>
-            <div class="row mt-20 justify-content-center" v-if="!adminViewUser">
+            <div class="row mt-20 justify-content-center">
               <button
                 class="btn btn-success mb-1 mr-1"
                 @click="onSaveProduct()"

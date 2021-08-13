@@ -15,19 +15,19 @@ var AuctionPublicSetting = new Schema({
         type: Boolean,
         default: false,
     },
-    new_list_target_folder:{
+    new_list_target_folder: {
         type: Array,
         default: [],
     },
-    new_list_start_time_hour:{
+    new_list_start_time_hour: {
         type: Number,
         default: 0,
     },
-    new_list_start_time_minute:{
+    new_list_start_time_minute: {
         type: Number,
         default: 0,
     },
-    new_list_interval_per_day:{
+    new_list_interval_per_day: {
         type: Boolean,
         default: true,
     },
@@ -35,48 +35,47 @@ var AuctionPublicSetting = new Schema({
         type: Number,
         default: 1,
     },
-    new_list_day_of_week:{
+    new_list_day_of_week: {
         type: Number,
         default: 1,
     },
-    new_list_process_of_skipped_items:{
+    new_list_process_of_skipped_items: {
         type: Number,
         default: '',
     },
-    relist_auto:{
+    relist_auto: {
         type: Boolean,
         default: false,
     },
-    relist_start_time_hour:{
+    relist_start_time_hour: {
         type: Number,
         default: 0,
     },
-    relist_start_time_minute:{
+    relist_start_time_minute: {
         type: Number,
         default: 0,
     },
-    calendar_list_setting:{
+    calendar_list_setting: {
         type: Boolean,
         default: false,
     },
     calendar_target_folder: {
         type: Array,
-        default: []
+        default: [],
     },
     target_folder_list: {
         type: Array,
-        default: []
+        default: [],
     },
     auction_delete: {
         type: Boolean,
-        default: 0
+        default: 0,
     },
     created: {
         type: Date,
         default: Date.now,
-    }
+    },
 });
-
 
 var AuctionPublicSettingSchema = mongoose.model('AuctionPublicSetting', AuctionPublicSetting);
 module.exports = AuctionPublicSettingSchema;

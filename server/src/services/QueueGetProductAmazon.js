@@ -59,7 +59,7 @@ const getProductByAsin = async (dataInput, cb) => {
                         if (isUpdateAmazonProduct) {
                             let checkUpdate = await ProductAmazonService.findOne({ asin: itemData.data.asin });
                             if (checkUpdate) {
-                                await ProductAmazonService.update(checkUpdate._id, itemData.data);
+                                await ProductAmazonService.update(checkUpdate._id, { ...itemData.data, created: Date.now() });
                             } else {
                                 await ProductAmazonService.create(itemData.data);
                             }

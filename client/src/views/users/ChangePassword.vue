@@ -68,7 +68,7 @@
         </ValidationProvider>
         <div
           class="row justify-content-center my-10 mt-20"
-          v-if="!adminViewUser"
+          
         >
           <button class="btn btn-success mb-1 mr-1" type="submit">
             <i class="fa fa-save"></i> セーブ

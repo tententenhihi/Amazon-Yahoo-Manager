@@ -86,7 +86,7 @@ var ProductInfomationDefault = new Schema({
     },
     ship_name1: {
         type: String,
-        default: 'ヤマト運輸',
+        default: 'ヤマト運輸または郵便局',
     },
     ship_fee1: {
         type: Number,

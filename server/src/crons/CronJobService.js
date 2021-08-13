@@ -27,7 +27,7 @@ export default class CronJobService {
             for (const asin of listAsin) {
                 let dateAsin = new Date(asin.created);
                 let now = new Date();
-                dateAsin.setDate(30);
+                dateAsin.setDate(dateAsin.getDate() + 30);
                 if (dateAsin < now) {
                     await AsinAmazonModel.deleteOne({ _id: asin._id });
                 }

@@ -31,7 +31,6 @@
       <div
         class="group-button  position-relative mb-10"
         style="justify-content: space-between; display: flex;"
-        v-if="!adminViewUser"
       >
         <button
           :disabled="!selectedProduct.length"
@@ -71,7 +70,6 @@
               </th>
               <th class="text-center" width="120">オークションID</th>
               <th class="text-center" width="100">出品画像</th>
-              <th class="text-center" width="100">取り扱い画像</th>
               <th width="300">Y！オーク商品の名前</th>
               <th class="text-center" width="110">落札価格</th>
               <th class="text-center" width="110">落札個数</th>
@@ -105,7 +103,7 @@
                 />
               </td>
               <td class="text-center">{{ product.aID }}</td>
-              <td class="text-center" width="100">
+              <!-- <td class="text-center" width="100">
                 <img
                   v-if="product.images && product.images.length"
                   :src="
@@ -115,7 +113,7 @@
                   "
                   style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
-              </td>
+              </td> -->
               <td class="text-center" width="100">
                 <img
                   v-if="product.thumbnail"
@@ -188,7 +186,7 @@
               <td>
                 {{ product.buyer_count }}
               </td> -->
-              <td v-if="!adminViewUser">
+              <td>
                 <button
                   class="btn btn-md btn-danger mb-1 mr-1"
                   @click="deleteProduct(product)"
@@ -454,7 +452,9 @@ export default {
                 item => item._id === product._id
               );
               this.searchProducts.splice(findIndex, 1);
-              this.selectedProduct = this.selectedProduct.filter(item => item._id !== product._id)
+              this.selectedProduct = this.selectedProduct.filter(
+                item => item._id !== product._id
+              );
               if (this.tableData.length === 0) {
                 this.page -= 1;
               }
@@ -544,9 +544,9 @@ export default {
   },
   created() {
     const selectedYahooAccount = this.$store.state.selectedYahooAccount;
-    if (selectedYahooAccount && selectedYahooAccount.is_lock) {
-      this.$routes.push({ name: "YahooAccounts" });
-    }
+    // if (selectedYahooAccount && selectedYahooAccount.is_lock) {
+    //   this.$routes.push({ name: "YahooAccounts" });
+    // }
   }
 };
 </script>

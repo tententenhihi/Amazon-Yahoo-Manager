@@ -36,4 +36,14 @@ export default class AuctionPublicSettingService {
             throw new Error('Error:' + error.message);
         }
     }
+    static async updateByYahooAccount(yahoo_account_id, data) {
+        try {
+            let res = await AuctionPublicSettingModel.findOneAndUpdate({ yahoo_account_id }, data, { new: true });
+            CronJobService.startUploadProductYahoo();
+            return res._doc;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error:' + error.message);
+        }
+    }
 }

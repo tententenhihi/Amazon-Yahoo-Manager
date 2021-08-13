@@ -31,7 +31,6 @@
       <div
         class="group-button position-relative pb-2"
         style="justify-content: space-between; display: flex;"
-        v-if="!adminViewUser"
       >
         <button
           :disabled="!selectedProduct.length"
@@ -71,7 +70,6 @@
               </th>
               <th class="text-center" width="120">オークションID</th>
               <th class="text-center" width="110">出品画像</th>
-              <th class="text-center" width="100">取り扱い画像</th>
               <th width="300">Y！オーク商品の名前</th>
               <th class="text-center" width="110">落札価格</th>
               <th class="text-center" width="130">落札者情報</th>
@@ -111,7 +109,7 @@
                   style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
               </td>
-              <td class="text-center" width="100">
+              <!-- <td class="text-center" width="100">
                 <img
                   v-if="product.images && product.images.length"
                   :src="
@@ -121,7 +119,7 @@
                   "
                   style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
-              </td>
+              </td> -->
               <td>
                 <a
                   :href="
@@ -172,7 +170,7 @@
               <td>
                 {{ getExpectShiping(product) }}
               </td>
-              <td v-if="!adminViewUser">
+              <td>
                 <button
                   class="btn btn-md btn-danger mb-1 mr-1"
                   @click="deleteProduct(product)"
@@ -454,7 +452,7 @@ export default {
       let params = {
         ids: this.selectedProduct.map(item => item._id)
       };
-      console.log(' ##### params: ', params);
+      console.log(" ##### params: ", params);
       let res = await ProductYahooFinishedApi.deleteMultiple(params);
       if (res && res.status === 200) {
         this.selectedProduct.forEach(item => {
@@ -527,9 +525,9 @@ export default {
   },
   created() {
     const selectedYahooAccount = this.$store.state.selectedYahooAccount;
-    if (selectedYahooAccount && selectedYahooAccount.is_lock) {
-      this.$routes.push({ name: "YahooAccounts" });
-    }
+    // if (selectedYahooAccount && selectedYahooAccount.is_lock) {
+    //   this.$routes.push({ name: "YahooAccounts" });
+    // }
   }
 };
 </script>

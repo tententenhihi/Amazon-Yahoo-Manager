@@ -351,15 +351,15 @@ const waitForStorageToBeReady = async (to, from, next) => {
   const adminViewUser = store.state.adminViewUser;
   const user = store.state.user;
   const selectedYahooAccount = store.state.selectedYahooAccount;
-  if (
-    (to.path === "/yahoo-auction-finished" ||
-      to.path === "/yahoo-auction-trades" ||
-      to.path === "/yahoo-auction-sellings") &&
-    selectedYahooAccount &&
-    selectedYahooAccount.is_lock
-  ) {
-    return next({ name: "YahooAccounts" });
-  }
+  // if (
+  //   (to.path === "/yahoo-auction-finished" ||
+  //     to.path === "/yahoo-auction-trades" ||
+  //     to.path === "/yahoo-auction-sellings") &&
+  //   selectedYahooAccount &&
+  //   selectedYahooAccount.is_lock
+  // ) {
+  //   return next({ name: "YahooAccounts" });
+  // }
   if (
     ((to.name !== "Login" && to.meta.requiredAuth) || to.name === null) &&
     !authUser

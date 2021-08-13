@@ -14,6 +14,8 @@ import AuctionPublicSettingService from '../services/AuctionPublicSettingService
 import ProductGlobalSettingService from '../services/ProductGlobalSettingService';
 import AccountYahooService from '../services/AccountYahooService';
 import ProxyService from '../services/ProxyService';
+import ProductYahooSellingService from '../services/ProductYahooSellingService';
+import AuctionYahooService from '../services/AuctionYahooService';
 
 const createDataDefault = async (user_id, yahoo_account_id) => {
     await ProductInfomationDefaultSchema.create({
@@ -28,25 +30,52 @@ const createDataDefault = async (user_id, yahoo_account_id) => {
         user_id,
         yahoo_account_id,
         name: '発送しました',
-        content: `商品発送いたしました。到着までしばらくお待ちください。届きましたら、評価よりご連絡ください。
-        なお、作業円滑化のため、追跡番号連絡や時間指定はできませんのでご了承ください。
-        1週間過ぎても商品が届かない場合はご連絡ください。
-        以上、ありがとうございました。
-        私から製品を購入していただきました方限定で、毎月3万～100万のお小遣いを得る丸秘術を無料でメール配信しております。
-        
-        https://december-ex.com/rg/5218/1/
-        LINE@:https://line.me/R/ti/p/%40603mwfiu`,
+        content:
+            `商品発送いたしました。到着までしばらくお待ちください。届きましたら、評価よりご連絡ください。\n` +
+            `なお、作業円滑化のため、追跡番号連絡や時間指定はできませんのでご了承ください。\n` +
+            `1週間過ぎても商品が届かない場合はご連絡ください。\n` +
+            `以上、ありがとうございました。\n` +
+            `私から製品を購入していただきました方限定で、毎月3万～100万のお小遣いを得る丸秘術を無料でメール配信しております。\n\n` +
+            `https://december-ex.com/rg/5218/1/\n` +
+            `LINE@:https://line.me/R/ti/p/%40603mwfiu`,
     });
 
     await RatingTemplateSchema.create({
         user_id,
         yahoo_account_id,
         name: '非常に良い',
-        rating: '非常に良い',
+        rating: 'veryGood',
         content: 'スムーズに取引できました。ありがとうございました。',
     });
 };
+const setLockAccount = async (yahooAccount) => {
+    await AuctionPublicSettingService.updateByYahooAccount(yahooAccount._id, {
+        new_list_auto: false,
+        relist_auto: false,
+        auction_delete: false,
+        calendar_list_setting: false,
+    });
 
+    let productSelling = await ProductYahooSellingService.find({ yahoo_account_id: yahooAccount._id });
+
+    if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+        let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+        if (proxyResult.status === 'SUCCESS') {
+            for (const productDelete of productSelling) {
+                try {
+                    if (productDelete.buyer_count > 0) {
+                        await AuctionYahooService.cancelAuction(productDelete.aID, yahooAccount.cookie, proxyResult.data, true);
+                    } else {
+                        await AuctionYahooService.cancelAuction(productDelete.aID, yahooAccount.cookie, proxyResult.data);
+                    }
+                } catch (error) {}
+                try {
+                    await ProductYahooSellingService.delete(productDelete._id);
+                } catch (error) {}
+            }
+        }
+    }
+};
 class YahooAccountController {
     static async getListAccount(req, res) {
         let response = new Response(res);
@@ -142,6 +171,9 @@ class YahooAccountController {
                         }
                         existAccount.name = name;
                         existAccount.is_lock = is_lock;
+                        if (is_lock) {
+                            await setLockAccount(existAccount);
+                        }
                         if (existAccount.yahoo_id !== yahoo_id.trim() || existAccount.password !== password.trim()) {
                             existAccount.yahoo_id = yahoo_id;
                             existAccount.password = password;

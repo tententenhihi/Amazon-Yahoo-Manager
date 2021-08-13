@@ -30,7 +30,7 @@
             <textarea class="form-control" id="precautions" v-model="setting.precaution_detail" cols="30" rows="8"></textarea>
           </div>
         </div>
-        <div class="row justify-content-center" v-if="!adminViewUser">
+        <div class="row justify-content-center" >
           <button class="btn btn-success" @click="onUpdateSetting">
             <i class="fa fa-save"> 保存</i>
           </button>

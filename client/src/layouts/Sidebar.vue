@@ -44,7 +44,7 @@
                 <span>管理者に戻る</span>
               </router-link>
             </li>
-            <li class="sidebar-dropdown" v-if="!isLockAccount">
+            <li class="sidebar-dropdown">
               <router-link :to="{ name: 'AsinManagement' }">
                 <i class="fa fa-shopping-cart"></i>
                 <span>ASIN管理</span>
@@ -55,7 +55,10 @@
                 <i class="fa fa-check-square"></i>
                 <span>出品管理</span>
               </a> -->
-              <router-link :to="'/yahoo-auction-products'">
+              <router-link
+                :to="'/yahoo-auction-products'"
+                v-if="!isLockAccount"
+              >
                 <i class="fa fa-calendar"></i>
                 <span>Y!オーク取扱商品管理</span>
               </router-link>
@@ -80,7 +83,7 @@
                 </ul>
               </div> -->
             </li>
-            <li class="sidebar-dropdown" v-if="!isLockAccount">
+            <li class="sidebar-dropdown">
               <a href="#" @click="showDropdown(4)">
                 <i class="fa fa-list"></i>
                 <span>出品した商品管理</span>
@@ -111,7 +114,7 @@
                 </ul>
               </div>
             </li>
-            <li class="sidebar-dropdown">
+            <li class="sidebar-dropdown" v-if="!isLockAccount">
               <a href="#" @click="showDropdown(3)">
                 <i class="fa fa-cogs"></i>
                 <span>出品設定</span>
@@ -167,25 +170,25 @@
                 </ul>
               </div>
             </li>
-            <li class="sidebar-dropdown" v-if="!isLockAccount">
+            <li class="sidebar-dropdown">
               <router-link :to="{ name: 'FolderManagement' }">
                 <i class="fa fa-folder"></i>
                 <span>フォルダ管理</span>
               </router-link>
             </li>
-            <li class="sidebar-dropdown" v-if="!isLockAccount">
+            <li class="sidebar-dropdown">
               <router-link :to="{ name: 'ImageInsertion' }">
                 <i class="fa fa-file-image"></i>
                 <span>画像挿入設定</span>
               </router-link>
             </li>
-            <li class="sidebar-dropdown" v-if="!isLockAccount">
+            <li class="sidebar-dropdown">
               <router-link :to="{ name: 'Categories' }">
                 <i class="fa fa-bookmark"></i>
                 <span>カテゴリ管理</span>
               </router-link>
             </li>
-            <li class="sidebar-dropdown" v-if="!isLockAccount">
+            <li class="sidebar-dropdown">
               <router-link :to="{ name: 'Logs' }">
                 <i class="fa fa-archive"></i>
                 <span>出品ログ</span>
@@ -247,10 +250,10 @@ export default {
     ...mapState(["adminViewUser"]),
     ...mapGetters({
       userInfo: "getUserInfo",
-      selectedYahooAccount: "getSelectedYahooAccount",
+      selectedYahooAccount: "getSelectedYahooAccount"
     }),
     isAdmin() {
-      return this.adminViewUser
+      return this.adminViewUser;
     },
     isLockAccount() {
       if (this.selectedYahooAccount && this.selectedYahooAccount.is_lock) {

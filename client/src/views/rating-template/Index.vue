@@ -5,7 +5,6 @@
 
       <button
         class="btn btn-add-account"
-        v-if="!adminViewUser"
         @click="goToFormRatingTemplate(0)"
       >
         <i class="fa fa-plus"></i> 追加

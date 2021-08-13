@@ -6,7 +6,7 @@
     <hr class="mt-10" />
     <div class="box-content px-50 py-20">
       <div>
-        アカウントのリスト
+        コピー元のアカウントのリスト
         <select
           v-model="idYahooSelected"
           class="form-control mx-2"
@@ -23,7 +23,6 @@
           >
         </select>
         <button
-          v-if="!adminViewUser"
           class="btn btn-info mb-1 px-3"
           @click="onCopyData"
         >

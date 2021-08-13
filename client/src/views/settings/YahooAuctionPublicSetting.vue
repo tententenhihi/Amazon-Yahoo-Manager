@@ -93,7 +93,7 @@
                 </div>
               </div>
               
-              <div class="row justify-content-center" v-if="!adminViewUser">
+              <div class="row justify-content-center" >
                 <button class="btn btn-success" @click="onUpdateSetting()">
                   <i class="fa fa-save"> 保存</i>
                 </button>
@@ -149,7 +149,7 @@
                 </div>
               </div>
               
-              <div class="row justify-content-center" v-if="!adminViewUser">
+              <div class="row justify-content-center" >
                 <button class="btn btn-success" @click="onUpdateSetting()">
                   <i class="fa fa-save"> 保存</i>
                 </button>
@@ -196,7 +196,7 @@
                 </div>
               </template>
 
-              <div class="row justify-content-center" v-if="!adminViewUser">
+              <div class="row justify-content-center" >
                 <button class="btn btn-success" @click="onUpdateSetting()">
                   <i class="fa fa-save"> 保存</i>
                 </button>
@@ -216,7 +216,7 @@
               <div class="text-auction-delete">
                 入札が入っている場合は手数料500円かかるので、自動削除しません。ご自身の判断で手動削除してください。
               </div>
-              <div class="row justify-content-center mt-20" v-if="!adminViewUser">
+              <div class="row justify-content-center mt-20" >
                 <button class="btn btn-danger" v-if="!setting.auction_delete" @click="onUpdateSetting(true)">
                   <i class="fa fa-save"> 削除をONにする</i>
                 </button>

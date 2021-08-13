@@ -31,7 +31,7 @@
           </li>
         </ul>
       </div>
-      <div class="row justify-content-center" v-if="!adminViewUser">
+      <div class="row justify-content-center" >
         <button class="btn btn-success" @click="onSelectTemplate">
           <i class="fa fa-save"> 保存</i>
         </button>

@@ -9,11 +9,7 @@
         <span class="font-weight-bold fs-lg">
           契約枠数（{{ countAccountActive }}/{{ maxYahooAccount }}）</span
         >
-        <button
-          v-if="!adminViewUser"
-          class="btn btn-success"
-          @click="onOpenModalAccount()"
-        >
+        <button class="btn btn-success" @click="onOpenModalAccount()">
           <i class="fa fa-plus"></i> アカウントを追加
         </button>
       </div>
@@ -50,7 +46,6 @@
                     認証未
                   </div>
                   <button
-                    v-if="!adminViewUser"
                     class="btn btn-sm btn-info"
                     @click="onReAuth(account)"
                   >
@@ -77,7 +72,7 @@
                 </td>
                 <!-- <td>{{ account.status }}</td> -->
                 <!-- <td>{{ account.statusMessage }}</td> -->
-                <td v-if="!adminViewUser">
+                <td>
                   <button
                     class="btn btn-md btn-warning mb-1"
                     @click="onOpenModalAccount(account, index)"
@@ -92,7 +87,6 @@
                     <i class="fa fa-trash"></i> 削除
                   </button>
                 </td>
-                <td v-else></td>
               </tr>
             </tbody>
           </table>
@@ -164,7 +158,7 @@
         </div>
         <div v-if="is_lock">
           <span style="color: red" class="fs-md">
-            取引のみに使用にチェックが入った状態で保存をすると、出品中の商品が自動で削除され■取り扱い商品管理■アカウント設定■出金管理■出品した商品管理■取り扱い商品管理のみが表示され、監視の停止・自動出品の停止されます。よろしいですか？
+            取引のみに使用にチェックが入った状態で保存をすると、出品中の商品が自動で削除され「取り扱い商品管理」「出品設定」が非表示になり、監視の停止・自動出品の停止されます。よろしいですか？
           </span>
         </div>
       </template>

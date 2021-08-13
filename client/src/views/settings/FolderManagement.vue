@@ -6,7 +6,7 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-50 py-20">
-        <div class="d-flex my-20" v-if="!adminViewUser">
+        <div class="d-flex my-20">
           <input
             type="text"
             v-model="name"
@@ -48,8 +48,7 @@
                     style="padding: 5px"
                   />
                 </label>
-                <!-- v-if="!adminViewUser" -->
-                <div class="group-button" v-if="!adminViewUser">
+                <div class="group-button">
                   <button
                     class="btn btn-outline-info"
                     v-if="!folder.isEdit"
@@ -75,7 +74,7 @@
               </li>
             </draggable>
           </ul>
-          <div v-if="!adminViewUser">
+          <div>
             <div v-if="folders.length">
               選択フォルダの出品予定
               <select

@@ -8,15 +8,19 @@
       <div class="px-30 pb-20">
         <div class="search-proxy mt-10">
           <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
               <label for="userid">ユーザーID</label>
               <input type="text" class="form-control" id="userid" v-model="searchUserId">
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
+              <label for="userid">ヤフーID</label>
+              <input type="text" class="form-control" id="userid" v-model="searchYahooId">
+            </div>
+            <div class="form-group col-md-3">
               <label for="username">ユーザー名</label>
               <input type="text" class="form-control" id="username" v-model="searchUsername">
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
               <label for="proxy">プロキシ</label>
               <input type="text" class="form-control" id="proxy" v-model="searchProxy">
             </div>
@@ -39,6 +43,7 @@
             <thead class="thead-purple">
               <tr>
                 <th scope="col">ユーザーID</th>
+                <th scope="col">ヤフーID</th>
                 <th scope="col">ユーザー名</th>
                 <th scope="col">Yahoo! オークID</th>
                 <th scope="col">状態</th>
@@ -49,6 +54,7 @@
             <tbody>
               <tr v-for="(account, index) in tableData" :key="index">
                 <td>{{ account.users[0].userId }}</td>
+                <td>{{ account.accountId }}</td>
                 <td>{{ account.users[0].username }}</td>
                 <td>{{ account.yahoo_id }}</td>
                 <td>{{ account.status }}</td>
@@ -121,6 +127,7 @@ export default {
       selectedProxy: null,
       selectAccount: null,
       searchUserId: '',
+      searchYahooId: '',
       searchUsername: '',
       searchProxy: '',
       searchData: [],
@@ -190,6 +197,10 @@ export default {
         if (this.searchUserId) {
           condition = condition && account.users.length && account.users[0].userId && account.users[0].userId.toString().includes(this.searchUserId)
         }
+        if (this.searchYahooId) {
+          condition = condition && account.users.length && account.accountId.toString().includes(this.searchYahooId)
+        }
+        
         if (this.searchUsername) {
           condition = condition && account.users.length && account.users[0].username.includes(this.searchUsername)
         }

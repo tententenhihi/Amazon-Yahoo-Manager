@@ -14,6 +14,7 @@ import CategoryService from './CategoryService';
 import moment from 'moment';
 
 import Utils from '../utils/Utils';
+import ProductAmazonService from './ProductAmazonService';
 var isCalendarUploading = false;
 
 export default class ProductYahooService {
@@ -27,17 +28,44 @@ export default class ProductYahooService {
             if (actual_profit <= defaultSetting.profit_stop) {
                 isStopUpload = true;
             }
-        } else {
-            isStopUpload = await this.checkProfitToStopUpload(defaultSetting, productYahooData.import_price, productYahooData.amazon_shipping_fee);
         }
 
         if (!isStopUpload && productYahooData.asin_amazon) {
+            let checkKeepa = false;
+            let newProductData = null;
             // Kiểm tra hết hàng
-            let resultKeep = await KeepaService.findProduct([productYahooData.asin_amazon]);
-            if (resultKeep.status === 'SUCCESS' && resultKeep.data && resultKeep.data.length > 0 && resultKeep.data[0].status === 'SUCCESS') {
-                let dataKeepa = resultKeep.data[0].data;
-                if (dataKeepa.count === 0) {
+            // 1. Check trong DB
+            let productAmazonInDB = await ProductAmazonService.findOne({ asin: productYahooData.asin_amazon });
+            if (productAmazonInDB) {
+                // checkDate
+                let dateProduct = new Date(productAmazonInDB.created);
+                let dateNow = new Date();
+                dateProduct.setHours(dateProduct.getHours() + 24);
+                if (dateProduct < dateNow) {
+                    checkKeepa = true;
+                } else {
+                    newProductData = productAmazonInDB;
+                }
+            }
+            // 2. Check Keepa
+            if (checkKeepa) {
+                let resultKeep = await KeepaService.findProduct([productYahooData.asin_amazon]);
+                if (resultKeep.status === 'SUCCESS' && resultKeep.data && resultKeep.data.length > 0 && resultKeep.data[0].status === 'SUCCESS') {
+                    newProductData = resultKeep.data[0].data;
+                    if (!productAmazonInDB) {
+                        // create new product amazon
+                        await ProductAmazonService.update(productAmazonInDB._id, newProductData);
+                    } else {
+                        //updatea product amazon
+                        await ProductAmazonService.create(newProductData);
+                    }
+                }
+            }
+            if (newProductData) {
+                if (newProductData.count === 0) {
                     isStopUpload = true;
+                } else {
+                    isStopUpload = await this.checkProfitToStopUpload(defaultSetting, newProductData.import_price, newProductData.ship_fee);
                 }
             }
             if (isStopUpload) {
@@ -60,19 +88,21 @@ export default class ProductYahooService {
         let profitPersent = '';
         for (let i = 0; i < defaultSetting.list_profit.length; i++) {
             const item_profile = defaultSetting.list_profit[i];
-            if (item_profile.price < import_price) {
+            if (import_price < item_profile.price) {
                 if (i == 0) {
                     profitPersent = defaultSetting.list_profit[i].persent_profit;
+                    break;
                 } else {
                     profitPersent = defaultSetting.list_profit[i - 1].persent_profit;
+                    break;
                 }
                 break;
             }
             if (i === defaultSetting.list_profit.length - 1) {
                 profitPersent = defaultSetting.list_profit[i].persent_profit;
+                break;
             }
         }
-
         //Phí gửi ở yahoo
         let ship_fee_yahoo = defaultSetting.yahoo_auction_shipping;
         //Phí giao dịch ở yahoo
@@ -116,24 +146,25 @@ export default class ProductYahooService {
             profitPersent = profitPersent.replace('\\', '');
             profitPersent = parseInt(profitPersent.toString().trim());
 
-            price = parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * (1 + fee_auction_yahoo));
+            // price = parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * (1 + fee_auction_yahoo));
+            price = parseInt((original_price + profitPersent) / (1 - fee_auction_yahoo));
 
             start_price = price - ship_fee_yahoo;
             if (start_price <= 0) {
                 start_price = 1;
             }
 
-            amount_received = price - parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * fee_auction_yahoo);
+            amount_received = price - parseInt(((original_price + profitPersent) * fee_auction_yahoo) / (1 - fee_auction_yahoo));
 
             gross_profit = price - original_price;
 
-            actual_profit = gross_profit - ship_fee_yahoo - parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * fee_auction_yahoo);
+            actual_profit = gross_profit - parseInt(((original_price + profitPersent) * fee_auction_yahoo) / (1 - fee_auction_yahoo));
 
             // if (bid_or_buy_price === 0) {
             bid_or_buy_price = start_price + defaultSetting.yahoo_auction_bid_price;
+
             // }
         }
-
         return {
             import_price,
             price,
@@ -556,7 +587,7 @@ export default class ProductYahooService {
                 asin: productAmazon.asin,
             });
         }
-        let cate_yahoo = cateAmazon.yahoo_cate_id || '26395';
+        let cate_yahoo = cateAmazon.yahoo_cate_id || null;
 
         // Cắt title
         let title = productAmazon.name;

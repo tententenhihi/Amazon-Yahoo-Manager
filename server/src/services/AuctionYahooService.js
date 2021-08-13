@@ -136,11 +136,10 @@ export default class AuctionYahooService {
             console.log(' ========= START UPLOAD YAHOO ========= ');
             // Check Data
             if (!productData.yahoo_auction_category_id || productData.yahoo_auction_category_id === '0') {
-                productData.yahoo_auction_category_id = 26395;
-                // return {
-                //     status: 'ERROR',
-                //     statusMessage: 'カテゴリーは必須です',
-                // };
+                return {
+                    status: 'ERROR',
+                    statusMessage: 'カテゴリ未設定',
+                };
             }
             if (!productData.start_price) {
                 return {

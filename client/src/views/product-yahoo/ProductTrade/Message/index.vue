@@ -107,9 +107,7 @@
         <ValidationObserver tag="div" ref="formMessage">
           <div class="input-group mb-2">
             <select v-model="selectedTemplate" id="" class="form-control">
-              <option :value="selectedTemplate" selected
-                >テンプレートを選択</option
-              >
+              <option :value="null" selected>テンプレートを選択</option>
               <option
                 :key="index"
                 v-for="(template, index) in templates"
@@ -353,7 +351,11 @@ export default {
   },
   watch: {
     selectedTemplate() {
-      this.comment = this.selectedTemplate.content;
+      if (this.selectedTemplate) {
+        this.comment = this.selectedTemplate.content;
+      } else {
+        this.comment = "";
+      }
     }
   }
 };

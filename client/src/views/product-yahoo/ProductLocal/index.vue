@@ -2,11 +2,7 @@
   <div class="wrapper-content">
     <div class="box-header">
       <i class="fa fa-list mr-2"></i>Y!オーク取扱商品管理
-      <button
-        v-if="!adminViewUser"
-        class="btn btn-add-account"
-        @click="goToFormProduct(0)"
-      >
+      <button class="btn btn-add-account" @click="goToFormProduct(0)">
         <i class="fa fa-plus"></i> 新規追加
       </button>
     </div>
@@ -157,7 +153,7 @@
       <div class="alert alert-danger mx-10" v-if="isDieProxy">
         現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
       </div>
-      <div class="group-button p-10" v-if="!adminViewUser">
+      <div class="group-button p-10">
         <button
           :disabled="!selectedProducts.length"
           @click="$refs.modalSelectFolder.openModal()"
@@ -202,6 +198,7 @@
           <i class="far fa-images mr-1"></i>写真を挿入
         </button>
         <button
+          v-if="!selectedYahooAccount.is_lock"
           :disabled="!selectedProducts.length"
           @click="onUploadYahooNow"
           class="btn btn-success mx-10 px-4"
@@ -467,7 +464,7 @@
               </td>
               <td class="text-center">{{ product.asin_amazon }}</td>
               <td class="text-center">{{ product.note }}</td>
-              <td class="text-center" v-if="!adminViewUser">
+              <td class="text-center">
                 <button
                   class="btn btn-md btn-warning mb-1 mr-1"
                   @click="onEditProduct(product, index)"

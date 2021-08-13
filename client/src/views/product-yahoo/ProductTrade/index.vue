@@ -46,7 +46,7 @@
       <div class="alert alert-danger" v-if="isDieProxy">
         現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
       </div>
-      <div class="group-button py-20 position-relative" v-if="!adminViewUser">
+      <div class="group-button py-20 position-relative">
         <button
           class="btn btn-primary my-10"
           style="position: absolute; top: -15px; right: 0; margin-bottom: -10px;"
@@ -74,11 +74,14 @@
           <thead class="thead-purple">
             <tr>
               <th class="text-center">
-                <input class="checkall" type="checkbox" style="cursor: pointer; width: 15px; height: 15px;" />
+                <input
+                  class="checkall"
+                  type="checkbox"
+                  style="cursor: pointer; width: 15px; height: 15px;"
+                />
               </th>
               <th class="text-center" width="120">オークションID</th>
               <th class="text-center" width="110">出品画像</th>
-              <th class="text-center" width="100">取り扱い画像</th>
               <th width="300">Y！オーク商品の名前</th>
               <th class="text-center" width="110">落札価格</th>
               <th class="text-center" width="110">落札個数</th>
@@ -99,9 +102,15 @@
           <tbody>
             <tr v-for="(product, index) in tableData" :key="index">
               <td class="text-center" width="50">
-                <input type="checkbox" name="" id="" style="cursor: pointer; width: 15px; height: 15px;"/>
+                <input
+                  type="checkbox"
+                  name=""
+                  id=""
+                  style="cursor: pointer; width: 15px; height: 15px;"
+                />
               </td>
               <td class="text-center">{{ product.aID }}</td>
+
               <td class="text-center" width="100">
                 <img
                   v-if="product.thumbnail"
@@ -112,8 +121,13 @@
                   "
                   style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
+                <img
+                  v-else
+                  :src="product.images[0]"
+                  style="min-width: 50px; max-height: 100px; object-fit: contain;"
+                />
               </td>
-              <td class="text-center" width="100">
+              <!-- <td class="text-center" width="100">
                 <img
                   v-if="product.images && product.images.length"
                   :src="
@@ -123,7 +137,7 @@
                   "
                   style="min-width: 50px; max-height: 100px; object-fit: contain;"
                 />
-              </td>
+              </td> -->
               <td>
                 <a
                   :href="
@@ -166,7 +180,7 @@
                 <div class="field-note">
                   <p>{{ product.note }}</p>
                 </div>
-                <div v-if="!adminViewUser">
+                <div>
                   <button
                     class="btn btn-info"
                     @click="onOpenModalNote(product)"
@@ -190,7 +204,7 @@
                 {{ getExpectShiping(product) }}
               </td>
 
-              <td v-if="!adminViewUser">
+              <td>
                 <button
                   class="btn btn-md btn-info mb-1 mr-1"
                   @click="addMessage(product)"
@@ -451,9 +465,9 @@ export default {
   },
   created() {
     const selectedYahooAccount = this.$store.state.selectedYahooAccount;
-    if (selectedYahooAccount && selectedYahooAccount.is_lock) {
-      this.$routes.push({ name: "YahooAccounts" });
-    }
+    // if (selectedYahooAccount && selectedYahooAccount.is_lock) {
+    //   this.$routes.push({ name: "YahooAccounts" });
+    // }
   }
 };
 </script>
