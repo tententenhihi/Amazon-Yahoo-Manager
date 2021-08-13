@@ -47,6 +47,8 @@ const createDataDefault = async (user_id, yahoo_account_id) => {
         rating: 'veryGood',
         content: 'スムーズに取引できました。ありがとうございました。',
     });
+
+    await AuctionPublicSettingService.create({ user_id, yahoo_account_id });
 };
 const setLockAccount = async (yahooAccount) => {
     await AuctionPublicSettingService.updateByYahooAccount(yahooAccount._id, {

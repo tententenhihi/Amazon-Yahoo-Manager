@@ -40,7 +40,10 @@ export default class AuctionPublicSettingService {
         try {
             let res = await AuctionPublicSettingModel.findOneAndUpdate({ yahoo_account_id }, data, { new: true });
             CronJobService.startUploadProductYahoo();
-            return res._doc;
+            if (res) {
+                return res._doc;
+            }
+            return null;
         } catch (error) {
             console.log(error);
             throw new Error('Error:' + error.message);
