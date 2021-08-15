@@ -44,6 +44,9 @@ var YahooAccount = new Schema({
     cookie: {
         type: String,
     },
+    cookie_aucpay: {
+        type: String,
+    },
     status: {
         type: String,
         require: true,

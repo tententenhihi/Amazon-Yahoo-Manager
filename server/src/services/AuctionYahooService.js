@@ -505,7 +505,7 @@ export default class AuctionYahooService {
         }
     }
 
-    static async getProductAuctionEnded(usernameYahoo, cookie, proxy, getAidOnly) {
+    static async getProductAuctionEnded(usernameYahoo, cookie, proxy, getAidOnly, accountYahoo) {
         let listProduct = [];
         try {
             let proxyConfig = {
@@ -635,17 +635,39 @@ export default class AuctionYahooService {
                     switch (classText) {
                         case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current04 acMdStatusImage__status--end acMdStatusImage__status--complete':
                             progress = '受取連絡';
-                            // Số tiền nhận dự kiến:
+
+                            break;
+                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current02':
+                            break;
+                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current02':
+                            progress = '送料連絡';
+                            break;
+                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current03':
+                            progress = '発送連絡';
+                            break;
+                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current01':
+                            progress = '取引情報';
+                            break;
+                    }
+                    // Số tiền nhận thực tế
+                    if (progress === '発送連絡' || progress === '受取連絡') {
+                        if (!accountYahoo.cookie_aucpay) {
+                            let result = await AuctionYahooService.getCookie(accountYahoo, proxy, true);
+                            if (result.status === 'SUCCESS') {
+                                accountYahoo.cookie_aucpay = result.cookie;
+                                await accountYahoo.save();
+                            }
+                        }
+                        if (accountYahoo.cookie_aucpay) {
                             let nodeAmountActual = $(
                                 'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr > td > div > a'
                             );
-
                             try {
                                 if (nodeAmountActual && nodeAmountActual.attr('href')) {
                                     let url_get_amount = nodeAmountActual.attr('href');
                                     let response_get_amount = await axios.get(url_get_amount, {
                                         headers: {
-                                            cookie,
+                                            cookie: accountYahoo.cookie_aucpay,
                                         },
                                         proxy: proxyConfig,
                                     });
@@ -659,33 +681,24 @@ export default class AuctionYahooService {
                                     }
                                 }
                             } catch (error) {}
-
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current02':
-                            progress = 'お支払い';
-                            // Số tiền nhận dự kiến:
-                            let nodeAmountExpected = $(
-                                'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr:nth-child(2) > td'
-                            );
-                            let amount_expected = 0;
-                            if (nodeAmountExpected.text()) {
-                                amount_expected = nodeAmountExpected.text().match(/\d+/)[0];
-                                if (amount_expected) {
-                                    product.amount_expected = amount_expected;
-                                }
-                            }
-
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current02':
-                            progress = '送料連絡';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current03':
-                            progress = '発送連絡';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current01':
-                            progress = '取引情報';
-                            break;
+                        }
                     }
+
+                    // Số tiền nhận dự kiến:
+                    if (progress === 'お支払い') {
+                        progress = 'お支払い';
+                        let nodeAmountExpected = $(
+                            'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr:nth-child(2) > td'
+                        );
+                        let amount_expected = 0;
+                        if (nodeAmountExpected.text()) {
+                            amount_expected = nodeAmountExpected.text().match(/\d+/)[0];
+                            if (amount_expected) {
+                                product.amount_expected = amount_expected;
+                            }
+                        }
+                    }
+
                     product.progress = progress;
                 } catch (error) {}
             }
@@ -812,7 +825,7 @@ export default class AuctionYahooService {
         return listProduct;
     }
 
-    static async getCookie(account, proxy) {
+    static async getCookie(account, proxy, is_get_cookie_auction) {
         console.log(' ==== Start login Yahoo ====');
 
         let sock5 = `http://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`;
@@ -846,7 +859,10 @@ export default class AuctionYahooService {
         const page = await browser.newPage();
         let urlLogin =
             'https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver';
-
+        if (is_get_cookie_auction) {
+            urlLogin =
+                'https://login.yahoo.co.jp/config/login?auth_lv=capin&.src=pay&.done=https%3A%2F%2Faucpay.yahoo.co.jp%2Fdetail-front%2FPaymentDetailList&.crumb=0';
+        }
         let timeout = 5 * 60 * 1000;
         // urlLogin = 'http://lumtest.com/myip.json';
         await page.goto(urlLogin, { waitUntil: 'load', timeout: timeout });

@@ -15,7 +15,13 @@ export default class ProductYahooEndedService {
             if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie && !accountYahoo.is_lock) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data);
+                    let listProductEnded = await AuctionYahooService.getProductAuctionEnded(
+                        accountYahoo.yahoo_id,
+                        accountYahoo.cookie,
+                        proxyResult.data,
+                        false,
+                        accountYahoo
+                    );
                     listProductEnded = listProductEnded.reverse();
                     let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
 
