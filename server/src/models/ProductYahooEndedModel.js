@@ -34,17 +34,9 @@ var Product = new Schema({
     },
     progress: {
         type: String,
-        enum: [
-            'address_inputing',
-            'postage_inputing',
-            'bundle_requested',
-            'bundle_accepted',
-            'money_received',
-            'preparation_for_shipment',
-            'shipping',
-            'complete',
-        ],
-        default: 'address_inputing',
+    },
+    progress_message: {
+        type: String,
     },
     message_list: {
         type: Array,
@@ -100,6 +92,18 @@ var Product = new Schema({
     },
     // phí ship amazon
     amazon_shipping_fee: {
+        type: Number,
+        default: 0,
+    },
+
+    // tiền nhận dự kiến
+    amount_expected: {
+        type: Number,
+        default: 0,
+    },
+
+    // tiền nhận thực tế
+    amount_actual: {
         type: Number,
         default: 0,
     },

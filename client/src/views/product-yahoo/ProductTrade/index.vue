@@ -90,6 +90,7 @@
               <th class="text-center">状態</th>
               <th width="150">メモ</th>
               <th class="text-center" width="100">予定受取金額</th>
+              <th class="text-center" width="100">実際受取金額</th>
               <th width="110" class="text-center">発送先</th>
               <th width="120" class="text-center">仕入れ価格</th>
               <th width="110" class="text-center">想定利益</th>
@@ -157,7 +158,7 @@
                 </div>
               </td>
               <td class="text-center">{{ getPriceEnd(product) }}</td>
-              <td class="text-center">{{ product.buyer_count }}</td>
+              <td class="text-center">{{ product.product_buy_count }}</td>
               <td class="text-center">
                 <div class="field-buyer">{{ product.idBuyer }}</div>
                 <div class="goto">
@@ -172,9 +173,14 @@
               </td>
               <td class="text-center">{{ product.time_end }}</td>
               <td class="text-center">
-                <span class="label label-info">{{
-                  displayProgress(product.progress)
+                <span class="label label-info fs-sm">{{
+                  product.progress
                 }}</span>
+                <div class="mt-1" v-if="product.progress_message">
+                  <span class="label " style="color: black">{{
+                    product.progress_message
+                  }}</span>
+                </div>
               </td>
               <td class="text-note">
                 <div class="field-note">
@@ -182,7 +188,7 @@
                 </div>
                 <div>
                   <button
-                    class="btn btn-info"
+                    class="btn btn-primary btn-sm"
                     @click="onOpenModalNote(product)"
                   >
                     <i class="fa fa-edit" aria-hidden="true"></i> 編集
@@ -190,6 +196,7 @@
                 </div>
               </td>
               <td class="text-center">{{ getExpectInCome(product) }}</td>
+              <td class="text-center">{{ getAmount_Actual(product) }}</td>
 
               <td class="text-center" v-html="getShipInfo(product)"></td>
 
@@ -335,12 +342,17 @@ export default {
       }
       return "-";
     },
+    getAmount_Actual(product) {
+      let amount_actual = product.amount_actual;
+      if (amount_actual) {
+        return amount_actual.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
     getExpectInCome(product) {
-      let yahooFee = product.price_end * (product.yahooAuctionFee / 100);
-      let income = product.price_end + product.ship_fee1 - yahooFee;
-      income = income * product.product_buy_count;
-      if (income) {
-        return income.toLocaleString("ja-JP") + "円";
+      let amount_expected = product.amount_expected;
+      if (amount_expected) {
+        return amount_expected.toLocaleString("ja-JP") + "円";
       }
       return "-";
     },
@@ -457,10 +469,6 @@ export default {
         progress: null
       };
       this.searchProducts = [...this.products];
-    },
-    displayProgress(progress) {
-      return this.LISTING_PROGRESS.find(item => item.value === progress)
-        .display;
     }
   },
   created() {

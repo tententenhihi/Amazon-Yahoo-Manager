@@ -16,12 +16,15 @@ export default class ProductYahooEndedService {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
                     let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data);
+                    listProductEnded = listProductEnded.reverse();
                     let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
 
-                    // console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
+                    console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
                     // tạo , update product
                     for (let j = 0; j < listProductEnded.length; j++) {
                         const product = listProductEnded[j];
+
+                        //amount_actual
                         //Check Xem có trong db chưa.
                         let productExisted = listProductEndedInDB.find((item) => item.aID === product.aID);
                         //chưa có thì tạo mới.
@@ -79,6 +82,7 @@ export default class ProductYahooEndedService {
         } catch (error) {
             console.log(' ### refreshDataYahoo: ', error);
         }
+        listProduct = listProduct.reverse();
         return listProduct;
     }
 
@@ -93,7 +97,7 @@ export default class ProductYahooEndedService {
     }
     static async get(idUser, yahoo_account_id) {
         try {
-            let result = await ProductYahooEndedModel.find({ user_id: idUser, yahoo_account_id })
+            let result = await ProductYahooEndedModel.find({ user_id: idUser, yahoo_account_id }).sort({ created: -1 });
             return result;
         } catch (error) {
             console.log(error);

@@ -555,55 +555,139 @@ export default class AuctionYahooService {
                 });
                 $ = cheerio.load(response.data);
                 //message
-                let listMessage = [];
-                let container = $('#messagelist');
-                if (container && container[0] && container[0].children && container[0].children.length > 0) {
-                    for (const children of container[0].children) {
-                        let classx = $(children).attr('class');
-                        let dataM = null;
-                        if (classx === 'ptsPartner') {
-                            dataM = {
-                                type: 'buyer',
-                                comment: $(children).find('#body').text().trim(),
-                                yahoo_id: $(children).find('#buyerid').text().trim(),
-                                created_at: $(children).find('.decTime').text().trim(),
-                            };
-                            listMessage.push(dataM);
-                        } else if (classx === 'ptsOwn') {
-                            dataM = {
-                                type: 'seller',
-                                comment: $(children).find('#body').text().trim(),
-                                yahoo_id: $(children).find('#sellerid').text().trim(),
-                                created_at: $(children).find('.decTime').text().trim(),
-                            };
-                            listMessage.push(dataM);
+                try {
+                    let listMessage = [];
+                    let container = $('#messagelist');
+                    if (container && container[0] && container[0].children && container[0].children.length > 0) {
+                        for (const children of container[0].children) {
+                            let classx = $(children).attr('class');
+                            let dataM = null;
+                            if (classx === 'ptsPartner') {
+                                dataM = {
+                                    type: 'buyer',
+                                    comment: $(children).find('#body').text().trim(),
+                                    yahoo_id: $(children).find('#buyerid').text().trim(),
+                                    created_at: $(children).find('.decTime').text().trim(),
+                                };
+                                listMessage.push(dataM);
+                            } else if (classx === 'ptsOwn') {
+                                dataM = {
+                                    type: 'seller',
+                                    comment: $(children).find('#body').text().trim(),
+                                    yahoo_id: $(children).find('#sellerid').text().trim(),
+                                    created_at: $(children).find('.decTime').text().trim(),
+                                };
+                                listMessage.push(dataM);
+                            }
                         }
                     }
-                }
-
+                    product.message_list = listMessage;
+                } catch (error) {}
                 // Ship address
-                let shipInfo = '';
-                let shipInfoNode = $('#yjMain > div.acMdPayShipInfo > div > table > tbody > tr:nth-child(4) > td > table > tbody > tr');
-                if (shipInfoNode && shipInfoNode.length > 0) {
-                    for (const info of shipInfoNode) {
-                        shipInfo += $(info).find('td').text().trim() + '</br>';
+                try {
+                    let shipInfo = '';
+                    //td.decInTblCel > div. > table > tbody > tr:nth-child(1)
+                    let shipInfoNode = $(
+                        'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div.libTableCnfTop.decTableCnfBod > table > tbody > tr > td > div > table > tbody > tr'
+                    );
+                    if (shipInfoNode && shipInfoNode.length > 0) {
+                        for (const info of shipInfoNode) {
+                            shipInfo += $(info).find('td').text().trim() + '</br>';
+                        }
                     }
-                }
-                shipInfo = shipInfo.trim();
+                    shipInfo = shipInfo.trim();
+                    product.ship_info = shipInfo;
+                } catch (error) {}
 
                 // product_buy_count
-
-                let productCountNode = $('.decQunt').text();
-                if (productCountNode) {
-                    let product_buy_count = productCountNode.replace(/\D+/g, '');
-                    if (product_buy_count) {
-                        product.product_buy_count = product_buy_count;
+                try {
+                    let productCountNode = $('.decQunt').text();
+                    if (productCountNode) {
+                        let product_buy_count = productCountNode.replace(/\D+/g, '');
+                        if (product_buy_count) {
+                            product.product_buy_count = product_buy_count;
+                        }
                     }
+                } catch (error) {}
+
+                // Progress message
+                try {
+                    //div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div
+                    let progress_message = $(
+                        'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div'
+                    );
+                    if (progress_message) {
+                        let text_date = $(
+                            'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div > span'
+                        );
+                        progress_message = progress_message.text().replace(text_date.text(), '').trim();
+                        product.progress_message = progress_message;
+                    }
+                } catch (error) {
+                    console.log(error);
                 }
 
-                product.message_list = listMessage;
-                product.ship_info = shipInfo;
-                
+                // Progress status
+                try {
+                    let progress = 'null';
+                    let classStatusNode = $('div.acMdStatusImage > ul.acMdStatusImage__status');
+                    let classText = classStatusNode.attr('class');
+                    switch (classText) {
+                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current04 acMdStatusImage__status--end acMdStatusImage__status--complete':
+                            progress = '受取連絡';
+                            // Số tiền nhận dự kiến:
+                            let nodeAmountActual = $(
+                                'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr > td > div > a'
+                            );
+
+                            try {
+                                if (nodeAmountActual && nodeAmountActual.attr('href')) {
+                                    let url_get_amount = nodeAmountActual.attr('href');
+                                    let response_get_amount = await axios.get(url_get_amount, {
+                                        headers: {
+                                            cookie,
+                                        },
+                                        proxy: proxyConfig,
+                                    });
+                                    if (response_get_amount && response_get_amount.status === 200) {
+                                        let $$ = cheerio.load(response_get_amount.data);
+                                        let node_amount_actual = $$('#rcvdtl > ul > li.decTotal > dl:nth-child(1) > dd');
+                                        if (node_amount_actual) {
+                                            let amount_actual = node_amount_actual.text().match(/\d+/)[0];
+                                            product.amount_actual = amount_actual;
+                                        }
+                                    }
+                                }
+                            } catch (error) {}
+
+                            break;
+                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current02':
+                            progress = 'お支払い';
+                            // Số tiền nhận dự kiến:
+                            let nodeAmountExpected = $(
+                                'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr:nth-child(2) > td'
+                            );
+                            let amount_expected = 0;
+                            if (nodeAmountExpected.text()) {
+                                amount_expected = nodeAmountExpected.text().match(/\d+/)[0];
+                                if (amount_expected) {
+                                    product.amount_expected = amount_expected;
+                                }
+                            }
+
+                            break;
+                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current02':
+                            progress = '送料連絡';
+                            break;
+                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current03':
+                            progress = '発送連絡';
+                            break;
+                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current01':
+                            progress = '取引情報';
+                            break;
+                    }
+                    product.progress = progress;
+                } catch (error) {}
             }
 
             // Get count buyer

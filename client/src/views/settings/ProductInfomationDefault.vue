@@ -42,7 +42,7 @@
                 <transition name="fade">
                   <div>
                     <div class="row">
-                      <div class="col-5 text-align-end mt-2">
+                      <div class="col-4 col-md-3 col-sm-2 text-align-end mt-2">
                         利益 :(円)を割ったら出品停止 :
                       </div>
                       <div class="col-3">
@@ -54,7 +54,7 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-5 text-align-end mt-2">
+                      <div class="col-4 col-md-3 col-sm-2 text-align-end mt-2">
                         Amazonで設定する　送料一律（円）<br />
                         取得価格が出品者だった場合に自動で割り当てておく送料
                         <small>(円)</small> :
@@ -68,28 +68,28 @@
                       </div>
                     </div>
 
-                    <div v-if="product.list_profit">
-                      <div class="row">
-                        <div class="col-5 text-align-end mt-2 font-weight-bold">
-                          <span>利益設定: </span>
-                        </div>
+                    <div class="row" v-if="product.list_profit">
+                      <div
+                        class="col-4 col-md-3 col-sm-2 text-align-end mt-2 font-weight-bold"
+                      >
+                        <span>利益設定: </span>
                       </div>
-                      <div class="row">
-                        <div
-                          class="col-6"
-                          style="text-align: end; justify-content: flex-end; align-items: flex-end; display: inline-grid;"
-                        >
+                      <div
+                        class="col-8 col-md-9 col-sm-10"
+                        style="display: flex;"
+                      >
+                        <div class="mr-4">
                           <div class="row align-items-center m-0">
                             <span class="mr-1">レンジ1: </span>
                             <div class="row m-0 align-items-center">
                               <input
                                 type="number"
-                                style="width: 150px"
+                                style="width: 100px"
                                 class="form-control mr-3"
                                 v-model="product.list_profit[0].price"
                               />
                               <input
-                                style="width: 150px"
+                                style="width: 100px"
                                 type="text"
                                 class="form-control"
                                 v-model="product.list_profit[0].persent_profit"
@@ -102,12 +102,12 @@
                             <div class="row ">
                               <input
                                 type="number"
-                                style="width: 150px"
+                                style="width: 100px"
                                 class="form-control mr-3"
                                 v-model="product.list_profit[1].price"
                               />
                               <input
-                                style="width: 150px"
+                                style="width: 100px"
                                 type="text"
                                 class="form-control"
                                 v-model="product.list_profit[1].persent_profit"
@@ -119,12 +119,12 @@
                             <div class="row m-0">
                               <input
                                 type="number"
-                                style="width: 150px"
+                                style="width: 100px"
                                 class="form-control mr-3 my-1"
                                 v-model="product.list_profit[2].price"
                               />
                               <input
-                                style="width: 150px"
+                                style="width: 100px"
                                 type="text"
                                 class="form-control my-1"
                                 v-model="product.list_profit[2].persent_profit"
@@ -137,12 +137,12 @@
                             <div class="row ">
                               <input
                                 type="number"
-                                style="width: 150px"
+                                style="width: 100px"
                                 class="form-control mr-3"
                                 v-model="product.list_profit[3].price"
                               />
                               <input
-                                style="width: 150px"
+                                style="width: 100px"
                                 type="text"
                                 class="form-control"
                                 v-model="product.list_profit[3].persent_profit"
@@ -155,12 +155,12 @@
                             <div class="row m-0">
                               <input
                                 type="number"
-                                style="width: 150px"
+                                style="width: 100px"
                                 class="form-control mr-3"
                                 v-model="product.list_profit[4].price"
                               />
                               <input
-                                style="width: 150px"
+                                style="width: 100px"
                                 type="text"
                                 class="form-control"
                                 v-model="product.list_profit[4].persent_profit"
@@ -168,7 +168,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-6">
+                        <div>
                           10％とすると、10%の利益率で計算（%）<br />
                           \500とすると、500円の利益で計算（\）<br />
                           自由に数字を変えてください。<br />
@@ -179,7 +179,7 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-5 text-align-end mt-2">
+                      <div class="col-4 col-md-3 col-sm-2 text-align-end mt-2">
                         ヤフオクの即決価格 販売価格から <small>(円)</small> :
                       </div>
                       <div class="col-3">
@@ -189,7 +189,7 @@
                           v-model="product.yahoo_auction_bid_price"
                         />
                       </div>
-                      <div class="col-4 mt-2">
+                      <div class="col-4 col-md-3 col-sm-2 mt-2">
                         乗せた金額を自動生成
                       </div>
                     </div>
