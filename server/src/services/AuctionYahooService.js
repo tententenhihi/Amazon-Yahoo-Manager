@@ -682,6 +682,37 @@ export default class AuctionYahooService {
                                 }
                             } catch (error) {}
                         }
+                        if (!product.amount_actual) {
+                            let result = await AuctionYahooService.getCookie(accountYahoo, proxy, true);
+                            if (result.status === 'SUCCESS') {
+                                accountYahoo.cookie_aucpay = result.cookie;
+                                await accountYahoo.save();
+                            }
+                            if (accountYahoo.cookie_aucpay) {
+                                let nodeAmountActual = $(
+                                    'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr > td > div > a'
+                                );
+                                try {
+                                    if (nodeAmountActual && nodeAmountActual.attr('href')) {
+                                        let url_get_amount = nodeAmountActual.attr('href');
+                                        let response_get_amount = await axios.get(url_get_amount, {
+                                            headers: {
+                                                cookie: accountYahoo.cookie_aucpay,
+                                            },
+                                            proxy: proxyConfig,
+                                        });
+                                        if (response_get_amount && response_get_amount.status === 200) {
+                                            let $$ = cheerio.load(response_get_amount.data);
+                                            let node_amount_actual = $$('#rcvdtl > ul > li.decTotal > dl:nth-child(1) > dd');
+                                            if (node_amount_actual) {
+                                                let amount_actual = node_amount_actual.text().match(/\d+/)[0];
+                                                product.amount_actual = amount_actual;
+                                            }
+                                        }
+                                    }
+                                } catch (error) {}
+                            }
+                        }
                     }
 
                     // Số tiền nhận dự kiến:
