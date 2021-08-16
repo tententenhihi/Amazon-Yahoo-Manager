@@ -21,69 +21,81 @@ export default class ProductYahooService {
     static async checkStopUpload(productYahooData, defaultSetting) {
         let isStopUpload = false;
 
-        if (productYahooData.is_user_change) {
-            let price = productYahooData.start_price + defaultSetting.yahoo_auction_shipping;
-            let gross_profit = price - productYahooData.original_price;
-            let actual_profit = gross_profit - defaultSetting.yahoo_auction_shipping;
-            if (actual_profit <= defaultSetting.profit_stop) {
-                isStopUpload = true;
+        // if (productYahooData.is_user_change) {
+
+        //     let actual_profit = this.calculatorPrice(defaultSetting, productYahooData);
+
+        //     if (actual_profit <= defaultSetting.profit_stop) {
+        //         isStopUpload = true;
+        //     }
+        // }
+
+        // if (!isStopUpload && productYahooData.asin_amazon) {
+        let checkKeepa = false;
+        let newProductData = null;
+        // Kiểm tra hết hàng
+        // 1. Check trong DB
+        let productAmazonInDB = await ProductAmazonService.findOne({ asin: productYahooData.asin_amazon });
+        if (productAmazonInDB) {
+            // checkDate
+            let dateProduct = new Date(productAmazonInDB.created);
+            let dateNow = new Date();
+            dateProduct.setHours(dateProduct.getHours() + 24);
+            if (dateProduct < dateNow) {
+                checkKeepa = true;
+            } else {
+                newProductData = productAmazonInDB;
             }
         }
-
-        if (!isStopUpload && productYahooData.asin_amazon) {
-            let checkKeepa = false;
-            let newProductData = null;
-            // Kiểm tra hết hàng
-            // 1. Check trong DB
-            let productAmazonInDB = await ProductAmazonService.findOne({ asin: productYahooData.asin_amazon });
-            if (productAmazonInDB) {
-                // checkDate
-                let dateProduct = new Date(productAmazonInDB.created);
-                let dateNow = new Date();
-                dateProduct.setHours(dateProduct.getHours() + 24);
-                if (dateProduct < dateNow) {
-                    checkKeepa = true;
+        // 2. Check Keepa
+        if (checkKeepa) {
+            let resultKeep = await KeepaService.findProduct([productYahooData.asin_amazon]);
+            if (resultKeep.status === 'SUCCESS' && resultKeep.data && resultKeep.data.length > 0 && resultKeep.data[0].status === 'SUCCESS') {
+                newProductData = resultKeep.data[0].data;
+                if (!productAmazonInDB) {
+                    // create new product amazon
+                    newProductData = await ProductAmazonService.update(productAmazonInDB._id, newProductData);
                 } else {
-                    newProductData = productAmazonInDB;
+                    //updatea product amazon
+                    newProductData = await ProductAmazonService.create(newProductData);
                 }
             }
-            // 2. Check Keepa
-            if (checkKeepa) {
-                let resultKeep = await KeepaService.findProduct([productYahooData.asin_amazon]);
-                if (resultKeep.status === 'SUCCESS' && resultKeep.data && resultKeep.data.length > 0 && resultKeep.data[0].status === 'SUCCESS') {
-                    newProductData = resultKeep.data[0].data;
-                    if (!productAmazonInDB) {
-                        // create new product amazon
-                        await ProductAmazonService.update(productAmazonInDB._id, newProductData);
-                    } else {
-                        //updatea product amazon
-                        await ProductAmazonService.create(newProductData);
+        }
+        if (newProductData) {
+            if (newProductData.count === 0) {
+                isStopUpload = true;
+                console.log(' ================ Dừng xuất hàng. Sản phẩm đã hết hàng =============== ');
+            } else {
+                if (productYahooData.is_user_change) {
+                    isStopUpload = await this.checkProfitToStopUpload(
+                        defaultSetting,
+                        newProductData.price,
+                        newProductData.ship_fee,
+                        productYahooData.start_price
+                    );
+                } else {
+                    isStopUpload = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee);
+                    if (isStopUpload) {
+                        console.log(' ================ Dừng xuất hàng. Sản phẩm lợi nhuận thấp =============== ');
                     }
                 }
             }
-            if (newProductData) {
-                if (newProductData.count === 0) {
-                    isStopUpload = true;
-                } else {
-                    isStopUpload = await this.checkProfitToStopUpload(defaultSetting, newProductData.import_price, newProductData.ship_fee);
-                }
-            }
-            if (isStopUpload) {
-                console.log(' ================ Dừng xuất hàng. Sản phẩm đã hết hàng =============== ');
-            }
-        } else {
-            console.log(' ================ Dừng xuất hàng. Sản phẩm lợi nhuận thấp =============== ');
         }
+
         return isStopUpload;
     }
-    static async checkProfitToStopUpload(defaultSetting, import_price, amazon_shipping_fee) {
-        let dataprofit = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee);
+    static async checkProfitToStopUpload(defaultSetting, import_price, amazon_shipping_fee, start_price_user_input) {
+        let dataprofit = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee, start_price_user_input);
+
+        console.log(' ### dataprofit: ', dataprofit);
+
         if (dataprofit.actual_profit <= defaultSetting.profit_stop) {
             return true;
         }
         return false;
     }
-    static async calculatorPrice(defaultSetting, import_price, amazon_shipping_fee) {
+    static async calculatorPrice(defaultSetting, import_price, amazon_shipping_fee, start_price_user_input) {
+
         //Tỷ suất lơi nhuận
         let profitPersent = '';
         for (let i = 0; i < defaultSetting.list_profit.length; i++) {
@@ -122,6 +134,8 @@ export default class ProductYahooService {
         // Nguyên giá
         let original_price = import_price + amazon_shipping_fee;
 
+        // Tiền người mua trả
+        let amount_buyer_paid = 0;
         // bid_or_buy_price = defaultSetting.yahoo_auction_bid_price;
 
         if (profitPersent.endsWith('%')) {
@@ -129,42 +143,26 @@ export default class ProductYahooService {
             profitPersent = parseFloat(profitPersent.toString().trim());
             profitPersent = profitPersent / 100;
             price = parseInt(import_price / (1 - profitPersent - fee_auction_yahoo));
-
-            start_price = price - ship_fee_yahoo;
-            if (start_price <= 0) {
-                start_price = 1;
-            }
-
-            amount_received = price - parseInt(price * fee_auction_yahoo);
-
-            gross_profit = price - original_price;
-
-            actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
-
-            bid_or_buy_price = start_price + defaultSetting.yahoo_auction_bid_price;
         } else if (profitPersent.startsWith('\\')) {
             profitPersent = profitPersent.replace('\\', '');
             profitPersent = parseInt(profitPersent.toString().trim());
-
-            // price = parseInt((import_price + profitPersent + amazon_shipping_fee + ship_fee_yahoo) * (1 + fee_auction_yahoo));
             price = parseInt((original_price + profitPersent) / (1 - fee_auction_yahoo));
-
-            start_price = price - ship_fee_yahoo;
-            if (start_price <= 0) {
-                start_price = 1;
-            }
-
-            amount_received = price - parseInt(((original_price + profitPersent) * fee_auction_yahoo) / (1 - fee_auction_yahoo));
-
-            gross_profit = price - original_price;
-
-            actual_profit = gross_profit - parseInt(((original_price + profitPersent) * fee_auction_yahoo) / (1 - fee_auction_yahoo));
-
-            // if (bid_or_buy_price === 0) {
-            bid_or_buy_price = start_price + defaultSetting.yahoo_auction_bid_price;
-
-            // }
         }
+
+        if (start_price_user_input) {
+            start_price = start_price_user_input;
+        } else {
+            start_price = price - ship_fee_yahoo;
+        }
+
+        if (start_price <= 0) {
+            start_price = 1;
+        }
+        amount_buyer_paid = start_price + ship_fee_yahoo;
+        amount_received = amount_buyer_paid - parseInt(price * fee_auction_yahoo);
+        actual_profit = amount_received - original_price;
+        bid_or_buy_price = start_price + defaultSetting.yahoo_auction_bid_price;
+
         return {
             import_price,
             price,
@@ -174,6 +172,7 @@ export default class ProductYahooService {
             gross_profit,
             actual_profit,
             original_price,
+            amount_buyer_paid,
         };
     }
     static async find(data) {
@@ -582,7 +581,6 @@ export default class ProductYahooService {
         let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id });
         if (!cateAmazon) {
             cateAmazon = await CategoryService.create({
-                user_id,
                 amazon_cate_id: productAmazon.category_id,
                 asin: productAmazon.asin,
             });

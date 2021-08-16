@@ -4,6 +4,8 @@ import AsinAmazonService from '../services/AsinAmazonService';
 import Response from '../utils/Response';
 import Utils from '../utils/Utils';
 import AccountYahooService from '../services/AccountYahooService';
+import ProductYahooService from '../services/ProductYahooService';
+import ProductYahooModel from '../models/ProductYahooModel';
 
 export default class AsinAmazonController {
     static async deleteMulti(req, res) {
@@ -76,10 +78,25 @@ export default class AsinAmazonController {
                 listCode.length > 0
                 // && groupId
             ) {
+                // Check max yahoo
+                let countProductYahoo = await ProductYahooModel.find({ user_id: user._id }).countDocuments();
+                if (countProductYahoo >= 3000) {
+                    return response.error400({
+                        message: 'ヤフオクの仕様上、1アカウントで3000件までしか出品できないので、1アカウントあたり最大3000件まで登録可能',
+                    });
+                }
                 let listAsinNew = [];
                 let queryKey = Utils.generateKey();
                 for (let i = 0; i < listCode.length; i++) {
                     const code = listCode[i];
+                    // Check exist Asin exít product
+
+                    // Check exist product yahoo
+                    let existProductYahoo = await ProductYahooService.findOne({ asin_amazon: code, user_id: user._id });
+                    if (existProductYahoo) {
+                        continue;
+                    }
+
                     let newAsinData = {
                         code,
                         idUser: user._id,
@@ -89,6 +106,10 @@ export default class AsinAmazonController {
                         query_key: queryKey,
                     };
                     listAsinNew.push(newAsinData);
+                    countProductYahoo++;
+                    if (countProductYahoo >= 3000) {
+                        break;
+                    }
                 }
                 let newAsin = await AsinAmazonService.addMany(listAsinNew);
                 QueueGetProductAmazon.addNew({

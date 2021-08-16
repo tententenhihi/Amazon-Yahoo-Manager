@@ -25,7 +25,7 @@ export default class ProductYahooEndedService {
                     listProductEnded = listProductEnded.reverse();
                     let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
 
-                    console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
+                    // console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
                     // tạo , update product
                     for (let j = 0; j < listProductEnded.length; j++) {
                         const product = listProductEnded[j];

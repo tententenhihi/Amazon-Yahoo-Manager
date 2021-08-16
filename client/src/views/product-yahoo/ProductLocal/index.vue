@@ -41,12 +41,13 @@
         </div>
         <div class="form-search">
           <div class="form-row">
-            <div class="form-group col-sm-4">
+            <div class="form-group col-sm-3">
               <label for="folder">出品フォルダ</label>
               <select
                 id="folder"
                 class="form-control"
                 v-model="searchObj.folder"
+                @change="onChangeSelectFolder"
               >
                 <option :value="null" selected>すべて</option>
                 <option
@@ -58,7 +59,17 @@
                 </option>
               </select>
             </div>
-            <div class="form-group col-sm-4">
+            <div class="form-group col-sm-3">
+              <label for="queryString">ASIN </label>
+              <input
+                type="text"
+                class="form-control"
+                v-model="searchObj.asin_amazon"
+                id="queryString"
+                placeholder="キーワード / 仕入元・オークションID"
+              />
+            </div>
+            <div class="form-group col-sm-3">
               <label for="queryString">検索クエリー</label>
               <input
                 type="text"
@@ -68,7 +79,7 @@
                 placeholder="キーワード / 仕入元・オークションID"
               />
             </div>
-            <div class="form-group col-sm-4">
+            <div class="form-group col-sm-3">
               <label for="listingStatus">出品ステータス</label>
               <select
                 id="listingStatus"
@@ -208,45 +219,164 @@
 
         <JsonCSV
           style="display: contents;"
-          :data="selectedProducts"
+          :data="dataExport"
           :fields="[
             '_id',
+            'yahoo_auction_category_id',
             'product_yahoo_title',
+            'type_import_desciption',
+            'description',
+            'image1',
+            'image2',
+            'image3',
+            'image4',
+            'image5',
+            'image6',
+            'image7',
+            'image8',
+            'image9',
+            'image10',
+            'image_comment1',
+            'image_comment2',
+            'image_comment3',
+            'image_comment4',
+            'image_comment5',
+            'image_comment6',
+            'image_comment7',
+            'image_comment8',
+            'image_comment9',
+            'image_comment10',
+            'count',
             'start_price',
             'bid_or_buy_price',
-            'ship_fee1',
-            'quantity',
-            'import_price',
+            'offer',
+
+            'duration',
+            'closing_time',
+            'num_resubmit',
+            'xxx1',
+            'auto_extension',
+            'close_early',
+            'min_bid_rating',
+            'bad_rating_ratio',
+            'bid_credit_limit',
+            'status',
+            'status_comment',
+            'retpolicy',
+            'ofretpolicy_commentfer',
+            'offer',
+            'offer',
+            'xxx2',
             'count',
-            'image_overlay_index',
-            'note',
-            'description',
-            'yahoo_auction_category_id'
+            'count',
+            'count',
+            'count',
+            'count',
+            'count',
+            'count',
+            'count',
+            'count',
+            'count',
+            'xxx3',
+            'location',
+            'city',
+            'shipping',
+            'xxx4',
+            'ship_schedule',
+            'xxx5',
+            'xxx6',
+            'xxx7',
+            'xxx8',
+            'xxx9',
+            'xxx10',
+            'xxx11',
+            'xxx12',
+            'xxx13',
+            'xxx14',
+            'ship_name1',
+            'xxx15',
+            'xxx16',
+            'xxx17',
+            'xxx18',
+            'ship_name2',
+            'xxx19',
+            'xxx20',
+            'xxx21',
+            'xxx22',
+            'ship_name3',
+            'xxx23',
+            'xxx24',
+            'xxx25',
+            'xxx26',
+            'ship_name4',
+            'xxx27',
+            'xxx28',
+            'xxx29',
+            'xxx30',
+            'ship_name5',
+            'xxx31',
+            'xxx32',
+            'xxx33',
+            'xxx34',
+            'ship_name6',
+            'xxx35',
+            'xxx36',
+            'xxx37',
+            'xxx38',
+            'ship_name7',
+            'xxx39',
+            'xxx40',
+            'xxx41',
+            'xxx42',
+            'ship_name8',
+            'xxx43',
+            'xxx44',
+            'xxx45',
+            'xxx46',
+            'ship_name9',
+            'xxx47',
+            'xxx48',
+            'xxx49',
+            'xxx50',
+            'ship_name10',
+            'xxx51',
+            'xxx52',
+            'xxx53',
+            'xxx',
+            'xxx',
+            'xxx',
+            'xxx',
+            'xxx',
+            'xxx',
+            'xxx',
+            'foreign_check',
+            'featured_amount',
+            'bold',
+            'highlight',
+            'xxxx',
+            'provider',
+            'asin_amazon',
+            'watch_only_prime',
+            'watch_stock',
+            'watch_profit',
+            'xxx',
+            'xxx',
+            'start_price',
+            'bid_or_buy_price',
+            'original_price',
+            'listing_status'
           ]"
-          :labels="{
-            _id: 'ID',
-            product_yahoo_title: 'Y！オーク商品の名前',
-            start_price: '開始価格',
-            bid_or_buy_price: '即決価格',
-            ship_fee1: '送料',
-            quantity: '数量',
-            import_price: '仕入元の値段',
-            count: '仕入元の在庫数',
-            image_overlay_index: '画像挿入',
-            note: '備考',
-            description: '商品詳細',
-            yahoo_auction_category_id: 'ヤフーカテゴリID'
-          }"
+          :labels="label_csv"
+          :name="nameFolderSelected + '.csv'"
         >
           <button
-            :disabled="!selectedProducts.length"
+            :disabled="!nameFolderSelected"
             class="btn btn-info mx-10 px-3"
             style="float: right;"
           >
             <i class="fa fa-download mr-1"></i>エクスポート
           </button>
         </JsonCSV>
-
         <button
           @click="$refs.inputCSV.click()"
           class="btn btn-info mx-10 px-3"
@@ -864,6 +994,151 @@ export default {
   },
   data() {
     return {
+      label_csv: {
+        _id: "ID",
+        yahoo_auction_category_id: "★カテゴリID",
+        product_yahoo_title: "Y！オーク商品の名前",
+        type_import_desciption: "説明の入力方式(0:直接入力/1:ファイル)",
+        description: "★商品説明またはファイル",
+        image1: "画像1ファイル",
+        image2: "画像2ファイル",
+        image3: "画像3ファイル",
+        image4: "画像4ファイル",
+        image5: "画像5ファイル",
+        image6: "画像6ファイル",
+        image7: "画像7ファイル",
+        image8: "画像8ファイル",
+        image9: "画像9ファイル",
+        image10: "画像10ファイル",
+        image_comment1: "画像1コメント",
+        image_comment2: "画像2コメント",
+        image_comment3: "画像3コメント",
+        image_comment4: "画像4コメント",
+        image_comment5: "画像5コメント",
+        image_comment6: "画像6コメント",
+        image_comment7: "画像7コメント",
+        image_comment8: "画像8コメント",
+        image_comment9: "画像9コメント",
+        image_comment10: "画像10コメント",
+        count: "個数",
+        start_price: "★開始価格",
+        bid_or_buy_price: "即決価格",
+        offer: "値下げ交渉",
+
+        duration: "★開催期間",
+        closing_time: "★終了時刻",
+        num_resubmit: "値下げ交渉",
+        xxx: "自動値下げ率(0)",
+        auto_extension: "自動延長",
+        close_early: "早期終了",
+        min_bid_rating: "入札者制限",
+        bad_rating_ratio: "悪い評価",
+        bid_credit_limit: "本人確認",
+        status: "★商品状態(0:中古/1:新品/2:その他)",
+        status_comment: "状態の備考",
+        retpolicy: "返品可否(0:不可/1:可)",
+        retpolicy_comment: "返品の備考",
+        xxx: "Yahoo!かんたん決済",
+        xxx: "みずほ銀行(3611464/0001)",
+        xxx: "(未設定)",
+        xxx: "(未設定)",
+        xxx: "(未設定)",
+        xxx: "(未設定)",
+        xxx: "(未設定)",
+        xxx: "(未設定)",
+        xxx: "(未設定)",
+        xxx: "(未設定)",
+        xxx: "(未設定)",
+        xxx: "出品者情報開示前チェック",
+        location: "★出品地域(1:北海道～47:沖縄/48:海外)",
+        city: "市区町村",
+        shipping: "送料負担(0:落札者/1:出品者)",
+        xxx: "送料入力方式(0:落札後/1:出品時/2:着払い)",
+        ship_schedule: "発送までの日数(1:1～2日/2:3～7日/3:8日以降)",
+        xxx: "ヤフネコ!(宅急便)",
+        xxx: "ヤフネコ!(宅急便コンパクト)",
+        xxx: "ヤフネコ!(ネコポス)",
+        xxx: "ゆうパック(おてがる版)",
+        xxx: "ゆうパケット(おてがる版)",
+        xxx: "(未使用)",
+        xxx: '"はこBOON mini"',
+        xxx: "荷物のサイズ(1～7)",
+        xxx: "荷物のサイズ(1～7)",
+        xxx: "荷物の重さ(1～7)",
+        ship_name1: "配送方法1",
+        xxx: "全国一律",
+        xxx: "北海道",
+        xxx: "沖縄",
+        xxx: "離島",
+        ship_name2: "配送方法1",
+        xxx: "全国一律",
+        xxx: "北海道",
+        xxx: "沖縄",
+        xxx: "離島",
+        ship_name3: "配送方法1",
+        xxx: "全国一律",
+        xxx: "北海道",
+        xxx: "沖縄",
+        xxx: "離島",
+        ship_name4: "配送方法1",
+        xxx: "全国一律",
+        xxx: "北海道",
+        xxx: "沖縄",
+        xxx: "離島",
+        ship_name5: "配送方法1",
+        xxx: "全国一律",
+        xxx: "北海道",
+        xxx: "沖縄",
+        xxx: "離島",
+        ship_name6: "配送方法1",
+        xxx: "全国一律",
+        xxx: "北海道",
+        xxx: "沖縄",
+        xxx: "離島",
+        ship_name7: "配送方法1",
+        xxx: "全国一律",
+        xxx: "北海道",
+        xxx: "沖縄",
+        xxx: "離島",
+        ship_name8: "配送方法1",
+        xxx: "全国一律",
+        xxx: "北海道",
+        xxx: "沖縄",
+        xxx: "離島",
+        ship_name9: "配送方法1",
+        xxx: "全国一律",
+        xxx: "北海道",
+        xxx: "沖縄",
+        xxx: "離島",
+        ship_name10: "配送方法1",
+        xxx: "全国一律",
+        xxx: "北海道",
+        xxx: "沖縄",
+        xxx: "離島",
+        xxx: "着払い[ゆうパック]",
+        xxx: "着払い[ゆうメール]",
+        xxx: "着払い[ゆうメール]",
+        xxx: "着払い[宅急便(ヤマト運輸)]",
+        xxx: "着払い[飛脚宅配便(佐川急便)]",
+        xxx: "着払い[カンガルー便(西濃運輸)]",
+        foreign_check: "海外対応",
+        featured_amount: "注目オプション(有料)",
+        bold: "太字(有料)",
+        highlight: "背景色(有料)",
+        xxx: "アフィリエイト(有料)",
+        provider: "仕入れ先",
+        asin_amazon: "仕入れ先ID",
+        watch_only_prime: "プライムのみ監視",
+        watch_stock: "在庫監視",
+        watch_profit: "利益監視",
+        xxx: "枠デザイン",
+        xxx:
+          "発送日数(1:１~２日/7:２～３日/2:３～７日/5:７日～１３日/6:１４日以降)",
+        start_price: "想定開始価格",
+        bid_or_buy_price: "想定即決価格",
+        original_price: "仕入れ金額",
+        listing_status: "出品中"
+      },
       products: [],
       HOLDING_PERIOD,
       ENDING_TIME,
@@ -877,11 +1152,13 @@ export default {
       searchObj: {
         folder: null,
         queryString: "",
+        asin_amazon: "",
         listingStatus: null,
         watch_stock: null,
         watch_profit: null,
         watch_only_prime: null
       },
+      nameFolderSelected: null,
       folders: [],
       LISTING_STATUS,
       SWITCH_OPTION,
@@ -924,23 +1201,121 @@ export default {
         this.selectedYahooAccount.proxy.length
         ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE
         : false;
+    },
+    dataExport() {
+      let dataExport = this.products.filter(product => {
+        let condition = true;
+        if (this.searchObj.folder) {
+          condition = condition && product.folder_id === this.searchObj.folder;
+        }
+        return condition;
+      });
+
+      dataExport = dataExport.map(item => {
+        return {
+          ...item,
+          xxx: "",
+          _id: "_id|" + item._id,
+          yahoo_auction_category_id: item.yahoo_auction_category_id || "",
+          product_yahoo_title: item.product_yahoo_title || "",
+          type_import_desciption: item.type_import_desciption || "",
+          description: item.description || "",
+          image1: item.image1 || "",
+          image2: item.image2 || "",
+          image3: item.image3 || "",
+          image4: item.image4 || "",
+          image5: item.image5 || "",
+          image6: item.image6 || "",
+          image7: item.image7 || "",
+          image8: item.image8 || "",
+          image9: item.image9 || "",
+          image10: item.image10 || "",
+          image_comment1: item.image_comment1 || "",
+          image_comment2: item.image_comment2 || "",
+          image_comment3: item.image_comment3 || "",
+          image_comment4: item.image_comment4 || "",
+          image_comment5: item.image_comment5 || "",
+          image_comment6: item.image_comment6 || "",
+          image_comment7: item.image_comment7 || "",
+          image_comment8: item.image_comment8 || "",
+          image_comment9: item.image_comment9 || "",
+          image_comment10: item.image_comment10 || "",
+          count: item.count || "",
+          start_price: item.start_price || "",
+          bid_or_buy_price: item.bid_or_buy_price || "",
+          offer: item.offer || "",
+          duration: item.duration || "",
+          closing_time: item.closing_time || "",
+          num_resubmit: item.num_resubmit || "",
+          auto_extension: item.auto_extension || "",
+          close_early: item.close_early || "",
+          min_bid_rating: item.min_bid_rating || "",
+          bad_rating_ratio: item.bad_rating_ratio || "",
+          bid_credit_limit: item.bid_credit_limit || "",
+          status: item.status || "",
+          status_comment: item.status_comment || "",
+          retpolicy: item.retpolicy || "",
+          retpolicy_comment: item.retpolicy_comment || "",
+          offer: item.offer || "",
+          location: item.location || "",
+          city: item.city || "",
+          shipping: item.shipping || "",
+          ship_schedule: item.ship_schedule || "",
+          ship_name1: item.ship_name1 || "",
+          ship_name2: item.ship_name2 || "",
+          ship_name3: item.ship_name3 || "",
+          ship_name4: item.ship_name4 || "",
+          ship_name5: item.ship_name5 || "",
+          ship_name6: item.ship_name6 || "",
+          ship_name7: item.ship_name7 || "",
+          ship_name8: item.ship_name8 || "",
+          ship_name9: item.ship_name9 || "",
+          ship_name10: item.ship_name10 || "",
+          foreign_check: item.foreign_check || "",
+          featured_amount: item.featured_amount || "",
+          bold: item.bold || "",
+          highlight: item.highlight || "",
+          provider: item.provider || "",
+          asin_amazon: item.asin_amazon || "",
+          watch_only_prime: item.watch_only_prime || "",
+          watch_stock: item.watch_stock || "",
+          watch_profit: item.watch_profit || "",
+          start_price: item.start_price || "",
+          bid_or_buy_price: item.bid_or_buy_price || "",
+          original_price: item.original_price || "",
+          listing_status:
+            item.listing_status === "UNDER_EXHIBITION" ? "出品済み" : "未出品"
+        };
+      });
+      return dataExport;
     }
   },
   methods: {
+    onChangeSelectFolder(event) {
+      let _id = event.target.value;
+      if (_id) {
+        let folderSelected = this.folders.find(item => item._id === _id);
+        if (folderSelected) {
+          this.nameFolderSelected = folderSelected.name;
+        } else {
+          this.nameFolderSelected = "";
+        }
+      } else {
+        this.nameFolderSelected = "";
+      }
+    },
     readFileText(file) {
       return new Promise((resolve, reject) => {
         try {
           let reader = new FileReader();
           reader.onload = async function(e) {
-            let arrLines = e.target.result.split("\n");
+            let arrLines = e.target.result
+              .split("_id|")
+              .filter(item => item !== "");
             let contentCsv = arrLines.slice(1, arrLines.length);
             let productList = [];
             contentCsv.forEach(line => {
               if (line) {
-                line = line
-                  .replace("\r", "")
-                  .replace("\n", "")
-                  .trim();
                 let pros = line.trim().split(",");
                 let start_price = pros[2].replace(/\D+/, "");
                 let bid_or_buy_price = pros[3].replace(/\D+/, "");
@@ -1190,6 +1565,12 @@ export default {
             condition &&
             product.product_yahoo_title.includes(this.searchObj.queryString);
         }
+        if (this.searchObj.asin_amazon) {
+          condition =
+            condition &&
+            product.asin_amazon.includes(this.searchObj.asin_amazon);
+        }
+
         if (this.searchObj.listingStatus) {
           condition =
             condition &&

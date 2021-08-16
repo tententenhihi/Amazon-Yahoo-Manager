@@ -17,6 +17,7 @@ import CronJobService from './crons/CronJobService';
 import ImageInsertionService from './services/ImageInsertionService';
 import ProductYahooService from './services/ProductYahooService';
 import Utils from './utils/Utils';
+import Category from './models/CategoryModel';
 require('dotenv').config();
 
 const app = express();
@@ -66,9 +67,25 @@ let initData = async () => {
         Fs.mkdirSync('uploads/yahoo-products');
     }
     console.log('Server Started.!');
-    // let results = await ProductYahooService.startUploadProductInListFolderId('60f3aaa13c13e41abc49cec2', '60f3adcc3c13e41abc49cee2', [
-    //     '6102d217bce59130b4f972d1',
-    // ]);
+
+    let countCateMap = await Category.find({}).countDocuments();
+    if (countCateMap < 14000) {
+        console.log(' ====== Import Category Default ======');
+        let listCate = Fs.readFileSync('category-map-default.txt', 'utf8');
+        listCate = listCate
+            .split('\n')
+            .map((item) => item.trim())
+            .filter((item) => item.trim() !== '')
+            .map((item) => {
+                return {
+                    amazon_cate_id: item.split('|')[0],
+                    yahoo_cate_id: item.split('|')[1],
+                    is_success_yahoo_cate_id: true,
+                };
+            });
+        await Category.insertMany(listCate);
+        console.log(' ====== Import Category Success ======');
+    }
 };
 
 // Connect mongo DB

@@ -25,8 +25,11 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
             }
         }
     }
-    dataUpdate.is_user_change = true;
+    if (dataUpdate.product_yahoo_title.length && dataUpdate.product_yahoo_title.length > 65) {
+        dataUpdate.product_yahoo_title = product_yahoo_title.substring(0, 65);
+    }
 
+    dataUpdate.is_user_change = true;
     dataUpdate.start_price = parseInt(dataUpdate.start_price);
     dataUpdate.ship_fee1 = parseInt(dataUpdate.ship_fee1);
     dataUpdate.bid_or_buy_price = parseInt(dataUpdate.bid_or_buy_price);
@@ -94,7 +97,6 @@ export default class ProductYahooController {
             if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-
                     let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
 
                     for (const product_id of ids) {

@@ -27,12 +27,18 @@ const getProductByAsin = async (dataInput, cb) => {
                     newListAsinModel.push(asinModel);
                     continue;
                 }
+
+                // // Check exist product yahoo
+                // let existProductYahoo = await ProductYahooService.findOne({ asin: asinModel.code })
+                // if (existProductYahoo) {
+                //     continue;
+                // }
                 let productAmazon = await ProductAmazonService.findOne({ asin: asinModel.code });
                 if (productAmazon) {
                     await ProductYahooService.createFromAmazonProduct(productAmazon, asinModel.idUser, asinModel.yahoo_account_id);
                     asinModel.isProductGeted = true;
                     asinModel.status = 'SUCCESS';
-                    asinModel.statusMessage = 'プロキシ変更';
+                    asinModel.statusMessage = '成功';
                     await asinModel.save();
                 } else {
                     listAsin.push(asinModel.code);
@@ -72,6 +78,7 @@ const getProductByAsin = async (dataInput, cb) => {
                             newListAsinModel[index].yahoo_account_id
                         );
                     }
+                    newListAsinModel[index].isProductGeted = itemData.status === 'SUCCESS';
                     newListAsinModel[index].status = itemData.status;
                     newListAsinModel[index].statusMessage = itemData.message;
                     await newListAsinModel[index].save();

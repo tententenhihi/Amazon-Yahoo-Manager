@@ -107,11 +107,7 @@
                 :key="asin.code + '-' + index"
               >
                 <td>{{ asin.code }}</td>
-                <td
-                  :class="
-                    asin.isProductGeted ? 'status-success' : 'status-fail'
-                  "
-                >
+                <td :class="asin.status ? 'status-success' : 'status-fail'">
                   {{ asin.status }}
                 </td>
                 <td>{{ asin.statusMessage }}</td>

@@ -84,7 +84,7 @@ const getData = async (listAsin) => {
                     result = {
                         asin: productData.asin,
                         data: {
-                            asin: productData.asin,
+                            asin: productData.asin, 
                             name: title,
                             category_id: productData.categories[0],
                             description,
@@ -94,7 +94,7 @@ const getData = async (listAsin) => {
                             count,
                         },
                         status: 'SUCCESS',
-                        message: '追加成功',
+                        message: '成功',
                     };
                 } catch (error) {
                     console.log(' #### KEEPA ERROR: ', error.message);

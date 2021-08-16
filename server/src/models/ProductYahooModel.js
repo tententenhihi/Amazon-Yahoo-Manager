@@ -49,6 +49,12 @@ var ProductYahoo = new Schema({
         type: Number,
         default: 0,
     },
+    // phí ship amazon
+    amount_buyer_paid: {
+        type: Number,
+        default: 0,
+    },
+
     profit_stop: {
         type: Number,
         default: 0,

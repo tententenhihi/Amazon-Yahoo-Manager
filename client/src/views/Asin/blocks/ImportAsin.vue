@@ -6,7 +6,7 @@
         id="group-id" v-model="groupId">
     </div> -->
     <span class="fs-12 font-weight-bold"
-      >ASIN一覧（最大１万件まで登録可能）</span
+      >ヤフオクの仕様上、1アカウントで3000件までしか出品できないので、1アカウントあたり最大3000件まで登録可能</span
     >
     <div class="row ">
       <textarea
@@ -17,10 +17,7 @@
         placeholder="ASINを入力、一行で一つだけです。"
         v-model="asinString"
       ></textarea>
-      <div
-        class="col-md-4 mt-10"
-        style="place-self: flex-end;"
-      >
+      <div class="col-md-4 mt-10" style="place-self: flex-end;">
         <div style="display: flex; align-items: center;margin-bottom:10px">
           <input
             type="checkbox"
@@ -140,11 +137,12 @@ export default {
         let listCode = this.asinString
           .split("\n")
           .filter(item => item.trim() != "");
-        if (listCode.length > 10000) {
+        if (listCode.length > 3000) {
           this.$swal.fire({
             icon: "error",
             title: "エラー",
-            text: "最大10.000ASINまでしか追加できません !"
+            text:
+              "ヤフオクの仕様上、1アカウントで3000件までしか出品できないので、1アカウントあたり最大3000件まで登録可能"
           });
           return;
         }
