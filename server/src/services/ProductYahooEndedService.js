@@ -12,7 +12,7 @@ export default class ProductYahooEndedService {
         try {
             let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
             let is_lock_user = await UserService.checkUser_Lock_Exprired(accountYahoo.user_id);
-            if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie && !accountYahoo.is_lock) {
+            if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie ) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
                     let listProductEnded = await AuctionYahooService.getProductAuctionEnded(

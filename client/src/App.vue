@@ -66,6 +66,7 @@ export default {
         await this.$store.dispatch("setYahooAccount", accounts);
         await this.$store.dispatch("setUser", infoUser);
         if (accounts.length > 0) {
+          console.log(' 1111111111111111111 ');
           this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", accounts[0]);
         }
       } else if (result.status === 401) {

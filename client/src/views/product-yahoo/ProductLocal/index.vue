@@ -60,12 +60,12 @@
               </select>
             </div>
             <div class="form-group col-sm-3">
-              <label for="queryString">ASIN </label>
+              <label for="asin_amazon">ASIN </label>
               <input
                 type="text"
                 class="form-control"
                 v-model="searchObj.asin_amazon"
-                id="queryString"
+                id="asin_amazon"
                 placeholder="キーワード / 仕入元・オークションID"
               />
             </div>
@@ -218,6 +218,48 @@
         </button>
 
         <JsonCSV
+          style="display: contents;"
+          :data="dataExport"
+          :fields="[
+            '_id',
+            'product_yahoo_title',
+            'start_price',
+            'bid_or_buy_price',
+            'ship_fee1',
+            'quantity',
+            'import_price',
+            'count',
+            'image_overlay_index',
+            'note',
+            'description',
+            'yahoo_auction_category_id'
+          ]"
+          :labels="{
+            _id: 'ID',
+            product_yahoo_title: 'Y！オーク商品の名前',
+            start_price: '開始価格',
+            bid_or_buy_price: '即決価格',
+            ship_fee1: '送料',
+            quantity: '数量',
+            import_price: '仕入元の値段',
+            count: '仕入元の在庫数',
+            image_overlay_index: '画像挿入',
+            note: '備考',
+            description: '商品詳細',
+            yahoo_auction_category_id: 'ヤフーカテゴリID'
+          }"
+          :name="nameFolderSelected + '.csv'"
+        >
+          <button
+            :disabled="!nameFolderSelected"
+            class="btn btn-info mx-10 px-3"
+            style="float: right;"
+          >
+            <i class="fa fa-download mr-1"></i>エクスポート
+          </button>
+        </JsonCSV>
+
+        <!-- <JsonCSV
           style="display: contents;"
           :data="dataExport"
           :fields="[
@@ -376,7 +418,7 @@
           >
             <i class="fa fa-download mr-1"></i>エクスポート
           </button>
-        </JsonCSV>
+        </JsonCSV> -->
         <button
           @click="$refs.inputCSV.click()"
           class="btn btn-info mx-10 px-3"
@@ -485,9 +527,14 @@
                 />
               </td>
               <td width="200">
-                <a :href="`/yahoo-auction-products/${product._id}`">{{
-                  product.product_yahoo_title
-                }}</a>
+                <router-link
+                  :to="{
+                    name: 'CreateProductYahooLocal',
+                    params: { id: product._id }
+                  }"
+                  >{{ product.product_yahoo_title }}</router-link
+                >
+                <!-- <a href="#" @click="onClickTitle(product._id)">{{}}</a> -->
               </td>
               <!-- <td class="text-center">{{ product.duration }}</td> -->
               <td class="text-center">
@@ -1291,6 +1338,12 @@ export default {
     }
   },
   methods: {
+    onClickTitle(idProduct) {
+      this.$router.push({
+        name: "CreateProductYahooLocal",
+        params: { id: idProduct }
+      });
+    },
     onChangeSelectFolder(event) {
       let _id = event.target.value;
       if (_id) {

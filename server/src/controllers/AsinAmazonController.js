@@ -6,6 +6,7 @@ import Utils from '../utils/Utils';
 import AccountYahooService from '../services/AccountYahooService';
 import ProductYahooService from '../services/ProductYahooService';
 import ProductYahooModel from '../models/ProductYahooModel';
+var _ = require('lodash');
 
 export default class AsinAmazonController {
     static async deleteMulti(req, res) {
@@ -87,12 +88,17 @@ export default class AsinAmazonController {
                 }
                 let listAsinNew = [];
                 let queryKey = Utils.generateKey();
+
+                console.log(listCode);
+                listCode = _.uniqBy(listCode);
+                console.log(listCode);
+
                 for (let i = 0; i < listCode.length; i++) {
                     const code = listCode[i];
                     // Check exist Asin exít product
 
                     // Check exist product yahoo
-                    let existProductYahoo = await ProductYahooService.findOne({ asin_amazon: code, user_id: user._id });
+                    let existProductYahoo = await ProductYahooService.findOne({ asin_amazon: code, yahoo_account_id });
                     if (existProductYahoo) {
                         continue;
                     }

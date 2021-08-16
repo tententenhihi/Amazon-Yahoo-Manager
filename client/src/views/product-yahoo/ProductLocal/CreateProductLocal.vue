@@ -739,16 +739,23 @@
           </div>
         </div>
         <div class="row mt-20">
-          <button class="btn btn-success mb-1 mr-1 px-4" @click="onSaveProduct()">
+          <button
+            class="btn btn-success mb-1 mr-1 px-4"
+            @click="onSaveProduct()"
+          >
             保存
           </button>
           <router-link
             :to="{ name: 'YahooAuctionProducts' }"
             tag="button"
             class="btn btn-warning mb-1"
+            custom
+            v-slot="{ navigate }"
           >
-            キャンセル</router-link
-          >
+            <span @click="navigate" @keypress.enter="navigate" role="link"
+              >キャンセル</span
+            >
+          </router-link>
         </div>
       </div>
     </div>
@@ -937,9 +944,21 @@ export default {
       isShowErrorTitle: false
     };
   },
+  computed: {
+    productId() {
+      return this.$route.params.id || 0;
+    },
+    ...mapGetters({
+      selectedYahooAccount: "getSelectedYahooAccount"
+    }),
+    yahooAccountId() {
+      return this.selectedYahooAccount._id;
+    }
+  },
   async mounted() {
     await this.getFolders();
     if (this.productId != 0) {
+      console.log(" 2222222222222222222222222 ");
       let result = await ProductYahooApi.show(this.productId);
       if (result && result.status === 200) {
         this.product = result.data;
@@ -963,17 +982,7 @@ export default {
       }
     }
   },
-  computed: {
-    productId() {
-      return this.$route.params.id || 0;
-    },
-    ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
-    }),
-    yahooAccountId() {
-      return this.selectedYahooAccount._id;
-    }
-  },
+
   methods: {
     async onChangeTitlte(value, text) {
       if (
