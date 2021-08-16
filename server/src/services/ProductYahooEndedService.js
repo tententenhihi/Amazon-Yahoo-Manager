@@ -50,6 +50,7 @@ export default class ProductYahooEndedService {
                                     ...productYahoo._doc,
                                     ...product,
                                     _id: null,
+                                    created: Date.now(),
                                 };
                                 newProductYahooEnded = await ProductYahooEndedService.create(newProductYahooEnded);
                                 listProduct.push(newProductYahooEnded);
@@ -69,7 +70,7 @@ export default class ProductYahooEndedService {
                                 }
                             }
                         } else {
-                            let newProductYahooEnded = await ProductYahooEndedService.update(productExisted._id, product);
+                            let newProductYahooEnded = await ProductYahooEndedService.update(productExisted._id, { ...product, created: Date.now() });
                             listProduct.push(newProductYahooEnded);
                         }
                     }
