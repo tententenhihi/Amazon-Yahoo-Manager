@@ -635,9 +635,9 @@ export default class AuctionYahooService {
                     switch (classText) {
                         case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current04 acMdStatusImage__status--end acMdStatusImage__status--complete':
                             progress = '受取連絡';
-
                             break;
                         case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current02':
+                            progress = 'お支払い';
                             break;
                         case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current02':
                             progress = '送料連絡';

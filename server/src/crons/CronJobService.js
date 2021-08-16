@@ -53,29 +53,49 @@ export default class CronJobService {
             if (accountYahoo.status === 'SUCCESS' && accountYahoo.cookie && !accountYahoo.is_lock) {
                 const proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
+                    let defaultSetting = await ProductInfomationDefaultService.findOne({
+                        yahoo_account_id: accountYahoo._id,
+                        user_id: accountYahoo.user_id,
+                    });
                     let listProductSelling = await AuctionYahooService.getProductAuctionSelling(accountYahoo.cookie, proxyResult.data);
                     for (const productSelling of listProductSelling) {
                         if (productSelling.idBuyer === '') {
                             let productYahoo = await ProductYahooAuctionService.findOne({ aID: productSelling.aID });
+                            if (!productYahoo && productSelling.title) {
+                                productYahoo = await ProductYahooAuctionService.findOne({
+                                    product_yahoo_title: { $regex: productSelling.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)') },
+                                });
+                            }
                             if (productYahoo && productYahoo.asin_amazon) {
-                                //productYahoo.asin_amazon
-                                let result = await KeepaService.findProduct([productYahoo.asin_amazon]);
-                                if (result.status === 'SUCCESS' && result.data && result.data.length > 0 && result.data[0].status === 'SUCCESS') {
-                                    let dataKeepa = result.data[0].data;
-                                    let deleteProduct = false;
-                                    if (dataKeepa.count === 0) {
-                                        deleteProduct = true;
-                                    } else {
-                                        let defaultSetting = await ProductInfomationDefaultService.findOne({
-                                            yahoo_account_id: accountYahoo._id,
-                                            user_id: accountYahoo.user_id,
-                                        });
-                                        deleteProduct = await ProductYahooService.checkProfitToStopUpload(defaultSetting, dataKeepa.price, dataKeepa.ship_fee);
-                                    }
+
+                                // Product được tạo sau 18 tiếng mới check
+                                let dateProduct = new Date(productYahoo.created);
+                                let dateNow = new Date();
+                                dateProduct.setHours(dateProduct.getHours() + 18);
+                                if (dateNow > dateProduct) {
+                                    let deleteProduct = await ProductYahooService.checkStopUpload(productYahoo, defaultSetting);
                                     if (deleteProduct) {
                                         await AuctionYahooService.cancelAuction(productSelling.aID, accountYahoo.cookie, proxyResult.data);
                                     }
                                 }
+
+                                // let result = await KeepaService.findProduct([productYahoo.asin_amazon]);
+                                // if (result.status === 'SUCCESS' && result.data && result.data.length > 0 && result.data[0].status === 'SUCCESS') {
+                                //     let dataKeepa = result.data[0].data;
+                                //     let deleteProduct = false;
+                                //     if (dataKeepa.count === 0) {
+                                //         deleteProduct = true;
+                                //     } else {
+                                //         let defaultSetting = await ProductInfomationDefaultService.findOne({
+                                //             yahoo_account_id: accountYahoo._id,
+                                //             user_id: accountYahoo.user_id,
+                                //         });
+                                //         deleteProduct = await ProductYahooService.checkProfitToStopUpload(defaultSetting, dataKeepa.price, dataKeepa.ship_fee);
+                                //     }
+                                //     if (deleteProduct) {
+                                //         await AuctionYahooService.cancelAuction(productSelling.aID, accountYahoo.cookie, proxyResult.data);
+                                //     }
+                                // }
                             }
                         }
                     }

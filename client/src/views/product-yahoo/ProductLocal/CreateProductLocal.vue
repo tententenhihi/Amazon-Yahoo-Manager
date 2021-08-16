@@ -958,7 +958,6 @@ export default {
   async mounted() {
     await this.getFolders();
     if (this.productId != 0) {
-      console.log(" 2222222222222222222222222 ");
       let result = await ProductYahooApi.show(this.productId);
       if (result && result.status === 200) {
         this.product = result.data;

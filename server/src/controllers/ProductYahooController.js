@@ -12,6 +12,29 @@ import ProductInfomationDefaultService from '../services/ProductInfomationDefaul
 
 const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     let current_product = await ProductYahooService.findOne({ _id: dataUpdate._id });
+
+    let defaultSetting = await ProductInfomationDefaultService.findOne({
+        yahoo_account_id: current_product.yahoo_account_id,
+        user_id: current_product.user_id,
+    });
+
+    if (defaultSetting) {
+        if (!dataUpdate.ship_fee1) {
+            dataUpdate.ship_fee1 = defaultSetting.ship_fee1;
+        }
+        if (!dataUpdate.quantity) {
+            dataUpdate.quantity = defaultSetting.quantity;
+        }
+        if (!dataUpdate.start_price) {
+            dataUpdate.start_price = 0;
+        }
+        if (!dataUpdate.bid_or_buy_price) {
+            dataUpdate.bid_or_buy_price = 0;
+        }
+    }
+
+    console.log(' ########## dataUpdate: ', dataUpdate);
+
     let yahooAccount = await AccountYahooService.findById(current_product.yahoo_account_id);
 
     if (!yahooAccount || yahooAccount.auction_point <= 10) {

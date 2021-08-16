@@ -1,17 +1,34 @@
 import Axios from 'axios';
+import AsinAmazonModel from '../models/AsinAmazonModel';
 import Utils from '../utils/Utils';
 
 const getData = async (listAsin) => {
     let listResult = [];
     try {
         let token = `82stsotg8m0qivjvcbsvn08f1t229kilkljgvi6057buv80631tbtlgdvtinj6e9`;
-        let url = `https://api.keepa.com/product?key=${token}&domain=5&asin=${listAsin.join(',')}&offers=20&stock=1&rating=1`;
         let res = null;
         let errorRes = null;
         do {
+            let newListAsin = [];
+            for (let i = 0; i < listAsin.length; i++) {
+                const asin = listAsin[i];
+                let checkExistAsin = await AsinAmazonModel.findOne({ code: asin });
+                if (checkExistAsin) {
+                    newListAsin.push(asin);
+                }
+            }
+            listAsin = newListAsin;
+            if (listAsin.length === 0) {
+                return {
+                    status: 'SUCCESS',
+                    data: [],
+                };
+            }
+            let url = `https://api.keepa.com/product?key=${token}&domain=5&asin=${listAsin.join(',')}&offers=20&stock=1&rating=1`;
             if (errorRes && errorRes.response && errorRes.response.status === 429) {
                 console.log(' ======== Sleep 429 ============ ');
                 console.log(' tokensLeft: ', errorRes.response.data.tokensLeft);
+
                 await Utils.sleep(30 * 1000);
             }
             try {
@@ -84,7 +101,7 @@ const getData = async (listAsin) => {
                     result = {
                         asin: productData.asin,
                         data: {
-                            asin: productData.asin, 
+                            asin: productData.asin,
                             name: title,
                             category_id: productData.categories[0],
                             description,
@@ -108,6 +125,7 @@ const getData = async (listAsin) => {
                 listResult.push(result);
             }
         } else {
+            console.log(' ###### errorRes: ', res);
             return {
                 status: 'ERROR',
                 message: 'エラー Keepa: ' + errorRes.response.status + '-' + errorRes.response.statusText,

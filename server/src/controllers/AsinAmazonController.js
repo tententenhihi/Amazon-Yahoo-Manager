@@ -77,32 +77,28 @@ export default class AsinAmazonController {
             if (
                 listCode &&
                 listCode.length > 0
-                // && groupId
             ) {
-                // Check max yahoo
+                // Kiểm tra giới hạn Product Yahoo
                 let countProductYahoo = await ProductYahooModel.find({ user_id: user._id }).countDocuments();
                 if (countProductYahoo >= 3000) {
                     return response.error400({
                         message: 'ヤフオクの仕様上、1アカウントで3000件までしか出品できないので、1アカウントあたり最大3000件まで登録可能',
                     });
                 }
+                // Kiểm tra trùng trong List
+                listCode = _.uniqBy(listCode);
+                
                 let listAsinNew = [];
                 let queryKey = Utils.generateKey();
 
-                console.log(listCode);
-                listCode = _.uniqBy(listCode);
-                console.log(listCode);
-
+                // Tạo List Object Asin
                 for (let i = 0; i < listCode.length; i++) {
                     const code = listCode[i];
-                    // Check exist Asin exít product
-
-                    // Check exist product yahoo
+                    // Kiểm tra đã tồn tại ProductYahoo chưa. có rồi thì bỏ qua Asin
                     let existProductYahoo = await ProductYahooService.findOne({ asin_amazon: code, yahoo_account_id });
                     if (existProductYahoo) {
                         continue;
                     }
-
                     let newAsinData = {
                         code,
                         idUser: user._id,
@@ -117,11 +113,17 @@ export default class AsinAmazonController {
                         break;
                     }
                 }
+
+                // Add list Object Asin
                 let newAsin = await AsinAmazonService.addMany(listAsinNew);
+
+                //Add List To Queue
                 QueueGetProductAmazon.addNew({
                     isUpdateAmazonProduct: checkUpdateAsin,
                     newAsin,
                 });
+
+                // Return List
                 let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
                 return response.success200({
                     newAsin: {
