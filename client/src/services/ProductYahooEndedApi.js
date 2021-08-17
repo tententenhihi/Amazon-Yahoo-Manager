@@ -14,7 +14,12 @@ export default {
   },
   deleteBuyer(credentials) {
     return Api.post(`${prefix}/delete-buyer`, credentials, {
-      timeout: 60 * 1000
+      timeout: 5 * 60 * 1000
+    });
+  },
+  cancelTransaction(credentials) {
+    return Api.post(`${prefix}/cancel-transaction`, credentials, {
+      timeout: 5 * 60 * 1000
     });
   },
   sendMessage(credentials) {

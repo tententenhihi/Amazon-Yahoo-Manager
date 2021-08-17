@@ -91,11 +91,18 @@
           }}</router-link
         >
         <br />
-        <button class="btn btn-danger mt-20" :disabled="true">取引中止</button>
+        <button
+          class="btn btn-danger mt-20"
+          @click="onCancelTransaction"
+          :disabled="product.progress !== '発送連絡'"
+        >
+          取引中止
+        </button>
         <br />
         <button
           class="btn btn-danger my-20"
           @click="$refs.modalSelectReason.openModal()"
+          :disabled="product.progress !== '取引情報'"
         >
           落札者削除
         </button>
@@ -286,6 +293,27 @@ export default {
     }
   },
   methods: {
+    async onCancelTransaction() {
+      let result = await this.$swal.fire({
+        icon: "warning",
+        title: "取引中止",
+        text: "トランザクションのキャンセルを確認する ",
+        showConfirmButton: true,
+        showCancelButton: true
+      });
+      if (result && result.value) {
+        try {
+          let payload = {
+            product_id: this.product._id
+          };
+          let res = await ProductYahooEndedApi.cancelTransaction(payload);
+          this.$swal.fire({
+            icon: "success",
+            timer: 500
+          });
+        } catch (error) {}
+      }
+    },
     async deleteBuyer() {
       let payload = {
         product_id: this.product._id,

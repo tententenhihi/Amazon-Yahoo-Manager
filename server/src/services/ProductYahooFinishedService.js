@@ -48,7 +48,7 @@ export default class ProductYahooFinishedService {
                     for (const productDB of listProductInDB) {
                         let checkDelete = true;
                         for (const productYAHOO of listProductFinished) {
-                            if (productDB.aID === productYAHOO.aID) {
+                            if (productDB.aID === productYAHOO.aID || productDB.product_yahoo_title.includes(productYAHOO.title)) {
                                 checkDelete = false;
                                 break;
                             }

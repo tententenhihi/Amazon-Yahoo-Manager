@@ -74,11 +74,12 @@ export default class ProductYahooEndedService {
                             listProduct.push(newProductYahooEnded);
                         }
                     }
+
                     // xóa product trong db
                     for (const productDB of listProductEndedInDB) {
                         let checkDelete = true;
                         for (const productYAHOO of listProductEnded) {
-                            if (productDB.aID === productYAHOO.aID) {
+                            if (productDB.aID === productYAHOO.aID || productDB.product_yahoo_title.includes(productYAHOO.title)) {
                                 checkDelete = false;
                                 break;
                             }

@@ -1448,4 +1448,69 @@ export default class AuctionYahooService {
             return null;
         }
     }
+    static async cancelTransaction(cookie, proxy, aID, usernameYahoo, idBuyer) {
+        try {
+            let headers = {
+                cookie,
+                'User-Agent':
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                Origin: 'https://contact.auctions.yahoo.co.jp',
+                Host: 'contact.auctions.yahoo.co.jp',
+
+                'Accept-Encoding': 'gzip, deflate, br',
+                Connection: 'keep-alive',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            };
+            let proxyConfig = {
+                host: proxy.host,
+                port: proxy.port,
+                auth: {
+                    username: proxy.username,
+                    password: proxy.password,
+                },
+            };
+            let urlPreview = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${aID}&syid=${usernameYahoo}&bid=${idBuyer}`;
+            let resPreview = await axios.get(urlPreview, { headers, proxy: proxyConfig });
+            let $ = cheerio.load(resPreview.data);
+            let oid = $('input[name="oid"]').val();
+            let crumb = $('input[name=".crumb"]').val();
+            if (oid && crumb) {
+                let dataSubmit = {
+                    oid,
+                    syid: usernameYahoo,
+                    aid: aID,
+                    bid: idBuyer,
+                    '.crumb': '.crumb',
+                    checkRepay: 1,
+                };
+                let payload = Qs.stringify(dataSubmit);
+                let resSubmit = await axios.post('https://contact.auctions.yahoo.co.jp/seller/escrowrepaysubmit', payload, {
+                    headers,
+                    proxy: proxyConfig,
+                });
+                if (resSubmit.data && resSubmit.data.includes('すべての取引が完了しました！またヤフオク!をご利用ください。')) {
+                    return {
+                        status: 'SUCCESS',
+                    };
+                } else {
+                    Fs.writeFileSync('CancelTransaction.html', resSubmit.data);
+                    return {
+                        status: 'ERROR',
+                        message: '...!',
+                    };
+                }
+            } else {
+                return {
+                    status: 'ERROR',
+                    message: 'crumb and oid not found.!',
+                };
+            }
+        } catch (error) {
+            console.log(' #### AuctionYahooService sendMessage: ', error);
+            return {
+                status: 'ERROR',
+                message: error.message,
+            };
+        }
+    }
 }

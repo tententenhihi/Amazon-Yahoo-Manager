@@ -66,6 +66,9 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         current_product.amazon_shipping_fee,
         dataUpdate.start_price
     );
+    if (dataUpdate.bid_or_buy_price) {
+        dataPrice.bid_or_buy_price = dataUpdate.bid_or_buy_price;
+    }
 
     dataUpdate = {
         ...dataUpdate,
@@ -255,9 +258,11 @@ export default class ProductYahooController {
             }
 
             let data = {
+                ...payload,
                 user_id: user._id,
                 images: [],
-                ...payload,
+                created: Date.now(),
+                _id: null,
             };
 
             if (req.files && payload.image_length) {
@@ -268,6 +273,38 @@ export default class ProductYahooController {
             } else {
                 return response.error400({ message: '画像は必須です' });
             }
+
+            let defaultSetting = await ProductInfomationDefaultService.findOne({
+                yahoo_account_id: payload.yahoo_account_id,
+                user_id: user._id,
+            });
+
+            if (defaultSetting) {
+                if (!data.ship_fee1) {
+                    data.ship_fee1 = defaultSetting.yahoo_auction_shipping;
+                }
+                if (!data.quantity) {
+                    data.quantity = defaultSetting.quantity;
+                }
+                if (!data.start_price) {
+                    data.start_price = 0;
+                }
+                if (!data.bid_or_buy_price) {
+                    data.bid_or_buy_price = 0;
+                }
+            }
+
+            if (data.product_yahoo_title.length && data.product_yahoo_title.length > 65) {
+                data.product_yahoo_title = product_yahoo_title.substring(0, 65);
+            }
+            let dataPrice = await ProductYahooService.calculatorPrice(defaultSetting, data.import_price, data.amazon_shipping_fee, data.start_price);
+            if (data.bid_or_buy_price) {
+                dataPrice.bid_or_buy_price = data.bid_or_buy_price;
+            }
+            console.log(dataPrice);
+
+            data = { ...data, ...dataPrice };
+            console.log(data);
             let result = await ProductYahooService.create(data);
             response.success200({ result });
         } catch (error) {

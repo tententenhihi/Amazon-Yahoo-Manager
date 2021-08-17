@@ -11,10 +11,11 @@ export default class ProductYahooSellingService {
         try {
             let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
             let is_lock_user = await UserService.checkUser_Lock_Exprired(accountYahoo.user_id);
-            if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie ) {
+            if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
                     let listProductSelling = await AuctionYahooService.getProductAuctionSelling(accountYahoo.cookie, proxyResult.data);
+                    listProductSelling = listProductSelling.reverse();
                     let listProductInDB = await ProductYahooSellingService.find({ yahoo_account_id: accountYahoo._id });
                     // console.log(' ##### startGetProductYahoo listProductSelling: ', listProductSelling);
                     // tạo , update product
@@ -40,7 +41,7 @@ export default class ProductYahooSellingService {
                                 listProduct.push(newProductYahooEnded);
                             }
                         } else {
-                            let newProductYahooEnded = await ProductYahooSellingService.update(productExisted._id, product);
+                            let newProductYahooEnded = await ProductYahooSellingService.update(productExisted._id, { ...product, created: Date.now() });
                             listProduct.push(newProductYahooEnded);
                         }
                     }
@@ -48,7 +49,7 @@ export default class ProductYahooSellingService {
                     for (const productDB of listProductInDB) {
                         let checkDelete = true;
                         for (const productYAHOO of listProductSelling) {
-                            if (productDB.aID === productYAHOO.aID) {
+                            if (productDB.aID === productYAHOO.aID || productDB.product_yahoo_title.includes(productYAHOO.title)) {
                                 checkDelete = false;
                                 break;
                             }
@@ -62,7 +63,7 @@ export default class ProductYahooSellingService {
         } catch (error) {
             console.log(' ### refreshDataYahoo: ', error);
         }
-        return listProduct;
+        return listProduct.reverse();
     }
 
     static async find(data) {

@@ -97,6 +97,41 @@ export default class ProductYahooEndedController {
             response.error500(error);
         }
     }
+    static async cancelTransaction(req, res) {
+        let response = new Response(res);
+        try {
+            const { product_id } = req.body;
+            let productEnded = await ProductYahooEndedService.findById(product_id);
+            if (!productEnded) {
+                return response.error400({ message: 'Product not found..!' });
+            }
+            let yahooAccount = await AccountYahooService.findById(productEnded.yahoo_account_id);
+            if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+                let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+                if (proxyResult.status === 'SUCCESS') {
+                    let result = await AuctionYahooService.cancelTransaction(
+                        yahooAccount.cookie,
+                        proxyResult.data,
+                        productEnded.aID,
+                        yahooAccount.yahoo_id,
+                        productEnded.idBuyer
+                    );
+                    if (result.status === 'SUCCESS') {
+                        return response.success200(result);
+                    } else {
+                        return response.error400({ message: result.message });
+                    }
+                } else {
+                    return response.error400({ message: proxyResult.statusMessage });
+                }
+            } else {
+                return response.error400({ message: 'User is Failse.!' });
+            }
+        } catch (error) {
+            console.log(error);
+            response.error500(error);
+        }
+    }
 
     static async sendMessage(req, res) {
         let response = new Response(res);

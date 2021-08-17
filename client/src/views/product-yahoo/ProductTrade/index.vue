@@ -350,8 +350,9 @@ export default {
       return "-";
     },
     getExpectInCome(product) {
-      let amount_expected = product.amount_expected;
+      let amount_expected = product.price_end - product.price_end * 0.1 + product.ship_fee1;
       if (amount_expected) {
+        amount_expected = amount_expected * product.product_buy_count
         return amount_expected.toLocaleString("ja-JP") + "円";
       }
       return "-";

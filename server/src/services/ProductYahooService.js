@@ -84,7 +84,7 @@ export default class ProductYahooService {
 
         return isStopUpload;
     }
-    static async checkProfitToStopUpload(defaultSetting, import_price, amazon_shipping_fee, start_price_user_input) {
+    static async checkProfitToStopUpload(defaultSetting, import_price, amazon_shipping_fee = 0, start_price_user_input = 0) {
         let dataprofit = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee, start_price_user_input);
 
         console.log(' ### dataprofit: ', dataprofit);
@@ -94,7 +94,10 @@ export default class ProductYahooService {
         }
         return false;
     }
-    static async calculatorPrice(defaultSetting, import_price, amazon_shipping_fee, start_price_user_input) {
+    static async calculatorPrice(defaultSetting, import_price = 0, amazon_shipping_fee = 0, start_price_user_input = 0) {
+        import_price = parseInt(import_price);
+        amazon_shipping_fee = parseInt(amazon_shipping_fee);
+        start_price_user_input = parseInt(start_price_user_input);
 
         //Tỷ suất lơi nhuận
         let profitPersent = '';
