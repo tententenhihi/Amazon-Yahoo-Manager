@@ -67,6 +67,9 @@ export default class ProductYahooService {
                 console.log(' ================ Dừng xuất hàng. Sản phẩm đã hết hàng =============== ');
             } else {
                 if (productYahooData.is_user_change) {
+                    if (newProductData.ship_fee1) {
+                        defaultSetting.yahoo_auction_shipping = newProductData.ship_fee1;
+                    }
                     isStopUpload = await this.checkProfitToStopUpload(
                         defaultSetting,
                         newProductData.price,

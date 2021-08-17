@@ -22,6 +22,8 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     if (defaultSetting) {
         if (!dataUpdate.ship_fee1) {
             dataUpdate.ship_fee1 = defaultSetting.yahoo_auction_shipping;
+        } else {
+            defaultSetting.yahoo_auction_shipping = dataUpdate.ship_fee1;
         }
         if (!dataUpdate.quantity) {
             dataUpdate.quantity = defaultSetting.quantity;
