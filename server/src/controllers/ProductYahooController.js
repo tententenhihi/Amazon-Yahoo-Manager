@@ -9,6 +9,7 @@ import ProductYahooAuctionService from '../services/ProductYahooAuctionService';
 import CronHistoryModel from '../models/CronHistoryModel';
 import ProductGlobalSettingService from '../services/ProductGlobalSettingService';
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
+import CategoryService from '../services/CategoryService';
 
 const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     let current_product = await ProductYahooService.findOne({ _id: dataUpdate._id });
@@ -20,7 +21,7 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
 
     if (defaultSetting) {
         if (!dataUpdate.ship_fee1) {
-            dataUpdate.ship_fee1 = defaultSetting.ship_fee1;
+            dataUpdate.ship_fee1 = defaultSetting.yahoo_auction_shipping;
         }
         if (!dataUpdate.quantity) {
             dataUpdate.quantity = defaultSetting.quantity;
@@ -33,7 +34,12 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         }
     }
 
-    console.log(' ########## dataUpdate: ', dataUpdate);
+    if (!dataUpdate.yahoo_auction_category_id) {
+        let cateAmazon = await CategoryService.findOne({ amazon_cate_id: current_product.id_category_amazon });
+        if (cateAmazon) {
+            dataUpdate.yahoo_auction_category_id = cateAmazon.yahoo_cate_id;
+        }
+    }
 
     let yahooAccount = await AccountYahooService.findById(current_product.yahoo_account_id);
 
@@ -53,28 +59,17 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     }
 
     dataUpdate.is_user_change = true;
-    dataUpdate.start_price = parseInt(dataUpdate.start_price);
-    dataUpdate.ship_fee1 = parseInt(dataUpdate.ship_fee1);
-    dataUpdate.bid_or_buy_price = parseInt(dataUpdate.bid_or_buy_price);
 
-    let fee_auction_yahoo = 0.1;
-    let price = dataUpdate.start_price + dataUpdate.ship_fee1;
-    let amount_received = price - parseInt(price * fee_auction_yahoo);
-    let gross_profit = price - current_product.original_price;
-    let actual_profit = gross_profit - parseInt(price * fee_auction_yahoo);
-    let bid_or_buy_price = 0;
-    if (current_product.bid_or_buy_price !== dataUpdate.bid_or_buy_price) {
-        bid_or_buy_price = dataUpdate.bid_or_buy_price;
-    } else {
-        bid_or_buy_price = price + (current_product.bid_or_buy_price - current_product.price);
-    }
+    let dataPrice = await ProductYahooService.calculatorPrice(
+        defaultSetting,
+        current_product.import_price,
+        current_product.amazon_shipping_fee,
+        dataUpdate.start_price
+    );
+
     dataUpdate = {
         ...dataUpdate,
-        price,
-        amount_received,
-        gross_profit,
-        actual_profit,
-        bid_or_buy_price,
+        ...dataPrice,
     };
 
     let result = await ProductYahooService.update(dataUpdate._id, dataUpdate);
@@ -300,6 +295,15 @@ export default class ProductYahooController {
             let user = req.user;
             const { _id } = req.params;
             let payload = JSON.parse(req.body.payload);
+
+            console.log(payload.yahoo_auction_category_id);
+            if (payload.yahoo_auction_category_id) {
+                let checkCateRight = await CategoryYahooService.findOne({ id: payload.yahoo_auction_category_id });
+                if (!checkCateRight) {
+                    return response.error400({ message: 'カテゴリーのエラー' });
+                }
+            }
+
             let result = await updateProductWithCaculatorProfit({ _id, ...payload }, req.files);
             response.success200({ result });
         } catch (error) {

@@ -100,7 +100,7 @@
                   <div class="col-8">
                     <input
                       type="text"
-                      v-model="product.asin"
+                      v-model="product.asin_amazon"
                       class="form-control"
                     />
                   </div>
