@@ -707,7 +707,7 @@ export default class AuctionYahooService {
                 proxy: proxyConfig,
             });
 
-            // Fs.writeFileSync(usernameYahoo + ' - preview.html', response.data);
+            Fs.writeFileSync(usernameYahoo + ' - preview.html', response.data);
             let $ = cheerio.load(response.data);
 
             let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
@@ -718,6 +718,10 @@ export default class AuctionYahooService {
                 let time_end = $(row).find('td:nth-child(5)').text().trim();
                 let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '').replace('-', '');
                 let progress_message = $(row).find('td:nth-child(7)').text();
+                let check_progress = $(row).find('td:nth-child(7) > p > img');
+                if (check_progress.length > 0) {
+                    progress_message = `<img src="https://s.yimg.jp/images/auct/template/ui/auc_mod/ic_6002.gif" alt="落札者" width="16" height="16">` + progress_message;
+                }
                 if (aID && aID !== '商品ID' && aID.trim() !== '') {
                     listProduct.push({ aID, idBuyer, time_end, price_end, title, progress_message });
                 }
@@ -830,6 +834,10 @@ export default class AuctionYahooService {
                         case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current01':
                             progress = '取引情報';
                             break;
+                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current04':
+                            progress = '発送連絡';
+                            break;
+                        
                     }
                     // Số tiền nhận thực tế
                     if (progress === '発送連絡' || progress === '受取連絡') {

@@ -102,7 +102,7 @@
         <button
           class="btn btn-danger my-20"
           @click="$refs.modalSelectReason.openModal()"
-          :disabled="product.progress !== '取引情報'"
+          :disabled="product.progress !== '取引情報' &&  product.progress !==  '送料連絡' "
         >
           落札者削除
         </button>

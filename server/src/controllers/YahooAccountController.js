@@ -173,7 +173,7 @@ class YahooAccountController {
                         existAccount.name = name;
                         existAccount.is_lock = is_lock;
                         if (is_lock) {
-                            await setLockAccount(existAccount);
+                            setLockAccount(existAccount);
                         }
                         if (existAccount.yahoo_id !== yahoo_id.trim() || existAccount.password !== password.trim()) {
                             existAccount.yahoo_id = yahoo_id;

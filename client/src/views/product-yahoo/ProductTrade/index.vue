@@ -177,9 +177,12 @@
                   product.progress
                 }}</span>
                 <div class="mt-1" v-if="product.progress_message">
-                  <span class="label " style="color: black">{{
-                    product.progress_message
-                  }}</span>
+                  <span
+                    class="label "
+                    style="color: black"
+                    v-html="product.progress_message"
+                  >
+                  </span>
                 </div>
               </td>
               <td class="text-note">
@@ -350,9 +353,10 @@ export default {
       return "-";
     },
     getExpectInCome(product) {
-      let amount_expected = product.price_end - product.price_end * 0.1 + product.ship_fee1;
+      let amount_expected =
+        product.price_end - product.price_end * 0.1 + product.ship_fee1;
       if (amount_expected) {
-        amount_expected = amount_expected * product.product_buy_count
+        amount_expected = amount_expected * product.product_buy_count;
         return amount_expected.toLocaleString("ja-JP") + "円";
       }
       return "-";
@@ -375,10 +379,16 @@ export default {
       return "-";
     },
     getPriceOriginal(product) {
-      let priceOriginal = product.import_price + product.amazon_shipping_fee;
-      if (priceOriginal) {
-        priceOriginal = priceOriginal * product.product_buy_count;
-        return priceOriginal.toLocaleString("ja-JP") + "円";
+      console.log(" ============= ");
+      console.log(product.import_price);
+      console.log(product.amazon_shipping_fee);
+
+      if (product.import_price && product.amazon_shipping_fee) {
+        return `${product.import_price.toLocaleString("ja-JP")}円 + 送料${
+          product.amazon_shipping_fee
+        }円`;
+      } else if (product.import_price) {
+        return `${product.import_price.toLocaleString("ja-JP")}円`;
       }
       return "-";
     },

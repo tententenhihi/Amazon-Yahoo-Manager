@@ -467,7 +467,7 @@
               <th class="text-center" width="100">送料<br /></th>
               <!-- <th class="text-center" width="70">出品停止<br />在庫数<br /></th> -->
               <th class="text-center" width="80">数量<br /></th>
-              <th class="text-center" width="70">仕入元の<br />値段</th>
+              <th class="text-center" width="100">仕入元の<br />値段</th>
               <th class="text-center" width="100">
                 想定利益
               </th>
@@ -1405,9 +1405,12 @@ export default {
   },
   methods: {
     getPriceOriginal(product) {
-      let priceOriginal = product.import_price + product.amazon_shipping_fee;
-      if (priceOriginal) {
-        return priceOriginal.toLocaleString("ja-JP") + "円";
+      if (product.import_price && product.amazon_shipping_fee) {
+        return `${product.import_price.toLocaleString("ja-JP")}円 + 送料${
+          product.amazon_shipping_fee
+        }円`;
+      } else if (product.import_price) {
+        return `${product.import_price.toLocaleString("ja-JP")}円`;
       }
       return "-";
     },

@@ -20,24 +20,27 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     });
     let temp_start_price = false;
     let temp_bid_or_buy_price = false;
+    let temp_ship_fee1 = false;
+
 
     if (defaultSetting) {
         if (!dataUpdate.ship_fee1) {
             dataUpdate.ship_fee1_temp = defaultSetting.quantity;
-            dataUpdate.ship_fee1 = 0;
+            dataUpdate.ship_fee1 = null;
+            temp_ship_fee1 = true;
         } else {
             defaultSetting.yahoo_auction_shipping = dataUpdate.ship_fee1;
         }
         if (!dataUpdate.quantity) {
             dataUpdate.quantity_temp = defaultSetting.quantity;
-            dataUpdate.quantity = 0;
+            dataUpdate.quantity = null;
         }
         if (!dataUpdate.start_price) {
-            dataUpdate.start_price = 0;
+            dataUpdate.start_price = null;
             temp_start_price = true;
         }
         if (!dataUpdate.bid_or_buy_price) {
-            dataUpdate.bid_or_buy_price = 0;
+            dataUpdate.bid_or_buy_price = null;
             temp_bid_or_buy_price = true;
         }
     }
@@ -85,12 +88,18 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     };
     if (temp_start_price) {
         dataUpdate.start_price_temp = dataUpdate.start_price;
-        dataUpdate.start_price = 0;
+        dataUpdate.start_price = null;
     }
     if (temp_bid_or_buy_price) {
         dataUpdate.bid_or_buy_price_temp = dataUpdate.bid_or_buy_price;
-        dataUpdate.bid_or_buy_price = 0;
+        dataUpdate.bid_or_buy_price = null;
     }
+    if (temp_ship_fee1) {
+        dataUpdate.ship_fee1_temp = dataUpdate.ship_fee1;
+        dataUpdate.ship_fee1 = null;
+    }
+
+    
 
     let result = await ProductYahooService.update(dataUpdate._id, dataUpdate);
     return result;
