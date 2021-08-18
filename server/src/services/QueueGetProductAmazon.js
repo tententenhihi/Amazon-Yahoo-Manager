@@ -99,6 +99,10 @@ export default class QueueGetProductAmazon {
         let newListAsinModel = [];
 
         // Kiểm tra list có product amazon chưa. có rồi ko cần lấy keepa nữa
+
+        console.log(' #### listAsinModel: ', listAsinModel.length);
+
+
         for (let asinModel of listAsinModel) {
             //Check Asin Black List
             let checkBlackList = await BlacklistAsinService.findOne({ type: 'BLACK', asin: asinModel.code });
@@ -126,8 +130,6 @@ export default class QueueGetProductAmazon {
                 }
             }
         }
-        console.log(' #### addNew newListAsinModel: ', newListAsinModel.length);
-
         queueGetInfoProduct.push({ newAsin: newListAsinModel, isUpdateAmazonProduct });
     }
 }

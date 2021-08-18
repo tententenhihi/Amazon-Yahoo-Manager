@@ -259,8 +259,8 @@ export default class AmazonController {
                     listing_status: 'NOT_LISTED',
                     count: productAmazon.count,
                     amazon_shipping_fee: productAmazon.shipping,
-                    _id: null,
                 };
+                delete productYahoo._id;
                 await ProductYahooService.create(productYahoo);
                 // }
             }

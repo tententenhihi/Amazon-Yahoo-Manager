@@ -18,10 +18,16 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         yahoo_account_id: current_product.yahoo_account_id,
         user_id: current_product.user_id,
     });
+    let temp_start_price = false;
+    let temp_bid_or_buy_price = false;
+    let temp_quantity = false;
+    let temp_ship_fee1 = false;
+
 
     if (defaultSetting) {
         if (!dataUpdate.ship_fee1) {
             dataUpdate.ship_fee1 = defaultSetting.yahoo_auction_shipping;
+            temp_ship_fee1 = true;
         } else {
             defaultSetting.yahoo_auction_shipping = dataUpdate.ship_fee1;
         }
@@ -30,6 +36,7 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         }
         if (!dataUpdate.start_price) {
             dataUpdate.start_price = 0;
+            temp_start_price = true
         }
         if (!dataUpdate.bid_or_buy_price) {
             dataUpdate.bid_or_buy_price = 0;
@@ -56,6 +63,7 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
             }
         }
     }
+    
     if (dataUpdate.product_yahoo_title.length && dataUpdate.product_yahoo_title.length > 65) {
         dataUpdate.product_yahoo_title = product_yahoo_title.substring(0, 65);
     }
@@ -264,8 +272,8 @@ export default class ProductYahooController {
                 user_id: user._id,
                 images: [],
                 created: Date.now(),
-                _id: null,
             };
+            delete data._id;
 
             if (req.files && payload.image_length) {
                 for (let index = 0; index < payload.image_length; index++) {

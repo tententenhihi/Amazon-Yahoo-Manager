@@ -57,15 +57,14 @@ const setLockAccount = async (yahooAccount) => {
         auction_delete: false,
         calendar_list_setting: false,
     });
-
-    let productSelling = await ProductYahooSellingService.find({ yahoo_account_id: yahooAccount._id });
-
+    // Delete product selling
     if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
         let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
         if (proxyResult.status === 'SUCCESS') {
+            let productSelling = await AuctionYahooService.getProductAuctionSelling(yahooAccount.cookie, proxyResult.data);
             for (const productDelete of productSelling) {
                 try {
-                    if (productDelete.buyer_count > 0) {
+                    if (productDelete.idBuyer !== '') {
                         await AuctionYahooService.cancelAuction(productDelete.aID, yahooAccount.cookie, proxyResult.data, true);
                     } else {
                         await AuctionYahooService.cancelAuction(productDelete.aID, yahooAccount.cookie, proxyResult.data);

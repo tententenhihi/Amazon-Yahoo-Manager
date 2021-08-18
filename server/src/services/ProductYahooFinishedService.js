@@ -34,8 +34,9 @@ export default class ProductYahooFinishedService {
                                 let newProductYahooEnded = {
                                     ...productYahoo._doc,
                                     ...product,
-                                    _id: null,
                                 };
+                                delete newProductYahooEnded._id;
+
                                 newProductYahooEnded = await ProductYahooFinishedService.create(newProductYahooEnded);
                                 listProduct.push(newProductYahooEnded);
                             }

@@ -24,8 +24,6 @@ export default class ProductYahooEndedService {
                     );
                     listProductEnded = listProductEnded.reverse();
 
-                    console.log(' #### listProductEnded: ', listProductEnded);
-
                     let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
 
                     // console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
@@ -49,9 +47,11 @@ export default class ProductYahooEndedService {
                                 let newProductYahooEnded = {
                                     ...productYahoo._doc,
                                     ...product,
-                                    _id: null,
+                                    yahoo_account_id,
+                                    user_id: accountYahoo.user_id,
                                     created: Date.now(),
                                 };
+                                delete newProductYahooEnded._id;
                                 newProductYahooEnded = await ProductYahooEndedService.create(newProductYahooEnded);
                                 listProduct.push(newProductYahooEnded);
                             } else {
@@ -66,7 +66,6 @@ export default class ProductYahooEndedService {
 
                                     let newProductYahooEnded = await ProductYahooEndedService.create(infoProductEnded);
                                     listProduct.push(newProductYahooEnded);
-                                    // console.log(' #### newProductYahooEnded: ', newProductYahooEnded);
                                 }
                             }
                         } else {
@@ -117,8 +116,9 @@ export default class ProductYahooEndedService {
     }
     static async create(data) {
         try {
-            let product = await ProductYahooEndedModel.create(data);
-            return product;
+            let new_product = new ProductYahooEndedModel(data);
+            await new_product.save();
+            return new_product;
         } catch (error) {
             console.log(error);
             throw new Error(error.message);

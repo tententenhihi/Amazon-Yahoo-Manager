@@ -28,6 +28,40 @@ async function waterMark(input, overlay, outputFolder) {
     await image.writeAsync(outputFolder);
 }
 
+async function getHtmlWithPuppeteer(url, proxy, cookie) {
+    let sock5 = `http://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`;
+    const newProxyUrl = await proxyChain.anonymizeProxy(sock5);
+    let args = [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-infobars',
+        '--window-position=0,0',
+        '--ignore-certifcate-errors',
+        '--ignore-certifcate-errors-spki-list',
+        '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"',
+        `--proxy-server=${newProxyUrl}`,
+    ];
+
+    if (config.get('env') === 'development') {
+        args.pop();
+    }
+    const options = {
+        args,
+        headless: true,
+        ignoreHTTPSErrors: true,
+    };
+    const cookies = [];
+    cookie = cookie.split(';');
+
+    const browser = await puppeteer.launch(options);
+    const page = await browser.newPage();
+    await page.setCookie(...cookies);
+
+    let timeout = 5 * 60 * 1000;
+    await page.goto(url, { waitUntil: 'load', timeout: timeout });
+
+    page.setDefaultNavigationTimeout(0);
+}
 export default class AuctionYahooService {
     static async getPointAuction(cookie, proxy) {
         try {
@@ -131,7 +165,7 @@ export default class AuctionYahooService {
         return listCateId;
     }
 
-    static async uploadNewProduct(cookie, productData, proxy, descrionUpload) {
+    static async uploadNewProduct(cookie, productData, proxy, descrionUpload, aID_resubmit) {
         try {
             console.log(' ========= START UPLOAD YAHOO ========= ');
             // Check Data
@@ -325,9 +359,9 @@ export default class AuctionYahooService {
 
             // PREVIEW
             let previewParams = {
-                aID: '',
+                aID: aID_resubmit || '',
                 oldAID: '',
-                mode: 'submit',
+                mode: aID_resubmit ? 'oresubmit' : 'submit',
                 encode: 'utf-8',
                 md5: keys.md5,
                 '.crumb': keys.crumb,
@@ -505,6 +539,153 @@ export default class AuctionYahooService {
         }
     }
 
+    static async reSubmit(cookie, proxy, aID) {
+        console.log(' ========= START UPLOAD YAHOO ========= ');
+
+        let proxyConfig = {
+            host: proxy.host,
+            port: proxy.port,
+            auth: {
+                username: proxy.username,
+                password: proxy.password,
+            },
+        };
+        if (config.get('env') === 'development') {
+            proxyConfig = null;
+        }
+
+        let res = await axios.get(`https://auctions.yahoo.co.jp/sell/jp/show/resubmit?aID=` + aID, {
+            headers: {
+                cookie,
+                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            proxy: proxyConfig,
+        });
+
+        Fs.writeFileSync('step1.html', res.data);
+
+        let $ = cheerio.load(res.data);
+
+        let select_node = $('#auction').find('input');
+        let previewParams = {};
+        for (const nodeInput of select_node) {
+            let name = nodeInput.attribs['name'];
+            let value = nodeInput.attribs['value'];
+            if (name) {
+                previewParams[name] = value;
+            }
+        }
+        let istatus = $('select[name="istatus"]');
+        let shipschedule = $('select[name="shipschedule"]');
+        let loc_cd = $('select[name="loc_cd"]');
+
+        previewParams['info01'] = -420;
+        previewParams['info02'] = 3;
+        previewParams['info03'] = 'Chrome PDF Plugin|Chrome PDF Viewer|Native Client';
+        previewParams['istatus'] = istatus.val();
+        previewParams['shipschedule'] = shipschedule.val();
+        previewParams['loc_cd'] = loc_cd.val();
+        previewParams['promoteCtoOfficial_shipMethod'] = 'クリックポスト';
+        previewParams['shippingSize'] = 60;
+        previewParams['promoteTAQBINtoOfficial_shipMethod'] = '現在の配送方法';
+        previewParams['promoteYumailtoOfficial_shipMethod'] = 'ゆうメール';
+        previewParams['promoteNon_STANDARDtoOfficial_shipMethod'] = '定形外郵便';
+        previewParams['promoteNon_STANDARDtoOfficial_shipMethod'] = '定形外郵便';
+        previewParams['retpolicy'] = 0;
+        previewParams['markdown_ratio'] = 0;
+        previewParams['tmpClosingTime'] = '';
+        previewParams['retpolicy'] = 0;
+
+        delete previewParams.salesContract;
+        delete previewParams.bidCreditLimit;
+        delete previewParams.badRatingRatio;
+        delete previewParams.minBidRating;
+        delete previewParams.markdown;
+
+        // salesContract
+        // bidCreditLimit
+        // badRatingRatio
+        // minBidRating
+        // markdown
+
+        let headers = {
+            cookie,
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15',
+            origin: 'https://auctions.yahoo.co.jp',
+            referer: 'https://auctions.yahoo.co.jp/sell/jp/show/resubmit?aID=' + aID,
+            authority: 'auctions.yahoo.co.jp',
+            'Accept-Encoding': 'gzip, deflate, br',
+            Connection: 'keep-alive',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        };
+
+        let payload = Qs.stringify(previewParams);
+
+        let resPreview = await axios.post(`https://auctions.yahoo.co.jp/sell/jp/show/preview`, payload, {
+            headers,
+            proxy: proxyConfig,
+        });
+
+        Fs.writeFileSync('step2.html', resPreview.data);
+
+        // Fs.writeFileSync('preview.html', resPreview.data);
+        let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
+        if (mgc == null) {
+            console.log(' ========== ERROR =========');
+            let $Preview = cheerio.load(resPreview.data);
+            let message = $Preview('.decErrorBox__title').text().split('\n')[0];
+            return {
+                status: 'ERROR',
+                statusMessage: message,
+            };
+        }
+
+        $ = cheerio.load(resPreview.data);
+        let form_node_submit = $('form[name="auction"]').find('input');
+        let submitParams = {};
+        for (const nodeInput of form_node_submit) {
+            let name = nodeInput.attribs['name'];
+            let value = nodeInput.attribs['value'];
+            if (name) {
+                submitParams[name] = value;
+            }
+        }
+        submitParams.ClosingTime = previewParams.tmpClosingTime;
+        payload = Qs.stringify(submitParams);
+        let resSubmit = await axios.post(`https://auctions.yahoo.co.jp/sell/jp/config/submit`, payload, {
+            headers,
+            proxy: proxyConfig,
+        });
+        // Fs.writeFileSync('submit.html', resSubmit.data);
+        Fs.writeFileSync('step3.html', resSubmit.data);
+
+        $ = cheerio.load(resSubmit.data);
+        if (resSubmit.data.includes('以下の商品の出品手続きが完了しました。ご利用ありがとうございました。')) {
+            console.log(' =========== Upload Product Auction SUCCESS ============= ');
+            return {
+                status: 'SUCCESS',
+                aID: submitParams.aID,
+                thumbnail: submitParams.ImageFullPath1,
+            };
+        } else if (resSubmit.data.includes('仮出品とは、出品手続きされたオークションを、Yahoo! JAPANが確認させていただくためのものです。')) {
+            console.log(' =========== Upload Product Auction SUCCESS ============= ');
+            return {
+                status: 'SUCCESS',
+                aID: submitParams.aID,
+                thumbnail: submitParams.ImageFullPath1,
+            };
+        } else {
+            console.log(' =========== Upload Product Auction ERROR ============= ');
+            let message = $('strong').text();
+            console.log(message);
+            return {
+                status: 'ERROR',
+                statusMessage: message,
+            };
+        }
+    }
+
     static async getProductAuctionEnded(usernameYahoo, cookie, proxy, getAidOnly, accountYahoo) {
         let listProduct = [];
         try {
@@ -536,8 +717,9 @@ export default class AuctionYahooService {
                 let idBuyer = $(row).find('td:nth-child(6)').text().trim().replace('-', '');
                 let time_end = $(row).find('td:nth-child(5)').text().trim();
                 let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '').replace('-', '');
+                let progress_message = $(row).find('td:nth-child(7)').text();
                 if (aID && aID !== '商品ID' && aID.trim() !== '') {
-                    listProduct.push({ aID, idBuyer, time_end, price_end, title });
+                    listProduct.push({ aID, idBuyer, time_end, price_end, title, progress_message });
                 }
             }
             if (getAidOnly) {
@@ -610,22 +792,22 @@ export default class AuctionYahooService {
                     }
                 } catch (error) {}
 
-                // Progress message
-                try {
-                    //div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div
-                    let progress_message = $(
-                        'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div'
-                    );
-                    if (progress_message) {
-                        let text_date = $(
-                            'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div > span'
-                        );
-                        progress_message = progress_message.text().replace(text_date.text(), '').trim();
-                        product.progress_message = progress_message;
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
+                // // Progress message
+                // try {
+                //     //div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div
+                //     let progress_message = $(
+                //         'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div'
+                //     );
+                //     if (progress_message) {
+                //         let text_date = $(
+                //             'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div > span'
+                //         );
+                //         progress_message = progress_message.text().replace(text_date.text(), '').trim();
+                //         product.progress_message = progress_message;
+                //     }
+                // } catch (error) {
+                //     console.log(error);
+                // }
 
                 // Progress status
                 try {

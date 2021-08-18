@@ -561,11 +561,7 @@
               <!-- <td class="text-center">{{ product.quantity_check }}</td> -->
               <td class="text-center">{{ product.quantity }}</td>
               <td class="text-center">
-                {{
-                  product.import_price
-                    ? product.import_price.toLocaleString("ja-JP")
-                    : 0
-                }}{{ product.import_price ? "円" : "" }}
+                {{ getPriceOriginal(product) }}
                 <div>
                   <a
                     class="btn btn-xs btn-warning text-white"
@@ -1338,6 +1334,13 @@ export default {
     }
   },
   methods: {
+    getPriceOriginal(product) {
+      let priceOriginal = product.import_price + product.amazon_shipping_fee;
+      if (priceOriginal) {
+        return priceOriginal.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
     onClickTitle(idProduct) {
       this.$router.push({
         name: "CreateProductYahooLocal",

@@ -20,6 +20,7 @@ const CronTime = require('cron').CronTime;
 
 export default class CronJobService {
     static async startCron() {
+        //======================
         CronJobService.startUploadProductYahoo();
         cron.schedule('0 0 0 1 * *', async () => {
             console.log(' ########### CRON JOB Delete Asin ########### ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
@@ -67,7 +68,6 @@ export default class CronJobService {
                                 });
                             }
                             if (productYahoo && productYahoo.asin_amazon) {
-
                                 // Product được tạo sau 18 tiếng mới check
                                 let dateProduct = new Date(productYahoo.created);
                                 let dateNow = new Date();
@@ -78,24 +78,6 @@ export default class CronJobService {
                                         await AuctionYahooService.cancelAuction(productSelling.aID, accountYahoo.cookie, proxyResult.data);
                                     }
                                 }
-
-                                // let result = await KeepaService.findProduct([productYahoo.asin_amazon]);
-                                // if (result.status === 'SUCCESS' && result.data && result.data.length > 0 && result.data[0].status === 'SUCCESS') {
-                                //     let dataKeepa = result.data[0].data;
-                                //     let deleteProduct = false;
-                                //     if (dataKeepa.count === 0) {
-                                //         deleteProduct = true;
-                                //     } else {
-                                //         let defaultSetting = await ProductInfomationDefaultService.findOne({
-                                //             yahoo_account_id: accountYahoo._id,
-                                //             user_id: accountYahoo.user_id,
-                                //         });
-                                //         deleteProduct = await ProductYahooService.checkProfitToStopUpload(defaultSetting, dataKeepa.price, dataKeepa.ship_fee);
-                                //     }
-                                //     if (deleteProduct) {
-                                //         await AuctionYahooService.cancelAuction(productSelling.aID, accountYahoo.cookie, proxyResult.data);
-                                //     }
-                                // }
                             }
                         }
                     }
@@ -172,8 +154,9 @@ export default class CronJobService {
                                     let newProductYahooEnded = {
                                         ...productYahoo._doc,
                                         ...product,
-                                        _id: null,
                                     };
+                                    delete newProductYahooEnded._id;
+
                                     newProductYahooEnded = await ProductYahooEndedService.create(newProductYahooEnded);
                                 }
                             } else {
@@ -213,8 +196,9 @@ export default class CronJobService {
                                     let newProductYahooEnded = {
                                         ...productYahoo._doc,
                                         ...product,
-                                        _id: null,
                                     };
+                                    delete newProductYahooEnded._id;
+
                                     newProductYahooEnded = await ProductYahooFinishedService.create(newProductYahooEnded);
                                 }
                             } else {
@@ -347,8 +331,8 @@ export default class CronJobService {
                                 console.log(' ========== cronRelist Locked ==========');
                                 return;
                             }
-
                             let results = await ProductYahooService.startReSubmitProduct(schedule.user_id, schedule.yahoo_account_id);
+                            console.log(' ### results: ', results);
                             if (results.length > 0) {
                                 let newCronHistory = {
                                     success_count: results.filter((item) => item.success).length,

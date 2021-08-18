@@ -35,8 +35,8 @@ export default class ProductYahooSellingService {
                                 let newProductYahooEnded = {
                                     ...productYahoo._doc,
                                     ...product,
-                                    _id: null,
                                 };
+                                delete newProductYahooEnded._id;
                                 newProductYahooEnded = await ProductYahooSellingService.create(newProductYahooEnded);
                                 listProduct.push(newProductYahooEnded);
                             }

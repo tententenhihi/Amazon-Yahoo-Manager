@@ -49,12 +49,17 @@ var ProductYahoo = new Schema({
         type: Number,
         default: 0,
     },
-    // phí ship amazon
-    amount_buyer_paid: {
+    //Temp
+    start_price_temp: {
         type: Number,
-        default: 0,
     },
-
+    bid_or_buy_price_temp: {
+        type: Number,
+    },
+    ship_fee1_temp: {
+        type: Number,
+    },
+    //============
     profit_stop: {
         type: Number,
         default: 0,
