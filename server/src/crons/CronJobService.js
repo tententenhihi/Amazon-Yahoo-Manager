@@ -73,8 +73,8 @@ export default class CronJobService {
                                 let dateNow = new Date();
                                 dateProduct.setHours(dateProduct.getHours() + 18);
                                 if (dateNow > dateProduct) {
-                                    let deleteProduct = await ProductYahooService.checkStopUpload(productYahoo, defaultSetting);
-                                    if (deleteProduct) {
+                                    let resultCheckUpload = await ProductYahooService.checkStopUpload(productYahoo, defaultSetting);
+                                    if (resultCheckUpload.isStopUpload) {
                                         await AuctionYahooService.cancelAuction(productSelling.aID, accountYahoo.cookie, proxyResult.data);
                                     }
                                 }

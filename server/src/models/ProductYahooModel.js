@@ -59,6 +59,9 @@ var ProductYahoo = new Schema({
     ship_fee1_temp: {
         type: Number,
     },
+    quantity_temp: {
+        type: Number,
+    },
     //============
     profit_stop: {
         type: Number,

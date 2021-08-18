@@ -464,9 +464,9 @@
               <!-- <th class="text-center" width="60">期間<br />(日)<br /></th> -->
               <th class="text-center" width="100">開始価格<br /></th>
               <th class="text-center" width="100">即決価格<br /></th>
-              <th class="text-center" width="70">送料<br /></th>
+              <th class="text-center" width="100">送料<br /></th>
               <!-- <th class="text-center" width="70">出品停止<br />在庫数<br /></th> -->
-              <th class="text-center" width="60">数量<br /></th>
+              <th class="text-center" width="80">数量<br /></th>
               <th class="text-center" width="70">仕入元の<br />値段</th>
               <th class="text-center" width="100">
                 想定利益
@@ -538,28 +538,98 @@
               </td>
               <!-- <td class="text-center">{{ product.duration }}</td> -->
               <td class="text-center">
-                {{
-                  product.start_price
-                    ? product.start_price.toLocaleString("ja-JP")
-                    : "-"
-                }}{{ product.start_price ? "円" : "" }}
+                <span v-if="product.start_price">
+                  {{
+                    product.start_price
+                      ? product.start_price.toLocaleString("ja-JP")
+                      : "-"
+                  }}{{ product.start_price ? "円" : "" }}
+                </span>
+                <div v-else>
+                  <div>
+                    {{
+                      product.start_price_temp
+                        ? product.start_price_temp.toLocaleString("ja-JP")
+                        : "-"
+                    }}{{ product.start_price_temp ? "円" : "" }}
+                  </div>
+                  <span
+                    class="p-1"
+                    style="background-color: #b7b6b6;font-size: 10px"
+                    >自動設定</span
+                  >
+                </div>
               </td>
               <td class="text-center">
-                {{
-                  product.bid_or_buy_price
-                    ? product.bid_or_buy_price.toLocaleString("ja-JP")
-                    : "-"
-                }}{{ product.bid_or_buy_price ? "円" : "" }}
+                <span v-if="product.bid_or_buy_price">
+                  {{
+                    product.bid_or_buy_price
+                      ? product.bid_or_buy_price.toLocaleString("ja-JP")
+                      : "-"
+                  }}{{ product.bid_or_buy_price ? "円" : "" }}
+                </span>
+                <div v-else>
+                  <div>
+                    {{
+                      product.bid_or_buy_price_temp
+                        ? product.bid_or_buy_price_temp.toLocaleString("ja-JP")
+                        : "-"
+                    }}{{ product.bid_or_buy_price_temp ? "円" : "" }}
+                  </div>
+                  <span
+                    class="p-1"
+                    style="background-color: #b7b6b6;font-size: 10px"
+                    >自動設定</span
+                  >
+                </div>
               </td>
               <td class="text-center">
-                {{
-                  product.ship_fee1
-                    ? product.ship_fee1.toLocaleString("ja-JP")
-                    : "-"
-                }}{{ product.ship_fee1 ? "円" : "" }}
+                <span v-if="product.ship_fee1">
+                  {{
+                    product.ship_fee1
+                      ? product.ship_fee1.toLocaleString("ja-JP")
+                      : "-"
+                  }}{{ product.ship_fee1 ? "円" : "" }}
+                </span>
+                <div v-else>
+                  <div>
+                    {{
+                      product.ship_fee1_temp
+                        ? product.ship_fee1_temp.toLocaleString("ja-JP")
+                        : "-"
+                    }}{{ product.ship_fee1_temp ? "円" : "" }}
+                  </div>
+                  <span
+                    class="p-1"
+                    style="background-color: #b7b6b6;font-size: 10px"
+                    >自動設定</span
+                  >
+                </div>
               </td>
               <!-- <td class="text-center">{{ product.quantity_check }}</td> -->
-              <td class="text-center">{{ product.quantity }}</td>
+              <td class="text-center">
+                <span v-if="product.quantity">
+                  {{
+                    product.quantity
+                      ? product.quantity.toLocaleString("ja-JP")
+                      : "-"
+                  }}{{ product.quantity ? "円" : "" }}
+                </span>
+                <div v-else>
+                  <div>
+                    {{
+                      product.quantity_temp
+                        ? product.quantity_temp.toLocaleString("ja-JP")
+                        : "-"
+                    }}{{ product.quantity_temp ? "円" : "" }}
+                  </div>
+                  <span
+                    class="p-1"
+                    style="background-color: #b7b6b6;font-size: 10px"
+                    >自動設定</span
+                  >
+                </div>
+              </td>
               <td class="text-center">
                 {{ getPriceOriginal(product) }}
                 <div>

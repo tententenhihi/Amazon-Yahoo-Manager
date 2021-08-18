@@ -20,26 +20,25 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     });
     let temp_start_price = false;
     let temp_bid_or_buy_price = false;
-    let temp_quantity = false;
-    let temp_ship_fee1 = false;
-
 
     if (defaultSetting) {
         if (!dataUpdate.ship_fee1) {
-            dataUpdate.ship_fee1 = defaultSetting.yahoo_auction_shipping;
-            temp_ship_fee1 = true;
+            dataUpdate.ship_fee1_temp = defaultSetting.quantity;
+            dataUpdate.ship_fee1 = 0;
         } else {
             defaultSetting.yahoo_auction_shipping = dataUpdate.ship_fee1;
         }
         if (!dataUpdate.quantity) {
-            dataUpdate.quantity = defaultSetting.quantity;
+            dataUpdate.quantity_temp = defaultSetting.quantity;
+            dataUpdate.quantity = 0;
         }
         if (!dataUpdate.start_price) {
             dataUpdate.start_price = 0;
-            temp_start_price = true
+            temp_start_price = true;
         }
         if (!dataUpdate.bid_or_buy_price) {
             dataUpdate.bid_or_buy_price = 0;
+            temp_bid_or_buy_price = true;
         }
     }
 
@@ -52,7 +51,7 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
 
     let yahooAccount = await AccountYahooService.findById(current_product.yahoo_account_id);
 
-    if (!yahooAccount || yahooAccount.auction_point <= 10) {
+    if (dataUpdate.quantity && (!yahooAccount || yahooAccount.auction_point <= 10)) {
         dataUpdate.quantity = 1;
     }
     if (files && dataUpdate.image_length) {
@@ -63,7 +62,7 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
             }
         }
     }
-    
+
     if (dataUpdate.product_yahoo_title.length && dataUpdate.product_yahoo_title.length > 65) {
         dataUpdate.product_yahoo_title = product_yahoo_title.substring(0, 65);
     }
@@ -84,6 +83,14 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         ...dataUpdate,
         ...dataPrice,
     };
+    if (temp_start_price) {
+        dataUpdate.start_price_temp = dataUpdate.start_price;
+        dataUpdate.start_price = 0;
+    }
+    if (temp_bid_or_buy_price) {
+        dataUpdate.bid_or_buy_price_temp = dataUpdate.bid_or_buy_price;
+        dataUpdate.bid_or_buy_price = 0;
+    }
 
     let result = await ProductYahooService.update(dataUpdate._id, dataUpdate);
     return result;
@@ -133,9 +140,9 @@ export default class ProductYahooController {
                     for (const product_id of ids) {
                         let productYahooData = await ProductYahooService.findOne({ _id: product_id });
 
-                        let isStopUpload = await ProductYahooService.checkStopUpload(productYahooData, defaultSetting);
+                        let resultCheckUpload = await ProductYahooService.checkStopUpload(productYahooData, defaultSetting);
 
-                        if (isStopUpload) {
+                        if (resultCheckUpload.isStopUpload) {
                             let newResult = {
                                 product_created: productYahooData.created,
                                 product_id: productYahooData._id,
@@ -146,6 +153,22 @@ export default class ProductYahooController {
                             };
                             results.push(newResult);
                             continue;
+                        }
+
+                        if (!productYahooData.start_price) {
+                            productYahooData.start_price = resultCheckUpload.start_price;
+                        }
+
+                        if (!productYahooData.bid_or_buy_price) {
+                            productYahooData.bid_or_buy_price = resultCheckUpload.bid_or_buy_price;
+                        }
+
+                        if (!productYahooData.quantity) {
+                            productYahooData.quantity = defaultSetting.quantity;
+                        }
+
+                        if (!productYahooData.ship_fee1) {
+                            productYahooData.ship_fee1 = resultCheckUpload.ship_fee1;
                         }
 
                         let dataUpdate = {};
