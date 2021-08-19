@@ -6,6 +6,86 @@ import AccountYahooService from '../services/AccountYahooService';
 import ProxyService from '../services/ProxyService';
 
 export default class ProductYahooEndedController {
+    static async contactShip(req, res) {
+        let response = new Response(res);
+        try {
+            let { product_id } = req.body;
+            if (!product_id) {
+                return response.error400({ message: 'データエラー.!' });
+            }
+            let productEnded = await ProductYahooEndedService.findById(product_id);
+            if (!productEnded) {
+                return response.error400({ message: 'Product not found..!' });
+            }
+            let yahooAccount = await AccountYahooService.findById(productEnded.yahoo_account_id);
+            if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+                let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+                if (proxyResult.status === 'SUCCESS') {
+                    console.log(productEnded);
+                    let result = await AuctionYahooService.contactShip(
+                        yahooAccount.cookie,
+                        proxyResult.data,
+                        productEnded.aID,
+                        yahooAccount.yahoo_id,
+                        productEnded.idBuyer
+                    );
+                    if (result.status === 'SUCCESS') {
+                        await ProductYahooEndedService.update(productEnded._id, { progress: '受取連絡' })
+                        return response.success200(result);
+                    } else {
+                        return response.error400({ message: result.message });
+                    }
+                } else {
+                    return response.error400({ message: proxyResult.statusMessage });
+                }
+            } else {
+                return response.error400({ message: 'ユーザーエラー.!' });
+            }
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
+    static async setShipFee(req, res) {
+        let response = new Response(res);
+        try {
+            let { product_id, set_ship_fee } = req.body;
+            if (!product_id || !set_ship_fee) {
+                return response.error400({ message: 'データエラー.!' });
+            }
+            let productEnded = await ProductYahooEndedService.findById(product_id);
+            if (!productEnded) {
+                return response.error400({ message: 'Product not found..!' });
+            }
+            let yahooAccount = await AccountYahooService.findById(productEnded.yahoo_account_id);
+            if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+                let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+                if (proxyResult.status === 'SUCCESS') {
+                    let result = await AuctionYahooService.setFeeShip(
+                        yahooAccount.cookie,
+                        proxyResult.data,
+                        productEnded.aID,
+                        yahooAccount.yahoo_id,
+                        productEnded.idBuyer,
+                        set_ship_fee
+                    );
+                    if (result.status === 'SUCCESS') {
+                        await ProductYahooEndedService.update(productEnded._id, { progress: 'お支払い' })
+                        return response.success200(result);
+                    } else {
+                        return response.error400({ message: result.message });
+                    }
+                } else {
+                    return response.error400({ message: proxyResult.statusMessage });
+                }
+            } else {
+                return response.error400({ message: 'ユーザーエラー.!' });
+            }
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
     static async refreshDataYahoo(req, res) {
         let response = new Response(res);
         try {
@@ -91,7 +171,7 @@ export default class ProductYahooEndedController {
                     return response.error400({ message: proxyResult.statusMessage });
                 }
             } else {
-                return response.error400({ message: 'User is Failse.!' });
+                return response.error400({ message: 'ユーザーエラー.!' });
             }
         } catch (error) {
             response.error500(error);
@@ -125,7 +205,7 @@ export default class ProductYahooEndedController {
                     return response.error400({ message: proxyResult.statusMessage });
                 }
             } else {
-                return response.error400({ message: 'User is Failse.!' });
+                return response.error400({ message: 'ユーザーエラー.!' });
             }
         } catch (error) {
             console.log(error);
@@ -173,7 +253,7 @@ export default class ProductYahooEndedController {
                     return response.error400({ message: proxyResult.statusMessage });
                 }
             } else {
-                return response.error400({ message: 'User is Failse.!' });
+                return response.error400({ message: 'ユーザーエラー.!' });
             }
         } catch (error) {
             response.error500(error);

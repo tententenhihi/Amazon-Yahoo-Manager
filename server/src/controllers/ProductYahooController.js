@@ -156,7 +156,7 @@ export default class ProductYahooController {
                                 product_created: productYahooData.created,
                                 product_id: productYahooData._id,
                                 product_aID: '',
-                                message: '低利益',
+                                message: resultCheckUpload.message,
                                 created: Date.now(),
                                 success: false,
                             };

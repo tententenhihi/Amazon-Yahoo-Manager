@@ -74,6 +74,18 @@
         <!-- <div class="alert alert-success">
           この商品は発送が完了しています。
         </div> -->
+
+        <div>
+          <button
+            class="btn btn-info btn-lg fs-lg"
+            style="width: 150px !important"
+            @click="$refs.modelSetFeeShip.openModal()"
+            v-if="product.progress === '送料連絡' && !isSetShipSuccess"
+          >
+            送料連絡
+          </button>
+        </div>
+
         <router-link
           tag="button"
           class="btn btn-default mt-20"
@@ -91,6 +103,7 @@
           }}</router-link
         >
         <br />
+
         <button
           class="btn btn-danger mt-20"
           @click="onCancelTransaction"
@@ -102,7 +115,11 @@
         <button
           class="btn btn-danger my-20"
           @click="$refs.modalSelectReason.openModal()"
-          :disabled="product.progress !== '取引情報' &&  product.progress !==  '送料連絡' "
+          :disabled="
+            product.progress !== '取引情報' &&
+              product.progress !== '送料連絡' &&
+              product.progress !== 'お支払い'
+          "
         >
           落札者削除
         </button>
@@ -254,6 +271,47 @@
         </div>
       </template>
     </modal-component>
+
+    <modal-component ref="modelSetFeeShip">
+      <template v-slot:header>
+        <h5>送料を連絡</h5>
+      </template>
+      <template>
+        <div>
+          <div class="mb-3">
+            <span>こちらの商品の送料を連絡します。</span>
+          </div>
+          <div class="form-group ">
+            <label class="ml-2">送料</label>
+            <div class="col-sm-12">
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="set_ship_fee"
+                />
+                <div class="input-group-append">
+                  <span class="input-group-text">円</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button class="btn btn-primary mr-2" @click="onSetFeeShip">
+            <i class="fa fa-save"></i> 送料を連絡
+          </button>
+          <button
+            class="btn btn-warning"
+            @click="$refs.modelSetFeeShip.closeModal()"
+          >
+            <i class="fa fa-times"></i> キャンセル
+          </button>
+        </div>
+      </template>
+    </modal-component>
   </div>
 </template>
 
@@ -274,7 +332,9 @@ export default {
       templates: [],
       selectedTemplate: null,
       deleteReason: DELETE_REASON[0].value,
-      DELETE_REASON
+      DELETE_REASON,
+      set_ship_fee: "",
+      isSetShipSuccess: false
     };
   },
   async mounted() {
@@ -293,6 +353,24 @@ export default {
     }
   },
   methods: {
+    async onSetFeeShip() {
+      let payload = {
+        product_id: this.product._id,
+        set_ship_fee: this.set_ship_fee
+      };
+
+      let res = await ProductYahooEndedApi.setShipFee(payload);
+      if (res && res.status === 200) {
+        this.isSetShipSuccess = true
+        this.$refs.modelSetFeeShip.closeModal();
+        this.$swal.fire({
+          icon: "success",
+          title: "成功",
+          timer: 500,
+          showConfirmButton: false
+        });
+      }
+    },
     async onCancelTransaction() {
       let result = await this.$swal.fire({
         icon: "warning",

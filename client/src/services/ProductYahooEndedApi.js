@@ -44,5 +44,15 @@ export default {
     return Api.post(`${prefix}/refresh-data-yahoo`, credentials, {
       timeout: 15 * 60 * 1000
     });
+  },
+  setShipFee(credentials) {
+    return Api.post(`${prefix}/set-ship-fee`, credentials, {
+      timeout: 60 * 1000
+    });
+  },
+  contactShip(credentials) {
+    return Api.post(`${prefix}/contact-ship`, credentials, {
+      timeout: 60 * 1000
+    });
   }
 };

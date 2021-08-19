@@ -232,7 +232,8 @@
             'image_overlay_index',
             'note',
             'description',
-            'yahoo_auction_category_id'
+            'yahoo_auction_category_id',
+            'asin_amazon'
           ]"
           :labels="{
             _id: 'ID',
@@ -246,7 +247,8 @@
             image_overlay_index: '画像挿入',
             note: '備考',
             description: '商品詳細',
-            yahoo_auction_category_id: 'ヤフーカテゴリID'
+            yahoo_auction_category_id: 'ヤフーカテゴリID',
+            asin_amazon: 'ASIN'
           }"
           :name="nameFolderSelected + '.csv'"
         >
@@ -258,167 +260,6 @@
             <i class="fa fa-download mr-1"></i>エクスポート
           </button>
         </JsonCSV>
-
-        <!-- <JsonCSV
-          style="display: contents;"
-          :data="dataExport"
-          :fields="[
-            '_id',
-            'yahoo_auction_category_id',
-            'product_yahoo_title',
-            'type_import_desciption',
-            'description',
-            'image1',
-            'image2',
-            'image3',
-            'image4',
-            'image5',
-            'image6',
-            'image7',
-            'image8',
-            'image9',
-            'image10',
-            'image_comment1',
-            'image_comment2',
-            'image_comment3',
-            'image_comment4',
-            'image_comment5',
-            'image_comment6',
-            'image_comment7',
-            'image_comment8',
-            'image_comment9',
-            'image_comment10',
-            'count',
-            'start_price',
-            'bid_or_buy_price',
-            'offer',
-
-            'duration',
-            'closing_time',
-            'num_resubmit',
-            'xxx1',
-            'auto_extension',
-            'close_early',
-            'min_bid_rating',
-            'bad_rating_ratio',
-            'bid_credit_limit',
-            'status',
-            'status_comment',
-            'retpolicy',
-            'ofretpolicy_commentfer',
-            'offer',
-            'offer',
-            'xxx2',
-            'count',
-            'count',
-            'count',
-            'count',
-            'count',
-            'count',
-            'count',
-            'count',
-            'count',
-            'count',
-            'xxx3',
-            'location',
-            'city',
-            'shipping',
-            'xxx4',
-            'ship_schedule',
-            'xxx5',
-            'xxx6',
-            'xxx7',
-            'xxx8',
-            'xxx9',
-            'xxx10',
-            'xxx11',
-            'xxx12',
-            'xxx13',
-            'xxx14',
-            'ship_name1',
-            'xxx15',
-            'xxx16',
-            'xxx17',
-            'xxx18',
-            'ship_name2',
-            'xxx19',
-            'xxx20',
-            'xxx21',
-            'xxx22',
-            'ship_name3',
-            'xxx23',
-            'xxx24',
-            'xxx25',
-            'xxx26',
-            'ship_name4',
-            'xxx27',
-            'xxx28',
-            'xxx29',
-            'xxx30',
-            'ship_name5',
-            'xxx31',
-            'xxx32',
-            'xxx33',
-            'xxx34',
-            'ship_name6',
-            'xxx35',
-            'xxx36',
-            'xxx37',
-            'xxx38',
-            'ship_name7',
-            'xxx39',
-            'xxx40',
-            'xxx41',
-            'xxx42',
-            'ship_name8',
-            'xxx43',
-            'xxx44',
-            'xxx45',
-            'xxx46',
-            'ship_name9',
-            'xxx47',
-            'xxx48',
-            'xxx49',
-            'xxx50',
-            'ship_name10',
-            'xxx51',
-            'xxx52',
-            'xxx53',
-            'xxx',
-            'xxx',
-            'xxx',
-            'xxx',
-            'xxx',
-            'xxx',
-            'xxx',
-            'foreign_check',
-            'featured_amount',
-            'bold',
-            'highlight',
-            'xxxx',
-            'provider',
-            'asin_amazon',
-            'watch_only_prime',
-            'watch_stock',
-            'watch_profit',
-            'xxx',
-            'xxx',
-            'start_price',
-            'bid_or_buy_price',
-            'original_price',
-            'listing_status'
-          ]"
-          :labels="label_csv"
-          :name="nameFolderSelected + '.csv'"
-        >
-          <button
-            :disabled="!nameFolderSelected"
-            class="btn btn-info mx-10 px-3"
-            style="float: right;"
-          >
-            <i class="fa fa-download mr-1"></i>エクスポート
-          </button>
-        </JsonCSV> -->
         <button
           @click="$refs.inputCSV.click()"
           class="btn btn-info mx-10 px-3"
@@ -600,6 +441,7 @@
                     }}{{ product.ship_fee1_temp ? "円" : "" }}
                   </div>
                   <span
+                    v-if="product.ship_fee1_temp"
                     class="p-1"
                     style="background-color: #b7b6b6;font-size: 10px"
                     >自動設定</span
@@ -609,19 +451,11 @@
               <!-- <td class="text-center">{{ product.quantity_check }}</td> -->
               <td class="text-center">
                 <span v-if="product.quantity">
-                  {{
-                    product.quantity
-                      ? product.quantity.toLocaleString("ja-JP")
-                      : "-"
-                  }}{{ product.quantity ? "円" : "" }}
+                  {{ product.quantity }}
                 </span>
                 <div v-else>
                   <div>
-                    {{
-                      product.quantity_temp
-                        ? product.quantity_temp.toLocaleString("ja-JP")
-                        : "-"
-                    }}{{ product.quantity_temp ? "円" : "" }}
+                    {{ product.quantity_temp }}
                   </div>
                   <span
                     class="p-1"
@@ -644,10 +478,12 @@
               </td>
               <td class="text-center">
                 {{
-                  product.actual_profit
-                    ? product.actual_profit.toLocaleString("ja-JP")
+                  product.actual_profit * product.quantity
+                    ? (product.actual_profit * product.quantity).toLocaleString(
+                        "ja-JP"
+                      )
                     : 0
-                }}{{ product.actual_profit ? "円" : "" }}
+                }}{{ product.actual_profit * product.quantity ? "円" : "" }}
               </td>
               <td class="text-center">{{ product.count }}</td>
               <td class="text-center">
@@ -1479,8 +1315,10 @@ export default {
                   image_overlay_index,
                   note: pros[9],
                   description: pros[10],
-                  yahoo_auction_category_id: pros[11]
+                  yahoo_auction_category_id: pros[11],
+                  asin_amazon: pros[12]
                 };
+                console.log(" ########## data: ", data);
                 productList.push(data);
               }
             });
@@ -1497,8 +1335,13 @@ export default {
       let listProduct = [];
 
       const file = files[0];
+      console.log(" ######################", file);
 
-      if (file.type !== "application/vnd.ms-excel") {
+      if (
+        file.type !== "application/vnd.ms-excel" &&
+        file.type !== "text/csv"
+      ) {
+        event.target.value = "";
         return this.$swal.fire({
           icon: "error",
           title: "エラー",

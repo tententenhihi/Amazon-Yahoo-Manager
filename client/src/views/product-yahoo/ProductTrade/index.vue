@@ -213,8 +213,14 @@
               <td class="text-center">
                 {{ getExpectShiping(product) }}
               </td>
-
               <td>
+                <button
+                  v-if="product.progress === '発送連絡'"
+                  class="btn btn-md btn-danger mb-1 mr-1"
+                  @click="onContactShip(product)"
+                >
+                  発送連絡
+                </button>
                 <button
                   class="btn btn-md btn-info mb-1 mr-1"
                   @click="addMessage(product)"
@@ -317,6 +323,19 @@ export default {
     }
   },
   methods: {
+    async onContactShip(product) {
+      let res = await ProductYahooEndedApi.contactShip({
+        product_id: product._id
+      });
+      if (res && res.status === 200) {
+        this.$swal.fire({
+          icon: "success",
+          title: "追加成功",
+          timer: 500,
+          showConfirmButton: false
+        });
+      }
+    },
     async refreshDataYahoo() {
       let res = await ProductYahooEndedApi.refreshDataYahoo({
         yahoo_account_id: this.yahooAccountId
@@ -356,6 +375,7 @@ export default {
       let amount_expected =
         product.price_end - product.price_end * 0.1 + product.ship_fee1;
       if (amount_expected) {
+        amount_expected = parseInt(amount_expected);
         amount_expected = amount_expected * product.product_buy_count;
         return amount_expected.toLocaleString("ja-JP") + "円";
       }
@@ -379,10 +399,6 @@ export default {
       return "-";
     },
     getPriceOriginal(product) {
-      console.log(" ============= ");
-      console.log(product.import_price);
-      console.log(product.amazon_shipping_fee);
-
       if (product.import_price && product.amazon_shipping_fee) {
         return `${product.import_price.toLocaleString("ja-JP")}円 + 送料${
           product.amazon_shipping_fee

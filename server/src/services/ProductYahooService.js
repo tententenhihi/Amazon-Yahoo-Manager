@@ -61,10 +61,22 @@ export default class ProductYahooService {
             }
         }
         if (newProductData) {
+            if (
+                productYahooData.import_price !== newProductData.price ||
+                productYahooData.amazon_shipping_fee !== newProductData.ship_fee ||
+                newProductData.count !== productYahooData.count
+            ) {
+                await ProductYahooService.update(productYahooData._id, {
+                    import_price: newProductData.price,
+                    amazon_shipping_fee: newProductData.ship_fee,
+                    count: productYahooData.count,
+                });
+            }
             if (newProductData.count === 0) {
                 resultData = {
                     isStopUpload: true,
                 };
+                resultData.message = '在庫なし';
                 console.log(' ================ Dừng xuất hàng. Sản phẩm đã hết hàng =============== ');
             } else {
                 if (productYahooData.is_user_change) {
@@ -81,11 +93,11 @@ export default class ProductYahooService {
                     resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee);
                 }
                 if (resultData.isStopUpload) {
+                    resultData.message = '低利益';
                     console.log(' ================ Dừng xuất hàng. Sản phẩm lợi nhuận thấp =============== ');
                 }
             }
         }
-
         return resultData;
     }
     static async checkProfitToStopUpload(defaultSetting, import_price, amazon_shipping_fee = 0, start_price_user_input = 0) {
@@ -225,7 +237,9 @@ export default class ProductYahooService {
     static async update(_id, data) {
         try {
             let product = await ProductYahooModel.findOneAndUpdate({ _id: _id }, data, { new: true });
-            return product._doc;
+            if (product) {
+                return product._doc;
+            }
         } catch (error) {
             console.log(error);
             throw new Error(error.message);
@@ -365,7 +379,7 @@ export default class ProductYahooService {
                                 product_created: productYahooData.created,
                                 product_id: productYahooData._id,
                                 product_aID: '',
-                                message: '低利益',
+                                message: resultCheckUpload.message,
                                 created: Date.now(),
                                 success: false,
                             };
@@ -463,7 +477,7 @@ export default class ProductYahooService {
                                         product_created: productYahooData.created,
                                         product_id: productYahooData._id,
                                         product_aID: '',
-                                        message: '低利益',
+                                        message: resultCheckUpload.message,
                                         created: Date.now(),
                                         success: false,
                                     };

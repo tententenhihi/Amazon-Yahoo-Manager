@@ -21,6 +21,7 @@ const CronTime = require('cron').CronTime;
 export default class CronJobService {
     static async startCron() {
         //======================
+        CronJobService.checkProductOriginalForAuctionProductSelling();
         CronJobService.startUploadProductYahoo();
         cron.schedule('0 0 0 1 * *', async () => {
             console.log(' ########### CRON JOB Delete Asin ########### ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
@@ -73,6 +74,10 @@ export default class CronJobService {
                                 let dateNow = new Date();
                                 dateProduct.setHours(dateProduct.getHours() + 18);
                                 if (dateNow > dateProduct) {
+                                    let productYahooLocal = await ProductYahooService.findOne({ asin_amazon: productYahoo.asin_amazon });
+                                    if (productYahooLocal) {
+                                        productYahoo = productYahooLocal;
+                                    }
                                     let resultCheckUpload = await ProductYahooService.checkStopUpload(productYahoo, defaultSetting);
                                     if (resultCheckUpload.isStopUpload) {
                                         await AuctionYahooService.cancelAuction(productSelling.aID, accountYahoo.cookie, proxyResult.data);
