@@ -215,13 +215,7 @@ export default class AuctionYahooService {
                     listImageOverlayOfAccountYahoo = listImageOverlayOfAccountYahoo.images;
                     let imageOverlay = 'uploads/' + listImageOverlayOfAccountYahoo[productData.image_overlay_index - 1];
                     for (const imageInput of listImage) {
-                        let saveImage =
-                            'uploads/yahoo-products/' +
-                            productData._id +
-                            '/' +
-                            path.basename(imageInput).replace(path.extname(imageInput), '') +
-                            '_' +
-                            `overlay_500x500.jpg`;
+                        let saveImage = 'uploads/yahoo-products/' + productData._id + '/' + path.basename(imageInput).replace(path.extname(imageInput), '') + '_' + `overlay_500x500.jpg`;
                         await waterMark(imageInput, imageOverlay, saveImage);
                         listImageOverlay.push(saveImage);
                     }
@@ -540,148 +534,155 @@ export default class AuctionYahooService {
     }
 
     static async reSubmit(cookie, proxy, aID) {
-        console.log(' ========= START UPLOAD YAHOO ========= ');
+        try {
+            console.log(' ========= START UPLOAD YAHOO ========= ');
 
-        let proxyConfig = {
-            host: proxy.host,
-            port: proxy.port,
-            auth: {
-                username: proxy.username,
-                password: proxy.password,
-            },
-        };
-        if (config.get('env') === 'development') {
-            proxyConfig = null;
-        }
+            let proxyConfig = {
+                host: proxy.host,
+                port: proxy.port,
+                auth: {
+                    username: proxy.username,
+                    password: proxy.password,
+                },
+            };
+            if (config.get('env') === 'development') {
+                proxyConfig = null;
+            }
 
-        let res = await axios.get(`https://auctions.yahoo.co.jp/sell/jp/show/resubmit?aID=` + aID, {
-            headers: {
+            let res = await axios.get(`https://auctions.yahoo.co.jp/sell/jp/show/resubmit?aID=` + aID, {
+                headers: {
+                    cookie,
+                    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                proxy: proxyConfig,
+            });
+
+            // Fs.writeFileSync('step1.html', res.data);
+
+            let $ = cheerio.load(res.data);
+
+            let select_node = $('#auction').find('input');
+            let previewParams = {};
+            for (const nodeInput of select_node) {
+                let name = nodeInput.attribs['name'];
+                let value = nodeInput.attribs['value'];
+                if (name) {
+                    previewParams[name] = value;
+                }
+            }
+            let istatus = $('select[name="istatus"]');
+            let shipschedule = $('select[name="shipschedule"]');
+            let loc_cd = $('select[name="loc_cd"]');
+
+            previewParams['info01'] = -420;
+            previewParams['info02'] = 3;
+            previewParams['info03'] = 'Chrome PDF Plugin|Chrome PDF Viewer|Native Client';
+            previewParams['istatus'] = istatus.val();
+            previewParams['shipschedule'] = shipschedule.val();
+            previewParams['loc_cd'] = loc_cd.val();
+            previewParams['promoteCtoOfficial_shipMethod'] = 'クリックポスト';
+            previewParams['shippingSize'] = 60;
+            previewParams['promoteTAQBINtoOfficial_shipMethod'] = '現在の配送方法';
+            previewParams['promoteYumailtoOfficial_shipMethod'] = 'ゆうメール';
+            previewParams['promoteNon_STANDARDtoOfficial_shipMethod'] = '定形外郵便';
+            previewParams['promoteNon_STANDARDtoOfficial_shipMethod'] = '定形外郵便';
+            previewParams['retpolicy'] = 0;
+            previewParams['markdown_ratio'] = 0;
+            previewParams['tmpClosingTime'] = '';
+            previewParams['retpolicy'] = 0;
+
+            delete previewParams.salesContract;
+            delete previewParams.bidCreditLimit;
+            delete previewParams.badRatingRatio;
+            delete previewParams.minBidRating;
+            delete previewParams.markdown;
+
+            // salesContract
+            // bidCreditLimit
+            // badRatingRatio
+            // minBidRating
+            // markdown
+
+            let headers = {
                 cookie,
                 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15',
+                origin: 'https://auctions.yahoo.co.jp',
+                referer: 'https://auctions.yahoo.co.jp/sell/jp/show/resubmit?aID=' + aID,
+                authority: 'auctions.yahoo.co.jp',
+                'Accept-Encoding': 'gzip, deflate, br',
+                Connection: 'keep-alive',
                 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            proxy: proxyConfig,
-        });
+            };
 
-        // Fs.writeFileSync('step1.html', res.data);
+            let payload = Qs.stringify(previewParams);
 
-        let $ = cheerio.load(res.data);
+            let resPreview = await axios.post(`https://auctions.yahoo.co.jp/sell/jp/show/preview`, payload, {
+                headers,
+                proxy: proxyConfig,
+            });
 
-        let select_node = $('#auction').find('input');
-        let previewParams = {};
-        for (const nodeInput of select_node) {
-            let name = nodeInput.attribs['name'];
-            let value = nodeInput.attribs['value'];
-            if (name) {
-                previewParams[name] = value;
+            // Fs.writeFileSync('step2.html', resPreview.data);
+
+            // Fs.writeFileSync('preview.html', resPreview.data);
+            let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
+            if (mgc == null) {
+                console.log(' ========== ERROR =========');
+                let $Preview = cheerio.load(resPreview.data);
+                let message = $Preview('.decErrorBox__title').text().split('\n')[0];
+                return {
+                    status: 'ERROR',
+                    statusMessage: message,
+                };
             }
-        }
-        let istatus = $('select[name="istatus"]');
-        let shipschedule = $('select[name="shipschedule"]');
-        let loc_cd = $('select[name="loc_cd"]');
 
-        previewParams['info01'] = -420;
-        previewParams['info02'] = 3;
-        previewParams['info03'] = 'Chrome PDF Plugin|Chrome PDF Viewer|Native Client';
-        previewParams['istatus'] = istatus.val();
-        previewParams['shipschedule'] = shipschedule.val();
-        previewParams['loc_cd'] = loc_cd.val();
-        previewParams['promoteCtoOfficial_shipMethod'] = 'クリックポスト';
-        previewParams['shippingSize'] = 60;
-        previewParams['promoteTAQBINtoOfficial_shipMethod'] = '現在の配送方法';
-        previewParams['promoteYumailtoOfficial_shipMethod'] = 'ゆうメール';
-        previewParams['promoteNon_STANDARDtoOfficial_shipMethod'] = '定形外郵便';
-        previewParams['promoteNon_STANDARDtoOfficial_shipMethod'] = '定形外郵便';
-        previewParams['retpolicy'] = 0;
-        previewParams['markdown_ratio'] = 0;
-        previewParams['tmpClosingTime'] = '';
-        previewParams['retpolicy'] = 0;
+            $ = cheerio.load(resPreview.data);
+            let form_node_submit = $('form[name="auction"]').find('input');
+            let submitParams = {};
+            for (const nodeInput of form_node_submit) {
+                let name = nodeInput.attribs['name'];
+                let value = nodeInput.attribs['value'];
+                if (name) {
+                    submitParams[name] = value;
+                }
+            }
+            submitParams.ClosingTime = previewParams.tmpClosingTime;
+            payload = Qs.stringify(submitParams);
+            let resSubmit = await axios.post(`https://auctions.yahoo.co.jp/sell/jp/config/submit`, payload, {
+                headers,
+                proxy: proxyConfig,
+            });
+            // Fs.writeFileSync('submit.html', resSubmit.data);
+            // Fs.writeFileSync('step3.html', resSubmit.data);
 
-        delete previewParams.salesContract;
-        delete previewParams.bidCreditLimit;
-        delete previewParams.badRatingRatio;
-        delete previewParams.minBidRating;
-        delete previewParams.markdown;
-
-        // salesContract
-        // bidCreditLimit
-        // badRatingRatio
-        // minBidRating
-        // markdown
-
-        let headers = {
-            cookie,
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15',
-            origin: 'https://auctions.yahoo.co.jp',
-            referer: 'https://auctions.yahoo.co.jp/sell/jp/show/resubmit?aID=' + aID,
-            authority: 'auctions.yahoo.co.jp',
-            'Accept-Encoding': 'gzip, deflate, br',
-            Connection: 'keep-alive',
-            'Content-Type': 'application/x-www-form-urlencoded',
-        };
-
-        let payload = Qs.stringify(previewParams);
-
-        let resPreview = await axios.post(`https://auctions.yahoo.co.jp/sell/jp/show/preview`, payload, {
-            headers,
-            proxy: proxyConfig,
-        });
-
-        // Fs.writeFileSync('step2.html', resPreview.data);
-
-        // Fs.writeFileSync('preview.html', resPreview.data);
-        let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
-        if (mgc == null) {
-            console.log(' ========== ERROR =========');
-            let $Preview = cheerio.load(resPreview.data);
-            let message = $Preview('.decErrorBox__title').text().split('\n')[0];
+            $ = cheerio.load(resSubmit.data);
+            if (resSubmit.data.includes('以下の商品の出品手続きが完了しました。ご利用ありがとうございました。')) {
+                console.log(' =========== Upload Product Auction SUCCESS ============= ');
+                return {
+                    status: 'SUCCESS',
+                    aID: submitParams.aID,
+                    thumbnail: submitParams.ImageFullPath1,
+                };
+            } else if (resSubmit.data.includes('仮出品とは、出品手続きされたオークションを、Yahoo! JAPANが確認させていただくためのものです。')) {
+                console.log(' =========== Upload Product Auction SUCCESS ============= ');
+                return {
+                    status: 'SUCCESS',
+                    aID: submitParams.aID,
+                    thumbnail: submitParams.ImageFullPath1,
+                };
+            } else {
+                console.log(' =========== Upload Product Auction ERROR ============= ');
+                let message = $('strong').text();
+                console.log(message);
+                return {
+                    status: 'ERROR',
+                    statusMessage: message,
+                };
+            }
+        } catch (error) {
             return {
                 status: 'ERROR',
-                statusMessage: message,
-            };
-        }
-
-        $ = cheerio.load(resPreview.data);
-        let form_node_submit = $('form[name="auction"]').find('input');
-        let submitParams = {};
-        for (const nodeInput of form_node_submit) {
-            let name = nodeInput.attribs['name'];
-            let value = nodeInput.attribs['value'];
-            if (name) {
-                submitParams[name] = value;
-            }
-        }
-        submitParams.ClosingTime = previewParams.tmpClosingTime;
-        payload = Qs.stringify(submitParams);
-        let resSubmit = await axios.post(`https://auctions.yahoo.co.jp/sell/jp/config/submit`, payload, {
-            headers,
-            proxy: proxyConfig,
-        });
-        // Fs.writeFileSync('submit.html', resSubmit.data);
-        // Fs.writeFileSync('step3.html', resSubmit.data);
-
-        $ = cheerio.load(resSubmit.data);
-        if (resSubmit.data.includes('以下の商品の出品手続きが完了しました。ご利用ありがとうございました。')) {
-            console.log(' =========== Upload Product Auction SUCCESS ============= ');
-            return {
-                status: 'SUCCESS',
-                aID: submitParams.aID,
-                thumbnail: submitParams.ImageFullPath1,
-            };
-        } else if (resSubmit.data.includes('仮出品とは、出品手続きされたオークションを、Yahoo! JAPANが確認させていただくためのものです。')) {
-            console.log(' =========== Upload Product Auction SUCCESS ============= ');
-            return {
-                status: 'SUCCESS',
-                aID: submitParams.aID,
-                thumbnail: submitParams.ImageFullPath1,
-            };
-        } else {
-            console.log(' =========== Upload Product Auction ERROR ============= ');
-            let message = $('strong').text();
-            console.log(message);
-            return {
-                status: 'ERROR',
-                statusMessage: message,
+                statusMessage: error.message,
             };
         }
     }
@@ -720,8 +721,7 @@ export default class AuctionYahooService {
                 let progress_message = $(row).find('td:nth-child(7)').text();
                 let check_progress = $(row).find('td:nth-child(7) > p > img');
                 if (check_progress.length > 0) {
-                    progress_message =
-                        `<img src="https://s.yimg.jp/images/auct/template/ui/auc_mod/ic_6002.gif" alt="落札者" width="16" height="16">` + progress_message;
+                    progress_message = `<img src="https://s.yimg.jp/images/auct/template/ui/auc_mod/ic_6002.gif" alt="落札者" width="16" height="16">` + progress_message;
                 }
                 if (aID && aID !== '商品ID' && aID.trim() !== '') {
                     listProduct.push({ aID, idBuyer, time_end, price_end, title, progress_message });
@@ -774,9 +774,7 @@ export default class AuctionYahooService {
                 try {
                     let shipInfo = '';
                     //td.decInTblCel > div. > table > tbody > tr:nth-child(1)
-                    let shipInfoNode = $(
-                        'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div.libTableCnfTop.decTableCnfBod > table > tbody > tr > td > div > table > tbody > tr'
-                    );
+                    let shipInfoNode = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div.libTableCnfTop.decTableCnfBod > table > tbody > tr > td > div > table > tbody > tr');
                     if (shipInfoNode && shipInfoNode.length > 0) {
                         for (const info of shipInfoNode) {
                             shipInfo += $(info).find('td').text().trim() + '</br>';
@@ -861,9 +859,7 @@ export default class AuctionYahooService {
                             }
                         }
                         if (accountYahoo.cookie_aucpay) {
-                            let nodeAmountActual = $(
-                                'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr > td > div > a'
-                            );
+                            let nodeAmountActual = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr > td > div > a');
                             try {
                                 if (nodeAmountActual && nodeAmountActual.attr('href')) {
                                     let url_get_amount = nodeAmountActual.attr('href');
@@ -891,9 +887,7 @@ export default class AuctionYahooService {
                                 await accountYahoo.save();
                             }
                             if (accountYahoo.cookie_aucpay) {
-                                let nodeAmountActual = $(
-                                    'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr > td > div > a'
-                                );
+                                let nodeAmountActual = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr > td > div > a');
                                 try {
                                     if (nodeAmountActual && nodeAmountActual.attr('href')) {
                                         let url_get_amount = nodeAmountActual.attr('href');
@@ -920,9 +914,7 @@ export default class AuctionYahooService {
                     // Số tiền nhận dự kiến:
                     if (progress === 'お支払い') {
                         progress = 'お支払い';
-                        let nodeAmountExpected = $(
-                            'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr:nth-child(2) > td'
-                        );
+                        let nodeAmountExpected = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr:nth-child(2) > td');
                         let amount_expected = 0;
                         if (nodeAmountExpected.text()) {
                             amount_expected = nodeAmountExpected.text().match(/\d+/)[0];
@@ -1028,9 +1020,7 @@ export default class AuctionYahooService {
         });
         let $ = cheerio.load(response.data);
 
-        let rowTable = $(
-            '#acWrContents > div > table > tbody > tr > td > table > tbody > tr > td > table:nth-child(2) > tbody > tr:nth-child(2) > td > table > tbody > tr'
-        );
+        let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr > td > table:nth-child(2) > tbody > tr:nth-child(2) > td > table > tbody > tr');
         let listProduct = [];
         for (const row of rowTable) {
             let aID = $(row).find('td:nth-child(1)').text();
@@ -1090,11 +1080,9 @@ export default class AuctionYahooService {
 
         const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
-        let urlLogin =
-            'https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver';
+        let urlLogin = 'https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver';
         if (is_get_cookie_auction) {
-            urlLogin =
-                'https://login.yahoo.co.jp/config/login?auth_lv=capin&.src=pay&.done=https%3A%2F%2Faucpay.yahoo.co.jp%2Fdetail-front%2FPaymentDetailList&.crumb=0';
+            urlLogin = 'https://login.yahoo.co.jp/config/login?auth_lv=capin&.src=pay&.done=https%3A%2F%2Faucpay.yahoo.co.jp%2Fdetail-front%2FPaymentDetailList&.crumb=0';
         }
         let timeout = 5 * 60 * 1000;
         // urlLogin = 'http://lumtest.com/myip.json';
@@ -1243,8 +1231,7 @@ export default class AuctionYahooService {
 
             let headers = {
                 cookie,
-                'User-Agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
                 Origin: 'https://contact.auctions.yahoo.co.jp',
                 Host: 'contact.auctions.yahoo.co.jp',
 
@@ -1309,8 +1296,7 @@ export default class AuctionYahooService {
         try {
             let headers = {
                 cookie,
-                'User-Agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
                 'Accept-Encoding': 'gzip, deflate, br',
                 Connection: 'keep-alive',
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -1382,11 +1368,7 @@ export default class AuctionYahooService {
                     $ = cheerio.load(resPreview.data);
                     return {
                         status: 'ERROR',
-                        message:
-                            'PREVIEW: ' +
-                            $(
-                                'body > table:nth-child(4) > tbody > tr > td > form:nth-child(1) > table:nth-child(11) > tbody > tr:nth-child(7) > td > table > tbody > tr > td > table'
-                            ).text(),
+                        message: 'PREVIEW: ' + $('body > table:nth-child(4) > tbody > tr > td > form:nth-child(1) > table:nth-child(11) > tbody > tr:nth-child(7) > td > table > tbody > tr > td > table').text(),
                     };
                 }
             } else {
@@ -1396,7 +1378,7 @@ export default class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService sendMessage: ', error);
+            console.log(' #### AuctionYahooService sendRating: ', error);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -1608,18 +1590,7 @@ export default class AuctionYahooService {
             let ImageFullPath10 = $('#auc_image_fullpath10').val();
             let ypoint = $('input[name="ypoint"]').val();
 
-            let images = [
-                ImageFullPath1,
-                ImageFullPath2,
-                ImageFullPath3,
-                ImageFullPath4,
-                ImageFullPath5,
-                ImageFullPath6,
-                ImageFullPath7,
-                ImageFullPath8,
-                ImageFullPath9,
-                ImageFullPath10,
-            ];
+            let images = [ImageFullPath1, ImageFullPath2, ImageFullPath3, ImageFullPath4, ImageFullPath5, ImageFullPath6, ImageFullPath7, ImageFullPath8, ImageFullPath9, ImageFullPath10];
             images = images.filter((item) => item.trim() !== '');
             let productData = {
                 aID,
@@ -1654,8 +1625,7 @@ export default class AuctionYahooService {
         try {
             let headers = {
                 cookie,
-                'User-Agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
                 Origin: 'https://contact.auctions.yahoo.co.jp',
                 Host: 'contact.auctions.yahoo.co.jp',
 
@@ -1671,6 +1641,10 @@ export default class AuctionYahooService {
                     password: proxy.password,
                 },
             };
+            if (config.get('env') === 'development') {
+                proxyConfig = null;
+            }
+
             let urlPreview = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${aID}&syid=${usernameYahoo}&bid=${idBuyer}`;
             let resPreview = await axios.get(urlPreview, { headers, proxy: proxyConfig });
             let $ = cheerio.load(resPreview.data);
@@ -1682,7 +1656,7 @@ export default class AuctionYahooService {
                     syid: usernameYahoo,
                     aid: aID,
                     bid: idBuyer,
-                    '.crumb': '.crumb',
+                    '.crumb': crumb,
                     checkRepay: 1,
                 };
                 let payload = Qs.stringify(dataSubmit);
@@ -1690,6 +1664,7 @@ export default class AuctionYahooService {
                     headers,
                     proxy: proxyConfig,
                 });
+
                 if (resSubmit.data && resSubmit.data.includes('すべての取引が完了しました！またヤフオク!をご利用ください。')) {
                     return {
                         status: 'SUCCESS',
@@ -1708,7 +1683,7 @@ export default class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService sendMessage: ', error);
+            console.log(' #### AuctionYahooService cancelTransaction: ', error);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -1721,8 +1696,7 @@ export default class AuctionYahooService {
         try {
             let headers = {
                 cookie,
-                'User-Agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
                 Origin: 'https://contact.auctions.yahoo.co.jp',
                 Host: 'contact.auctions.yahoo.co.jp',
 
@@ -1832,8 +1806,7 @@ export default class AuctionYahooService {
         try {
             let headers = {
                 cookie,
-                'User-Agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
                 Origin: 'https://contact.auctions.yahoo.co.jp',
                 Host: 'contact.auctions.yahoo.co.jp',
 

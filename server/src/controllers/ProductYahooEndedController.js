@@ -197,6 +197,7 @@ export default class ProductYahooEndedController {
                         productEnded.idBuyer
                     );
                     if (result.status === 'SUCCESS') {
+                        await ProductYahooEndedService.update(productEnded._id, { progress: '受取連絡' })
                         return response.success200(result);
                     } else {
                         return response.error400({ message: result.message });

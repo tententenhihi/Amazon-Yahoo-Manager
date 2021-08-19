@@ -8,12 +8,12 @@ export default {
   },
   create(credentials) {
     return Api.post(`${prefix}/create-new`, credentials, {
-      timeout: 5 * 60 * 1000
+      timeout: 15 * 60 * 1000
     });
   },
   update(credentials) {
     return Api.post(`${prefix}/edit/${credentials._id}`, credentials, {
-      timeout: 5 * 60 * 1000
+      timeout: 15 * 60 * 1000
     });
   },
   delete(credentials) {

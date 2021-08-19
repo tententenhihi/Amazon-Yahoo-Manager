@@ -103,11 +103,10 @@
           }}</router-link
         >
         <br />
-
         <button
           class="btn btn-danger mt-20"
           @click="onCancelTransaction"
-          :disabled="product.progress !== '発送連絡'"
+          v-if="product.progress === '発送連絡' && !isCancelTransactionSuccess"
         >
           取引中止
         </button>
@@ -320,8 +319,8 @@ import { mapGetters } from "vuex";
 import ProductYahooEndedApi from "@/services/ProductYahooEndedApi";
 import TradeMessageTemplateApi from "@/services/TradeMessageTemplateApi";
 const DELETE_REASON = [
-  { value: "seller", display: "売り手" },
-  { value: "winner", display: "勝者" }
+  { value: "seller", display: "出品者都合" },
+  { value: "winner", display: "落札者都合" }
 ];
 export default {
   name: "YahooAuctionTradeMessage",
@@ -334,7 +333,8 @@ export default {
       deleteReason: DELETE_REASON[0].value,
       DELETE_REASON,
       set_ship_fee: "",
-      isSetShipSuccess: false
+      isSetShipSuccess: false,
+      isCancelTransactionSuccess: false
     };
   },
   async mounted() {
@@ -361,7 +361,7 @@ export default {
 
       let res = await ProductYahooEndedApi.setShipFee(payload);
       if (res && res.status === 200) {
-        this.isSetShipSuccess = true
+        this.isSetShipSuccess = true;
         this.$refs.modelSetFeeShip.closeModal();
         this.$swal.fire({
           icon: "success",
@@ -385,10 +385,14 @@ export default {
             product_id: this.product._id
           };
           let res = await ProductYahooEndedApi.cancelTransaction(payload);
-          this.$swal.fire({
-            icon: "success",
-            timer: 500
-          });
+          if (res && res.status === 200) {
+            this.isCancelTransactionSuccess = true;
+            this.$swal.fire({
+              icon: "success",
+              title: "成功",
+              timer: 500
+            });
+          }
         } catch (error) {}
       }
     },
