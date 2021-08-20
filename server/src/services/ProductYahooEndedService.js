@@ -15,18 +15,10 @@ export default class ProductYahooEndedService {
             if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    let listProductEnded = await AuctionYahooService.getProductAuctionEnded(
-                        accountYahoo.yahoo_id,
-                        accountYahoo.cookie,
-                        proxyResult.data,
-                        false,
-                        accountYahoo
-                    );
+                    let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data, false, accountYahoo);
                     listProductEnded = listProductEnded.reverse();
 
-
                     console.log(' ############ listProductEnded: ', listProductEnded);
-
 
                     let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
 
@@ -83,14 +75,14 @@ export default class ProductYahooEndedService {
                         let checkDelete = true;
                         for (const productYAHOO of listProductEnded) {
                             if (productDB.aID === productYAHOO.aID || productDB.product_yahoo_title.includes(productYAHOO.title)) {
-                                console.log(' ### delete ', productDB.aID);
-                                console.log(' ### productDB.product_yahoo_title: ', productDB.product_yahoo_title);
-                                console.log(' ### productYAHOO.title ', productYAHOO.title);
                                 checkDelete = false;
                                 break;
                             }
                         }
                         if (checkDelete) {
+                            console.log(' ### delete ', productDB.aID);
+                            console.log(' ### productDB.product_yahoo_title: ', productDB.product_yahoo_title);
+                            console.log(' ### productYAHOO.title ', productYAHOO.title);
                             await ProductYahooEndedService.delete(productDB._id);
                         }
                     }
