@@ -1587,7 +1587,7 @@ export default class AuctionYahooService {
             let ypoint = $('input[name="ypoint"]').val();
 
             let images = [ImageFullPath1, ImageFullPath2, ImageFullPath3, ImageFullPath4, ImageFullPath5, ImageFullPath6, ImageFullPath7, ImageFullPath8, ImageFullPath9, ImageFullPath10];
-            images = images.filter((item) => item.trim() !== '');
+            images = images.filter((item) => item && item.trim() !== '');
             let productData = {
                 aID,
                 oldAID,
