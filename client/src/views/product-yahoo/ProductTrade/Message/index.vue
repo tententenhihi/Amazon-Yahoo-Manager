@@ -121,7 +121,6 @@
             @click="$refs.modalSelectReason.openModal()"
             v-if="
               !(
-                product.progress !== '取引情報' &&
                 product.progress !== '送料連絡' &&
                 product.progress !== 'お支払い'
               )

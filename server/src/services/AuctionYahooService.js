@@ -828,6 +828,9 @@ export default class AuctionYahooService {
                         case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current01':
                             progress = '取引情報';
                             break;
+                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current01':
+                            progress = '取引情報';
+                            break;
                         case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current04':
                             progress = '発送連絡';
                             break;
