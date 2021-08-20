@@ -46,7 +46,9 @@ var Product = new Schema({
         type: Array,
         default: [],
     },
-
+    is_join_bill: {
+        type: Boolean,
+    },
     //============================================
     // Giá gốc
     import_price: {

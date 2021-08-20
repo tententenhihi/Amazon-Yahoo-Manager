@@ -71,60 +71,68 @@
             </tr>
           </tbody>
         </table>
-        <!-- <div class="alert alert-success">
-          この商品は発送が完了しています。
-        </div> -->
 
         <div>
           <button
-            class="btn btn-info btn-lg fs-lg"
-            style="width: 150px !important"
+            class="ml-2 btn btn-success"
+            @click="$refs.modelJoinBill.openModal()"
+            v-if="product.is_join_bill && !isSetJoinBillSuccess"
+          >
+            まとめて確認
+          </button>
+          <button
+            class="ml-2 btn btn-info "
             @click="$refs.modelSetFeeShip.openModal()"
             v-if="product.progress === '送料連絡' && !isSetShipSuccess"
           >
             送料連絡
           </button>
-        </div>
+          <router-link
+            tag="button"
+            class="ml-2 btn btn-default"
+            :class="{
+              'btn-warning':
+                !product ||
+                !product.rating_list ||
+                product.rating_list.length == 0
+            }"
+            :to="{
+              name: 'YahooAuctionTradeRating',
+              params: { id: product._id }
+            }"
+            >{{
+              product && product.rating_list && product.rating_list.length > 0
+                ? "評価済"
+                : "評価"
+            }}</router-link
+          >
+          <button
+            class="ml-2 btn btn-danger"
+            @click="onCancelTransaction"
+            v-if="
+              product.progress === '発送連絡' && !isCancelTransactionSuccess
+            "
+          >
+            取引中止
+          </button>
 
-        <router-link
-          tag="button"
-          class="btn btn-default mt-20"
-          :class="{
-            'btn-warning':
-              !product ||
-              !product.rating_list ||
-              product.rating_list.length == 0
-          }"
-          :to="{ name: 'YahooAuctionTradeRating', params: { id: product._id } }"
-          >{{
-            product && product.rating_list && product.rating_list.length > 0
-              ? "評価済"
-              : "評価"
-          }}</router-link
-        >
-        <br />
-        <button
-          class="btn btn-danger mt-20"
-          @click="onCancelTransaction"
-          v-if="product.progress === '発送連絡' && !isCancelTransactionSuccess"
-        >
-          取引中止
-        </button>
-        <br />
-        <button
-          class="btn btn-danger my-20"
-          @click="$refs.modalSelectReason.openModal()"
-          :disabled="
-            product.progress !== '取引情報' &&
-              product.progress !== '送料連絡' &&
-              product.progress !== 'お支払い'
-          "
-        >
-          落札者削除
-        </button>
+          <button
+            class="ml-2 btn btn-danger"
+            @click="$refs.modalSelectReason.openModal()"
+            v-if="
+              !(
+                product.progress !== '取引情報' &&
+                product.progress !== '送料連絡' &&
+                product.progress !== 'お支払い'
+              )
+            "
+          >
+            落札者削除
+          </button>
+        </div>
         <br />
         <hr />
-        <div class="my-20">
+        <div class="my-2">
           取引で困ったことなどがあったら、落札者に質問してみよう！
         </div>
         <ValidationObserver tag="div" ref="formMessage">
@@ -311,6 +319,133 @@
         </div>
       </template>
     </modal-component>
+
+    <modal-component ref="modelJoinBill">
+      <template v-slot:header>
+        <h5>配送方法</h5>
+      </template>
+      <template>
+        <div class="p-2" style="font-size: 14px">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="is_join_bill_true"
+              id="is_join_bill_true"
+              :value="true"
+              v-model="is_join_bill"
+            />
+            <label class="form-check-label" for="is_join_bill_true">
+              まとめて取引
+            </label>
+          </div>
+          <div v-if="is_join_bill" class="ml-4 mt-2">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="use_ship_origin_true"
+                id="use_ship_origin_true"
+                :value="true"
+                v-model="use_ship_origin"
+              />
+              <label class="form-check-label" for="use_ship_origin_true">
+                出品時に設定した配送方法を利用する
+              </label>
+            </div>
+            <div class="form-check mt-1">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="use_ship_origin_false"
+                id="use_ship_origin_false"
+                :value="false"
+                v-model="use_ship_origin"
+              />
+              <label class="form-check-label" for="use_ship_origin_false">
+                別の配送方法を利用する
+              </label>
+            </div>
+
+            <div v-if="!use_ship_origin" class="input-group mt-2 mb-3">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span
+                    class="input-group-text"
+                    style="background-color: #fff7db"
+                    id="inputGroupPrepend2"
+                    >配送方法</span
+                  >
+                </div>
+                <select class="custom-select" v-model="new_fee_ship_type">
+                  <option
+                    v-for="(item, index) in NEW_SHIP"
+                    :key="index"
+                    :value="item.value"
+                    >{{ item.display }}</option
+                  >
+                </select>
+                <div
+                  v-if="
+                    new_fee_ship_type !== 'ヤフネコ!（ネコポス）' &&
+                      new_fee_ship_type !== 'ヤフネコ!（宅急便コンパクト）' &&
+                      new_fee_ship_type !== 'ヤフネコ!（宅急便）' &&
+                      new_fee_ship_type !== 'ゆうパケット（おてがる版）' &&
+                      new_fee_ship_type !== 'ゆうパック（おてがる版）'
+                  "
+                  class="input-group-prepend"
+                >
+                  <span
+                    class="input-group-text"
+                    style="background-color: #fff7db"
+                    id="inputGroupPrepend2"
+                    >送料（円）</span
+                  >
+                </div>
+                <input
+                  v-if="
+                    new_fee_ship_type !== 'ヤフネコ!（ネコポス）' &&
+                      new_fee_ship_type !== 'ヤフネコ!（宅急便コンパクト）' &&
+                      new_fee_ship_type !== 'ヤフネコ!（宅急便）' &&
+                      new_fee_ship_type !== 'ゆうパケット（おてがる版）' &&
+                      new_fee_ship_type !== 'ゆうパック（おてがる版）'
+                  "
+                  type="text"
+                  class="form-control"
+                  v-model="new_fee_ship_price"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-check mt-2">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="is_join_bill_false"
+              id="is_join_bill_false"
+              v-model="is_join_bill"
+              :value="false"
+            />
+            <label class="form-check-label" for="is_join_bill_false">
+              単品で取引
+            </label>
+          </div>
+        </div>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button class="btn btn-primary mr-2" @click="onSetJoinBill">
+            <i class="fa fa-save"></i> 送料を連絡
+          </button>
+          <button
+            class="btn btn-warning"
+            @click="$refs.modelSetFeeShip.closeModal()"
+          >
+            <i class="fa fa-times"></i> キャンセル
+          </button>
+        </div>
+      </template>
+    </modal-component>
   </div>
 </template>
 
@@ -322,6 +457,32 @@ const DELETE_REASON = [
   { value: "seller", display: "出品者都合" },
   { value: "winner", display: "落札者都合" }
 ];
+
+const NEW_SHIP = [
+  { value: "ヤフネコ!（ネコポス）", display: "ヤフネコ!（ネコポス）" },
+  {
+    value: "ヤフネコ!（宅急便コンパクト）",
+    display: "ヤフネコ!（宅急便コンパクト）"
+  },
+  { value: "ヤフネコ!（宅急便）", display: "ヤフネコ!（宅急便）" },
+  {
+    value: "ゆうパケット（おてがる版）",
+    display: "ゆうパケット（おてがる版）"
+  },
+  { value: "ゆうパック（おてがる版）", display: "ゆうパック（おてがる版）" },
+  { value: "定形郵便", display: "定形郵便" },
+  { value: "定形外郵便", display: "定形外郵便" },
+  { value: "レターパックプラス", display: "レターパックプラス" },
+  { value: "レターパックライト", display: "レターパックライト" },
+  { value: "ゆうパック", display: "ゆうパック" },
+  { value: "ゆうメール", display: "ゆうメール" },
+  { value: "宅急便（ヤマト運輸）", display: "宅急便（ヤマト運輸）" },
+  { value: "飛脚宅配便（佐川急便）", display: "飛脚宅配便（佐川急便）" },
+  { value: "飛脚メール便（佐川急便）", display: "飛脚メール便（佐川急便）" },
+  { value: "クリックポスト", display: "クリックポスト" },
+  { value: "カンガルー便（西濃運輸）", display: "カンガルー便（西濃運輸）" }
+];
+
 export default {
   name: "YahooAuctionTradeMessage",
   data() {
@@ -332,9 +493,15 @@ export default {
       selectedTemplate: null,
       deleteReason: DELETE_REASON[0].value,
       DELETE_REASON,
+      NEW_SHIP,
       set_ship_fee: "",
       isSetShipSuccess: false,
-      isCancelTransactionSuccess: false
+      isCancelTransactionSuccess: false,
+      is_join_bill: true,
+      use_ship_origin: false,
+      new_fee_ship_type: NEW_SHIP[0].value,
+      new_fee_ship_price: 0,
+      isSetJoinBillSuccess: false
     };
   },
   async mounted() {
@@ -353,6 +520,29 @@ export default {
     }
   },
   methods: {
+    async onSetJoinBill() {
+      try {
+        let payload = {
+          product_id: this.product._id,
+          is_join_bill: this.is_join_bill,
+          use_ship_origin: this.use_ship_origin,
+          new_fee_ship_type: this.new_fee_ship_type,
+          new_fee_ship_price: this.new_fee_ship_price
+        };
+
+        let res = await ProductYahooEndedApi.setJoinBill(payload);
+        if (res && res.status === 200) {
+          this.isSetJoinBillSuccess = true;
+          this.$refs.modelJoinBill.closeModal();
+          this.$swal.fire({
+            icon: "success",
+            title: "成功",
+            timer: 500,
+            showConfirmButton: false
+          });
+        }
+      } catch (error) {}
+    },
     async onSetFeeShip() {
       let payload = {
         product_id: this.product._id,

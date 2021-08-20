@@ -1,0 +1,402 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ja">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>ヤフオク! - まとめて取引 確認</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" href="https://s.yimg.jp/images/auc/pc/common/css/tradingnavi/1.0.0/standard_common.css" type="text/css" media="all">
+<link media="all" type="text/css" href="https://s.yimg.jp/images/auc/pc/tradingnavi/css/1.0.36/style_common.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://s.yimg.jp/images/auct/cms/promo/paymentfree/pc/pc_put/css/1.0.2/mdl_tradingnavi.css" type="text/css" media="all">
+<!-- basic-MHCSS -->
+<!-- mhcss -->
+<link href="https://s.yimg.jp/yui/jp/mh/pc/1.5.7/css/std.css" rel="stylesheet" type="text/css" media="all">
+<!-- /mhcss -->
+<!--[if lte IE 7]><style type="text/css">*{zoom:1;}ul,ol,li{zoom:normal;}</style><![endif]-->
+</head>
+<body class="yj950-1">
+
+<div id="acWrHead">
+<div id="header">
+<span class="yjGuid"><a name="yjPagetop" id="yjPagetop"></a></span>
+<!-- MHD -->
+<!-- basic-MH-login -->
+<!-- mhd -->
+<div id="msthd">
+  <div>
+    <div id="msthdtp">
+      <div id="mhd_uhd_pc"></div>
+      <div id="msthdsb">
+        <div class="msthdLink">
+          <ul>
+            <li class="msthdLinkYtop"><a data-redirectadclick href="https://www.yahoo.co.jp/" data-ylk="slk:h_ytop;pos:0" id="msthdYtop">Yahoo! JAPAN</a></li>
+            <!-- mhhl -->
+            <li class="msthdLinkHelp"><a data-redirectadclick href="https://www.yahoo-help.jp/app/home/service/auctions/" data-ylk="slk:h_hlp;pos:0" id="msthdHelp">ヘルプ</a></li>
+            <!-- /mhhl -->
+          </ul>
+        </div>
+        <div id="msthdsrch">
+          <form data-redirectadclick action="https://search.yahoo.co.jp/search" name="p">
+            <p id="msthdsrchBox">
+              <label id="msthdslb" for="msthdsbox" title="キーワード：" class="offLeft">キーワード：</label>
+              <input id="msthdsbox" type="text" name="p" value="" placeholder="ウェブ検索">
+              <button id="msthdsbt" type="submit" title="検索">検索</button>
+              <input type=hidden name="ei" value="UTF-8" id="msthdei">
+              <input type=hidden name="fr" value="ush">
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- mhlg -->
+    <div class="logo">
+      <a data-redirectadclick href="https://auctions.yahoo.co.jp/" data-ylk="slk:h_srvtop;pos:0" id="msthdLogo">
+        <img src="https://s.yimg.jp/c/logo/f/2.0/auctions_r_34_2x.png" alt="ヤフオク!" width="134" height="30">
+      </a>
+    </div>
+    <!-- /mhlg -->
+    <!-- mhli_login -->
+    <noscript>
+      <style type="text/css">
+      <!--
+        #msthdLoginUser{display: inline-block;}
+        #msthd #msthdUserIcon #msthdUserIconImg{display: inline;}
+        #msthd #msthdsrch {display: inline-block;}
+      -->
+      </style>
+    </noscript>
+    <div class="msthdtxt">
+      <div id="msthdUserIcon">
+        <a data-redirectadclick href="https://accounts.yahoo.co.jp/profile?.done=https%3A%2F%2Fcontact.auctions.yahoo.co.jp%2Fseller%2Ftop%3Faid%3Db1001136624%26syid%3Dakkzaq8880%26bid%3Diwaac11%26oid%3D60101198-6329382916-0302374%26uc%3D&.src=auc" data-ylk="slk:h_usricn;pos:0"><img src="https://s.yimg.jp/images/account/sp/img/display_name/user/64/00.png" alt="ユーザーアイコン" width="36" height="36" id="msthdUserIconImg"></a>
+      </div>
+      <div id="msthdLoginUser">
+        <p>
+          <a data-redirectadclick href="https://accounts.yahoo.co.jp/profile?.done=https%3A%2F%2Fcontact.auctions.yahoo.co.jp%2Fseller%2Ftop%3Faid%3Db1001136624%26syid%3Dakkzaq8880%26bid%3Diwaac11%26oid%3D60101198-6329382916-0302374%26uc%3D&.src=auc" class="b" id="msthdLoginName" data-ylk="slk:h_reginf;pos:0"></a>
+        </p>
+        <p>
+          <span id="mhd_premium_pc"></span>
+        </p>
+      </div>
+      <div id="msthdPointArea">
+        <p>
+          <a data-redirectadclick href="https://points.yahoo.co.jp/book" data-ylk="slk:h_tpthst;pos:0" id="msthdPoint"><span id="msthdPointNum">-ポイント</span></a><span id="msthdPointTxt"></span>
+        </p>
+        <p>
+          <span id="mhd_text_pc" style="display: none;"></span>
+        </p>
+      </div>
+    </div>
+    <!-- /mhli_login -->
+  </div>
+</div>
+<script type="text/javascript" src="https://s.yimg.jp/images/security/pf/pcore-1.0.2.min.js"></script>
+<script type="text/javascript" src="https://s.yimg.jp/images/security/pf/yjsecure.js"></script>
+<script type="text/javascript" src="https://s.yimg.jp/images/mempf/mhd/2_3_0/mempf.js"></script>
+<script type="text/javascript">
+window.msthdPromo = function() {
+  YAHOO.JP.msthd.Promo.init();
+};
+</script>
+<script type="text/javascript">
+  (function(d,t){var s=d.getElementsByTagName(t)[0],n=d.createElement(t);n.id='msthdScript';n.src='https://s.yimg.jp/yui/jp/mh/pc/1.9.0/js/std-min.js';n.setAttribute('data-s','');n.setAttribute('data-tm','');s.parentNode.insertBefore(n,s);}(document,'script'));
+</script>
+<!-- /mhd -->
+
+<!-- /MHD -->
+<!-- EMG -->
+<div id="emg"><!-- EMG noResult --></div><!--/#emg-->
+<!-- /EMG -->
+
+<noscript>
+<div id="libJsOffAlert">
+<div class="untBody">
+<p><em>現在JavaScriptの設定が無効になっています。</em></p>
+<p class="decTxt">すべての機能を利用するにはJavaScriptの設定を有効にしてください。<a href="https://www.yahoo-help.jp/app/noscript">JavaScriptの設定を変更する方法はこちら</a>。</p>
+</div>
+</div>
+</noscript>
+
+<!-- PointNavi -->
+<div id="libPointNavi" class="cf">
+    <div class="ptsPoint">
+            </div>
+<div class="ptsNavi">
+<ul>
+<li><a href="https://auctions.yahoo.co.jp/user/jp/show/mystatus" data-ylk="rsec:nav_header;slk:myauc;pos:1" >マイオク</a></li>
+<li><a href="https://auctions.yahoo.co.jp/sell/jp/show/submit?category=0" data-ylk="rsec:nav_header;slk:sell;pos:1" >出品</a></li>
+<li><a href="https://auctions.yahoo.co.jp/sell/jp/show/prefs?.done=" data-ylk="rsec:nav_header;slk:aopt;pos:1" >オプション/設定</a></li>
+</ul>
+</div>
+</div><!--/#libPointNavi-->
+<!-- /PointNavi -->
+</div><!--/#header-->
+</div>
+
+<hr class="yjSeparation">
+
+<div id="acWrContents">
+<div id="contents">
+<div id="yjContentsBody">
+<div id="yjMain" class="cf">
+
+<div id="acConHeader" class="cf">
+<!-- HeadH1 -->
+<div class="acMdHeadH1 libTitleH1">
+<h1>まとめて取引 確認</h1>
+<div class="decGuideLink mT20">
+<a href="https://auctions.yahoo.co.jp/topic/tradingnavi/guide/" target="_60101198-6329382916-0302374" data-ylk="rsec:btn;slk:lguide;pos:1" ><span class="decIconBeginer"></span>使い方ガイド</a>
+</div>
+</div><!-- /.acMdHeadH1 -->
+<!-- /HeadH1 -->
+
+<!-- ItemInfo -->
+        
+<div class="acMdItemInfo libItemInfo ">
+<dl class="ptsItmInfoDl"><dt class="decItmPhoto"><img src="https://s.yimg.jp/images/yc/pc/common/image/noimage/c.gif" alt="" width="50" height="50"></dt>
+
+<dd class="decItmName">
+      6枚セット-B 6枚 for すとぷり キーホルダー アクリル 2021年人気 for すとぷりあくきー キーチェーン 携帯ストラ
+  </dd>
+
+<dd class="decPrice"><span class="decQunt">落札数量： 1</span>落札価格： 101円</dd>
+<dd class="decMDT">終了日時： 8月19日 23時22分</dd>
+<dd class="decItmID"><p>オークションID： b1001136624</p></dd>
+<dd class="decBuyerID"><p>落札者： iwaac11（<a href="https://auctions.yahoo.co.jp/jp/show/rating?userID=iwaac11" target="_60101198-6329382916-0302374" data-ylk="rsec:itm;slk:rtg;pos:1" >243</a>）</p></dd>
+</dl>
+
+  <p class="ptsItmPgBtn"><a href="https://page.auctions.yahoo.co.jp/jp/auction/b1001136624" target="_60101198-6329382916-0302374" class="libBtnGrayS" data-ylk="rsec:itm;slk:tc;pos:1" ><span>商品ページへ</span></a></p>
+
+</div><!-- /.acMdItemInfo -->
+<!-- ItemInfo -->
+
+</div><!-- /#acConHeader -->
+
+<!-- Bundle - 同梱対応用パーツ -->
+<div class="acMdEntrySendInfo">
+<div class="libTitleH2TxtVr"><h2>まとめて取引を依頼された商品</h2></div>
+<div class="acMdSendCnct">
+
+<div class="decTotalItem">
+  <div class="libTableCnf">
+  <table border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+    <tr>
+      <td><span class="decItem">2件</span>（落札数量：2）</td>
+      <td class="alignR"><div class="decTotalInfo">落札合計金額：<span class="decInfoPrice">202円</span></div></td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="libCnfTblWr decBundle">
+<div class="libTableCnf">
+<table border="0" cellpadding="0" cellspacing="0">
+<tbody>
+
+
+<tr>
+  <td colspan="2"><div class="acMdItemInfo libItemInfo decFloatL">
+    <dl class="ptsItmInfoDl"><dt class="decItmPhoto"><img src="https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0208/users/9d35ad161ea7e71db54710543a9ea16534f97468/i-img500x500-1629297260pecyfm268070.jpg" alt="" width="50" height="50"></dt>
+      <dd class="decItmName">6枚セット-B 6枚 for すとぷり キーホルダー アクリル 2021年人気 for すとぷりあくきー キーチェーン 携帯ストラ</dd>
+              <dd class="decPrice"><span class="decQunt">落札数量： 1</span>落札価格： 101円</dd>
+        <dd class="decMDT">終了日時： 8月19日 23時22分</dd>
+          </dl>
+  </div></td>
+</tr>
+
+
+<tr>
+  <td colspan="2"><div class="acMdItemInfo libItemInfo decFloatL">
+    <dl class="ptsItmInfoDl"><dt class="decItmPhoto"><img src="https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0208/users/9d35ad161ea7e71db54710543a9ea16534f97468/i-img500x500-1629297252fuueyh39197.jpg" alt="" width="50" height="50"></dt>
+      <dd class="decItmName">6枚 for すとぷり キーホルダー アクリル 2021年人気 for すとぷりあくきー キーチェーン 携帯ストラップ 人気 軽量</dd>
+              <dd class="decPrice"><span class="decQunt">落札数量： 1</span>落札価格： 101円</dd>
+        <dd class="decMDT">終了日時： 8月19日 23時23分</dd>
+          </dl>
+  </div></td>
+</tr>
+
+
+</tbody></table>
+
+</div><!-- /.libTableCnf -->
+</div><!-- /.libCnfTblWr -->
+<p class="fnt12 mT10 mL10">まとめて取引ができない商品については、<a href="https://www.yahoo-help.jp/app/answers/detail/a_id/109740/p/353" target="_blank"  data-ylk="rsec:bndl;slk:notbndl;pos:1" >こちら</a>をご確認ください。</p>
+</div><!-- /.acMdSendCnct -->
+</div><!-- /.acMdEntrySendInfo -->
+<!-- /Bundle - 同梱対応用パーツ -->
+
+<form action="/seller/bundle/shipsubmit" method="POST" onSubmit="document.getElementById('redSubmitBtn').disabled = true">
+<!-- Bundle - 同梱対応用パーツ -->
+<div class="acMdEntryPaymentMthd">
+  <div class="libTitleH2TxtVr"><h2>お届け地域</h2></div>
+  <div class="libTableCnfSetPts">
+    <div class="ptsInrCnfTbl ">
+      <div class="decCnfWr">埼玉県</div>
+    </div><!--/.ptsInrCnfTbl-->
+  </div><!-- /.libTableCnfSetPts -->
+</div><!-- /.acMdEntryPaymentMthd -->
+<!-- /Bundle - 同梱対応用パーツ -->
+
+<!-- Bundle - 同梱対応用パーツ -->
+<div class="acMdEntryPaymentMthd">
+  <div class="libTitleH2TxtVr"><h2>送料負担</h2></div>
+  <div class="libTableCnfSetPts">
+    <div class="ptsInrCnfTbl ">
+      <div class="decCnfWr">落札者</div>
+    </div><!--/.ptsInrCnfTbl-->
+  </div><!-- /.libTableCnfSetPts -->
+</div><!-- /.acMdEntryPaymentMthd -->
+<!-- /Bundle - 同梱対応用パーツ -->
+
+<!-- Bundle - 同梱対応用パーツ -->
+<div class="acMdEntrySendInfo">
+  <div class="libTitleH2TxtVr"><h2>配送方法</h2></div>
+<div class="libTableCnfSetPts">
+<div class="ptsInrCnfTbl ">
+
+      <div class="decCnfWr">ゆうパケット（おてがる版）
+      <img src="https://s.yimg.jp/images/auct/template/ui/auc_mod/ic_privacy_delivery.png" class="decPrivacyDeliveryIcon" alt="匿名配送">      （210円）    </div>
+  </div><!--/.ptsInrCnfTbl-->
+</div><!-- /.libTableCnfSetPts -->
+</div><!-- /.acMdEntrySendInfo -->
+<!-- /Bundle - 同梱対応用パーツ -->
+
+<!-- Bundle - 同梱対応用パーツ -->
+<div class="acMdTradeBtn libButtonBoxGrd">
+  <div class="acMdStatusCmt">
+    <div class="elAlert alignC">
+      <p class="fnt13">同意した後は、まとめて取引の内容を変更できません。</p>
+    </div>
+  </div>
+  <input type="button" class="libBtnGrayM" value="戻る" onClick="if (typeof(ins)!='undefined'){ins.beaconClick('acWrContents','rt',this.getAttribute('data-rapid_p'));} form.back.value=1; form.action='/seller/bundle/shipedit'; submit();"  data-ylk="rsec:bndl;slk:rt;pos:1" >
+  <input type="hidden" name="back" value="" />
+  <input type="submit" class="libBtnRedL" value="決定する" id="redSubmitBtn"  data-ylk="rsec:bndl;slk:btn;pos:1" >
+</div>
+<!-- /Bundle - 同梱対応用パーツ -->
+
+<input type="hidden" name="aid" value="b1001136624" />
+<input type="hidden" name="syid" value="akkzaq8880" />
+<input type="hidden" name="bid" value="iwaac11" />
+<input type="hidden" name="oid" value="60101198-6329382916-0302374" />
+<input type="hidden" name="_crumb" value="f261a5bb42fae24085642002b2d191c4fcd2f9be94754b5e2163c734afc01e4e" />
+
+<input type="hidden" name="shipUseParent" value="0" />
+<input type="hidden" name="shippingMethod" value="ゆうパケット（おてがる版）" />
+<input type="hidden" name="shipChargeNumber" value="" />
+<input type="hidden" name="chargeForShipping" value="1" />
+
+</form>
+
+</div><!--/#yjMain-->
+</div><!--/#yjContentsBody-->
+</div><!--/#contents-->
+</div>
+
+    
+<hr class="yjSeparation">
+<div id="acWrFooter">
+<div id="footer">
+<!-- libPropertyLink -->
+<div class="libPropertyLink">
+<ul>
+<li class="decLst"><a href="https://auctions.yahoo.co.jp/" data-ylk="rsec:rt;slk:top;pos:1" >ヤフオク!</a></li>
+</ul>
+</div><!--/libPropertyLink-->
+<!-- SitePolicy -->
+<address><a rel="nofollow" href="https://privacy.yahoo.co.jp/" data-ylk="rsec:footer;slk:pol;pos:1" >プライバシー</a> - <a rel="nofollow" href="https://about.yahoo.co.jp/docs/info/terms/" data-ylk="rsec:footer;slk:ag;pos:1" >利用規約</a> - <a rel="nofollow" href="https://premium.yahoo.co.jp/info/guidelines.html/?sc_yprec=yyac_footer" data-ylk="rsec:footer;slk:gidpre;pos:1" >プレミアム利用ガイド</a> - <a rel="nofollow" href="https://auctions.yahoo.co.jp/special/html/guidelines.html" data-ylk="rsec:footer;slk:gidlin;pos:1" >ガイドライン</a> - <a rel="nofollow" href="https://auctions.yahoo.co.jp/special/html/tokushoho.html" data-ylk="rsec:footer;slk:toku;pos:1" >特定商取引法の表示</a> - <a rel="nofollow" href="https://business.yahoo.co.jp/category2/index.html" data-ylk="rsec:footer;slk:stropn;pos:1" >ストア出店について</a> - <a rel="nofollow" href="https://auctions.yahoo.co.jp/guide/kaizen/" data-ylk="rsec:footer;slk:fdbk;pos:1" >ご意見・ご要望</a> - <a rel="nofollow" href="https://www.yahoo-help.jp/app/home/p/353/" data-ylk="rsec:footer;slk:help;pos:1" >ヘルプ・お問い合わせ</a><br>
+Copyright (C) 2021 Yahoo Japan Corporation. All Rights Reserved.
+</address>
+<!-- /SitePolicy -->
+
+</div><!--/#footer-->
+</div>
+<script type="text/javascript" src="https://s.yimg.jp/images/commerce/js/libs/jquery/core/1.8.1/jquery.min.js"></script>
+<script src="https://s.yimg.jp/images/ds/ult/auctions/rapidjp-1.0.0.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+
+
+var ins;
+
+
+var conf = {
+        spaceid:2084315653,
+        tracked_mods:['acWrContents','libPointNavi','acWrFooter','msthd'],
+        keys:{
+                pagetype:'confirmation',
+                conttype:'tnvslrbndlagree',
+        opttype:'pc',
+                uiid:'seller',
+                apptype:'web',
+                status:'login',
+                vtgrpid:'tnv',
+                dlvkind:'115',
+                bndlprdl:'other',
+                ctsid:'b1001136624',
+                vtestid:'',
+                service:'auctions'
+        },
+        apv:false,
+        compr_on:false
+};
+
+YAHOO.i13n.WEBWORKER_FILE = "/dev/js/rapid/rapid-worker-1.2.js";
+ins = (new YAHOO.i13n.JP.simpleRapid(conf)).initRapid();
+
+</script>
+
+<!-- JavaScript -->
+<script src="https://s.yimg.jp/images/auc/pc/common/js/1.0.0/common.jquery.js" type="text/javascript"></script>
+<script src="https://s.yimg.jp/images/auc/pc/tradingnavi/js/1.0.3/common.js" type="text/javascript"></script>
+<script src="https://s.yimg.jp/images/auc/pc/tradingnavi/js/1.0.1/autosize.js" type="text/javascript"></script>
+<script type="text/javascript">
+YAHOO.JP.auc.cre.$('.libJsExpand').Expand();
+</script>
+<script language="JavaScript" type="text/javascript">
+(function() {
+  var domain = "contact.auctions.yahoo.co.jp";
+  var spaceid = "2084315653";
+  var property = "jp_auction";
+  var url = "https://pvtag.yahoo.co.jp/t?f=" + spaceid + "&p=" + property + "&domain=" + domain + "&js=1&rnd=" + new Date().getTime();
+  document.write("<sc" + "ript src=\""  + url + "\"></sc" + "ript>");
+})();
+</script>
+<noscript>
+<iframe src="https://pvtag.yahoo.co.jp/t?f=2084315653&p=jp_auction&domain=contact.auctions.yahoo.co.jp&js=0" height=1 width=1 marginwidth=0 marginheight=0 hspace=0 vspace=0 frameborder=0 scrolling="no"></iframe>
+</noscript>
+<script src="https://s.yimg.jp/images/ds/yas/ual-2.10.2.min.js"></script>
+<script>
+  window.ualcmds = window.ualcmds || [];
+  window.ual = window.ual || function() {
+    ualcmds.push(arguments);
+  };
+
+  ual('config', 'token', 'c7c61354-54b0-48b6-b152-a67e042b8e21');
+  if (typeof YAHOO !== 'undefined'
+    && typeof YAHOO.i13n !== 'undefined'
+    && typeof YAHOO.i13n.A_SID !== 'undefined') {
+    ual('hit', 'pageview', {
+      service: 'auctions',
+      opttype: 'pc',
+      nopv: false,
+      hierarchy_id: '2084315653',
+      ss_join_id: YAHOO.i13n.A_SID,
+
+    });
+  } else {
+    ual('hit', 'pageview', {
+      service: 'auctions',
+      opttype: 'pc',
+      nopv: false,
+      hierarchy_id: '2084315653',
+
+    });
+  }
+
+</script>
+</body>
+</html>

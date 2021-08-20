@@ -6,6 +6,40 @@ import AccountYahooService from '../services/AccountYahooService';
 import ProxyService from '../services/ProxyService';
 
 export default class ProductYahooEndedController {
+    static async setJoinBill(req, res) {
+        let response = new Response(res);
+        try {
+            let { product_id, is_join_bill, use_ship_origin, new_fee_ship_type, new_fee_ship_price } = req.body;
+            if (!product_id) {
+                return response.error400({ message: 'データエラー.!' });
+            }
+            let productEnded = await ProductYahooEndedService.findById(product_id);
+            if (!productEnded) {
+                return response.error400({ message: 'Product not found..!' });
+            }
+            let yahooAccount = await AccountYahooService.findById(productEnded.yahoo_account_id);
+            if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+                let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+                if (proxyResult.status === 'SUCCESS') {
+                    let result = await AuctionYahooService.setJoinBill(yahooAccount.cookie, proxyResult.data, productEnded.aID, yahooAccount.yahoo_id, productEnded.idBuyer, is_join_bill, use_ship_origin, new_fee_ship_type, new_fee_ship_price);
+                    if (result.status === 'SUCCESS') {
+                        await ProductYahooEndedService.update(productEnded._id, { is_join_bill: false });
+                        return response.success200(result);
+                    } else {
+                        return response.error400({ message: result.message });
+                    }
+                } else {
+                    return response.error400({ message: proxyResult.statusMessage });
+                }
+            } else {
+                return response.error400({ message: 'ユーザーエラー.!' });
+            }
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
+
     static async contactShip(req, res) {
         let response = new Response(res);
         try {
@@ -22,15 +56,9 @@ export default class ProductYahooEndedController {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
                     console.log(productEnded);
-                    let result = await AuctionYahooService.contactShip(
-                        yahooAccount.cookie,
-                        proxyResult.data,
-                        productEnded.aID,
-                        yahooAccount.yahoo_id,
-                        productEnded.idBuyer
-                    );
+                    let result = await AuctionYahooService.contactShip(yahooAccount.cookie, proxyResult.data, productEnded.aID, yahooAccount.yahoo_id, productEnded.idBuyer);
                     if (result.status === 'SUCCESS') {
-                        await ProductYahooEndedService.update(productEnded._id, { progress: '受取連絡' })
+                        await ProductYahooEndedService.update(productEnded._id, { progress: '受取連絡' });
                         return response.success200(result);
                     } else {
                         return response.error400({ message: result.message });
@@ -61,16 +89,9 @@ export default class ProductYahooEndedController {
             if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    let result = await AuctionYahooService.setFeeShip(
-                        yahooAccount.cookie,
-                        proxyResult.data,
-                        productEnded.aID,
-                        yahooAccount.yahoo_id,
-                        productEnded.idBuyer,
-                        set_ship_fee
-                    );
+                    let result = await AuctionYahooService.setFeeShip(yahooAccount.cookie, proxyResult.data, productEnded.aID, yahooAccount.yahoo_id, productEnded.idBuyer, set_ship_fee);
                     if (result.status === 'SUCCESS') {
-                        await ProductYahooEndedService.update(productEnded._id, { progress: 'お支払い' })
+                        await ProductYahooEndedService.update(productEnded._id, { progress: 'お支払い' });
                         return response.success200(result);
                     } else {
                         return response.error400({ message: result.message });
@@ -189,15 +210,9 @@ export default class ProductYahooEndedController {
             if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    let result = await AuctionYahooService.cancelTransaction(
-                        yahooAccount.cookie,
-                        proxyResult.data,
-                        productEnded.aID,
-                        yahooAccount.yahoo_id,
-                        productEnded.idBuyer
-                    );
+                    let result = await AuctionYahooService.cancelTransaction(yahooAccount.cookie, proxyResult.data, productEnded.aID, yahooAccount.yahoo_id, productEnded.idBuyer);
                     if (result.status === 'SUCCESS') {
-                        await ProductYahooEndedService.update(productEnded._id, { progress: '受取連絡' })
+                        await ProductYahooEndedService.update(productEnded._id, { progress: '受取連絡' });
                         return response.success200(result);
                     } else {
                         return response.error400({ message: result.message });
@@ -227,14 +242,7 @@ export default class ProductYahooEndedController {
             if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    let resultSendMessage = await AuctionYahooService.sendMessage(
-                        yahooAccount.cookie,
-                        proxyResult.data,
-                        productEnded.aID,
-                        yahooAccount.yahoo_id,
-                        productEnded.idBuyer,
-                        message
-                    );
+                    let resultSendMessage = await AuctionYahooService.sendMessage(yahooAccount.cookie, proxyResult.data, productEnded.aID, yahooAccount.yahoo_id, productEnded.idBuyer, message);
                     if (resultSendMessage.status === 'SUCCESS') {
                         let message_list = [
                             {

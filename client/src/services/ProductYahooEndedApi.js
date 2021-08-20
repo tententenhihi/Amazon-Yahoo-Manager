@@ -56,5 +56,10 @@ export default {
     return Api.post(`${prefix}/contact-ship`, credentials, {
       timeout: 15 * 60 * 1000
     });
+  },
+  setJoinBill(credentials) {
+    return Api.post(`${prefix}/set-join-bill`, credentials, {
+      timeout: 15 * 60 * 1000
+    });
   }
 };

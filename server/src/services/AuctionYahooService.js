@@ -786,7 +786,7 @@ export default class AuctionYahooService {
 
                 // product_buy_count
                 try {
-                    let productCountNode = $('.decQunt').text();
+                    let productCountNode = $('#acConHeader > div.acMdItemInfo.libItemInfo > dl > dd.decPrice > span').text();
                     if (productCountNode) {
                         let product_buy_count = productCountNode.replace(/\D+/g, '');
                         if (product_buy_count) {
@@ -794,23 +794,6 @@ export default class AuctionYahooService {
                         }
                     }
                 } catch (error) {}
-
-                // // Progress message
-                // try {
-                //     //div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div
-                //     let progress_message = $(
-                //         'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div'
-                //     );
-                //     if (progress_message) {
-                //         let text_date = $(
-                //             'div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(6) > table > tbody > tr > td > div > table > tbody > tr:nth-child(1) > td > div > span'
-                //         );
-                //         progress_message = progress_message.text().replace(text_date.text(), '').trim();
-                //         product.progress_message = progress_message;
-                //     }
-                // } catch (error) {
-                //     console.log(error);
-                // }
 
                 // Progress status
                 try {
@@ -925,6 +908,16 @@ export default class AuctionYahooService {
                     }
 
                     product.progress = progress;
+                } catch (error) {}
+
+                // Check gộp thanh toán
+                try {
+                    let buttonJoinPayment = $('div.acMdTradeBtn > a.libBtnBlueL');
+                    if (buttonJoinPayment && buttonJoinPayment.length > 0 && buttonJoinPayment.text() === 'まとめて取引をはじめる') {
+                        product.is_join_bill = true;
+                    } else {
+                        product.is_join_bill = false;
+                    }
                 } catch (error) {}
             }
 
@@ -1759,39 +1752,6 @@ export default class AuctionYahooService {
                     message: '...!',
                 };
             }
-
-            // let oid = $('#oid').val();
-            // let crumb = $('#crumb').val();
-            // if (oid && crumb) {
-            //     let dataSubmit = {
-            //         oid,
-            //         syid: usernameYahoo,
-            //         aid: aID,
-            //         bid: idBuyer,
-            //         crumb,
-            //         body: message,
-            //     };
-            //     let payload = Qs.stringify(dataSubmit);
-            //     let resSubmit = await axios.post('https://contact.auctions.yahoo.co.jp/message/submit', payload, {
-            //         headers,
-            //         proxy: proxyConfig,
-            //     });
-            //     if (resSubmit.data.Result != null && resSubmit.data.Result != {}) {
-            //         return {
-            //             status: 'SUCCESS',
-            //         };
-            //     } else {
-            //         return {
-            //             status: 'ERROR',
-            //             message: '...!',
-            //         };
-            //     }
-            // } else {
-            //     return {
-            //         status: 'ERROR',
-            //         message: 'crumb and oid not found.!',
-            //     };
-            // }
         } catch (error) {
             console.log(' #### AuctionYahooService stopTransaction: ', error);
             return {
@@ -1869,6 +1829,107 @@ export default class AuctionYahooService {
                     status: 'ERROR',
                     message: '...!',
                 };
+            }
+        } catch (error) {
+            console.log(' #### AuctionYahooService stopTransaction: ', error);
+            return {
+                status: 'ERROR',
+                message: error.message,
+            };
+        }
+    }
+
+    static async setJoinBill(cookie, proxy, aID, usernameYahoo, idBuyer, is_join_bill, use_ship_origin, new_fee_ship_type, new_fee_ship_price) {
+        // reason: seller or winner
+        try {
+            let headers = {
+                cookie,
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                Origin: 'https://contact.auctions.yahoo.co.jp',
+                Host: 'contact.auctions.yahoo.co.jp',
+
+                'Accept-Encoding': 'gzip, deflate, br',
+                Connection: 'keep-alive',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            };
+            let proxyConfig = {
+                host: proxy.host,
+                port: proxy.port,
+                auth: {
+                    username: proxy.username,
+                    password: proxy.password,
+                },
+            };
+
+            if (config.get('env') === 'development') {
+                proxyConfig = null;
+            }
+
+            let urlPreview = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${aID}&syid=${usernameYahoo}&bid=${idBuyer}`;
+            let resPreview = await axios.get(urlPreview, { headers, proxy: proxyConfig });
+            let $ = cheerio.load(resPreview.data);
+            if (!is_join_bill) {
+                let urlCancelJoinBill = $('#mBoxPay2 > div > input.libBtnRedL').attr('onclick');
+                urlCancelJoinBill = 'https://contact.auctions.yahoo.co.jp' + urlCancelJoinBill.split("'")[1];
+                console.log(urlCancelJoinBill);
+                let resCancelJoinBill = await axios.get(urlCancelJoinBill, { headers, proxy: proxyConfig });
+                if (resCancelJoinBill && resCancelJoinBill.data && resCancelJoinBill.data.includes('取引情報')) {
+                    return {
+                        status: 'SUCCESS',
+                    };
+                } else {
+                    Fs.writeFileSync('cancel_join_bill_error.html', resCancelJoinBill.data);
+                    return {
+                        status: 'ERROR',
+                        message: '...!',
+                    };
+                }
+            } else {
+                let urlJoinBill = $('div.acMdTradeBtn > a.libBtnBlueL').attr('href');
+                urlJoinBill = 'https://contact.auctions.yahoo.co.jp' + urlJoinBill;
+                console.log(urlJoinBill);
+                let resCancelJoinBill = await axios.get(urlJoinBill, { headers, proxy: proxyConfig });
+                $ = cheerio.load(resCancelJoinBill.data);
+                let oid = $('input[name="oid"]').val();
+                let _crumb = $('input[name="_crumb"]').val();
+                let payload = {
+                    shipUseParent: use_ship_origin ? 1 : 0,
+                    shippingMethod: new_fee_ship_type,
+                    shipChargeNumber: new_fee_ship_price,
+                    aid: aID,
+                    syid: usernameYahoo,
+                    bid: idBuyer,
+                    oid,
+                    _crumb,
+                    chargeForShipping: 1,
+                };
+
+                if (new_fee_ship_type === 'ヤフネコ!（ネコポス）' || new_fee_ship_type === 'ヤフネコ!（宅急便コンパクト）' || new_fee_ship_type === 'ヤフネコ!（宅急便）' || new_fee_ship_type === 'ゆうパケット（おてがる版）' || new_fee_ship_type === 'ゆうパック（おてがる版）') {
+                    delete payload.shipChargeNumber;
+                }
+
+                console.log(' ########### payload ', payload);
+                let urlSetShipPreview = 'https://contact.auctions.yahoo.co.jp/seller/bundle/shippreview';
+                let resSetShipPreview = await axios.post(urlSetShipPreview, Qs.stringify(payload), { headers, proxy: proxyConfig });
+
+                // Fs.writeFileSync('resSetShipPreview.html', resSetShipPreview.data);
+
+                $ = cheerio.load(resSetShipPreview.data);
+                _crumb = $('input[name="_crumb"]').val();
+                payload._crumb = _crumb;
+                let urlSetShipSubmit = `https://contact.auctions.yahoo.co.jp/seller/bundle/shipsubmit`;
+                let resSetShipSubmit = await axios.post(urlSetShipSubmit, Qs.stringify(payload), { headers, proxy: proxyConfig });
+                if (resSetShipSubmit && resSetShipSubmit.data && resSetShipSubmit.data.includes('取引情報')) {
+                    return {
+                        status: 'SUCCESS',
+                    };
+                } else {
+                    // Fs.writeFileSync('resSetShipSubmit.html', resSetShipSubmit.data);
+                    return {
+                        status: 'ERROR',
+                        message: '...!',
+                    };
+                }
             }
         } catch (error) {
             console.log(' #### AuctionYahooService stopTransaction: ', error);

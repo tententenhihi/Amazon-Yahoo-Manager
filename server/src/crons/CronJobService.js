@@ -21,7 +21,6 @@ const CronTime = require('cron').CronTime;
 export default class CronJobService {
     static async startCron() {
         //======================
-        CronJobService.checkProductOriginalForAuctionProductSelling();
         CronJobService.startUploadProductYahoo();
         cron.schedule('0 0 0 1 * *', async () => {
             console.log(' ########### CRON JOB Delete Asin ########### ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));

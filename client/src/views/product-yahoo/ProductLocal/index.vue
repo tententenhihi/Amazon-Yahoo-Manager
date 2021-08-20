@@ -478,12 +478,12 @@
               </td>
               <td class="text-center">
                 {{
-                  product.actual_profit * product.quantity
-                    ? (product.actual_profit * product.quantity).toLocaleString(
+                  product.actual_profit * (product.quantity ? product.quantity : product.quantity_temp)
+                    ? (product.actual_profit * (product.quantity ? product.quantity : product.quantity_temp)).toLocaleString(
                         "ja-JP"
                       )
                     : 0
-                }}{{ product.actual_profit * product.quantity ? "円" : "" }}
+                }}{{ product.actual_profit * (product.quantity ? product.quantity : product.quantity_temp) ? "円" : "" }}
               </td>
               <td class="text-center">{{ product.count }}</td>
               <td class="text-center">

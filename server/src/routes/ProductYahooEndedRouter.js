@@ -16,6 +16,10 @@ ProductYahooEndedRouter.route('/set-note').post(ProductYahooEndedController.setN
 ProductYahooEndedRouter.route('/refresh-data-yahoo').post(ProductYahooEndedController.refreshDataYahoo);
 ProductYahooEndedRouter.route('/set-ship-fee').post(ProductYahooEndedController.setShipFee);
 ProductYahooEndedRouter.route('/contact-ship').post(ProductYahooEndedController.contactShip);
+ProductYahooEndedRouter.route('/set-join-bill').post(ProductYahooEndedController.setJoinBill);
+
+
+
 
 
 
