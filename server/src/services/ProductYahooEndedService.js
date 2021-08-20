@@ -54,6 +54,8 @@ export default class ProductYahooEndedService {
                                     infoProductEnded = {
                                         ...infoProductEnded,
                                         ...product,
+                                        yahoo_auction_category_id: '',
+                                        product_yahoo_title: product.title,
                                         yahoo_account_id,
                                         user_id: accountYahoo.user_id,
                                     };

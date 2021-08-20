@@ -147,7 +147,6 @@ var Product = new Schema({
     },
     yahoo_auction_category_id: {
         type: String,
-        required: true,
     },
 
     status: {
