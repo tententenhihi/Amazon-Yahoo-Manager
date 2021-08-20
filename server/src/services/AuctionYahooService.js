@@ -727,6 +727,7 @@ export default class AuctionYahooService {
                     listProduct.push({ aID, idBuyer, time_end, price_end, title, progress_message });
                 }
             }
+            console.log(' ####### listProduct: ', listProduct);
             if (getAidOnly) {
                 return listProduct;
             }
