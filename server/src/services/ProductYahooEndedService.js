@@ -24,6 +24,10 @@ export default class ProductYahooEndedService {
                     );
                     listProductEnded = listProductEnded.reverse();
 
+
+                    console.log(' ############ listProductEnded: ', listProductEnded);
+
+
                     let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
 
                     // console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
@@ -79,6 +83,9 @@ export default class ProductYahooEndedService {
                         let checkDelete = true;
                         for (const productYAHOO of listProductEnded) {
                             if (productDB.aID === productYAHOO.aID || productDB.product_yahoo_title.includes(productYAHOO.title)) {
+                                console.log(' ### delete ', productDB.aID);
+                                console.log(' ### productDB.product_yahoo_title: ', productDB.product_yahoo_title);
+                                console.log(' ### productYAHOO.title ', productYAHOO.title);
                                 checkDelete = false;
                                 break;
                             }
