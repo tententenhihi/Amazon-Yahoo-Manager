@@ -22,7 +22,6 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     let temp_bid_or_buy_price = false;
     let temp_ship_fee1 = false;
 
-
     if (defaultSetting) {
         if (!dataUpdate.ship_fee1) {
             dataUpdate.ship_fee1_temp = defaultSetting.quantity;
@@ -72,12 +71,7 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
 
     dataUpdate.is_user_change = true;
 
-    let dataPrice = await ProductYahooService.calculatorPrice(
-        defaultSetting,
-        current_product.import_price,
-        current_product.amazon_shipping_fee,
-        dataUpdate.start_price
-    );
+    let dataPrice = await ProductYahooService.calculatorPrice(defaultSetting, current_product.import_price, current_product.amazon_shipping_fee, dataUpdate.start_price);
     if (dataUpdate.bid_or_buy_price) {
         dataPrice.bid_or_buy_price = dataUpdate.bid_or_buy_price;
     }
@@ -98,8 +92,6 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         dataUpdate.ship_fee1_temp = dataUpdate.ship_fee1;
         dataUpdate.ship_fee1 = null;
     }
-
-    
 
     let result = await ProductYahooService.update(dataUpdate._id, dataUpdate);
     return result;
@@ -141,7 +133,7 @@ export default class ProductYahooController {
             }
             let results = [];
             let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
-            if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+            if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
                     let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
@@ -181,19 +173,8 @@ export default class ProductYahooController {
                         }
 
                         let dataUpdate = {};
-                        let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
-                            yahooAccount.user_id,
-                            yahooAccount._id,
-                            yahooAccount.yahoo_id,
-                            productYahooData.description,
-                            productYahooData.note
-                        );
-                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(
-                            yahooAccount.cookie,
-                            productYahooData,
-                            proxyResult.data,
-                            descrionUpload
-                        );
+                        let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
+                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
 
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
@@ -208,6 +189,10 @@ export default class ProductYahooController {
                         let message = '出品に成功しました';
                         if (uploadAuctionResult.status === 'ERROR') {
                             message = uploadAuctionResult.statusMessage;
+                            if (message === 'ヤフーアカウントのエラー') {
+                                yahooAccount.is_error = true;
+                                await yahooAccount.save();
+                            }
                         }
                         if (uploadAuctionResult.status === 'SUCCESS' && !uploadAuctionResult.aID) {
                             message = '仮出品とは、出品手続きされたオークションを、Yahoo! JAPANが確認させていただくためのものです。';
@@ -283,14 +268,7 @@ export default class ProductYahooController {
             let user = req.user;
             let payload = JSON.parse(req.body.payload);
 
-            if (
-                !payload.folder_id ||
-                !payload.product_yahoo_title ||
-                !payload.yahoo_auction_category_id ||
-                !payload.description ||
-                !payload.location ||
-                !payload.import_price
-            ) {
+            if (!payload.folder_id || !payload.product_yahoo_title || !payload.yahoo_auction_category_id || !payload.description || !payload.location || !payload.import_price) {
                 return response.error400({ message: '必須フィールドをすべて入力してください' });
             }
 

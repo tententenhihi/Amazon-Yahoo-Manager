@@ -61,11 +61,7 @@ export default class ProductYahooService {
             }
         }
         if (newProductData) {
-            if (
-                productYahooData.import_price !== newProductData.price ||
-                productYahooData.amazon_shipping_fee !== newProductData.ship_fee ||
-                newProductData.count !== productYahooData.count
-            ) {
+            if (productYahooData.import_price !== newProductData.price || productYahooData.amazon_shipping_fee !== newProductData.ship_fee || newProductData.count !== productYahooData.count) {
                 await ProductYahooService.update(productYahooData._id, {
                     import_price: newProductData.price,
                     amazon_shipping_fee: newProductData.ship_fee,
@@ -83,12 +79,7 @@ export default class ProductYahooService {
                     if (newProductData.ship_fee1) {
                         defaultSetting.yahoo_auction_shipping = productYahooData.ship_fee1;
                     }
-                    resultData = await this.checkProfitToStopUpload(
-                        defaultSetting,
-                        newProductData.price,
-                        newProductData.ship_fee,
-                        productYahooData.start_price
-                    );
+                    resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee, productYahooData.start_price);
                 } else {
                     resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee);
                 }
@@ -355,7 +346,7 @@ export default class ProductYahooService {
 
         let result = [];
         let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
-        if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+        if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
             if (proxyResult.status === 'SUCCESS') {
                 while (isCalendarUploading) {
@@ -403,20 +394,9 @@ export default class ProductYahooService {
                             productYahooData.ship_fee1 = resultCheckUpload.ship_fee1;
                         }
 
-                        let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
-                            yahooAccount.user_id,
-                            yahooAccount._id,
-                            yahooAccount.yahoo_id,
-                            productYahooData.description,
-                            productYahooData.note
-                        );
+                        let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
 
-                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(
-                            yahooAccount.cookie,
-                            productYahooData,
-                            proxyResult.data,
-                            descrionUpload
-                        );
+                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
                         // console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
@@ -431,6 +411,10 @@ export default class ProductYahooService {
                         let message = '出品に成功しました';
                         if (uploadAuctionResult.status === 'ERROR') {
                             message = uploadAuctionResult.statusMessage;
+                            if (message === 'ヤフーアカウントのエラー') {
+                                yahooAccount.is_error = true;
+                                await yahooAccount.save();
+                            }
                         }
                         let newResult = {
                             product_created: productYahooData.created,
@@ -461,7 +445,7 @@ export default class ProductYahooService {
                 let folder_id = calendar_target_folder[today - 1];
                 if (folder_id) {
                     let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
-                    if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+                    if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
                         let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                         if (proxyResult.status === 'SUCCESS') {
                             let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
@@ -501,20 +485,9 @@ export default class ProductYahooService {
                                     productYahooData.ship_fee1 = resultCheckUpload.ship_fee1;
                                 }
 
-                                let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(
-                                    yahooAccount.user_id,
-                                    yahooAccount._id,
-                                    yahooAccount.yahoo_id,
-                                    productYahooData.description,
-                                    productYahooData.note
-                                );
+                                let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
 
-                                let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(
-                                    yahooAccount.cookie,
-                                    productYahooData,
-                                    proxyResult.data,
-                                    descrionUpload
-                                );
+                                let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
                                 // console.log(' ### startUploadProductByCalendar uploadAuctionResult: ', uploadAuctionResult);
                                 dataUpdate.upload_status = uploadAuctionResult.status;
                                 dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
@@ -527,6 +500,10 @@ export default class ProductYahooService {
                                 let message = '出品に成功しました';
                                 if (uploadAuctionResult.status === 'ERROR') {
                                     message = uploadAuctionResult.statusMessage;
+                                    if (message === 'ヤフーアカウントのエラー') {
+                                        yahooAccount.is_error = true;
+                                        await yahooAccount.save();
+                                    }
                                 }
                                 let newResult = {
                                     product_created: productYahooData.created,
@@ -556,7 +533,7 @@ export default class ProductYahooService {
 
         let result = [];
         let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
-        if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
+        if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
             if (proxyResult.status === 'SUCCESS') {
                 let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
@@ -564,6 +541,9 @@ export default class ProductYahooService {
                 let listProductEnded = await AuctionYahooService.getProductAuctionEnded('', yahooAccount.cookie, proxyResult.data, true);
                 let listProductResubmit = [...listProductFinished, ...listProductEnded];
                 listProductResubmit = listProductFinished.filter((item) => {
+                    if (!item.idBuyer || item.idBuyer.trim() === '') {
+                        return true;
+                    }
                     let date = item.time_end.replace('月', '|').replace('日', '|').replace('時', '|').replace('分', '');
                     date = date.split('|');
                     let month = date[0];
@@ -577,6 +557,7 @@ export default class ProductYahooService {
                     if (dateItem >= now) {
                         return true;
                     }
+                    return false;
                 });
                 for (const product of listProductResubmit) {
                     let uploadAuctionResult = await AuctionYahooService.reSubmit(yahooAccount.cookie, proxyResult.data, product.aID);

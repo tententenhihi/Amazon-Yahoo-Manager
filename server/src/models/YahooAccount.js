@@ -4,6 +4,10 @@ var bcrypt = require('bcryptjs');
 var autoIncrement = require('mongoose-auto-increment');
 
 var YahooAccount = new Schema({
+    is_error: {
+        type: Boolean,
+        default: false
+    },
     count_error: {
         type: Number,
         default: 0,

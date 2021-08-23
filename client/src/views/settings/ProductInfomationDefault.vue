@@ -55,7 +55,7 @@
                     </div>
                     <div class="row">
                       <div class="col-4 col-md-3 col-sm-2 text-align-end mt-2">
-                        Amazonで設定する　送料一律（円）<br />
+                        ヤフオクで設定する　送料一律（円）<br />
                         取得価格が出品者だった場合に自動で割り当てておく送料
                         <small>(円)</small> :
                       </div>

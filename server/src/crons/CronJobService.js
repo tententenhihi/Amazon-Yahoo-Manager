@@ -113,6 +113,7 @@ export default class CronJobService {
         let listYahooAcount = await AccountYahooService.find({});
         for (const account of listYahooAcount) {
             account.count_error = 0;
+            account.is_error = false;
             await account.save();
         }
     }
@@ -336,7 +337,6 @@ export default class CronJobService {
                                 return;
                             }
                             let results = await ProductYahooService.startReSubmitProduct(schedule.user_id, schedule.yahoo_account_id);
-                            console.log(' ### results: ', results);
                             if (results.length > 0) {
                                 let newCronHistory = {
                                     success_count: results.filter((item) => item.success).length,
