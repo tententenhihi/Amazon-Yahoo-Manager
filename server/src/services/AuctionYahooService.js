@@ -721,7 +721,7 @@ export default class AuctionYahooService {
                 if (check_progress.length > 0) {
                     progress_message = `<img src="https://s.yimg.jp/images/auct/template/ui/auc_mod/ic_6002.gif" alt="落札者" width="16" height="16">` + progress_message;
                 }
-                if (aID && aID !== '商品ID' && aID.trim() !== '') {
+                if (aID && aID !== '商品ID' && aID.trim() !== '' && aID.length > 5) {
                     listProduct.push({ aID, idBuyer, time_end, price_end, title, progress_message });
                 }
             }
@@ -978,7 +978,7 @@ export default class AuctionYahooService {
                 let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '');
                 let time_end = $(row).find('td:nth-child(5)').text().trim().replace('-', '');
 
-                if (aID && aID !== '商品ID' && aID.trim() !== '') {
+                if (aID && aID !== '商品ID' && aID.trim() !== '' && aID.length > 5) {
                     listProduct.push({
                         aID,
                         price_end,

@@ -41,12 +41,8 @@ const getPriceProductAmazon = async (asin) => {
                 auto_request_tokens: false,
             },
         });
-        console.log(' 111111111111111111 ');
         await sellingPartner.refreshAccessToken();
-        console.log(' 2222222222222 ');
         await sellingPartner.refreshRoleCredentials();
-        console.log(' 33333333333333333 ');
-
         let res = await sellingPartner.callAPI({
             operation: 'getItemOffers',
             endpoint: 'productPricing',
@@ -61,7 +57,8 @@ const getPriceProductAmazon = async (asin) => {
                 version: 'v0',
             },
         });
-        console.log(' ############### res: ', res);
+        console.log(' ############### sellingPartner: ', res);
+
         if (res && res.status === 'Success') {
             if (res.Offers && res.Offers.length > 0) {
                 let offer = res.Offers[0];
@@ -110,6 +107,7 @@ export default class ProductYahooService {
         // 2. Check Keepa
         if (checkKeepa) {
             newProductData = await getPriceProductAmazon(productYahooData.asin_amazon);
+            console.log(' ############### getPriceProductAmazon: ', newProductData);
             if (newProductData && productAmazonInDB) {
                 // update product yahoo
                 newProductData = await ProductAmazonService.update(productAmazonInDB._id, { ...newProductData, created: Date.now() });
