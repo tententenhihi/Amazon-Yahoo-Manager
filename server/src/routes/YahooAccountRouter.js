@@ -8,5 +8,9 @@ YahooAccountRouter.route('/create-new').post(YahooAccountController.createNewAcc
 YahooAccountRouter.route('/edit/:_id').post(YahooAccountController.editAccount);
 YahooAccountRouter.route('/delete/:_id').post(YahooAccountController.deleteAccount);
 YahooAccountRouter.route('/copy-data').post(YahooAccountController.copyDefaultSetting);
+YahooAccountRouter.route('/get-account-bank').post(YahooAccountController.getAccountBank);
+YahooAccountRouter.route('/set-bank-to-account').post(YahooAccountController.setBankToAccount);
+
+
 
 export default YahooAccountRouter;

@@ -16,6 +16,7 @@ import AccountYahooService from '../services/AccountYahooService';
 import ProxyService from '../services/ProxyService';
 import ProductYahooSellingService from '../services/ProductYahooSellingService';
 import AuctionYahooService from '../services/AuctionYahooService';
+import BankModel from '../models/BankModel';
 
 const createDataDefault = async (user_id, yahoo_account_id) => {
     await ProductInfomationDefaultSchema.create({
@@ -78,14 +79,41 @@ const setLockAccount = async (yahooAccount) => {
     }
 };
 class YahooAccountController {
+    static async setBankToAccount(req, res) {
+        let response = new Response(res);
+        let user = req.user;
+        try {
+            let data = req.body;
+            console.log(data);
+
+            if (!data._id || !data.bank_id) {
+                return response.error400({ message: '完全な情報を入力してください。' });
+            }
+            let newAccount = await YahooAccountModel.findByIdAndUpdate(data._id, { bank_id: data.bank_id });
+            response.success200({ newAccount });
+        } catch (error) {
+            console.log(error);
+            response.error500(error);
+        }
+    }
+
+    static async getAccountBank(req, res) {
+        let response = new Response(res);
+        let user = req.user;
+        try {
+            let accounts = await YahooAccountModel.aggregate([{ $match: { user_id: mongoose.Types.ObjectId(user._id) } }, { $lookup: { from: 'banks', localField: 'bank_id', foreignField: '_id', as: 'bank' } }]);
+            let listBank = await BankModel.find({ user_id: mongoose.Types.ObjectId(user._id) });
+            response.success200({ accounts, listBank });
+        } catch (error) {
+            response.error500(error);
+        }
+    }
+
     static async getListAccount(req, res) {
         let response = new Response(res);
         let user = req.user;
         try {
-            let accounts = await YahooAccountModel.aggregate([
-                { $match: { user_id: mongoose.Types.ObjectId(user._id) } },
-                { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxy' } },
-            ]);
+            let accounts = await YahooAccountModel.aggregate([{ $match: { user_id: mongoose.Types.ObjectId(user._id) } }, { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxy' } }]);
             let infoUser = await UserModel.findById(user._id, { password: 0, hash_password: 0 });
             response.success200({ accounts, infoUser });
         } catch (error) {

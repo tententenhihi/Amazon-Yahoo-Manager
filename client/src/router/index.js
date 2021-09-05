@@ -58,6 +58,9 @@ const AdminProxy = () => import("@/views/admin/proxy/Index.vue");
 const AdminYahooAccounts = () =>
   import("@/views/admin/yahoo-accounts/Index.vue");
 const AdminAsins = () => import("@/views/admin/asins/Index.vue");
+const BankManager = () => import("@/views/bank/BankManager.vue");
+const MappingBank = () => import("@/views/bank/MappingBank.vue");
+const AccountPayment = () => import("@/views/bank/AccountPayment.vue");
 
 Vue.use(Router);
 
@@ -341,6 +344,33 @@ const router = new Router({
     {
       path: "*",
       redirect: "/"
+    },
+    {
+      path: "/bank-manager",
+      name: "BankManager",
+      component: BankManager,
+      meta: {
+        requiredAuth: true,
+        type: "bank"
+      }
+    },
+    {
+      path: "/mapping-bank",
+      name: "MappingBank",
+      component: MappingBank,
+      meta: {
+        requiredAuth: true,
+        type: "bank"
+      }
+    },
+    {
+      path: "/account-payment",
+      name: "AccountPayment",
+      component: AccountPayment,
+      meta: {
+        requiredAuth: true,
+        type: "bank"
+      }
     }
   ]
 });

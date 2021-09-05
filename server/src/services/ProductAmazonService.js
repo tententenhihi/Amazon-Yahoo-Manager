@@ -192,9 +192,9 @@ export default class ProductAmazonService {
     static async findOne(data) {
         try {
             let product = await ProductAmazonSchema.findOne(data);
-            if (product) {
-                this.update(product._id, { created: Date.now() });
-            }
+            // if (product) {
+            //     this.update(product._id, { created: Date.now() });
+            // }
             return product;
         } catch (error) {
             console.log(error);

@@ -219,6 +219,39 @@
                 </ul>
               </div>
             </li>
+
+            <li class="sidebar-dropdown">
+              <a href="#" @click="showDropdown(5)">
+                <i class="fa fa-dollar-sign"></i>
+                <span>出金</span>
+              </a>
+              <div
+                class="sidebar-submenu"
+                :class="{ 'd-block': dropdownOpen == 5 }"
+              >
+                <ul>
+                  <li>
+                    <router-link :to="{ name: 'AccountPayment' }">
+                      <i class="fa fa-money-bill-alt m-0"></i>
+                      <span>実行アカウント</span>
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link :to="{ name: 'MappingBank' }">
+                      <i class="fa fa-map-signs m-0"></i>
+                      <span>アカウントごとの口座管理</span>
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link :to="{ name: 'BankManager' }">
+                      <i class="fa fa-university m-0"></i>
+                      <span>本物口座情報</span>
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </li>
+
             <li
               class="sidebar-dropdown mt-100"
               :class="{ 'mt-100': userInfo.type == 'member' }"
@@ -287,6 +320,9 @@ export default {
           break;
         case "product-management":
           this.dropdownOpen = 4;
+          break;
+        case "bank":
+          this.dropdownOpen = 5;
           break;
         default:
           this.dropdownOpen = 0;

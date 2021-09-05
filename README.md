@@ -7,8 +7,8 @@
 apt install libnss3-dev libgdk-pixbuf2.0-dev libgtk-3-dev libxss-dev
 
 # Update Server
-cd /home/ubuntu/Amazon-Yahoo-Manager; git pull origin main; cd server/; npm run build; export NODE_ENV=production; pm2 delete all; pm2 start dist/bin/www.js
-cd /home/ubuntu/Amazon-Yahoo-Manager; git pull origin main; cd client/; npm run build; rm -r /var/www/dist; cp -r dist/ /var/www/
+cd /home/ubuntu/Amazon-Yahoo-Manager; git pull origin main; cd server/; npm install; npm run build; export NODE_ENV=production; pm2 delete all; pm2 start dist/bin/www.js
+cd /home/ubuntu/Amazon-Yahoo-Manager; git pull origin main; cd client/; npm install;  npm run build; rm -r /var/www/dist; cp -r dist/ /var/www/
 
 # Set timezone
 timedatectl set-timezone "Asia/Tokyo"

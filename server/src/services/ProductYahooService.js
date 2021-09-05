@@ -38,9 +38,15 @@ const getPriceProductAmazon = async (asin) => {
                 AWS_SECRET_ACCESS_KEY,
             },
             options: {
-                auto_request_tokens: true,
+                auto_request_tokens: false,
             },
         });
+        console.log(' 111111111111111111 ');
+        await sellingPartner.refreshAccessToken();
+        console.log(' 2222222222222 ');
+        await sellingPartner.refreshRoleCredentials();
+        console.log(' 33333333333333333 ');
+
         let res = await sellingPartner.callAPI({
             operation: 'getItemOffers',
             endpoint: 'productPricing',
@@ -55,7 +61,7 @@ const getPriceProductAmazon = async (asin) => {
                 version: 'v0',
             },
         });
-
+        console.log(' ############### res: ', res);
         if (res && res.status === 'Success') {
             if (res.Offers && res.Offers.length > 0) {
                 let offer = res.Offers[0];
@@ -69,6 +75,11 @@ const getPriceProductAmazon = async (asin) => {
                     count: 0,
                 };
             }
+        }
+        if (res && res.status === 'NoBuyableOffers' && res.Offers && res.Offers.length === 0) {
+            return {
+                count: 0,
+            };
         }
         return null;
         // console.log(res2);

@@ -21,5 +21,15 @@ export default {
   },
   copyData(credentials) {
     return Api.post(`${prefix}/copy-data`, credentials);
+  },
+  getAccountAndBank(credentials) {
+    return Api.post(`${prefix}/get-account-bank`, credentials, {
+      timeout: 15 * 60 * 1000
+    });
+  },
+  setBankToAccount(credentials) {
+    return Api.post(`${prefix}/set-bank-to-account`, credentials, {
+      timeout: 15 * 60 * 1000
+    });
   }
 };

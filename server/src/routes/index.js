@@ -20,12 +20,13 @@ import CronHistoryRouter from './CronHistoryRouter';
 import ImageInsertionRouter from './ImageInsertionRouter';
 import ProductYahooSellingRouter from './ProductYahooSellingRouter';
 import ProductYahooFinishedRouter from './ProductYahooFinishedRouter';
+import BankRouter from './BankRouter';
 
 var router = express.Router();
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.status(200).send('<h1>Amazon-Yahoo-Manager By Bacnt - bacnt2412@gmail.com </h1>');
+    res.status(200).send('<h1>Amazon-Yahoo-Manager Dev By Bacnt - bacnt2412@gmail.com </h1>');
 });
 
 router.use('/auth', AuthRouter);
@@ -49,5 +50,6 @@ router.use('/api/v1/cron', CronHistoryRouter);
 router.use('/api/v1/image-insertion', ImageInsertionRouter);
 router.use('/api/v1/product-yahoo-selling', ProductYahooSellingRouter);
 router.use('/api/v1/product-yahoo-finished', ProductYahooFinishedRouter);
+router.use('/api/v1/bank', BankRouter);
 
 export default router;
