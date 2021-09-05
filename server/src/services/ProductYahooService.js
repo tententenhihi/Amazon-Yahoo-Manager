@@ -38,11 +38,16 @@ const getPriceProductAmazon = async (asin) => {
                 AWS_SECRET_ACCESS_KEY,
             },
             options: {
-                auto_request_tokens: false,
+                auto_request_tokens: true,
             },
         });
-        await sellingPartner.refreshAccessToken();
-        await sellingPartner.refreshRoleCredentials();
+        // console.log(' ======== 111111 ========= ');
+        // await sellingPartner.refreshAccessToken();
+        // console.log(' ======== 2222222 ========= ');
+
+        // await sellingPartner.refreshRoleCredentials();
+        // console.log(' ======== 3333333 ========= ');
+
         let res = await sellingPartner.callAPI({
             operation: 'getItemOffers',
             endpoint: 'productPricing',
