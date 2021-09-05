@@ -90,17 +90,12 @@ export default class AsinAmazonController {
                 
                 let listAsinNew = [];
                 let queryKey = Utils.generateKey();
-
-                console.log(' ####### listCode: ', listCode);
-
-                
                 // Tạo List Object Asin
                 for (let i = 0; i < listCode.length; i++) {
                     const code = listCode[i];
                     // Kiểm tra đã tồn tại ProductYahoo chưa. có rồi thì bỏ qua Asin
                     let existProductYahoo = await ProductYahooService.findOne({ asin_amazon: code, yahoo_account_id });
                     if (existProductYahoo) {
-                        console.log(' #####  existProductYahoo: ', existProductYahoo);
                         continue;
                     }
                     let newAsinData = {
@@ -120,7 +115,6 @@ export default class AsinAmazonController {
 
                 // Add list Object Asin
                 let newAsin = await AsinAmazonService.addMany(listAsinNew);
-                console.log(' ####### newAsin: ', newAsin);
                 //Add List To Queue
                 QueueGetProductAmazon.addNew({
                     isUpdateAmazonProduct: checkUpdateAsin,

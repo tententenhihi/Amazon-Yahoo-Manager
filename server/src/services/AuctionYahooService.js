@@ -31,16 +31,7 @@ async function waterMark(input, overlay, outputFolder) {
 async function getHtmlWithPuppeteer(url, proxy, cookie) {
     let sock5 = `http://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`;
     const newProxyUrl = await proxyChain.anonymizeProxy(sock5);
-    let args = [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-infobars',
-        '--window-position=0,0',
-        '--ignore-certifcate-errors',
-        '--ignore-certifcate-errors-spki-list',
-        '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"',
-        `--proxy-server=${newProxyUrl}`,
-    ];
+    let args = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-infobars', '--window-position=0,0', '--ignore-certifcate-errors', '--ignore-certifcate-errors-spki-list', '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"', `--proxy-server=${newProxyUrl}`];
 
     if (config.get('env') === 'development') {
         args.pop();
@@ -574,7 +565,13 @@ export default class AuctionYahooService {
             let istatus = $('select[name="istatus"]');
             let shipschedule = $('select[name="shipschedule"]');
             let loc_cd = $('select[name="loc_cd"]');
-
+            let Quantity = $('select[name="Quantity"]');
+            if (Quantity && Quantity.val()) {
+                previewParams['Quantity'] = Quantity.val();
+            }
+            if (!previewParams['Quantity']) {
+                previewParams['Quantity'] = 1;
+            }
             previewParams['info01'] = -420;
             previewParams['info02'] = 3;
             previewParams['info03'] = 'Chrome PDF Plugin|Chrome PDF Viewer|Native Client';
@@ -598,6 +595,7 @@ export default class AuctionYahooService {
             delete previewParams.minBidRating;
             delete previewParams.markdown;
 
+            // console.log(' ######### previewParams: ', previewParams);
             // salesContract
             // bidCreditLimit
             // badRatingRatio
@@ -624,7 +622,7 @@ export default class AuctionYahooService {
 
             // Fs.writeFileSync('step2.html', resPreview.data);
 
-            // Fs.writeFileSync('preview.html', resPreview.data);
+            // Fs.writeFileSync('preview-resubmit.html', resPreview.data);
             let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
             if (mgc == null) {
                 console.log(' ========== ERROR =========');
@@ -652,7 +650,7 @@ export default class AuctionYahooService {
                 headers,
                 proxy: proxyConfig,
             });
-            // Fs.writeFileSync('submit.html', resSubmit.data);
+            // Fs.writeFileSync('submit-resubmit.html', resSubmit.data);
             // Fs.writeFileSync('step3.html', resSubmit.data);
 
             $ = cheerio.load(resSubmit.data);
@@ -1049,16 +1047,7 @@ export default class AuctionYahooService {
 
         let sock5 = `http://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`;
         const newProxyUrl = await proxyChain.anonymizeProxy(sock5);
-        let args = [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-infobars',
-            '--window-position=0,0',
-            '--ignore-certifcate-errors',
-            '--ignore-certifcate-errors-spki-list',
-            '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"',
-            `--proxy-server=${newProxyUrl}`,
-        ];
+        let args = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-infobars', '--window-position=0,0', '--ignore-certifcate-errors', '--ignore-certifcate-errors-spki-list', '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"', `--proxy-server=${newProxyUrl}`];
 
         if (config.get('env') === 'development') {
             args.pop();
@@ -1911,7 +1900,6 @@ export default class AuctionYahooService {
                     delete payload.shipChargeNumber;
                 }
 
-                console.log(' ########### payload ', payload);
                 let urlSetShipPreview = 'https://contact.auctions.yahoo.co.jp/seller/bundle/shippreview';
                 let resSetShipPreview = await axios.post(urlSetShipPreview, Qs.stringify(payload), { headers, proxy: proxyConfig });
 

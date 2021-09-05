@@ -14,15 +14,12 @@ import QueueLoginYahooAuction from './services/QueueLoginYahooAuction';
 import upload from 'express-fileupload';
 import BrightDataService from './services/BrightDataService';
 import CronJobService from './crons/CronJobService';
-import ImageInsertionService from './services/ImageInsertionService';
-import ProductYahooService from './services/ProductYahooService';
-import Utils from './utils/Utils';
 import Category from './models/CategoryModel';
 require('dotenv').config();
 
 const app = express();
 // Fix Cross
-var corsOptions = {
+var corsOptions = { 
     origin: function (origin, callback) {
         callback(null, true);
     },
@@ -43,7 +40,6 @@ app.use(upload());
 app.use('/uploads', express.static('uploads'));
 app.use('/', indexRouter);
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
-
 let initData = async () => {
     UserService.addUser({
         username: 'admin',

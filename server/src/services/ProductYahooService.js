@@ -12,24 +12,74 @@ import ProductGlobalSettingService from './ProductGlobalSettingService';
 import ProductInfomationDefaultService from './ProductInfomationDefaultService';
 import CategoryService from './CategoryService';
 import moment from 'moment';
-
+const SellingPartnerAPI = require('amazon-sp-api');
 import Utils from '../utils/Utils';
 import ProductAmazonService from './ProductAmazonService';
+import config from 'config';
 var isCalendarUploading = false;
 
+const getPriceProductAmazon = async (asin) => {
+    try {
+        const REFRESH_TOKEN = config.get('REFRESH_TOKEN');
+        const SELLING_PARTNER_APP_CLIENT_ID = config.get('SELLING_PARTNER_APP_CLIENT_ID');
+        const SELLING_PARTNER_APP_CLIENT_SECRET = config.get('SELLING_PARTNER_APP_CLIENT_SECRET');
+        const AWS_SELLING_PARTNER_ROLE = config.get('AWS_SELLING_PARTNER_ROLE');
+        const AWS_ACCESS_KEY_ID = config.get('AWS_ACCESS_KEY_ID');
+        const AWS_SECRET_ACCESS_KEY = config.get('AWS_SECRET_ACCESS_KEY');
+
+        let sellingPartner = new SellingPartnerAPI({
+            region: 'fe', // The region to use for the SP-API endpoints ("eu", "na" or "fe")
+            refresh_token: REFRESH_TOKEN, // The refresh token of your app user
+            credentials: {
+                SELLING_PARTNER_APP_CLIENT_ID,
+                SELLING_PARTNER_APP_CLIENT_SECRET,
+                AWS_SELLING_PARTNER_ROLE,
+                AWS_ACCESS_KEY_ID,
+                AWS_SECRET_ACCESS_KEY,
+            },
+            options: {
+                auto_request_tokens: true,
+            },
+        });
+        let res = await sellingPartner.callAPI({
+            operation: 'getItemOffers',
+            endpoint: 'productPricing',
+            query: {
+                MarketplaceId: 'A1VC38T7YXB528',
+                ItemCondition: 'New',
+            },
+            path: {
+                Asin: asin,
+            },
+            options: {
+                version: 'v0',
+            },
+        });
+
+        if (res && res.status === 'Success') {
+            if (res.Offers && res.Offers.length > 0) {
+                let offer = res.Offers[0];
+                return {
+                    price: offer.ListingPrice.Amount,
+                    count: 1,
+                    ship_fee: offer.Shipping ? offer.Shipping.Amount : 0,
+                };
+            } else {
+                return {
+                    count: 0,
+                };
+            }
+        }
+        return null;
+        // console.log(res2);
+    } catch (error) {
+        console.log(' ### Error getPriceProductAmazon: ', error);
+        return null;
+    }
+};
 export default class ProductYahooService {
     static async checkStopUpload(productYahooData, defaultSetting) {
         let resultData = {};
-        // if (productYahooData.is_user_change) {
-
-        //     let actual_profit = this.calculatorPrice(defaultSetting, productYahooData);
-
-        //     if (actual_profit <= defaultSetting.profit_stop) {
-        //         isStopUpload = true;
-        //     }
-        // }
-
-        // if (!isStopUpload && productYahooData.asin_amazon) {
 
         let checkKeepa = false;
         let newProductData = null;
@@ -48,26 +98,15 @@ export default class ProductYahooService {
         }
         // 2. Check Keepa
         if (checkKeepa) {
-            let resultKeep = await KeepaService.findProduct([productYahooData.asin_amazon]);
-            if (resultKeep.status === 'SUCCESS' && resultKeep.data && resultKeep.data.length > 0 && resultKeep.data[0].status === 'SUCCESS') {
-                newProductData = resultKeep.data[0].data;
-                if (!productAmazonInDB) {
-                    // create new product amazon
-                    newProductData = await ProductAmazonService.update(productAmazonInDB._id, newProductData);
-                } else {
-                    //updatea product amazon
-                    newProductData = await ProductAmazonService.create(newProductData);
-                }
+            newProductData = await getPriceProductAmazon(productYahooData.asin_amazon);
+            if (newProductData && productAmazonInDB) {
+                // update product yahoo
+                newProductData = await ProductAmazonService.update(productAmazonInDB._id, { ...newProductData, created: Date.now() });
             }
         }
         if (newProductData) {
-            if (productYahooData.import_price !== newProductData.price || productYahooData.amazon_shipping_fee !== newProductData.ship_fee || newProductData.count !== productYahooData.count) {
-                await ProductYahooService.update(productYahooData._id, {
-                    import_price: newProductData.price,
-                    amazon_shipping_fee: newProductData.ship_fee,
-                    count: productYahooData.count,
-                });
-            }
+            // Update data yahoo
+            await ProductYahooService.update(productYahooData._id, { import_price: newProductData.price, amazon_shipping_fee: newProductData.ship_fee, count: newProductData.count });
             if (newProductData.count === 0) {
                 resultData = {
                     isStopUpload: true,
@@ -76,12 +115,17 @@ export default class ProductYahooService {
                 console.log(' ================ Dừng xuất hàng. Sản phẩm đã hết hàng =============== ');
             } else {
                 if (productYahooData.is_user_change) {
-                    if (newProductData.ship_fee1) {
+                    // Giá ship tự set
+                    if (productYahooData.ship_fee1) {
                         defaultSetting.yahoo_auction_shipping = productYahooData.ship_fee1;
                     }
                     resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee, productYahooData.start_price);
                 } else {
                     resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee);
+                }
+
+                if (resultData && resultData.import_price) {
+                    await ProductYahooService.update(productYahooData._id, resultData);
                 }
                 if (resultData.isStopUpload) {
                     resultData.message = '低利益';
@@ -93,7 +137,6 @@ export default class ProductYahooService {
     }
     static async checkProfitToStopUpload(defaultSetting, import_price, amazon_shipping_fee = 0, start_price_user_input = 0) {
         let dataprofit = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee, start_price_user_input);
-        console.log(' ### dataprofit: ', dataprofit);
         if (dataprofit.actual_profit <= defaultSetting.profit_stop) {
             return {
                 isStopUpload: true,
@@ -644,6 +687,7 @@ export default class ProductYahooService {
         await newProduct.save();
         // await ProductYahooService.create(productYahoo);
     }
+
     static async UpdateCalculatorPrice(productInfomationDefault) {
         let listProduct = await ProductYahooModel.find({
             user_id: productInfomationDefault.user_id,
