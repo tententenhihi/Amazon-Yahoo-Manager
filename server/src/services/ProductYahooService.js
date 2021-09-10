@@ -617,6 +617,21 @@ export default class ProductYahooService {
                     return false;
                 });
                 for (const product of listProductResubmit) {
+                    let productYahooData = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
+                    let resultCheckUpload = await this.checkStopUpload(productYahooData, defaultSetting);
+
+                    if (resultCheckUpload.isStopUpload) {
+                        result.push({
+                            product_created: productYahooData.created,
+                            product_id: 'Resubmit',
+                            product_aID: product.aID,
+                            message: resultCheckUpload.message,
+                            created: Date.now(),
+                            success: false,
+                        });
+                        continue;
+                    }
+
                     let uploadAuctionResult = await AuctionYahooService.reSubmit(yahooAccount.cookie, proxyResult.data, product.aID);
                     let message = '出品に成功しました';
                     if (uploadAuctionResult.status === 'ERROR') {

@@ -4,17 +4,26 @@ import ProxyService from './ProxyService';
 import AuctionYahooService from './AuctionYahooService';
 import ProductYahooAuctionService from './ProductYahooAuctionService';
 import AccountYahooService from './AccountYahooService';
+import SocketIOService from './SocketIOService';
 
 export default class ProductYahooFinishedService {
     static async refreshDataYahoo(yahoo_account_id) {
         let listProduct = [];
+        let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
         try {
-            let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
             let is_lock_user = await UserService.checkUser_Lock_Exprired(accountYahoo.user_id);
             if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
                     let listProductFinished = await AuctionYahooService.getProductAuctionFinished(accountYahoo.cookie, proxyResult.data);
+
+                    SocketIOService.emitData(accountYahoo.user_id, {
+                        type: 'FINISHED',
+                        isLoading: true,
+                        progress: 0,
+                        total: listProductFinished.length,
+                    });
+
                     let listProductInDB = await ProductYahooFinishedService.find({ yahoo_account_id: accountYahoo._id });
                     // console.log(' ##### startGetProductYahoo getProductAuctionFinished: ', listProductFinished);
                     // tạo , update product
@@ -44,6 +53,12 @@ export default class ProductYahooFinishedService {
                             let newProductYahooEnded = await ProductYahooFinishedService.update(productExisted._id, product);
                             listProduct.push(newProductYahooEnded);
                         }
+                        SocketIOService.emitData(accountYahoo.user_id, {
+                            type: 'FINISHED',
+                            isLoading: true,
+                            progress: j + 1,
+                            total: listProductFinished.length,
+                        });
                     }
                     // xóa product trong db
                     for (const productDB of listProductInDB) {
@@ -63,7 +78,13 @@ export default class ProductYahooFinishedService {
         } catch (error) {
             console.log(' ### refreshDataYahoo: ', error);
         }
-        return listProduct;
+        SocketIOService.emitData(accountYahoo.user_id, {
+            type: 'FINISHED',
+            isLoading: false,
+            progress: 0,
+            total: 0,
+            listProduct: listProduct,
+        });
     }
 
     static async find(data) {

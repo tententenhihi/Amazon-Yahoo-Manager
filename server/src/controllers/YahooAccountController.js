@@ -17,6 +17,7 @@ import ProxyService from '../services/ProxyService';
 import ProductYahooSellingService from '../services/ProductYahooSellingService';
 import AuctionYahooService from '../services/AuctionYahooService';
 import BankModel from '../models/BankModel';
+import WithDrawMoneyModel from '../models/WithDrawMoneyModel';
 
 const createDataDefault = async (user_id, yahoo_account_id) => {
     await ProductInfomationDefaultSchema.create({
@@ -79,6 +80,21 @@ const setLockAccount = async (yahooAccount) => {
     }
 };
 class YahooAccountController {
+    static async getAccountAndHistoryWithRraw(req, res) {
+        let response = new Response(res);
+        let user = req.user;
+        try {
+            let accounts = await YahooAccountModel.aggregate([{ $match: { user_id: mongoose.Types.ObjectId(user._id) } }, { $lookup: { from: 'banks', localField: 'bank_id', foreignField: '_id', as: 'bank' } }]);
+            for (let i = 0; i < accounts.length; i++) {
+                let historyWithDraw = await WithDrawMoneyModel.find({ yahoo_account_id: accounts[i]._id });
+                accounts[i].historyWithDraw = historyWithDraw || [];
+            }
+            response.success200({ accounts });
+        } catch (error) {
+            console.log(error);
+            response.error500(error);
+        }
+    }
     static async setBankToAccount(req, res) {
         let response = new Response(res);
         let user = req.user;

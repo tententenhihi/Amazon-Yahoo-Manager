@@ -49,7 +49,7 @@
       <div class="group-button py-20 position-relative">
         <button
           class="btn btn-primary my-10"
-          style="position: absolute; top: -15px; right: 0; margin-bottom: -10px;"
+          style="position: absolute; top: -15px; right: 0; margin-bottom: -10px"
           @click="refreshDataYahoo()"
         >
           <i class="fa fa-sync-alt" style="font-size: 12px"></i>
@@ -77,7 +77,7 @@
                 <input
                   class="checkall"
                   type="checkbox"
-                  style="cursor: pointer; width: 15px; height: 15px;"
+                  style="cursor: pointer; width: 15px; height: 15px"
                 />
               </th>
               <th class="text-center" width="120">オークションID</th>
@@ -107,7 +107,7 @@
                   type="checkbox"
                   name=""
                   id=""
-                  style="cursor: pointer; width: 15px; height: 15px;"
+                  style="cursor: pointer; width: 15px; height: 15px"
                 />
               </td>
               <td class="text-center">{{ product.aID }}</td>
@@ -120,12 +120,20 @@
                       ? product.thumbnail
                       : SERVER_HOST_UPLOAD + product.thumbnail
                   "
-                  style="min-width: 50px; max-height: 100px; object-fit: contain;"
+                  style="
+                    min-width: 50px;
+                    max-height: 100px;
+                    object-fit: contain;
+                  "
                 />
                 <img
                   v-else
                   :src="product.images[0]"
-                  style="min-width: 50px; max-height: 100px; object-fit: contain;"
+                  style="
+                    min-width: 50px;
+                    max-height: 100px;
+                    object-fit: contain;
+                  "
                 />
               </td>
               <!-- <td class="text-center" width="100">
@@ -141,9 +149,7 @@
               </td> -->
               <td>
                 <a
-                  :href="
-                    `https://page.auctions.yahoo.co.jp/jp/auction/${product.aID}`
-                  "
+                  :href="`https://page.auctions.yahoo.co.jp/jp/auction/${product.aID}`"
                   target="_blank"
                   >{{ product.product_yahoo_title }}</a
                 >
@@ -164,7 +170,11 @@
                 <div class="goto">
                   <a
                     class="btn btn-xs"
-                    style="border: 1px solid #d19405; background: #fece2f; color: #4c3000"
+                    style="
+                      border: 1px solid #d19405;
+                      background: #fece2f;
+                      color: #4c3000;
+                    "
                     :href="`/yahoo-auction-trades-message/${product._id}`"
                   >
                     取引ナビ
@@ -178,7 +188,7 @@
                 }}</span>
                 <div class="mt-1" v-if="product.progress_message">
                   <span
-                    class="label "
+                    class="label"
                     style="color: black"
                     v-html="product.progress_message"
                   >
@@ -254,20 +264,27 @@
         ></textarea>
       </template>
       <template v-slot:button>
-        <button class="btn btn-primary" @click="onSaveNote">
-          保存
-        </button>
+        <button class="btn btn-primary" @click="onSaveNote">保存</button>
         <button class="btn btn-default" @click="oncloseModal()">
           キャンセル
         </button>
       </template>
     </modal-component>
+    <ProgressLoading
+      v-if="progressData.isLoading"
+      :progressData="progressData"
+      ref="ProgressLoading"
+    />
   </div>
 </template>
 
 <script>
 import ProductYahooEndedApi from "@/services/ProductYahooEndedApi";
+import ProgressLoading from "../../components/ProgressLoading.vue";
 import { mapGetters } from "vuex";
+import io from "socket.io-client";
+var socket = null;
+
 const LISTING_PROGRESS = [
   { value: "address_inputing", display: "住所入力待ち" },
   { value: "postage_inputing", display: "送料連絡中" },
@@ -276,11 +293,14 @@ const LISTING_PROGRESS = [
   { value: "money_received", display: "入金待ち" },
   { value: "preparation_for_shipment", display: "発送連絡中" },
   { value: "shipping", display: "発送完了" },
-  { value: "complete", display: "取引完了" }
+  { value: "complete", display: "取引完了" },
 ];
 const PROXY_STATUS_DIE = "die";
 export default {
   name: "YahooAuctionTrade",
+  components: {
+    ProgressLoading,
+  },
   data() {
     return {
       products: [],
@@ -288,20 +308,40 @@ export default {
       selectedEdiNote: {},
       searchObj: {
         queryString: "",
-        progress: null
+        progress: null,
       },
       searchProducts: [],
       page: 1,
-      LISTING_PROGRESS
+      LISTING_PROGRESS,
+      progressData: {
+        total: 0,
+        progress: 0,
+        isLoading: false,
+      },
     };
   },
   async mounted() {
     await this.getListProduct();
+    socket = io.connect(process.env.SERVER_API);
+    socket.on(this.$store.state.user._id + '-ENDED', (fetchedData) => {
+      this.progressData = fetchedData;
+      if (fetchedData.listProduct) {
+        this.products = fetchedData.listProduct;
+        this.searchProducts = fetchedData.listProduct;
+      } else {
+        this.products = [];
+        this.searchProducts = [];
+      }
+      if (this.progressData.total === this.progressData.progress) {
+        this.progressData.isLoading = false;
+      }
+    });
   },
+
   computed: {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
-      adminViewUser: "getAdminViewUser"
+      adminViewUser: "getAdminViewUser",
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
@@ -320,35 +360,38 @@ export default {
         this.selectedYahooAccount.proxy.length
         ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE
         : false;
-    }
+    },
   },
   methods: {
     async onContactShip(product) {
       let res = await ProductYahooEndedApi.contactShip({
-        product_id: product._id
+        product_id: product._id,
       });
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
           title: "追加成功",
           timer: 500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
       }
     },
     async refreshDataYahoo() {
       let res = await ProductYahooEndedApi.refreshDataYahoo({
-        yahoo_account_id: this.yahooAccountId
+        yahoo_account_id: this.yahooAccountId,
       });
       if (res && res.status === 200) {
-        this.products = res.data.products;
-        this.searchProducts = this.products;
-        this.$swal.fire({
-          icon: "success",
-          title: "追加成功",
-          timer: 500,
-          showConfirmButton: false
-        });
+        this.products = [];
+        this.searchProducts = [];
+        this.progressData.isLoading = true;
+        // this.products = res.data.products;
+        // this.searchProducts = this.products;
+        // this.$swal.fire({
+        //   icon: "success",
+        //   title: "追加成功",
+        //   timer: 500,
+        //   showConfirmButton: false
+        // });
       }
     },
     getPriceEnd(product) {
@@ -433,20 +476,20 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: error.message
+          text: error.message,
         });
       }
     },
     addRating(product) {
       this.$router.push({
         name: "YahooAuctionTradeRating",
-        params: { id: product._id }
+        params: { id: product._id },
       });
     },
     addMessage(product) {
       this.$router.push({
         name: "YahooAuctionTradeMessage",
-        params: { id: product._id }
+        params: { id: product._id },
       });
     },
     onOpenModalNote(product) {
@@ -456,14 +499,14 @@ export default {
     async onSaveNote() {
       let res = await ProductYahooEndedApi.setNote({
         product_id: this.selectedEdiNote._id,
-        note: this.$refs.textareaNote.value
+        note: this.$refs.textareaNote.value,
       });
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
           title: "追加成功",
           timer: 500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
         this.selectedEdiNote.note = this.$refs.textareaNote.value;
         this.oncloseModal();
@@ -474,7 +517,7 @@ export default {
       this.$refs.modalNote.closeModal();
     },
     onSearchProduct() {
-      this.searchProducts = this.products.filter(product => {
+      this.searchProducts = this.products.filter((product) => {
         let condition = true;
         if (this.searchObj.queryString) {
           condition =
@@ -493,17 +536,17 @@ export default {
     clearSearchProduct() {
       this.searchObj = {
         queryString: "",
-        progress: null
+        progress: null,
       };
       this.searchProducts = [...this.products];
-    }
+    },
   },
   created() {
     const selectedYahooAccount = this.$store.state.selectedYahooAccount;
     // if (selectedYahooAccount && selectedYahooAccount.is_lock) {
     //   this.$routes.push({ name: "YahooAccounts" });
     // }
-  }
+  },
 };
 </script>
 
@@ -517,5 +560,8 @@ table tr td.text-note {
 label {
   font-weight: bold;
   margin-bottom: 5px;
+}
+.wrapper-content {
+  position: relative;
 }
 </style>

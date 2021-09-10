@@ -4,19 +4,26 @@ import ProxyService from './ProxyService';
 import AuctionYahooService from './AuctionYahooService';
 import ProductYahooAuctionService from './ProductYahooAuctionService';
 import AccountYahooService from './AccountYahooService';
-import mongoose from 'mongoose';
+import SocketIOService from './SocketIOService';
 
 export default class ProductYahooEndedService {
     static async refreshDataYahoo(yahoo_account_id) {
         let listProduct = [];
+        let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
         try {
-            let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
             let is_lock_user = await UserService.checkUser_Lock_Exprired(accountYahoo.user_id);
             if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data, false, accountYahoo);
+                    let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data, false, accountYahoo, true);
                     listProductEnded = listProductEnded.reverse();
+
+                    SocketIOService.emitData(accountYahoo.user_id, {
+                        type: 'ENDED',
+                        isLoading: true,
+                        progress: listProductEnded.length / 2,
+                        total: listProductEnded.length,
+                    });
 
                     let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
 
@@ -68,6 +75,12 @@ export default class ProductYahooEndedService {
                             let newProductYahooEnded = await ProductYahooEndedService.update(productExisted._id, { ...product, created: Date.now() });
                             listProduct.push(newProductYahooEnded);
                         }
+                        SocketIOService.emitData(accountYahoo.user_id, {
+                            type: 'ENDED',
+                            isLoading: true,
+                            progress: (listProductEnded.length + j + 1) / 2,
+                            total: listProductEnded.length,
+                        });
                     }
 
                     // xóa product trong db
@@ -89,7 +102,13 @@ export default class ProductYahooEndedService {
             console.log(' ### refreshDataYahoo: ', error);
         }
         listProduct = listProduct.reverse();
-        return listProduct;
+        SocketIOService.emitData(accountYahoo.user_id, {
+            type: 'ENDED',
+            isLoading: false,
+            progress: 0,
+            total: 0,
+            listProduct: listProduct.reverse(),
+        });
     }
 
     static async find(data) {

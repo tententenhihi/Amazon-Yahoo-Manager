@@ -6,49 +6,22 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 pb-20">
-        <!-- <div class="search-proxy mt-10">
-          <div class="form-row">
-            <div class="form-group col-md-3">
-              <label for="userid">ユーザーID</label>
-              <input
-                type="text"
-                class="form-control"
-                id="userid"
-                v-model="searchUserId"
-              />
-            </div>
-            <div class="form-group col-md-3">
-              <label for="userid">ヤフーID</label>
-              <input
-                type="text"
-                class="form-control"
-                id="userid"
-                v-model="searchYahooId"
-              />
-            </div>
-            <div class="form-group col-md-3">
-              <label for="username">ユーザー名</label>
-              <input
-                type="text"
-                class="form-control"
-                id="username"
-                v-model="searchUsername"
-              />
-            </div>
-            <div class="form-group col-md-3">
-              <label for="proxy">銀行の口座番号:</label>
-              <input
-                type="text"
-                class="form-control"
-                id="proxy"
-                v-model="searchBankNumber"
-              />
-            </div>
-          </div>
-          <button class="btn btn-primary px-4" @click="searchYahooAccount">
-            検索
+        <div class="form-row my-3" style="justify-content: space-between;">
+          <button
+            :disabled="!listAccountSelected || listAccountSelected.length === 0"
+            class="btn btn-primary px-4"
+            @click="openPayment"
+          >
+            出金ログを見る
           </button>
-        </div> -->
+          <button
+            :disabled="!listAccountSelected || listAccountSelected.length === 0"
+            class="btn btn-success px-4"
+            @click="searchYahooAccount"
+          >
+            選択したアカウントの出金を実行する
+          </button>
+        </div>
         <paginate
           v-if="pageCount > 1"
           v-model="page"
@@ -65,59 +38,60 @@
           <table id="tablebank" class="table table-striped display pt-10 my-20">
             <thead class="thead-purple">
               <tr>
-                <th scope="col">
-                  No
-                  <input
-                    type="checkbox"
-                    v-model="isCheckAllProduct"
-                    style="cursor: pointer; width: 15px; height: 15px;"
-                  />
+                <th name="stt" scope="col">
+                  <div style="display: flex;align-items: center;">
+                    <input
+                      class="mr-2"
+                      type="checkbox"
+                      v-model="isCheckAllAccount"
+                      style="cursor: pointer; width: 15px; height: 15px;"
+                      id="checkAll"
+                    />
+                    <label style="cursor: pointer" for="checkAll">全選択</label>
+                  </div>
                 </th>
                 <th scope="col">Yahoo! オークID</th>
-                <th scope="col">対応口座</th>
-                <th scope="col">支店名</th>
                 <th scope="col">偽口座情報</th>
-                <th scope="col">名義カナ名字</th>
-                <th scope="col">名義カナ名前</th>
-                <th scope="col"></th>
+                <th scope="col">前回出金日</th>
+                <th scope="col">出金額</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(account, index) in tableData" :key="index">
-                <td>{{ account.accountId }}</td>
+                <td>
+                  <div style="display: flex;align-items: center;">
+                    <input
+                      class="mr-2"
+                      type="checkbox"
+                      v-model="listAccountSelected"
+                      :value="account._id"
+                      style="cursor: pointer; width: 15px; height: 15px;"
+                      :id="'account_' + index"
+                    />
+                    <label style="cursor: pointer" :for="'account_' + index">{{
+                      account.accountId
+                    }}</label>
+                  </div>
+                </td>
                 <td>{{ account.yahoo_id }}</td>
-                <td>
-                  <span v-if="account.bank[0]">
-                    {{ account.bank[0].name }}
-                  </span>
-                </td>
-                <td>
-                  <span v-if="account.bank[0]">
-                    {{ account.bank[0].branch }}
-                  </span>
-                </td>
                 <td>
                   <span v-if="account.bank[0]">
                     {{ account.bank[0].number }}
                   </span>
                 </td>
                 <td>
-                  <span v-if="account.bank[0]">
-                    {{ account.bank[0].first_name }}
+                  <span v-if="account.historyWithDraw[0]">
+                    {{
+                      $moment(account.historyWithDraw[0].created).format(
+                        "YYYY/MM/DD HH:mm"
+                      )
+                    }}
                   </span>
                 </td>
                 <td>
-                  <span v-if="account.bank[0]">
-                    {{ account.bank[0].last_name }}
+                  <span v-if="account.historyWithDraw[0]">
+                    {{ account.historyWithDraw[0].amount }}
                   </span>
-                </td>
-                <td>
-                  <button
-                    class="btn btn-sm btn-warning"
-                    @click="setBankToAccount(account)"
-                  >
-                    銀行を変更する
-                  </button>
                 </td>
               </tr>
             </tbody>
@@ -125,32 +99,64 @@
         </div>
       </div>
     </div>
-    <modal-component ref="modelBankAccount">
+
+    <modal-component ref="modelHistoryPayment" classModalDialog="modal-lg">
       <template v-slot:header>
-        <h5><i class="fa fa-user-plus"></i> 銀行口座を設定する</h5>
+        <h5>離脱履歴</h5>
       </template>
       <template>
         <div class="form-group form-line">
-          <label class="col-sm-4 control-label">銀行の口座番号: </label>
-          <div class="col-sm-7">
-            <select class="form-control" v-model="selectedBank">
-              <option
-                v-for="(bank, index) in listBank"
-                :value="bank._id"
-                :key="index"
-              >
-                {{ bank.name }} - {{ bank.number }} -
-                {{ bank.first_name + " " + bank.last_name }}
-              </option>
-            </select>
-          </div>
+          <table id="tablebank" class="table table-striped display pt-10 my-20">
+            <thead class="thead-purple">
+              <tr>
+                <th name="stt" scope="col">
+                  <div style="display: flex;align-items: center;">
+                    <input
+                      class="mr-2"
+                      type="checkbox"
+                      v-model="isCheckAllAccount"
+                      style="cursor: pointer; width: 15px; height: 15px;"
+                      id="checkAll"
+                    />
+                    <label style="cursor: pointer" for="checkAll">全選択</label>
+                  </div>
+                </th>
+                <th scope="col">Yahoo! オークID</th>
+                <th scope="col">偽口座情報</th>
+                <th scope="col">前回出金日</th>
+                <th scope="col">出金額</th>
+                <th scope="col">即時出金</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(account, index) in listHistoryWithRraw" :key="index">
+                <td>
+                  <div style="display: flex;align-items: center;">
+                    {{ index + 1 }}
+                  </div>
+                </td>
+                <td>{{ account.yahoo_id }}</td>
+                <td>
+                  {{ account.bank_number }}
+                </td>
+                <td>
+                  <span>
+                    {{ $moment(account.created).format("YYYY/MM/DD HH:mm") }}
+                  </span>
+                </td>
+                <td>
+                  {{ account.amount }}
+                </td>
+                <td>
+                  {{ account.status }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </template>
       <template v-slot:button>
         <div class="button-group">
-          <button class="btn btn-success mr-2" @click="onSetBankToAccount">
-            <i class="fa fa-save"></i> セーブ
-          </button>
           <button class="btn btn-warning" @click="onCloseModal">
             <i class="fa fa-times"></i> キャンセル
           </button>
@@ -176,8 +182,8 @@ export default {
   data() {
     return {
       isCheckAllAccount: false,
+      listAccountSelected: [],
       accounts: [],
-      listBank: [],
       STATUS_PROXY,
       page: 1,
       selectedBank: null,
@@ -186,7 +192,8 @@ export default {
       searchYahooId: "",
       searchUsername: "",
       searchBankNumber: "",
-      searchData: []
+      searchData: [],
+      listHistoryWithRraw: []
     };
   },
   async mounted() {
@@ -228,6 +235,12 @@ export default {
               .attr("autocomplete", "off");
           },
           responsive: true,
+          columnDefs: [
+            {
+              targets: 0,
+              orderable: false
+            }
+          ],
           language: {
             sEmptyTable: "テーブルにデータがありません",
             sInfo: " _TOTAL_ 件中 _START_ から _END_ まで表示",
@@ -258,10 +271,9 @@ export default {
     },
     async getYahooAccounts() {
       try {
-        let res = await YahooAccountApi.getAccountAndBank();
+        let res = await YahooAccountApi.getAccountAndHistoryWithDraw();
         if (res && res.status === 200) {
           this.accounts = res.data.accounts;
-          this.listBank = res.data.listBank;
           this.searchData = this.accounts;
         }
       } catch (error) {
@@ -272,30 +284,26 @@ export default {
         });
       }
     },
-    setBankToAccount(account) {
-      this.$refs.modelBankAccount.openModal();
-      this.selectAccount = account;
-    },
-
-    async onSetBankToAccount() {
-      let res = await YahooAccountApi.setBankToAccount({
-        _id: this.selectAccount._id,
-        bank_id: this.selectedBank
-      });
-      if (res && res.status === 200) {
-        this.$swal.fire({
-          icon: "success",
-          title: "銀行の設定が完了しました",
-          timer: 500,
-          showConfirmButton: false
+    openPayment() {
+      let listHistory = [];
+      this.listAccountSelected.map(item => {
+        let account = this.accounts.find(itemx => itemx._id === item);
+        account.historyWithDraw.map(itemXX => {
+          listHistory.push({
+            yahoo_id: accounts.yahoo_id,
+            bank_number: accounts.bank[0].number,
+            ip: itemXX.client,
+            created: itemXX.created,
+            amount: itemXX.amount,
+            status: itemXX.status
+          });
         });
-        await this.getYahooAccounts();
-        this.selectedBank = null;
-        this.$refs.modelBankAccount.closeModal();
-      }
+      });
+      this.listHistoryWithRraw = listHistory;
+      this.$refs.modelHistoryPayment.openModal();
     },
     onCloseModal() {
-      this.$refs.modelBankAccount.closeModal();
+      this.$refs.modelHistoryPayment.closeModal();
     },
     searchYahooAccount() {
       this.searchData = this.accounts.filter(account => {
@@ -320,17 +328,20 @@ export default {
             account.users.length > 0 &&
             account.users[0].username.includes(this.searchUsername);
         }
-        if (this.searchBankNumber) {
-          condition =
-            condition &&
-            account.bank.length > 0 &&
-            account.bank[0].ip.includes(this.searchBankNumber);
-        }
         if (condition) {
           return account;
         }
       });
       this.page = 1;
+    }
+  },
+  watch: {
+    isCheckAllAccount: function() {
+      if (this.isCheckAllAccount) {
+        this.listAccountSelected = this.accounts.map(item => item._id);
+      } else {
+        this.listAccountSelected = [];
+      }
     }
   }
 };

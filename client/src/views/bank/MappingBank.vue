@@ -6,49 +6,6 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 pb-20">
-        <!-- <div class="search-proxy mt-10">
-          <div class="form-row">
-            <div class="form-group col-md-3">
-              <label for="userid">ユーザーID</label>
-              <input
-                type="text"
-                class="form-control"
-                id="userid"
-                v-model="searchUserId"
-              />
-            </div>
-            <div class="form-group col-md-3">
-              <label for="userid">ヤフーID</label>
-              <input
-                type="text"
-                class="form-control"
-                id="userid"
-                v-model="searchYahooId"
-              />
-            </div>
-            <div class="form-group col-md-3">
-              <label for="username">ユーザー名</label>
-              <input
-                type="text"
-                class="form-control"
-                id="username"
-                v-model="searchUsername"
-              />
-            </div>
-            <div class="form-group col-md-3">
-              <label for="proxy">銀行の口座番号:</label>
-              <input
-                type="text"
-                class="form-control"
-                id="proxy"
-                v-model="searchBankNumber"
-              />
-            </div>
-          </div>
-          <button class="btn btn-primary px-4" @click="searchYahooAccount">
-            検索
-          </button>
-        </div> -->
         <paginate
           v-if="pageCount > 1"
           v-model="page"
@@ -120,7 +77,7 @@
     </div>
     <modal-component ref="modelBankAccount">
       <template v-slot:header>
-        <h5><i class="fa fa-user-plus"></i> 銀行口座を設定する</h5>
+        <h5>銀行口座を設定する</h5>
       </template>
       <template>
         <div class="form-group form-line">
@@ -288,41 +245,6 @@ export default {
     },
     onCloseModal() {
       this.$refs.modelBankAccount.closeModal();
-    },
-    searchYahooAccount() {
-      this.searchData = this.accounts.filter(account => {
-        let condition = true;
-        if (this.searchUserId) {
-          condition =
-            condition &&
-            account.users.length > 0 &&
-            account.users[0].userId &&
-            account.users[0].userId.toString().includes(this.searchUserId);
-        }
-        if (this.searchYahooId) {
-          condition =
-            condition &&
-            account.users.length &&
-            account.accountId.toString().includes(this.searchYahooId);
-        }
-
-        if (this.searchUsername) {
-          condition =
-            condition &&
-            account.users.length > 0 &&
-            account.users[0].username.includes(this.searchUsername);
-        }
-        if (this.searchBankNumber) {
-          condition =
-            condition &&
-            account.bank.length > 0 &&
-            account.bank[0].ip.includes(this.searchBankNumber);
-        }
-        if (condition) {
-          return account;
-        }
-      });
-      this.page = 1;
     }
   }
 };

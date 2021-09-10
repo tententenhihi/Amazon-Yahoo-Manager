@@ -21,13 +21,13 @@ export default {
   name: "App",
   data() {
     return {
-      isLoading: false
+      isLoading: false,
     };
   },
   components: {
     NormalLayout,
     AdminLayout,
-    Loading
+    Loading,
   },
   computed: {
     ...mapState(["isUserLoggedIn"]),
@@ -39,8 +39,8 @@ export default {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
       userInfo: "getUserInfo",
-      listYahooAccount: "getYahooAccount"
-    })
+      listYahooAccount: "getYahooAccount",
+    }),
   },
   created() {
     this.$eventBus.$on("showLoading", this.onShowLoading);
@@ -89,7 +89,7 @@ export default {
           this.$router.push({ name: "YahooAccounts" });
           this.$swal.fire({
             icon: "warning",
-            title: "ヤフーのアカウントを設定してください"
+            title: "ヤフーのアカウントを設定してください",
           });
         }
       }
@@ -100,7 +100,7 @@ export default {
         this.userInfo.type !== "admin" &&
         this.listYahooAccount &&
         this.userInfo.maxYahooAccount <
-          this.listYahooAccount.filter(item => !item.is_lock).length
+          this.listYahooAccount.filter((item) => !item.is_lock).length
       ) {
         if (!NO_NEED_VALIDATE_ROUTER.includes(this.$route.name)) {
           if (this.$route.name !== "YahooAccounts") {
@@ -109,17 +109,17 @@ export default {
           this.$swal.fire({
             icon: "warning",
             title: `契約数をオーバーしています。
-アカウントを削除して減らすか、取引のみに使用にチェックをして契約数を合わせてください。`
+アカウントを削除して減らすか、取引のみに使用にチェックをして契約数を合わせてください。`,
           });
         }
       }
-    }
+    },
   },
   watch: {
     $route() {
       this.checkExistYahooAccount();
-    }
-  }
+    },
+  },
 };
 </script>
 <style src="@/assets/css/reset.css"></style>

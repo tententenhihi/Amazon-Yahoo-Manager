@@ -9,8 +9,8 @@ export default class ProductYahooFinishedController {
         let response = new Response(res);
         try {
             let { yahoo_account_id } = req.body;
-            let products = await ProductYahooFinishedService.refreshDataYahoo(yahoo_account_id);
-            return response.success200({ products });
+            ProductYahooFinishedService.refreshDataYahoo(yahoo_account_id);
+            return response.success200({});
         } catch (error) {
             console.log(error);
             return response.error500(error);

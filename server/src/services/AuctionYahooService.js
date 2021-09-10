@@ -11,6 +11,7 @@ import Utils from '../utils/Utils';
 import ImageInsertionService from './ImageInsertionService';
 import path from 'path';
 import config from 'config';
+import SocketIOService from './SocketIOService';
 
 const Jimp = require('jimp');
 
@@ -685,7 +686,7 @@ export default class AuctionYahooService {
         }
     }
 
-    static async getProductAuctionEnded(usernameYahoo, cookie, proxy, getAidOnly, accountYahoo) {
+    static async getProductAuctionEnded(usernameYahoo, cookie, proxy, getAidOnly, accountYahoo, isEmit) {
         let listProduct = [];
         try {
             let proxyConfig = {
@@ -728,6 +729,7 @@ export default class AuctionYahooService {
             if (getAidOnly) {
                 return listProduct;
             }
+
             // Get detail info
             for (let i = 0; i < listProduct.length; i++) {
                 let product = listProduct[i];
@@ -920,6 +922,15 @@ export default class AuctionYahooService {
                         product.is_join_bill = false;
                     }
                 } catch (error) {}
+
+                if (isEmit) {
+                    SocketIOService.emitData(accountYahoo.user_id, {
+                        type: 'ENDED',
+                        isLoading: true,
+                        progress: (i + 1) / 2,
+                        total: listProduct.length,
+                    });
+                }
             }
 
             // Get count buyer

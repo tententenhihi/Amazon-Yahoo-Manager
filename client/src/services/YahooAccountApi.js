@@ -31,5 +31,10 @@ export default {
     return Api.post(`${prefix}/set-bank-to-account`, credentials, {
       timeout: 15 * 60 * 1000
     });
+  },
+  getAccountAndHistoryWithDraw(credentials) {
+    return Api.get(`${prefix}/get-account-history-withdraw`, credentials, {
+      timeout: 15 * 60 * 1000
+    });
   }
 };

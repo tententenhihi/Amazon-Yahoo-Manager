@@ -10,7 +10,6 @@ YahooAccountRouter.route('/delete/:_id').post(YahooAccountController.deleteAccou
 YahooAccountRouter.route('/copy-data').post(YahooAccountController.copyDefaultSetting);
 YahooAccountRouter.route('/get-account-bank').post(YahooAccountController.getAccountBank);
 YahooAccountRouter.route('/set-bank-to-account').post(YahooAccountController.setBankToAccount);
-
-
+YahooAccountRouter.route('/get-account-history-withdraw').get(YahooAccountController.getAccountAndHistoryWithRraw);
 
 export default YahooAccountRouter;

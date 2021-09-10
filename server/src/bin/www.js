@@ -9,6 +9,7 @@ import debugLib from 'debug';
 import http from 'http';
 const debug = debugLib('your-project-name:server');
 import config from 'config';
+import SocketIOService from '../services/SocketIOService.js';
 
 /**
  * Get port from environment and store in Express.
@@ -22,6 +23,11 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+var socketIO = require('socket.io')(server, {
+    cors: {
+        origin: '*',
+    },
+});
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -29,6 +35,8 @@ var server = http.createServer(app);
 
 server.listen(port, () => {
     console.log(' Server run on port:', port);
+    new SocketIOService(socketIO);
+
     // init socketIO
 });
 server.on('error', onError);

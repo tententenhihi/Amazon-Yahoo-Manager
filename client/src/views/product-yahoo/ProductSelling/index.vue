@@ -29,8 +29,8 @@
         現在プロキシ未割当のため一時的に機能が利用できなくなっております。管理者までお問い合わせ下さい。
       </div>
       <div
-        class="group-button  position-relative mb-10"
-        style="justify-content: space-between; display: flex;"
+        class="group-button position-relative mb-10"
+        style="justify-content: space-between; display: flex"
       >
         <button
           :disabled="!selectedProduct.length"
@@ -39,7 +39,7 @@
         >
           <i class="far fa-trash-alt mr-1"></i> 削除
         </button>
-        <button class="btn btn-primary " @click="refreshDataYahoo()">
+        <button class="btn btn-primary" @click="refreshDataYahoo()">
           <i class="fa fa-sync-alt" style="font-size: 12px"></i>
           最新の情報を反映する
         </button>
@@ -65,7 +65,7 @@
                   class="checkall"
                   type="checkbox"
                   v-model="isCheckAllProduct"
-                  style="cursor: pointer; width: 15px; height: 15px;"
+                  style="cursor: pointer; width: 15px; height: 15px"
                 />
               </th>
               <th class="text-center" width="120">オークションID</th>
@@ -90,7 +90,7 @@
             <tr v-for="(product, index) in tableData" :key="index">
               <td class="text-center" width="50">
                 <input
-                  style="cursor: pointer; width: 15px; height: 15px;"
+                  style="cursor: pointer; width: 15px; height: 15px"
                   type="checkbox"
                   :id="product._id"
                   :disabled="
@@ -122,14 +122,16 @@
                       ? product.thumbnail
                       : SERVER_HOST_UPLOAD + product.thumbnail
                   "
-                  style="min-width: 50px; max-height: 100px; object-fit: contain;"
+                  style="
+                    min-width: 50px;
+                    max-height: 100px;
+                    object-fit: contain;
+                  "
                 />
               </td>
               <td>
                 <a
-                  :href="
-                    `https://page.auctions.yahoo.co.jp/jp/auction/${product.aID}`
-                  "
+                  :href="`https://page.auctions.yahoo.co.jp/jp/auction/${product.aID}`"
                   target="_blank"
                   >{{ product.product_yahoo_title }}</a
                 >
@@ -214,9 +216,7 @@
         ></textarea>
       </template>
       <template v-slot:button>
-        <button class="btn btn-primary" @click="onSaveNote">
-          保存
-        </button>
+        <button class="btn btn-primary" @click="onSaveNote">保存</button>
         <button class="btn btn-default" @click="oncloseModal()">
           キャンセル
         </button>
@@ -240,12 +240,21 @@
         </div>
       </template>
     </modal-component>
+    <ProgressLoading
+      v-if="progressData.isLoading"
+      :progressData="progressData"
+      ref="ProgressLoading"
+    />
   </div>
 </template>
 
 <script>
 import ProductYahooSellingApi from "@/services/ProductYahooSellingApi";
-import { mapGetters } from "vuex";
+import ProgressLoading from "../../components/ProgressLoading.vue";
+import io from "socket.io-client";
+var socket = null;
+
+import { mapGetters, mapState } from "vuex";
 const LISTING_PROGRESS = [
   { value: "address_inputing", display: "住所入力待ち" },
   { value: "postage_inputing", display: "送料連絡中" },
@@ -254,33 +263,57 @@ const LISTING_PROGRESS = [
   { value: "money_received", display: "入金待ち" },
   { value: "preparation_for_shipment", display: "発送連絡中" },
   { value: "shipping", display: "発送完了" },
-  { value: "complete", display: "取引完了" }
+  { value: "complete", display: "取引完了" },
 ];
 const PROXY_STATUS_DIE = "die";
 export default {
   name: "YahooAuctionSellings",
+  components: {
+    ProgressLoading,
+  },
   data() {
     return {
       products: [],
       SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/",
       selectedEdiNote: {},
       searchObj: {
-        queryString: ""
+        queryString: "",
       },
       searchProducts: [],
       page: 1,
       LISTING_PROGRESS,
       isCheckAllProduct: false,
-      selectedProduct: []
+      selectedProduct: [],
+      progressData: {
+        total: 0,
+        progress: 0,
+        isLoading: false,
+      },
     };
   },
   async mounted() {
     await this.getListProduct();
+    socket = io.connect(process.env.SERVER_API);
+    socket.on(this.$store.state.user._id + "-SELLING", (fetchedData) => {
+      this.progressData = fetchedData;
+      if (fetchedData.listProduct) {
+        this.products = fetchedData.listProduct;
+        this.searchProducts = fetchedData.listProduct;
+      } else {
+        this.products = [];
+        this.searchProducts = [];
+      }
+
+      if (this.progressData.total === this.progressData.progress) {
+        this.progressData.isLoading = false;
+      }
+    });
   },
+
   computed: {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
-      adminViewUser: "getAdminViewUser"
+      adminViewUser: "getAdminViewUser",
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
@@ -299,7 +332,7 @@ export default {
         this.selectedYahooAccount.proxy.length
         ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE
         : false;
-    }
+    },
   },
   methods: {
     getPriceEnd(product) {
@@ -373,7 +406,7 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: error.message
+          text: error.message,
         });
       }
     },
@@ -384,14 +417,14 @@ export default {
     async onSaveNote() {
       let res = await ProductYahooSellingApi.setNote({
         product_id: this.selectedEdiNote._id,
-        note: this.$refs.textareaNote.value
+        note: this.$refs.textareaNote.value,
       });
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
           title: "追加成功",
           timer: 500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
         this.selectedEdiNote.note = this.$refs.textareaNote.value;
         this.oncloseModal();
@@ -402,7 +435,7 @@ export default {
       this.$refs.modalNote.closeModal();
     },
     onSearchProduct() {
-      this.searchProducts = this.products.filter(product => {
+      this.searchProducts = this.products.filter((product) => {
         let condition = true;
         if (this.searchObj.queryString) {
           condition =
@@ -419,12 +452,12 @@ export default {
     },
     clearSearchProduct() {
       this.searchObj = {
-        queryString: ""
+        queryString: "",
       };
       this.searchProducts = [...this.products];
     },
     displayProgress(progress) {
-      return this.LISTING_PROGRESS.find(item => item.value === progress)
+      return this.LISTING_PROGRESS.find((item) => item.value === progress)
         .display;
     },
     deleteProduct(product) {
@@ -442,18 +475,18 @@ export default {
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
           confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  番号'
+          cancelButtonText: '<i class="fa fa-times"></i>  番号',
         })
-        .then(async result => {
+        .then(async (result) => {
           if (result.isConfirmed) {
             let res = await ProductYahooSellingApi.delete(product._id);
             if (res && res.status == 200) {
               let findIndex = this.searchProducts.findIndex(
-                item => item._id === product._id
+                (item) => item._id === product._id
               );
               this.searchProducts.splice(findIndex, 1);
               this.selectedProduct = this.selectedProduct.filter(
-                item => item._id !== product._id
+                (item) => item._id !== product._id
               );
               if (this.tableData.length === 0) {
                 this.page -= 1;
@@ -469,13 +502,13 @@ export default {
     },
     async onDeleteMultipleProduct() {
       let params = {
-        ids: this.selectedProduct.map(item => item._id)
+        ids: this.selectedProduct.map((item) => item._id),
       };
       let res = await ProductYahooSellingApi.deleteMultiple(params);
       if (res && res.status === 200) {
-        this.selectedProduct.forEach(item => {
+        this.selectedProduct.forEach((item) => {
           let findIndex = this.searchProducts.findIndex(
-            product => product._id === item._id
+            (product) => product._id === item._id
           );
           this.searchProducts.splice(findIndex, 1);
         });
@@ -484,7 +517,7 @@ export default {
         this.$refs.modalDeleteProduct.closeModal();
         this.$swal.fire({
           icon: "success",
-          title: "商品一覧を削除しました。"
+          title: "商品一覧を削除しました。",
         });
         if (this.tableData.length === 0) {
           this.page -= 1;
@@ -493,26 +526,29 @@ export default {
     },
     async refreshDataYahoo() {
       let res = await ProductYahooSellingApi.refreshDataYahoo({
-        yahoo_account_id: this.yahooAccountId
+        yahoo_account_id: this.yahooAccountId,
       });
       if (res && res.status === 200) {
-        this.products = res.data.products;
-        this.searchProducts = this.products;
-        this.$swal.fire({
-          icon: "success",
-          title: "追加成功",
-          timer: 500,
-          showConfirmButton: false
-        });
+        this.products = [];
+        this.searchProducts = [];
+        this.progressData.isLoading = true;
+        // this.products = res.data.products;
+        // this.searchProducts = this.products;
+        // this.$swal.fire({
+        //   icon: "success",
+        //   title: "追加成功",
+        //   timer: 500,
+        //   showConfirmButton: false
+        // });
       }
-    }
+    },
   },
   updated() {},
   watch: {
     isCheckAllProduct() {
       if (this.isCheckAllProduct) {
         let data = [...this.tableData];
-        let filterPro = data.filter(item => {
+        let filterPro = data.filter((item) => {
           if (!item.idBuyer) {
             return item;
           }
@@ -526,7 +562,7 @@ export default {
       if (
         this.selectedProduct.length &&
         this.selectedProduct.length ==
-          this.tableData.filter(item => {
+          this.tableData.filter((item) => {
             if (!item.idBuyer) {
               return item;
             }
@@ -540,14 +576,14 @@ export default {
     page() {
       this.isCheckAllProduct = false;
       this.selectedProduct = [];
-    }
+    },
   },
   created() {
     const selectedYahooAccount = this.$store.state.selectedYahooAccount;
     // if (selectedYahooAccount && selectedYahooAccount.is_lock) {
     //   this.$routes.push({ name: "YahooAccounts" });
     // }
-  }
+  },
 };
 </script>
 
@@ -561,5 +597,8 @@ table tr td.text-note {
 label {
   font-weight: bold;
   margin-bottom: 5px;
+}
+.wrapper-content {
+  position: relative;
 }
 </style>
