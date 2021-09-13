@@ -159,8 +159,10 @@ export default {
   },
   watch: {
     $route() {
-      this.checkExistYahooAccount();
-      this.checkApikey();
+      if (this.isUserLoggedIn) {
+        this.checkExistYahooAccount();
+        this.checkApikey();
+      }
     },
   },
 };
