@@ -525,7 +525,7 @@ export default class AuctionYahooService {
         }
     }
 
-    static async reSubmit(cookie, proxy, aID) {
+    static async reSubmit(cookie, proxy, aID, productData) {
         try {
             console.log(' ========= START UPLOAD YAHOO ========= ');
 
@@ -596,7 +596,72 @@ export default class AuctionYahooService {
             delete previewParams.minBidRating;
             delete previewParams.markdown;
 
-            // console.log(' ######### previewParams: ', previewParams);
+            if (productData) {
+                if (config.get('env') === 'development') {
+                    proxyConfig = null;
+                }
+
+                let now = new Date();
+                now.setDate(now.getDate() + productData.duration);
+                let tmpClosingYMD = moment(now).format('yyyy-MM-DD');
+
+                let location = constants.PREFECTURE.find((x) => x.value === productData.location);
+                if (!location) {
+                    location = '';
+                } else {
+                    location = location.display;
+                }
+                // PREVIEW
+                previewParams = {
+                    ...previewParams,
+                    Title: productData.product_yahoo_title,
+                    category: productData.yahoo_auction_category_id,
+                    salesmode: productData.sales_mode,
+                    StartPrice: productData.start_price,
+                    BidOrBuyPrice: productData.bid_or_buy_price != '0' ? productData.bid_or_buy_price : '',
+                    istatus: productData.status,
+                    istatus_comment: productData.status_comment,
+                    Quantity: productData.quantity,
+                    Duration: productData.duration,
+                    ClosingTime: productData.closing_time,
+                    // Tạo ra từ Duration + ngày hiện tại
+                    tmpClosingYMD: tmpClosingYMD,
+                    ClosingYMD: tmpClosingYMD,
+                    //====
+                    retpolicy: productData.retpolicy,
+                    retpolicy_comment: productData.retpolicy_comment,
+                    minBidRating: productData.min_bid_rating, // 0 or 1
+                    badRatingRatio: productData.bad_rating_ratio,
+                    bidCreditLimit: productData.bid_credit_limit,
+                    AutoExtension: productData.auto_extension,
+                    numResubmit: productData.num_resubmit,
+                    // ReservePrice: productData.reserve_price,
+
+                    Description: productData.description,
+                    Description_rte: productData.description,
+
+                    // Ship
+                    shiptime: productData.ship_time,
+                    shipping: productData.shipping,
+                    loc_cd: productData.location,
+                    location: location,
+
+                    shipname1: productData.ship_name1,
+                    shipfee1: productData.ship_fee1,
+                    shipname2: productData.ship_name2,
+                    shipfee2: productData.ship_fee2,
+                    shipname3: productData.ship_name3,
+                    shipfee3: productData.ship_fee3,
+                    shipschedule: productData.ship_schedule,
+
+                    // Amount
+                    featuredAmount: productData.featured_amount,
+                    BoldFaceCharge: productData.bold,
+                    HighlightListingCharge: productData.highlight,
+                    GiftIconName: productData.gift,
+                    WrappingIconCharge: productData.wrapping,
+                };
+            }
             // salesContract
             // bidCreditLimit
             // badRatingRatio
@@ -705,6 +770,7 @@ export default class AuctionYahooService {
                     cookie,
                 },
                 proxy: proxyConfig,
+                timeout: 60 * 1000,
             });
 
             // Fs.writeFileSync(usernameYahoo + ' - preview.html', response.data);
@@ -729,148 +795,130 @@ export default class AuctionYahooService {
             if (getAidOnly) {
                 return listProduct;
             }
+            if (isEmit) {
+                SocketIOService.emitData(accountYahoo.user_id, {
+                    type: 'ENDED',
+                    isLoading: true,
+                    progress: 0,
+                    total: listProduct.length,
+                });
+            }
 
             // Get detail info
             for (let i = 0; i < listProduct.length; i++) {
-                let product = listProduct[i];
-                let url = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${product.aID}&syid=${usernameYahoo}&bid=${product.idBuyer}`;
-                response = await axios.get(url, {
-                    headers: {
-                        cookie,
-                    },
-                    proxy: proxyConfig,
-                });
-                $ = cheerio.load(response.data);
-                //message
                 try {
-                    let listMessage = [];
-                    let container = $('#messagelist');
-                    if (container && container[0] && container[0].children && container[0].children.length > 0) {
-                        for (const children of container[0].children) {
-                            let classx = $(children).attr('class');
-                            let dataM = null;
-                            if (classx === 'ptsPartner') {
-                                dataM = {
-                                    type: 'buyer',
-                                    comment: $(children).find('#body').text().trim(),
-                                    yahoo_id: $(children).find('#buyerid').text().trim(),
-                                    created_at: $(children).find('.decTime').text().trim(),
-                                };
-                                listMessage.push(dataM);
-                            } else if (classx === 'ptsOwn') {
-                                dataM = {
-                                    type: 'seller',
-                                    comment: $(children).find('#body').text().trim(),
-                                    yahoo_id: $(children).find('#sellerid').text().trim(),
-                                    created_at: $(children).find('.decTime').text().trim(),
-                                };
-                                listMessage.push(dataM);
-                            }
-                        }
-                    }
-                    product.message_list = listMessage;
-                } catch (error) {}
-                // Ship address
-                try {
-                    let shipInfo = '';
-                    //td.decInTblCel > div. > table > tbody > tr:nth-child(1)
-                    let shipInfoNode = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div.libTableCnfTop.decTableCnfBod > table > tbody > tr > td > div > table > tbody > tr');
-                    if (shipInfoNode && shipInfoNode.length > 0) {
-                        for (const info of shipInfoNode) {
-                            shipInfo += $(info).find('td').text().trim() + '</br>';
-                        }
-                    }
-                    shipInfo = shipInfo.trim();
-                    product.ship_info = shipInfo;
-                } catch (error) {}
-
-                // product_buy_count
-                try {
-                    let productCountNode = $('#acConHeader > div.acMdItemInfo.libItemInfo > dl > dd.decPrice > span').text();
-                    if (productCountNode) {
-                        let product_buy_count = productCountNode.replace(/\D+/g, '');
-                        if (product_buy_count) {
-                            product.product_buy_count = product_buy_count;
-                        }
-                    }
-                } catch (error) {}
-
-                // Progress status
-                try {
-                    let progress = 'null';
-                    let classStatusNode = $('div.acMdStatusImage > ul.acMdStatusImage__status');
-                    let classText = classStatusNode.attr('class');
-                    switch (classText) {
-                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current05':
-                            progress = '受取連絡';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current04':
-                            progress = '受取連絡';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current04 acMdStatusImage__status--end acMdStatusImage__status--complete':
-                            progress = '受取連絡';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current05 acMdStatusImage__status--end acMdStatusImage__status--complete':
-                            progress = '受取連絡';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current02':
-                            progress = 'お支払い';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current02':
-                            progress = '送料連絡';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current03':
-                            progress = '発送連絡';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current03':
-                            progress = 'お支払い';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current01':
-                            progress = '取引情報';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current01':
-                            progress = '取引情報';
-                            break;
-                        case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current04':
-                            progress = '発送連絡';
-                            break;
-                    }
-                    // Số tiền nhận thực tế
-                    if (progress === '発送連絡' || progress === '受取連絡') {
-                        if (!accountYahoo.cookie_aucpay) {
-                            let result = await AuctionYahooService.getCookie(accountYahoo, proxy, true);
-                            if (result.status === 'SUCCESS') {
-                                accountYahoo.cookie_aucpay = result.cookie;
-                                await accountYahoo.save();
-                            }
-                        }
-                        if (accountYahoo.cookie_aucpay) {
-                            let nodeAmountActual = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr > td > div > a');
-                            try {
-                                if (nodeAmountActual && nodeAmountActual.attr('href')) {
-                                    let url_get_amount = nodeAmountActual.attr('href');
-                                    let response_get_amount = await axios.get(url_get_amount, {
-                                        headers: {
-                                            cookie: accountYahoo.cookie_aucpay,
-                                        },
-                                        proxy: proxyConfig,
-                                    });
-                                    if (response_get_amount && response_get_amount.status === 200) {
-                                        let $$ = cheerio.load(response_get_amount.data);
-                                        let node_amount_actual = $$('#rcvdtl > ul > li.decTotal > dl:nth-child(1) > dd');
-                                        if (node_amount_actual) {
-                                            let amount_actual = node_amount_actual.text().match(/\d+/)[0];
-                                            product.amount_actual = amount_actual;
-                                        }
-                                    }
+                    let product = listProduct[i];
+                    let url = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${product.aID}&syid=${usernameYahoo}&bid=${product.idBuyer}`;
+                    response = await axios.get(url, {
+                        headers: {
+                            cookie,
+                        },
+                        proxy: proxyConfig,
+                        timeout: 30 * 1000,
+                    });
+                    $ = cheerio.load(response.data);
+                    //message
+                    try {
+                        let listMessage = [];
+                        let container = $('#messagelist');
+                        if (container && container[0] && container[0].children && container[0].children.length > 0) {
+                            for (const children of container[0].children) {
+                                let classx = $(children).attr('class');
+                                let dataM = null;
+                                if (classx === 'ptsPartner') {
+                                    dataM = {
+                                        type: 'buyer',
+                                        comment: $(children).find('#body').text().trim(),
+                                        yahoo_id: $(children).find('#buyerid').text().trim(),
+                                        created_at: $(children).find('.decTime').text().trim(),
+                                    };
+                                    listMessage.push(dataM);
+                                } else if (classx === 'ptsOwn') {
+                                    dataM = {
+                                        type: 'seller',
+                                        comment: $(children).find('#body').text().trim(),
+                                        yahoo_id: $(children).find('#sellerid').text().trim(),
+                                        created_at: $(children).find('.decTime').text().trim(),
+                                    };
+                                    listMessage.push(dataM);
                                 }
-                            } catch (error) {}
+                            }
                         }
-                        if (!product.amount_actual) {
-                            let result = await AuctionYahooService.getCookie(accountYahoo, proxy, true);
-                            if (result.status === 'SUCCESS') {
-                                accountYahoo.cookie_aucpay = result.cookie;
-                                await accountYahoo.save();
+                        product.message_list = listMessage;
+                    } catch (error) {}
+                    // Ship address
+                    try {
+                        let shipInfo = '';
+                        //td.decInTblCel > div. > table > tbody > tr:nth-child(1)
+                        let shipInfoNode = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div.libTableCnfTop.decTableCnfBod > table > tbody > tr > td > div > table > tbody > tr');
+                        if (shipInfoNode && shipInfoNode.length > 0) {
+                            for (const info of shipInfoNode) {
+                                shipInfo += $(info).find('td').text().trim() + '</br>';
+                            }
+                        }
+                        shipInfo = shipInfo.trim();
+                        product.ship_info = shipInfo;
+                    } catch (error) {}
+
+                    // product_buy_count
+                    try {
+                        let productCountNode = $('#acConHeader > div.acMdItemInfo.libItemInfo > dl > dd.decPrice > span').text();
+                        if (productCountNode) {
+                            let product_buy_count = productCountNode.replace(/\D+/g, '');
+                            if (product_buy_count) {
+                                product.product_buy_count = product_buy_count;
+                            }
+                        }
+                    } catch (error) {}
+
+                    // Progress status
+                    try {
+                        let progress = 'null';
+                        let classStatusNode = $('div.acMdStatusImage > ul.acMdStatusImage__status');
+                        let classText = classStatusNode.attr('class');
+                        switch (classText) {
+                            case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current05':
+                                progress = '受取連絡';
+                                break;
+                            case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current04':
+                                progress = '受取連絡';
+                                break;
+                            case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current04 acMdStatusImage__status--end acMdStatusImage__status--complete':
+                                progress = '受取連絡';
+                                break;
+                            case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current05 acMdStatusImage__status--end acMdStatusImage__status--complete':
+                                progress = '受取連絡';
+                                break;
+                            case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current02':
+                                progress = 'お支払い';
+                                break;
+                            case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current02':
+                                progress = '送料連絡';
+                                break;
+                            case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current03':
+                                progress = '発送連絡';
+                                break;
+                            case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current03':
+                                progress = 'お支払い';
+                                break;
+                            case 'acMdStatusImage__status acMdStatusImage__status--st04 acMdStatusImage__status--current01':
+                                progress = '取引情報';
+                                break;
+                            case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current01':
+                                progress = '取引情報';
+                                break;
+                            case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current04':
+                                progress = '発送連絡';
+                                break;
+                        }
+                        // Số tiền nhận thực tế
+                        if (progress === '発送連絡' || progress === '受取連絡') {
+                            if (!accountYahoo.cookie_aucpay) {
+                                let result = await AuctionYahooService.getCookie(accountYahoo, proxy, true);
+                                if (result.status === 'SUCCESS') {
+                                    accountYahoo.cookie_aucpay = result.cookie;
+                                    await accountYahoo.save();
+                                }
                             }
                             if (accountYahoo.cookie_aucpay) {
                                 let nodeAmountActual = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr > td > div > a');
@@ -894,42 +942,73 @@ export default class AuctionYahooService {
                                     }
                                 } catch (error) {}
                             }
-                        }
-                    }
-
-                    // Số tiền nhận dự kiến:
-                    if (progress === 'お支払い') {
-                        progress = 'お支払い';
-                        let nodeAmountExpected = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr:nth-child(2) > td');
-                        let amount_expected = 0;
-                        if (nodeAmountExpected.text()) {
-                            amount_expected = nodeAmountExpected.text().match(/\d+/)[0];
-                            if (amount_expected) {
-                                product.amount_expected = amount_expected;
+                            if (!product.amount_actual) {
+                                let result = await AuctionYahooService.getCookie(accountYahoo, proxy, true);
+                                if (result.status === 'SUCCESS') {
+                                    accountYahoo.cookie_aucpay = result.cookie;
+                                    await accountYahoo.save();
+                                }
+                                if (accountYahoo.cookie_aucpay) {
+                                    let nodeAmountActual = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr > td > div > a');
+                                    try {
+                                        if (nodeAmountActual && nodeAmountActual.attr('href')) {
+                                            let url_get_amount = nodeAmountActual.attr('href');
+                                            let response_get_amount = await axios.get(url_get_amount, {
+                                                headers: {
+                                                    cookie: accountYahoo.cookie_aucpay,
+                                                },
+                                                proxy: proxyConfig,
+                                            });
+                                            if (response_get_amount && response_get_amount.status === 200) {
+                                                let $$ = cheerio.load(response_get_amount.data);
+                                                let node_amount_actual = $$('#rcvdtl > ul > li.decTotal > dl:nth-child(1) > dd');
+                                                if (node_amount_actual) {
+                                                    let amount_actual = node_amount_actual.text().match(/\d+/)[0];
+                                                    product.amount_actual = amount_actual;
+                                                }
+                                            }
+                                        }
+                                    } catch (error) {}
+                                }
                             }
                         }
+
+                        // Số tiền nhận dự kiến:
+                        if (progress === 'お支払い') {
+                            progress = 'お支払い';
+                            let nodeAmountExpected = $('div.acMdTradeInfo > div > div.libJsExpandBody.ptsMsgWr.mL10.mR10.mB10 > div:nth-child(2) > table > tbody > tr > td > div > table > tbody > tr:nth-child(2) > td');
+                            let amount_expected = 0;
+                            if (nodeAmountExpected.text()) {
+                                amount_expected = nodeAmountExpected.text().match(/\d+/)[0];
+                                if (amount_expected) {
+                                    product.amount_expected = amount_expected;
+                                }
+                            }
+                        }
+
+                        product.progress = progress;
+                    } catch (error) {}
+
+                    // Check gộp thanh toán
+                    try {
+                        let buttonJoinPayment = $('div.acMdTradeBtn > a.libBtnBlueL');
+                        if (buttonJoinPayment && buttonJoinPayment.length > 0 && buttonJoinPayment.text() === 'まとめて取引をはじめる') {
+                            product.is_join_bill = true;
+                        } else {
+                            product.is_join_bill = false;
+                        }
+                    } catch (error) {}
+
+                    if (isEmit) {
+                        SocketIOService.emitData(accountYahoo.user_id, {
+                            type: 'ENDED',
+                            isLoading: true,
+                            progress: (i + 1) / 2,
+                            total: listProduct.length,
+                        });
                     }
-
-                    product.progress = progress;
-                } catch (error) {}
-
-                // Check gộp thanh toán
-                try {
-                    let buttonJoinPayment = $('div.acMdTradeBtn > a.libBtnBlueL');
-                    if (buttonJoinPayment && buttonJoinPayment.length > 0 && buttonJoinPayment.text() === 'まとめて取引をはじめる') {
-                        product.is_join_bill = true;
-                    } else {
-                        product.is_join_bill = false;
-                    }
-                } catch (error) {}
-
-                if (isEmit) {
-                    SocketIOService.emitData(accountYahoo.user_id, {
-                        type: 'ENDED',
-                        isLoading: true,
-                        progress: (i + 1) / 2,
-                        total: listProduct.length,
-                    });
+                } catch (error) {
+                    console.log(error);
                 }
             }
 
@@ -979,6 +1058,7 @@ export default class AuctionYahooService {
                     cookie,
                 },
                 proxy: proxyConfig,
+                timeout: 60 * 1000,
             });
 
             let $ = cheerio.load(response.data);
@@ -1022,6 +1102,7 @@ export default class AuctionYahooService {
                 cookie,
             },
             proxy: proxyConfig,
+            timeout: 60 * 1000,
         });
         let $ = cheerio.load(response.data);
 
@@ -1054,85 +1135,93 @@ export default class AuctionYahooService {
     }
 
     static async getCookie(account, proxy, is_get_cookie_auction) {
-        console.log(' ==== Start login Yahoo ====');
+        try {
+            console.log(' ==== Start login Yahoo ====');
 
-        let sock5 = `http://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`;
-        const newProxyUrl = await proxyChain.anonymizeProxy(sock5);
-        let args = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-infobars', '--window-position=0,0', '--ignore-certifcate-errors', '--ignore-certifcate-errors-spki-list', '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"', `--proxy-server=${newProxyUrl}`];
+            let sock5 = `http://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`;
+            const newProxyUrl = await proxyChain.anonymizeProxy(sock5);
+            let args = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-infobars', '--window-position=0,0', '--ignore-certifcate-errors', '--ignore-certifcate-errors-spki-list', '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"', `--proxy-server=${newProxyUrl}`];
 
-        if (config.get('env') === 'development') {
-            args.pop();
-        }
+            if (config.get('env') === 'development') {
+                args.pop();
+            }
 
-        // if (Fs.existsSync('./tmp')) {
-        //     Fs.rmdirSync('./tmp', { recursive: true });
-        // }
-        const options = {
-            args,
-            headless: true,
-            ignoreHTTPSErrors: true,
-            // userDataDir: './tmp',
-        };
-
-        const browser = await puppeteer.launch(options);
-        const page = await browser.newPage();
-        let urlLogin = 'https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver';
-        if (is_get_cookie_auction) {
-            urlLogin = 'https://login.yahoo.co.jp/config/login?auth_lv=capin&.src=pay&.done=https%3A%2F%2Faucpay.yahoo.co.jp%2Fdetail-front%2FPaymentDetailList&.crumb=0';
-        }
-        let timeout = 5 * 60 * 1000;
-        // urlLogin = 'http://lumtest.com/myip.json';
-        await page.goto(urlLogin, { waitUntil: 'load', timeout: timeout });
-
-        page.setDefaultNavigationTimeout(0);
-        await Utils.sleep(1000);
-
-        console.log(' ### username ');
-        const username = await page.waitForSelector('#username');
-        await username.type(account.yahoo_id);
-        await Utils.sleep(1000);
-
-        async function waitAndClick(selector) {
-            await page.evaluate((selector) => document.querySelector(selector).click(), selector);
-        }
-
-        console.log(' ##### btnNext ');
-        await waitAndClick('#btnNext');
-
-        // await page.click('#btnNext');
-
-        console.log(' ### password');
-        const password = await page.waitForSelector('#passwd');
-        await password.type(account.password);
-        await Utils.sleep(1000);
-
-        console.log(' #### Submit');
-        await waitAndClick('#btnSubmit');
-        const find = await page.waitForSelector('input[type=text]', { timeout: 30000 });
-        await Utils.sleep(1000);
-        const cookies = await page.cookies();
-
-        if (cookies.length > 4) {
-            try {
-                await browser.close();
-            } catch (error) {}
-            console.log(' ======== SUCCESS ======= ');
-            let cookie = cookies
-                .map(function (c) {
-                    return `${c.name}=${c.value}`;
-                })
-                .join('; ');
-            return {
-                status: 'SUCCESS',
-                cookie,
+            // if (Fs.existsSync('./tmp')) {
+            //     Fs.rmdirSync('./tmp', { recursive: true });
+            // }
+            const options = {
+                args,
+                headless: true,
+                ignoreHTTPSErrors: true,
+                // userDataDir: './tmp',
             };
-        } else {
-            const data = await page.evaluate(() => document.querySelector('*').outerHTML);
-            // Fs.writeFileSync('preview.html', data);
-            console.log(' ======== Failse ======= ');
-            try {
-                await browser.close();
-            } catch (error) {}
+
+            const browser = await puppeteer.launch(options);
+            const page = await browser.newPage();
+            let urlLogin = 'https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver';
+            if (is_get_cookie_auction) {
+                urlLogin = 'https://login.yahoo.co.jp/config/login?auth_lv=capin&.src=pay&.done=https%3A%2F%2Faucpay.yahoo.co.jp%2Fdetail-front%2FPaymentDetailList&.crumb=0';
+            }
+            let timeout = 5 * 60 * 1000;
+            // urlLogin = 'http://lumtest.com/myip.json';
+            await page.goto(urlLogin, { waitUntil: 'load', timeout: timeout });
+
+            page.setDefaultNavigationTimeout(0);
+            await Utils.sleep(1000);
+
+            console.log(' ### username ');
+            const username = await page.waitForSelector('#username');
+            await username.type(account.yahoo_id);
+            await Utils.sleep(1000);
+
+            async function waitAndClick(selector) {
+                await page.evaluate((selector) => document.querySelector(selector).click(), selector);
+            }
+
+            console.log(' ##### btnNext ');
+            await waitAndClick('#btnNext');
+
+            // await page.click('#btnNext');
+
+            console.log(' ### password');
+            const password = await page.waitForSelector('#passwd');
+            await password.type(account.password);
+            await Utils.sleep(1000);
+
+            console.log(' #### Submit');
+            await waitAndClick('#btnSubmit');
+            const find = await page.waitForSelector('input[type=text]', { timeout: 30000 });
+            await Utils.sleep(1000);
+            const cookies = await page.cookies();
+
+            if (cookies.length > 4) {
+                try {
+                    await browser.close();
+                } catch (error) {}
+                console.log(' ======== SUCCESS ======= ');
+                let cookie = cookies
+                    .map(function (c) {
+                        return `${c.name}=${c.value}`;
+                    })
+                    .join('; ');
+                return {
+                    status: 'SUCCESS',
+                    cookie,
+                };
+            } else {
+                const data = await page.evaluate(() => document.querySelector('*').outerHTML);
+                // Fs.writeFileSync('preview.html', data);
+                console.log(' ======== Failse ======= ');
+                try {
+                    await browser.close();
+                } catch (error) {}
+                return {
+                    status: 'ERROR',
+                    message: 'エラー。 管理者に連絡する ',
+                };
+            }
+        } catch (error) {
+            console.log(' ##### error: ', error);
             return {
                 status: 'ERROR',
                 message: 'エラー。 管理者に連絡する ',

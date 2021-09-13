@@ -24,7 +24,6 @@ export default class ProductYahooSellingService {
                         progress: 0,
                         total: listProductSelling.length,
                     });
-                    await Utils.sleep(1000);
                     listProductSelling = listProductSelling.reverse();
                     let listProductInDB = await ProductYahooSellingService.find({ yahoo_account_id: accountYahoo._id });
                     // console.log(' ##### startGetProductYahoo listProductSelling: ', listProductSelling);
@@ -61,7 +60,6 @@ export default class ProductYahooSellingService {
                             progress: j + 1,
                             total: listProductSelling.length,
                         });
-                        await Utils.sleep(1000);
                     }
                     // xóa product trong db
                     for (const productDB of listProductInDB) {
@@ -89,7 +87,6 @@ export default class ProductYahooSellingService {
             total: 0,
             listProduct: listProduct.reverse(),
         });
-        await Utils.sleep(1000);
     }
 
     static async find(data) {

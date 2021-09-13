@@ -17,7 +17,6 @@ export default class ProductYahooEndedService {
                 if (proxyResult.status === 'SUCCESS') {
                     let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data, false, accountYahoo, true);
                     listProductEnded = listProductEnded.reverse();
-
                     SocketIOService.emitData(accountYahoo.user_id, {
                         type: 'ENDED',
                         isLoading: true,

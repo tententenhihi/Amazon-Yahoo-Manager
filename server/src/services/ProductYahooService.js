@@ -16,6 +16,7 @@ const SellingPartnerAPI = require('amazon-sp-api');
 import Utils from '../utils/Utils';
 import ProductAmazonService from './ProductAmazonService';
 import config from 'config';
+import ProductYahooAuctionModel from '../models/ProductYahooAuction';
 var isCalendarUploading = false;
 
 const getPriceProductAmazon = async (asin) => {
@@ -616,28 +617,42 @@ export default class ProductYahooService {
                     }
                     return false;
                 });
+                // console.log(' ########## listProductResubmit: ', listProductResubmit)
+                // return;
                 for (const product of listProductResubmit) {
-                    let productYahooData = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
-                    let resultCheckUpload = await this.checkStopUpload(productYahooData, defaultSetting);
-
-                    if (resultCheckUpload.isStopUpload) {
-                        result.push({
-                            product_created: productYahooData.created,
-                            product_id: 'Resubmit',
-                            product_aID: product.aID,
-                            message: resultCheckUpload.message,
-                            created: Date.now(),
-                            success: false,
-                        });
-                        continue;
+                    let newDataUpload = null;
+                    let productAuction = await ProductYahooAuctionModel.findOne({ aID: product.aID });
+                    if (productAuction) {
+                        let productYahooData = await ProductYahooModel.findOne({ asin_amazon: productAuction.asin_amazon, yahoo_account_id });
+                        if (productYahooData) {
+                            let resultCheckUpload = await this.checkStopUpload(productYahooData, defaultSetting);
+                            if (resultCheckUpload.isStopUpload) {
+                                result.push({
+                                    product_created: productYahooData.created,
+                                    product_id: 'Resubmit',
+                                    product_aID: product.aID,
+                                    message: resultCheckUpload.message,
+                                    created: Date.now(),
+                                    success: false,
+                                });
+                                continue;
+                            } else {
+                                let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
+                                newDataUpload = {
+                                    ...productYahooData._doc,
+                                    ...resultCheckUpload,
+                                    description: descrionUpload,
+                                };
+                            }
+                        }
                     }
-
-                    let uploadAuctionResult = await AuctionYahooService.reSubmit(yahooAccount.cookie, proxyResult.data, product.aID);
+                    let uploadAuctionResult = await AuctionYahooService.reSubmit(yahooAccount.cookie, proxyResult.data, product.aID, newDataUpload);
+                    console.log(' ######### uploadAuctionResult: ', uploadAuctionResult);
+                    
                     let message = '出品に成功しました';
                     if (uploadAuctionResult.status === 'ERROR') {
                         message = uploadAuctionResult.statusMessage;
                     }
-
                     let newResult = {
                         product_created: Date.now(),
                         product_id: 'Resubmit',
@@ -647,6 +662,8 @@ export default class ProductYahooService {
                         success: uploadAuctionResult.status === 'SUCCESS',
                     };
                     result.push(newResult);
+                    break;
+
                 }
                 console.log(' ======= DONE ======== ');
             }
