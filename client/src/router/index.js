@@ -61,6 +61,7 @@ const AdminAsins = () => import("@/views/admin/asins/Index.vue");
 const BankManager = () => import("@/views/bank/BankManager.vue");
 const MappingBank = () => import("@/views/bank/MappingBank.vue");
 const AccountPayment = () => import("@/views/bank/AccountPayment.vue");
+const ApiKey = () => import("@/views/ApiKey");
 
 Vue.use(Router);
 
@@ -76,6 +77,14 @@ const router = new Router({
       path: "/forgot-password",
       name: "ForgotPassword",
       component: ForgotPassword
+    },
+    {
+      path: "/api-key",
+      name: "ApiKey",
+      component: ApiKey,
+      meta: {
+        requiredAuth: true
+      }
     },
     {
       path: "/reset-password",

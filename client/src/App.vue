@@ -16,6 +16,7 @@ import AdminLayout from "./layouts/AdminLayout.vue";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 import YahooAccountApi from "@/services/YahooAccountApi";
+import ApiKey from "@/services/ApiKey";
 
 export default {
   name: "App",
@@ -32,6 +33,7 @@ export default {
   computed: {
     ...mapState(["isUserLoggedIn"]),
     ...mapState(["adminViewUser"]),
+    ...mapState(["apiKey"]),
     ...mapState(["isAdmin"]),
     layout() {
       return (this.$route.meta.layout || "normal") + "-layout";
@@ -40,6 +42,7 @@ export default {
       selectedYahooAccount: "getSelectedYahooAccount",
       userInfo: "getUserInfo",
       listYahooAccount: "getYahooAccount",
+      apiKey: "getApiKey",
     }),
   },
   created() {
@@ -52,12 +55,20 @@ export default {
     ) {
       await this.getListAccount();
       this.checkExistYahooAccount();
+      await this.getApiKey();
+      this.checkApikey();
     }
   },
   beforeDestroy() {
     this.$eventBus.$off("showLoading", this.onShowLoading);
   },
   methods: {
+    async getApiKey() {
+      let result = await ApiKey.get();
+      if (result && result.status === 200) {
+        await this.$store.dispatch("setApiKey", result.data.apiKey);
+      }
+    },
     async getListAccount() {
       let result = await YahooAccountApi.get();
       if (result && result.status === 200) {
@@ -114,10 +125,42 @@ export default {
         }
       }
     },
+    checkApikey() {
+      console.log(" #### checkApikey: ", this.apiKey);
+      if (!this.apiKey.is_amz && !this.apiKey.is_keepa) {
+        if (
+          this.$route.name !== "ApiKey" &&
+          this.$route.name !== "YahooAccounts"
+        ) {
+          this.$router.push({ name: "ApiKey" });
+        }
+        this.$swal.fire({
+          icon: "warning",
+          title: `Please set api Keepa to continue use`,
+        });
+      } else if (
+        this.apiKey.is_amz &&
+        !this.apiKey.is_keepa &&
+        this.listYahooAccount &&
+        this.listYahooAccount.filter((item) => !item.is_lock).length > 2
+      ) {
+        if (
+          this.$route.name !== "ApiKey" &&
+          this.$route.name !== "YahooAccounts"
+        ) {
+          this.$router.push({ name: "ApiKey" });
+        }
+        this.$swal.fire({
+          icon: "warning",
+          title: `Please set api Keepa to continue use 3 account yahoo`,
+        });
+      }
+    },
   },
   watch: {
     $route() {
       this.checkExistYahooAccount();
+      this.checkApikey();
     },
   },
 };

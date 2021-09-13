@@ -3,7 +3,6 @@ import ProductAmazonSchema from '../models/ProductAmazonModel';
 import AccountYahooService from '../services/AccountYahooService';
 import ProxyService from '../services/ProxyService';
 import AuctionYahooService from '../services/AuctionYahooService';
-import KeepaService from '../services/KeepaService';
 import fs from 'fs';
 import fsExtra from 'fs-extra';
 import mongoose from 'mongoose';
@@ -17,17 +16,32 @@ import Utils from '../utils/Utils';
 import ProductAmazonService from './ProductAmazonService';
 import config from 'config';
 import ProductYahooAuctionModel from '../models/ProductYahooAuction';
+import ApiKeyController from '../controllers/ApiKeyController';
+
 var isCalendarUploading = false;
 
-const getPriceProductAmazon = async (asin) => {
+const getPriceProductAmazon = async (asin, user_id) => {
     try {
-        const REFRESH_TOKEN = config.get('REFRESH_TOKEN');
-        const SELLING_PARTNER_APP_CLIENT_ID = config.get('SELLING_PARTNER_APP_CLIENT_ID');
-        const SELLING_PARTNER_APP_CLIENT_SECRET = config.get('SELLING_PARTNER_APP_CLIENT_SECRET');
-        const AWS_SELLING_PARTNER_ROLE = config.get('AWS_SELLING_PARTNER_ROLE');
-        const AWS_ACCESS_KEY_ID = config.get('AWS_ACCESS_KEY_ID');
-        const AWS_SECRET_ACCESS_KEY = config.get('AWS_SECRET_ACCESS_KEY');
+        let REFRESH_TOKEN = config.get('REFRESH_TOKEN');
+        let SELLING_PARTNER_APP_CLIENT_ID = config.get('SELLING_PARTNER_APP_CLIENT_ID');
+        let SELLING_PARTNER_APP_CLIENT_SECRET = config.get('SELLING_PARTNER_APP_CLIENT_SECRET');
+        let AWS_SELLING_PARTNER_ROLE = config.get('AWS_SELLING_PARTNER_ROLE');
+        let AWS_ACCESS_KEY_ID = config.get('AWS_ACCESS_KEY_ID');
+        let AWS_SECRET_ACCESS_KEY = config.get('AWS_SECRET_ACCESS_KEY');
 
+        try {
+            let apiKey = await ApiKeyController.getApiKeyByUser(user_id);
+            if (apiKey && apiKey.is_amz && apiKey.REFRESH_TOKEN && apiKey.SELLING_PARTNER_APP_CLIENT_ID && apiKey.SELLING_PARTNER_APP_CLIENT_SECRET && apiKey.AWS_SELLING_PARTNER_ROLE && apiKey.AWS_ACCESS_KEY_ID && apiKey.AWS_SECRET_ACCESS_KEY) {
+                REFRESH_TOKEN = apiKey.REFRESH_TOKEN;
+                SELLING_PARTNER_APP_CLIENT_ID = apiKey.SELLING_PARTNER_APP_CLIENT_ID;
+                SELLING_PARTNER_APP_CLIENT_SECRET = apiKey.SELLING_PARTNER_APP_CLIENT_SECRET;
+                AWS_SELLING_PARTNER_ROLE = apiKey.AWS_SELLING_PARTNER_ROLE;
+                AWS_ACCESS_KEY_ID = apiKey.AWS_ACCESS_KEY_ID;
+                AWS_SECRET_ACCESS_KEY = apiKey.AWS_SECRET_ACCESS_KEY;
+            }
+        } catch (error) {
+            console.log(' ### Keepa ApiKeyController.getApiKeyByUser: ', error);
+        }
         let sellingPartner = new SellingPartnerAPI({
             region: 'fe', // The region to use for the SP-API endpoints ("eu", "na" or "fe")
             refresh_token: REFRESH_TOKEN, // The refresh token of your app user
@@ -42,13 +56,6 @@ const getPriceProductAmazon = async (asin) => {
                 auto_request_tokens: true,
             },
         });
-        // console.log(' ======== 111111 ========= ');
-        // await sellingPartner.refreshAccessToken();
-        // console.log(' ======== 2222222 ========= ');
-
-        // await sellingPartner.refreshRoleCredentials();
-        // console.log(' ======== 3333333 ========= ');
-
         let res = await sellingPartner.callAPI({
             operation: 'getItemOffers',
             endpoint: 'productPricing',
@@ -63,8 +70,6 @@ const getPriceProductAmazon = async (asin) => {
                 version: 'v0',
             },
         });
-        console.log(' ############### sellingPartner: ', res);
-
         if (res && res.status === 'Success') {
             if (res.Offers && res.Offers.length > 0) {
                 let offer = res.Offers[0];
@@ -112,8 +117,7 @@ export default class ProductYahooService {
         }
         // 2. Check Keepa
         if (checkKeepa) {
-            newProductData = await getPriceProductAmazon(productYahooData.asin_amazon);
-            console.log(' ############### getPriceProductAmazon: ', newProductData);
+            newProductData = await getPriceProductAmazon(productYahooData.asin_amazon, defaultSetting.user_id);
             if (newProductData && productAmazonInDB) {
                 // update product yahoo
                 newProductData = await ProductAmazonService.update(productAmazonInDB._id, { ...newProductData, created: Date.now() });
@@ -648,7 +652,7 @@ export default class ProductYahooService {
                     }
                     let uploadAuctionResult = await AuctionYahooService.reSubmit(yahooAccount.cookie, proxyResult.data, product.aID, newDataUpload);
                     console.log(' ######### uploadAuctionResult: ', uploadAuctionResult);
-                    
+
                     let message = '出品に成功しました';
                     if (uploadAuctionResult.status === 'ERROR') {
                         message = uploadAuctionResult.statusMessage;
@@ -663,7 +667,6 @@ export default class ProductYahooService {
                     };
                     result.push(newResult);
                     break;
-
                 }
                 console.log(' ======= DONE ======== ');
             }

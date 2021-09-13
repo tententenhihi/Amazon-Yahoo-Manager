@@ -5,7 +5,12 @@
         <div class="sidebar-brand">
           <a
             href="#"
-            style="font-size: 16px; font-weight: bold; color: white; text-align: center;"
+            style="
+              font-size: 16px;
+              font-weight: bold;
+              color: white;
+              text-align: center;
+            "
             >ヤフプロ</a
           >
           <div id="close-sidebar" @click="$emit('closeSidebar')">
@@ -195,6 +200,12 @@
               </router-link>
             </li>
             <li class="sidebar-dropdown">
+              <router-link :to="{ name: 'ApiKey' }">
+                <i class="fa fa-key"></i>
+                <span>Api</span>
+              </router-link>
+            </li>
+            <li class="sidebar-dropdown">
               <a href="#" @click="showDropdown(1)">
                 <i class="fa fa-user"></i>
                 <span>アカウント設定</span>
@@ -276,14 +287,14 @@ export default {
   data() {
     return {
       dropdownOpen: 0,
-      isShowCloseSidebar: true
+      isShowCloseSidebar: true,
     };
   },
   computed: {
     ...mapState(["adminViewUser"]),
     ...mapGetters({
       userInfo: "getUserInfo",
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
     }),
     isAdmin() {
       return this.adminViewUser;
@@ -292,7 +303,7 @@ export default {
       if (this.selectedYahooAccount && this.selectedYahooAccount.is_lock) {
         return true;
       } else return false;
-    }
+    },
   },
   methods: {
     onClickLogout() {
@@ -303,7 +314,7 @@ export default {
       this.dropdownOpen == index
         ? (this.dropdownOpen = 0)
         : (this.dropdownOpen = index);
-    }
+    },
   },
   watch: {
     $route() {
@@ -328,8 +339,8 @@ export default {
           this.dropdownOpen = 0;
           break;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

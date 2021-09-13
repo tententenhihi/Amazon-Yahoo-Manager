@@ -26,7 +26,7 @@ const getProductByAsin = async (dataInput, cb) => {
         let index = 0;
         while (listAsin && listAsin.length > 0 && count <= listAsin.length) {
             let newListAsin = listAsin.slice(currentIndex, count);
-            let result = await KeepaService.findProduct(newListAsin);
+            let result = await KeepaService.findProduct(newListAsin, dataInput.user_id);
             if (result.status === 'SUCCESS') {
                 for (const itemData of result.data) {
                     if (itemData.status === 'SUCCESS') {
@@ -40,11 +40,7 @@ const getProductByAsin = async (dataInput, cb) => {
                         } else {
                             await ProductAmazonService.create(itemData.data);
                         }
-                        await ProductYahooService.createFromAmazonProduct(
-                            itemData.data,
-                            newListAsinModel[index].idUser,
-                            newListAsinModel[index].yahoo_account_id
-                        );
+                        await ProductYahooService.createFromAmazonProduct(itemData.data, newListAsinModel[index].idUser, newListAsinModel[index].yahoo_account_id);
                     }
                     newListAsinModel[index].isProductGeted = itemData.status === 'SUCCESS';
                     newListAsinModel[index].status = itemData.status;
@@ -102,7 +98,6 @@ export default class QueueGetProductAmazon {
 
         console.log(' #### listAsinModel: ', listAsinModel.length);
 
-
         for (let asinModel of listAsinModel) {
             //Check Asin Black List
             let checkBlackList = await BlacklistAsinService.findOne({ type: 'BLACK', asin: asinModel.code });
@@ -130,6 +125,6 @@ export default class QueueGetProductAmazon {
                 }
             }
         }
-        queueGetInfoProduct.push({ newAsin: newListAsinModel, isUpdateAmazonProduct });
+        queueGetInfoProduct.push({ newAsin: newListAsinModel, isUpdateAmazonProduct, user_id: dataInput.user_id });
     }
 }

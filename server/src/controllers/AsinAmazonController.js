@@ -74,10 +74,7 @@ export default class AsinAmazonController {
             if (!type) {
                 type = 'ASIN';
             }
-            if (
-                listCode &&
-                listCode.length > 0
-            ) {
+            if (listCode && listCode.length > 0) {
                 // Kiểm tra giới hạn Product Yahoo
                 let countProductYahoo = await ProductYahooModel.find({ user_id: user._id }).countDocuments();
                 if (countProductYahoo >= 3000) {
@@ -87,7 +84,7 @@ export default class AsinAmazonController {
                 }
                 // Kiểm tra trùng trong List
                 listCode = _.uniqBy(listCode);
-                
+
                 let listAsinNew = [];
                 let queryKey = Utils.generateKey();
                 // Tạo List Object Asin
@@ -119,6 +116,7 @@ export default class AsinAmazonController {
                 QueueGetProductAmazon.addNew({
                     isUpdateAmazonProduct: checkUpdateAsin,
                     newAsin,
+                    user_id: user,
                 });
 
                 // Return List

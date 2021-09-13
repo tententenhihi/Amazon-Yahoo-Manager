@@ -20,9 +20,13 @@ export default new Vuex.Store({
     adminViewUser: false,
     isLoading: false,
     yahooAccount: [],
-    selectedYahooAccount: {}
+    selectedYahooAccount: {},
+    apiKey: {}
   },
   getters: {
+    getApiKey(state) {
+      return state.apiKey;
+    },
     getAdminViewUser(state) {
       return state.adminViewUser;
     },
@@ -37,6 +41,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setApiKey(state, data) {
+      state.apiKey = data;
+    },
     setAdminViewUser(state, data) {
       state.adminViewUser = true;
     },
@@ -93,6 +100,9 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    setApiKey({ commit }, data) {
+      commit("setApiKey", data);
+    },
     adminSetUserData({ commit }, data) {
       commit("adminSetUserData", data);
     },

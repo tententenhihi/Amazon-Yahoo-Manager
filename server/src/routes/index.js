@@ -21,6 +21,7 @@ import ImageInsertionRouter from './ImageInsertionRouter';
 import ProductYahooSellingRouter from './ProductYahooSellingRouter';
 import ProductYahooFinishedRouter from './ProductYahooFinishedRouter';
 import BankRouter from './BankRouter';
+import ApiKeyRouter from './ApiKeyRouter';
 
 var router = express.Router();
 
@@ -51,5 +52,6 @@ router.use('/api/v1/image-insertion', ImageInsertionRouter);
 router.use('/api/v1/product-yahoo-selling', ProductYahooSellingRouter);
 router.use('/api/v1/product-yahoo-finished', ProductYahooFinishedRouter);
 router.use('/api/v1/bank', BankRouter);
+router.use('/api/v1/api-key', ApiKeyRouter);
 
 export default router;

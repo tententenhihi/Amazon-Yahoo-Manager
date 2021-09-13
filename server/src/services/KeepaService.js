@@ -1,11 +1,20 @@
 import Axios from 'axios';
+import ApiKeyController from '../controllers/ApiKeyController';
 import AsinAmazonModel from '../models/AsinAmazonModel';
 import Utils from '../utils/Utils';
 
-const getData = async (listAsin) => {
+const getData = async (listAsin, user_id) => {
     let listResult = [];
     try {
         let token = `82stsotg8m0qivjvcbsvn08f1t229kilkljgvi6057buv80631tbtlgdvtinj6e9`;
+        try {
+            let apiKey = await ApiKeyController.getApiKeyByUser(user_id);
+            if (apiKey && apiKey.is_keepa && apiKey.token_keepa) {
+                token = apiKey.token_keepa;
+            }
+        } catch (error) {
+            console.log(' ### Keepa ApiKeyController.getApiKeyByUser: ', error);
+        }
         let res = null;
         let errorRes = null;
         do {
@@ -147,8 +156,8 @@ const getData = async (listAsin) => {
 };
 
 export default class KeepaService {
-    static async findProduct(listAsin) {
-        return await getData(listAsin);
+    static async findProduct(listAsin, user_id) {
+        return await getData(listAsin, user_id);
     }
 
     // static async findProduct(listAsin) {
