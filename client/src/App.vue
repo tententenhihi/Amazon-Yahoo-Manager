@@ -22,13 +22,13 @@ export default {
   name: "App",
   data() {
     return {
-      isLoading: false,
+      isLoading: false
     };
   },
   components: {
     NormalLayout,
     AdminLayout,
-    Loading,
+    Loading
   },
   computed: {
     ...mapState(["isUserLoggedIn"]),
@@ -42,13 +42,16 @@ export default {
       selectedYahooAccount: "getSelectedYahooAccount",
       userInfo: "getUserInfo",
       listYahooAccount: "getYahooAccount",
-      apiKey: "getApiKey",
-    }),
+      apiKey: "getApiKey"
+    })
   },
   created() {
     this.$eventBus.$on("showLoading", this.onShowLoading);
   },
   async mounted() {
+    console.log(" ###### this.isAdmin: ", this.isAdmin);
+    console.log(" ###### this.adminViewUser: ", this.adminViewUser);
+
     if (
       (this.isUserLoggedIn && !this.isAdmin) ||
       (this.isAdmin && this.adminViewUser)
@@ -100,7 +103,7 @@ export default {
           this.$router.push({ name: "YahooAccounts" });
           this.$swal.fire({
             icon: "warning",
-            title: "ヤフーのアカウントを設定してください",
+            title: "ヤフーのアカウントを設定してください"
           });
         }
       }
@@ -111,7 +114,7 @@ export default {
         this.userInfo.type !== "admin" &&
         this.listYahooAccount &&
         this.userInfo.maxYahooAccount <
-          this.listYahooAccount.filter((item) => !item.is_lock).length
+          this.listYahooAccount.filter(item => !item.is_lock).length
       ) {
         if (!NO_NEED_VALIDATE_ROUTER.includes(this.$route.name)) {
           if (this.$route.name !== "YahooAccounts") {
@@ -120,42 +123,48 @@ export default {
           this.$swal.fire({
             icon: "warning",
             title: `契約数をオーバーしています。
-アカウントを削除して減らすか、取引のみに使用にチェックをして契約数を合わせてください。`,
+アカウントを削除して減らすか、取引のみに使用にチェックをして契約数を合わせてください。`
           });
         }
       }
     },
     checkApikey() {
       console.log(" #### checkApikey: ", this.apiKey);
-      if (!this.apiKey.is_amz && !this.apiKey.is_keepa) {
-        if (
-          this.$route.name !== "ApiKey" &&
-          this.$route.name !== "YahooAccounts"
-        ) {
-          this.$router.push({ name: "ApiKey" });
-        }
-        this.$swal.fire({
-          icon: "warning",
-          title: `Please set api Keepa to continue use`,
-        });
-      } else if (
-        this.apiKey.is_amz &&
-        !this.apiKey.is_keepa &&
-        this.listYahooAccount &&
-        this.listYahooAccount.filter((item) => !item.is_lock).length > 2
+
+      if (
+        (this.isUserLoggedIn && !this.isAdmin) ||
+        (this.isAdmin && this.adminViewUser)
       ) {
-        if (
-          this.$route.name !== "ApiKey" &&
-          this.$route.name !== "YahooAccounts"
+        if (!this.apiKey.is_amz && !this.apiKey.is_keepa) {
+          if (
+            this.$route.name !== "ApiKey" &&
+            this.$route.name !== "YahooAccounts"
+          ) {
+            this.$router.push({ name: "ApiKey" });
+          }
+          this.$swal.fire({
+            icon: "warning",
+            title: `Please set api Keepa to continue use`
+          });
+        } else if (
+          this.apiKey.is_amz &&
+          !this.apiKey.is_keepa &&
+          this.listYahooAccount &&
+          this.listYahooAccount.filter(item => !item.is_lock).length > 2
         ) {
-          this.$router.push({ name: "ApiKey" });
+          if (
+            this.$route.name !== "ApiKey" &&
+            this.$route.name !== "YahooAccounts"
+          ) {
+            this.$router.push({ name: "ApiKey" });
+          }
+          this.$swal.fire({
+            icon: "warning",
+            title: `Please set api Keepa to continue use 3 account yahoo`
+          });
         }
-        this.$swal.fire({
-          icon: "warning",
-          title: `Please set api Keepa to continue use 3 account yahoo`,
-        });
       }
-    },
+    }
   },
   watch: {
     $route() {
@@ -163,8 +172,8 @@ export default {
         this.checkExistYahooAccount();
         this.checkApikey();
       }
-    },
-  },
+    }
+  }
 };
 </script>
 <style src="@/assets/css/reset.css"></style>

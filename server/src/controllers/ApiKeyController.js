@@ -11,7 +11,7 @@ export default class ApiKeyController {
             return null;
         }
     }
-    
+
     static async get(req, res) {
         let response = new Response(res);
         try {
@@ -36,7 +36,20 @@ export default class ApiKeyController {
             } else {
                 payload.is_keepa = false;
             }
-            if (payload.REFRESH_TOKEN.trim() !== '' && payload.SELLING_PARTNER_APP_CLIENT_ID.trim() !== '' && payload.SELLING_PARTNER_APP_CLIENT_SECRET.trim() !== '' && payload.AWS_SELLING_PARTNER_ROLE.trim() !== '' && payload.AWS_ACCESS_KEY_ID.trim() !== '' && payload.AWS_SECRET_ACCESS_KEY.trim() !== '') {
+            if (
+                payload.REFRESH_TOKEN &&
+                payload.REFRESH_TOKEN.trim() !== '' &&
+                payload.SELLING_PARTNER_APP_CLIENT_ID &&
+                payload.SELLING_PARTNER_APP_CLIENT_ID.trim() !== '' &&
+                payload.SELLING_PARTNER_APP_CLIENT_SECRET &&
+                payload.SELLING_PARTNER_APP_CLIENT_SECRET.trim() !== '' &&
+                payload.AWS_SELLING_PARTNER_ROLE &&
+                payload.AWS_SELLING_PARTNER_ROLE.trim() !== '' &&
+                payload.AWS_ACCESS_KEY_ID &&
+                payload.AWS_ACCESS_KEY_ID.trim() !== '' &&
+                payload.AWS_SECRET_ACCESS_KEY &&
+                payload.AWS_SECRET_ACCESS_KEY.trim() !== ''
+            ) {
                 payload.is_amz = true;
             } else {
                 payload.is_amz = false;
@@ -44,6 +57,7 @@ export default class ApiKeyController {
             let newApi = await ApiKeyModel.findByIdAndUpdate(payload._id, { ...payload }, { new: true });
             return response.success200({ apiKey: newApi });
         } catch (error) {
+            console.log(error);
             response.error500(error);
         }
     }
