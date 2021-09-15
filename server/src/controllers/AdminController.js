@@ -15,7 +15,7 @@ import ProductYahooModel from '../models/ProductYahooModel';
 import RatingTemplateModel from '../models/RatingTemplateModel';
 import TradeMessageTemplateModel from '../models/TradeMessageTemplateModel';
 import AsinModel from '../models/BlacklistAsinModel';
-
+import BrightDataService from '../services/BrightDataService';
 import { sendEmail } from '../helpers/sendEmail';
 
 const saltRounds = 10;
@@ -280,6 +280,38 @@ class AdminController {
                 await YahooAccountModel.findOneAndUpdate({ proxy_id: _id }, { proxy_id: null });
                 return response.success200({ proxies: result });
             }
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
+
+    static async reloadProxy(req, res) {
+        let response = new Response(res);
+        try {
+            let listProxyNew = await BrightDataService.getAllProxy();
+            let listProxyOld = await ProxyModel.find({});
+
+            for (let i = 0; i < listProxyOld.length; i++) {
+                const proxyOld = listProxyOld[i];
+                let findProxy = await listProxyNew.find((item) => item.ip == proxyOld.ip);
+                if (findProxy) {
+                    listProxyNew = listProxyNew.filter((item) => item.ip !== findProxy.ip);
+                    //update proxy hiện tại
+                    await ProxyModel.findByIdAndUpdate(proxyOld._id, findProxy);
+                } else {
+                    // Xóa proxy cũ
+                    await ProxyModel.findByIdAndDelete(proxyOld._id);
+                    await YahooAccountModel.findOneAndUpdate({ proxy_id: proxyOld._id }, { proxy_id: null });
+                }
+            }
+            for (let i = 0; i < listProxyNew.length; i++) {
+                const element = listProxyNew[i];
+                await ProxyModel.create(element);
+            }
+            let proxies = await ProxyModel.find({});
+
+            return response.success200({ proxies });
         } catch (error) {
             console.log(error);
             return response.error500(error);

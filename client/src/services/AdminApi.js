@@ -37,5 +37,8 @@ export default {
   },
   unLockProxy(id) {
     return Api.post(prefix + "/unlock-proxy/" + id);
+  },
+  loadProxyAgain(id) {
+    return Api.get(prefix + "/reload-proxy", { timeout: 5 * 60 * 1000 });
   }
 };

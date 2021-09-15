@@ -59,8 +59,11 @@
           >
           </paginate>
           <div>
-            <button class="btn btn-success px-4 mr-3" @click="onUnLockAllProxy">
+            <button class="btn btn-success px-4 mr-2" @click="onUnLockAllProxy">
               停止のプロキシを全て開放
+            </button>
+            <button class="btn btn-primary px-4 mr-2" @click="onLoadProxy">
+              プロキシをリロード
             </button>
           </div>
         </div>
@@ -184,6 +187,21 @@ export default {
     async onUnLockAllProxy() {
       try {
         let res = await AdminApi.unLockProxy("all");
+        if (res && res.status === 200) {
+          this.proxies = res.data.proxies;
+          this.searchData = res.data.proxies;
+        }
+      } catch (error) {
+        this.$swal.fire({
+          icon: "error",
+          title: "エラー",
+          text: error.message
+        });
+      }
+    },
+    async onLoadProxy() {
+      try {
+        let res = await AdminApi.loadProxyAgain();
         if (res && res.status === 200) {
           this.proxies = res.data.proxies;
           this.searchData = res.data.proxies;

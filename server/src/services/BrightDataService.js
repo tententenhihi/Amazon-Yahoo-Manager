@@ -82,9 +82,14 @@ export default class BrightDataService {
         }
         return listIp;
     }
+
+    static async getAllProxy() {
+        let listProxy = await this.getAllIp();
+        return listProxy;
+    }
+    
     static async loadProxyToDB() {
         let check = await ProxySchema.find({});
-
         if (!check || check.length == 0) {
             let listProxy = await this.getAllIp();
             for (const proxy of listProxy) {

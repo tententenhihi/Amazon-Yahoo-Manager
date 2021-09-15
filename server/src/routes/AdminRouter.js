@@ -16,6 +16,6 @@ adminRouter.route('/get-black-list-asin').get(AdminController.getBlackListAsin);
 adminRouter.route('/create-asin').post(AdminController.createAsinAmazon);
 adminRouter.route('/delete-asin/:_id').post(AdminController.deleteAsinAmazon);
 adminRouter.route('/unlock-proxy/:_id').post(AdminController.unLockProxy);
-
+adminRouter.route('/reload-proxy').get(AdminController.reloadProxy);
 
 export default adminRouter;
