@@ -126,7 +126,7 @@ export default class CronJobService {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
                     let point = await AuctionYahooService.getPointAuction(accountYahoo.cookie, proxyResult.data);
-                    if (point != null && point.trim() !== '') {
+                    if (point) {
                         await AccountYahooService.update(accountYahoo._id, { auction_point: point });
                     }
                 }
