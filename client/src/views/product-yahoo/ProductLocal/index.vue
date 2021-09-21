@@ -1105,7 +1105,7 @@ export default {
         watch_profit: null,
         watch_only_prime: null
       },
-      nameFolderSelected: null,
+      nameFolderSelected: 'すべて',
       folders: [],
       LISTING_STATUS,
       SWITCH_OPTION,
@@ -1264,7 +1264,7 @@ export default {
           this.nameFolderSelected = "";
         }
       } else {
-        this.nameFolderSelected = "";
+        this.nameFolderSelected = "すべて";
       }
     },
     readFileText(file) {
