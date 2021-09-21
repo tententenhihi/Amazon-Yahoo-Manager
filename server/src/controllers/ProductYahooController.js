@@ -203,7 +203,7 @@ export default class ProductYahooController {
                             product_created: productYahooData.created,
                             product_id: productYahooData._id,
                             product_aID: uploadAuctionResult.aID,
-                            message,
+                            message: '出品に成功しました: ' + message,
                             created: Date.now(),
                             success: uploadAuctionResult.status === 'SUCCESS',
                         };

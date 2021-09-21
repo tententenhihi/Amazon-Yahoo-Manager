@@ -432,7 +432,7 @@ export default class ProductYahooService {
                                 product_created: productYahooData.created,
                                 product_id: productYahooData._id,
                                 product_aID: '',
-                                message: resultCheckUpload.message,
+                                message: '出品に成功しました: ' + resultCheckUpload.message,
                                 created: Date.now(),
                                 success: false,
                             };
@@ -576,7 +576,7 @@ export default class ProductYahooService {
                                     product_created: productYahooData.created,
                                     product_id: productYahooData._id,
                                     product_aID: uploadAuctionResult.aID,
-                                    message,
+                                    message: '出品に成功しました: ' + message,
                                     created: Date.now(),
                                     success: uploadAuctionResult.status === 'SUCCESS',
                                 };
@@ -674,7 +674,7 @@ export default class ProductYahooService {
                         product_created: Date.now(),
                         product_id: productYahooData ? productYahooData._id : null,
                         product_aID: uploadAuctionResult.aID,
-                        message,
+                        message: (item.idBuyer ? '再出品に成功しました（落札あり）' : '再出品に成功しました（落札なし）') + ': ' + message,
                         created: Date.now(),
                         success: uploadAuctionResult.status === 'SUCCESS',
                     };
