@@ -467,7 +467,9 @@ export default class ProductYahooService {
                         if (uploadAuctionResult.status === 'SUCCESS') {
                             dataUpdate.listing_status = 'UNDER_EXHIBITION';
                             dataUpdate.thumbnail = uploadAuctionResult.thumbnail;
-                            await ProductYahooAuctionService.create({ ...productYahooData._doc, ...dataUpdate });
+                            let newProductYahooAuction = { ...productYahooData._doc, ...dataUpdate };
+                            delete newProductYahooAuction._id;
+                            await ProductYahooAuctionService.create(newProductYahooAuction);
                         }
                         await ProductYahooService.update(productYahooData._id, dataUpdate);
                         let message = '出品に成功しました';
@@ -556,7 +558,10 @@ export default class ProductYahooService {
                                 dataUpdate.aID = uploadAuctionResult.aID;
                                 if (uploadAuctionResult.status === 'SUCCESS') {
                                     dataUpdate.listing_status = 'UNDER_EXHIBITION';
-                                    await ProductYahooAuctionService.create({ ...productYahooData._doc, ...dataUpdate });
+
+                                    let newProductYahooAuction = { ...productYahooData._doc, ...dataUpdate };
+                                    delete newProductYahooAuction._id;
+                                    await ProductYahooAuctionService.create(newProductYahooAuction);
                                 }
                                 await ProductYahooService.update(productYahooData._id, dataUpdate);
                                 let message = '出品に成功しました';
@@ -625,9 +630,10 @@ export default class ProductYahooService {
                 // return;
                 for (const product of listProductResubmit) {
                     let newDataUpload = null;
+                    let productYahooData = null;
                     let productAuction = await ProductYahooAuctionModel.findOne({ aID: product.aID });
                     if (productAuction) {
-                        let productYahooData = await ProductYahooModel.findOne({ asin_amazon: productAuction.asin_amazon, yahoo_account_id });
+                        productYahooData = await ProductYahooModel.findOne({ asin_amazon: productAuction.asin_amazon, yahoo_account_id });
                         if (productYahooData) {
                             let resultCheckUpload = await this.checkStopUpload(productYahooData, defaultSetting);
                             if (resultCheckUpload.isStopUpload) {
@@ -653,13 +659,20 @@ export default class ProductYahooService {
                     let uploadAuctionResult = await AuctionYahooService.reSubmit(yahooAccount.cookie, proxyResult.data, product.aID, newDataUpload);
                     console.log(' ######### uploadAuctionResult: ', uploadAuctionResult);
 
+                    // Đối với sp có người bán. sẽ trả về aID mới nên cần tạo map cho n
+                    if (item.idBuyer && uploadAuctionResult.status === 'SUCCESS' && newDataUpload) {
+                        delete newDataUpload._id;
+                        await ProductYahooAuctionService.create({ ...newDataUpload, aID: uploadAuctionResult.aID });
+                    }
+
                     let message = '出品に成功しました';
                     if (uploadAuctionResult.status === 'ERROR') {
                         message = uploadAuctionResult.statusMessage;
                     }
+
                     let newResult = {
                         product_created: Date.now(),
-                        product_id: 'Resubmit',
+                        product_id: productYahooData ? productYahooData._id : null,
                         product_aID: uploadAuctionResult.aID,
                         message,
                         created: Date.now(),

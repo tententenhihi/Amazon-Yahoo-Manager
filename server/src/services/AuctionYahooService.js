@@ -493,19 +493,23 @@ export default class AuctionYahooService {
             console.log(' =========== Upload Product Auction DONE ============= ');
             let $ = cheerio.load(resSubmit.data);
 
-            if (resSubmit.data.includes('以下の商品の出品手続きが完了しました。ご利用ありがとうございました。')) {
+            let aID_success = '';
+            try {
                 let aTag = $('#modInfoTxt > div.untBody > ul > li:nth-child(1) > a');
                 let href = aTag.attr('href');
-                let aID = href.split('/')[href.split('/').length - 1];
+                aID_success = href.split('/')[href.split('/').length - 1];
+            } catch (error) {}
+
+            if (resSubmit.data.includes('以下の商品の出品手続きが完了しました。ご利用ありがとうございました。')) {
                 return {
                     status: 'SUCCESS',
-                    aID,
+                    aID: aID_success,
                     thumbnail,
                 };
             } else if (resSubmit.data.includes('仮出品とは、出品手続きされたオークションを、Yahoo! JAPANが確認させていただくためのものです。')) {
                 return {
                     status: 'SUCCESS',
-                    aID: '',
+                    aID: aID_success,
                     thumbnail,
                 };
             } else {
@@ -720,18 +724,25 @@ export default class AuctionYahooService {
             // Fs.writeFileSync('step3.html', resSubmit.data);
 
             $ = cheerio.load(resSubmit.data);
+            let aID_success = '';
+            try {
+                let aTag = $('#modInfoTxt > div:nth-child(4) > ul > li:nth-child(1) > a');
+                let href = aTag.attr('href');
+                aID_success = href.split('/')[href.split('/').length - 1];
+            } catch (error) {}
+
             if (resSubmit.data.includes('以下の商品の出品手続きが完了しました。ご利用ありがとうございました。')) {
                 console.log(' =========== Upload Product Auction SUCCESS ============= ');
                 return {
                     status: 'SUCCESS',
-                    aID: submitParams.aID,
+                    aID: aID_success ? aID_success : submitParams.aID,
                     thumbnail: submitParams.ImageFullPath1,
                 };
             } else if (resSubmit.data.includes('仮出品とは、出品手続きされたオークションを、Yahoo! JAPANが確認させていただくためのものです。')) {
                 console.log(' =========== Upload Product Auction SUCCESS ============= ');
                 return {
                     status: 'SUCCESS',
-                    aID: submitParams.aID,
+                    aID: aID_success ? aID_success : submitParams.aID,
                     thumbnail: submitParams.ImageFullPath1,
                 };
             } else {
@@ -2104,7 +2115,7 @@ export default class AuctionYahooService {
             });
 
             console.log(' ########### resPayoutDone: ', resPayoutDone);
-            
+
             // ============ Payout Finish =============
             let resPayoutFinish = await axios.get(resPayoutDone.response.location, {
                 headers: {
@@ -2117,9 +2128,6 @@ export default class AuctionYahooService {
             });
 
             $ = cheerio.load(resPayoutFinish.data);
-
-
-
         } catch (error) {
             console.log(' #### rutTien: ', error);
             return {

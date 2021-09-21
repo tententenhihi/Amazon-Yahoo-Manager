@@ -142,7 +142,7 @@ export default class ProductYahooController {
                         let productYahooData = await ProductYahooService.findOne({ _id: product_id });
 
                         let resultCheckUpload = await ProductYahooService.checkStopUpload(productYahooData, defaultSetting);
-
+                        console.log(' ### uploadProductYahooNow resultCheckUpload: ', resultCheckUpload);
                         if (resultCheckUpload.isStopUpload) {
                             let newResult = {
                                 product_created: productYahooData.created,
@@ -182,7 +182,9 @@ export default class ProductYahooController {
                         if (uploadAuctionResult.status === 'SUCCESS') {
                             dataUpdate.listing_status = 'UNDER_EXHIBITION';
                             dataUpdate.thumbnail = uploadAuctionResult.thumbnail;
-                            await ProductYahooAuctionService.create({ ...productYahooData._doc, ...dataUpdate });
+                            let newProductYahooAuction = { ...productYahooData._doc, ...dataUpdate };
+                            delete newProductYahooAuction._id;
+                            await ProductYahooAuctionService.create(newProductYahooAuction);
                         }
                         await ProductYahooService.update(productYahooData._id, dataUpdate);
 
