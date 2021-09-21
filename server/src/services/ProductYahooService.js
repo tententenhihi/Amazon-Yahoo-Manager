@@ -621,7 +621,7 @@ export default class ProductYahooService {
                     }
                     return false;
                 });
-                // console.log(' ########## listProductResubmit: ', listProductResubmit)
+                console.log(' ########## listProductResubmit: ', listProductResubmit);
                 // return;
                 for (const product of listProductResubmit) {
                     let newDataUpload = null;
@@ -666,7 +666,6 @@ export default class ProductYahooService {
                         success: uploadAuctionResult.status === 'SUCCESS',
                     };
                     result.push(newResult);
-                    break;
                 }
                 console.log(' ======= DONE ======== ');
             }

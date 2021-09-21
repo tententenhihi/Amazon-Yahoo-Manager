@@ -19,6 +19,7 @@ const CronJob = require('cron').CronJob;
 const CronTime = require('cron').CronTime;
 
 export default class CronJobService {
+    // static async test
     static async startCron() {
         //======================
         CronJobService.startUploadProductYahoo();
@@ -46,6 +47,7 @@ export default class CronJobService {
             CronJobService.checkProductOriginalForAuctionProductSelling();
         });
     }
+
     static async checkProductOriginalForAuctionProductSelling() {
         console.log(' ====== START CRON Theo dõi product selling ======: ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
         let listAccountYahoo = await AccountYahooService.find({});

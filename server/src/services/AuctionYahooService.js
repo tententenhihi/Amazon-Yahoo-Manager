@@ -2030,4 +2030,102 @@ export default class AuctionYahooService {
             };
         }
     }
+
+    static async rutTien(cookie, proxy, infoBank) {
+        try {
+            let headers = {
+                cookie,
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                origin: 'https://salesmanagement.yahoo.co.jp',
+                referer: 'https://salesmanagement.yahoo.co.jp/list',
+                'Accept-Encoding': 'gzip, deflate, br',
+                Connection: 'keep-alive',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            };
+            let proxyConfig = {
+                host: proxy.host,
+                port: proxy.port,
+                auth: {
+                    username: proxy.username,
+                    password: proxy.password,
+                },
+            };
+
+            if (config.get('env') === 'development') {
+                proxyConfig = null;
+            }
+            let $ = null;
+            let resList = await axios.get('https://salesmanagement.yahoo.co.jp/list', { headers, proxy: proxyConfig });
+            $ = cheerio.load(resList.data);
+            let crumb = $('input[name=".crumb"]').val();
+            let payload = {
+                '.crumb': crumb,
+            };
+            let resPayoutConfirm = await axios.post('https://salesmanagement.yahoo.co.jp/payout_confirm', Qs.stringify(payload), { headers, proxy: proxyConfig });
+            $ = cheerio.load(resPayoutConfirm.data);
+            let backCurrentText = $('#yjMain > div.acMdPaymentInfo.mT30.mB40 > div.TransferDetails > div > div > div:nth-child(5) > div:nth-child(3) > span');
+            let bankName = backCurrentText.trim().split('  ')[0];
+            let bankBranch = backCurrentText.trim().split('  ')[1];
+            let bankNumber = backCurrentText.trim().split('  ')[2];
+            let bankUserName = backCurrentText.trim().split('  ')[3];
+            console.log(' ####### backCurrentText: ', backCurrentText);
+            console.log(' ####### bankName: ', bankName);
+            console.log(' ####### bankBranch: ', bankBranch);
+            console.log(' ####### bankNumber: ', bankNumber);
+            console.log(' ####### bankUserName: ', bankUserName);
+
+            //============ UPDATE BANK =============
+
+            let resChangeBank = await axios.post('https://edit.wallet.yahoo.co.jp/config/wallet_trans_update?.done=https%3A%2F%2Fsalesmanagement.yahoo.co.jp%2Flist', {
+                headers: {
+                    cookie,
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                    origin: 'https://salesmanagement.yahoo.co.jp',
+                    referer: 'https://salesmanagement.yahoo.co.jp/',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                },
+                proxy: proxyConfig,
+            });
+
+            // ============ Payout done =============
+            payload = {
+                ba: 579,
+                '.crumb': 'a52d9ded336eb5298a25432c3c6a70c9665d6d42782ad25b98f74c86a6fb8fd6',
+            };
+            let resPayoutDone = await axios.post('https://salesmanagement.yahoo.co.jp/payout_done', Qs.stringify(payload), {
+                headers: {
+                    cookie,
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                    origin: 'https://salesmanagement.yahoo.co.jp',
+                    referer: 'https://salesmanagement.yahoo.co.jp/payout_confirm',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                },
+                proxy: proxyConfig,
+            });
+
+            console.log(' ########### resPayoutDone: ', resPayoutDone);
+            
+            // ============ Payout Finish =============
+            let resPayoutFinish = await axios.get(resPayoutDone.response.location, {
+                headers: {
+                    cookie,
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+                    referer: 'https://salesmanagement.yahoo.co.jp/payout_confirm',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                },
+                proxy: proxyConfig,
+            });
+
+            $ = cheerio.load(resPayoutFinish.data);
+
+
+
+        } catch (error) {
+            console.log(' #### rutTien: ', error);
+            return {
+                status: 'ERROR',
+                message: error.message,
+            };
+        }
+    }
 }
