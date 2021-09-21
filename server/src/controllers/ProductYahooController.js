@@ -148,7 +148,7 @@ export default class ProductYahooController {
                                 product_created: productYahooData.created,
                                 product_id: productYahooData._id,
                                 product_aID: '',
-                                message: resultCheckUpload.message,
+                                message: '出品に成功しました: ' + resultCheckUpload.message,
                                 created: Date.now(),
                                 success: false,
                             };

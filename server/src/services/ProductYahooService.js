@@ -484,7 +484,7 @@ export default class ProductYahooService {
                             product_created: productYahooData.created,
                             product_id: productYahooData._id,
                             product_aID: uploadAuctionResult.aID,
-                            message,
+                            message: '出品に成功しました: ' + message,
                             created: Date.now(),
                             success: uploadAuctionResult.status === 'SUCCESS',
                         };
@@ -525,7 +525,7 @@ export default class ProductYahooService {
                                         product_created: productYahooData.created,
                                         product_id: productYahooData._id,
                                         product_aID: '',
-                                        message: resultCheckUpload.message,
+                                        message: '出品に成功しました: ' + resultCheckUpload.message,
                                         created: Date.now(),
                                         success: false,
                                     };
@@ -641,7 +641,7 @@ export default class ProductYahooService {
                                     product_created: productYahooData.created,
                                     product_id: 'Resubmit',
                                     product_aID: product.aID,
-                                    message: resultCheckUpload.message,
+                                    message: (product.idBuyer ? '再出品に成功しました（落札あり）' : '再出品に成功しました（落札なし）') + ': ' + resultCheckUpload.message,
                                     created: Date.now(),
                                     success: false,
                                 });
@@ -660,7 +660,7 @@ export default class ProductYahooService {
                     console.log(' ######### uploadAuctionResult: ', uploadAuctionResult);
 
                     // Đối với sp có người bán. sẽ trả về aID mới nên cần tạo map cho n
-                    if (item.idBuyer && uploadAuctionResult.status === 'SUCCESS' && newDataUpload) {
+                    if (product.idBuyer && uploadAuctionResult.status === 'SUCCESS' && newDataUpload) {
                         delete newDataUpload._id;
                         await ProductYahooAuctionService.create({ ...newDataUpload, aID: uploadAuctionResult.aID });
                     }
@@ -674,7 +674,7 @@ export default class ProductYahooService {
                         product_created: Date.now(),
                         product_id: productYahooData ? productYahooData._id : null,
                         product_aID: uploadAuctionResult.aID,
-                        message: (item.idBuyer ? '再出品に成功しました（落札あり）' : '再出品に成功しました（落札なし）') + ': ' + message,
+                        message: (product.idBuyer ? '再出品に成功しました（落札あり）' : '再出品に成功しました（落札なし）') + ': ' + message,
                         created: Date.now(),
                         success: uploadAuctionResult.status === 'SUCCESS',
                     };
