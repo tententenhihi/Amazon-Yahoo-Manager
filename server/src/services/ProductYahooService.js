@@ -639,7 +639,7 @@ export default class ProductYahooService {
                             if (resultCheckUpload.isStopUpload) {
                                 result.push({
                                     product_created: productYahooData.created,
-                                    product_id: 'Resubmit',
+                                    product_id: productYahooData ? productYahooData._id : null,
                                     product_aID: product.aID,
                                     message: (product.idBuyer ? '再出品に成功しました（落札あり）' : '再出品に成功しました（落札なし）') + ': ' + resultCheckUpload.message,
                                     created: Date.now(),
