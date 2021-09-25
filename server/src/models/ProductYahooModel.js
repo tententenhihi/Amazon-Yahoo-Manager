@@ -119,7 +119,7 @@ var ProductYahoo = new Schema({
     },
     quantity: {
         type: Number,
-        default: 3,
+        default: 0,
     },
     quantity_check: {
         type: Number,

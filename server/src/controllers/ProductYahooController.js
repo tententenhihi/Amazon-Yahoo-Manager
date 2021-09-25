@@ -92,7 +92,7 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         dataUpdate.ship_fee1_temp = dataUpdate.ship_fee1;
         dataUpdate.ship_fee1 = null;
     }
-
+    // console.log(" ########## dataUpdate: ", dataUpdate)
     let result = await ProductYahooService.update(dataUpdate._id, dataUpdate);
     return result;
 };
@@ -148,7 +148,7 @@ export default class ProductYahooController {
                                 product_created: productYahooData.created,
                                 product_id: productYahooData._id,
                                 product_aID: '',
-                                message: '出品に成功しました: ' + resultCheckUpload.message,
+                                message: resultCheckUpload.message,
                                 created: Date.now(),
                                 success: false,
                             };
@@ -175,7 +175,7 @@ export default class ProductYahooController {
                         let dataUpdate = {};
                         let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
                         let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
-
+                        console.log(" ### uploadAuctionResult: ", uploadAuctionResult);
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                         dataUpdate.aID = uploadAuctionResult.aID;
@@ -203,7 +203,7 @@ export default class ProductYahooController {
                             product_created: productYahooData.created,
                             product_id: productYahooData._id,
                             product_aID: uploadAuctionResult.aID,
-                            message: '出品に成功しました: ' + message,
+                            message: message,
                             created: Date.now(),
                             success: uploadAuctionResult.status === 'SUCCESS',
                         };
@@ -362,7 +362,6 @@ export default class ProductYahooController {
                     return response.error400({ message: 'カテゴリーのエラー' });
                 }
             }
-
             let result = await updateProductWithCaculatorProfit({ _id, ...payload }, req.files);
             response.success200({ result });
         } catch (error) {

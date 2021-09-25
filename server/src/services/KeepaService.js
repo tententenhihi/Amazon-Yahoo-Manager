@@ -2,6 +2,7 @@ import Axios from 'axios';
 import ApiKeyController from '../controllers/ApiKeyController';
 import AsinAmazonModel from '../models/AsinAmazonModel';
 import Utils from '../utils/Utils';
+import ProductYahooService from './ProductYahooService';
 
 const getData = async (listAsin, user_id) => {
     let listResult = [];
@@ -33,12 +34,11 @@ const getData = async (listAsin, user_id) => {
                     data: [],
                 };
             }
-            let url = `https://api.keepa.com/product?key=${token}&domain=5&asin=${listAsin.join(',')}&offers=20&stock=1&rating=1`;
+            let url = `https://api.keepa.com/product?key=${token}&domain=5&asin=${listAsin.join(',')}&stock=1&rating=1`;
             if (errorRes && errorRes.response && errorRes.response.status === 429) {
                 console.log(' ======== Sleep 429 ============ ');
                 console.log(' tokensLeft: ', errorRes.response.data.tokensLeft);
-
-                await Utils.sleep(30 * 1000);
+                await Utils.sleep(60 * 1000);
             }
             try {
                 res = await Axios.post(url);
@@ -49,6 +49,9 @@ const getData = async (listAsin, user_id) => {
 
         if (res && res.status === 200) {
             for (const productData of res.data.products) {
+                let priceAndCountData = await ProductYahooService.getPriceAndCountByAmazon(productData.asin, user_id);
+                console.log(" ############# priceAndCountData: ", priceAndCountData);
+
                 let result = {
                     asin: '',
                     data: '',
@@ -62,6 +65,13 @@ const getData = async (listAsin, user_id) => {
                     let images = [];
                     let description = '';
                     let title = '';
+
+                    if (priceAndCountData) {
+                        count = priceAndCountData.count;
+                        price = priceAndCountData.price || 0;
+                        ship_fee = priceAndCountData.ship_fee || 0;
+                    }
+
                     if (productData.title) {
                         title = productData.title;
                         if (productData.color) {
@@ -74,16 +84,15 @@ const getData = async (listAsin, user_id) => {
                     if (title.length > 65) {
                         title = title.substring(0, 65);
                     }
-                    if (productData.liveOffersOrder && productData.liveOffersOrder.length > 0 && productData.offers && productData.offers.length > 0) {
-                        let liveOffersOrder = productData.liveOffersOrder[0];
-                        let offer = productData.offers[liveOffersOrder];
-                        price = offer.offerCSV[offer.offerCSV.length - 2];
-                        ship_fee = offer.offerCSV[offer.offerCSV.length - 1];
-                        if (offer.isShippable) {
-                            count = 1;
-                        }
-                    }
-
+                    // if (productData.liveOffersOrder && productData.liveOffersOrder.length > 0 && productData.offers && productData.offers.length > 0) {
+                    //     let liveOffersOrder = productData.liveOffersOrder[0];
+                    //     let offer = productData.offers[liveOffersOrder];
+                    //     price = offer.offerCSV[offer.offerCSV.length - 2];
+                    //     ship_fee = offer.offerCSV[offer.offerCSV.length - 1];
+                    //     if (offer.isShippable) {
+                    //         count = 1;
+                    //     }
+                    // }
                     if (productData.imagesCSV) {
                         images = productData.imagesCSV.split(',').map((item) => 'https://images-na.ssl-images-amazon.com/images/I/' + item);
                     }
@@ -100,7 +109,7 @@ const getData = async (listAsin, user_id) => {
                                 .map((item) => '・' + item)
                                 .join('\n');
                         }
-                    } else {
+                    } else if(productData.description) {
                         description = productData.description.replace(/\n+/g, '\n');
                         description = description
                             .split('\n')

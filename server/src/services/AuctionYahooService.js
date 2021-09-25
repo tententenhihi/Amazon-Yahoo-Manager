@@ -250,14 +250,18 @@ export default class AuctionYahooService {
                         proxy: proxyConfig,
                     };
                     const response = await axios.get('https://auctions.yahoo.co.jp/jp/show/submit', configs);
-                    const crumbValue = /<input type="hidden" name=".crumb" value="(.*)">/.exec(response.data);
-                    const imgCrumbValue = /<input type="hidden" id="img_crumb" value="(.*)">/.exec(response.data);
-                    const md5Value = /<input type="hidden" name="md5" value="(.*)">/.exec(response.data);
-                    let keys = {};
-
-                    if (imgCrumbValue) keys.img_crumb = imgCrumbValue[1];
-                    if (crumbValue) keys.crumb = crumbValue[1];
-                    if (md5Value) keys.md5 = md5Value[1];
+                    // Fs.writeFileSync('get-key.html', response.data);
+                    let $$ = cheerio.load(response.data);
+                    const crumbValue = $$('input[name=".crumb"]').val();
+                    const imgCrumbValue = $$('input[id="img_crumb"]').val();
+                    const md5Value = $$('input[name="md5"]').val();
+                    const brand_line_id = $$('input[name="brand_line_id"]').val();
+                    let keys = {
+                        img_crumb: crumbValue,
+                        crumb: imgCrumbValue,
+                        md5: md5Value,
+                        brand_line_id: brand_line_id,
+                    };
                     return keys;
                 } catch (err) {
                     console.log(' ### AuctionYahooService -> uploadNewProduct -> getKeys: ', err);
@@ -269,11 +273,15 @@ export default class AuctionYahooService {
             };
 
             let keys = await getKeys(cookie);
+            console.log(' ####### keys: ', keys);
 
             if (keys && keys.status === 'ERROR') {
+                console.log(' ######## 111 : Get Key Errror');
                 return keys;
             }
             if (keys && !keys.img_crumb) {
+                console.log(' ######## 111: keys.img_crumb');
+
                 return {
                     status: 'ERROR',
                     statusMessage: 'ヤフーアカウントのエラー',
@@ -321,6 +329,7 @@ export default class AuctionYahooService {
             }
 
             if (payloadImage.length < 0) {
+                console.log(' ######## 111 : payloadImage');
                 return {
                     status: 'ERROR',
                     statusMessage: 'エラー画像 ',
@@ -345,96 +354,90 @@ export default class AuctionYahooService {
 
             // PREVIEW
             let previewParams = {
-                aID: aID_resubmit || '',
+                aID: '',
                 oldAID: '',
-                mode: aID_resubmit ? 'oresubmit' : 'submit',
-                encode: 'utf-8',
+                mode: 'submit',
+
                 md5: keys.md5,
                 '.crumb': keys.crumb,
                 tos: 'yes',
-                CloseEarly: 'yes',
-                fnavi: 1,
-                pagetype: 'form',
-                submitTipsDisp: 0,
-                saveIndex: 0,
-                newsubmitform: 1,
                 info01: -420,
-                info02: 3,
-                info03: 'Chrome PDF Plugin|Chrome PDF Viewer|Native Client',
+                info02: 2,
+                info03: 'Chromium PDF Plugin|Chromium PDF Viewer',
+                submitTipsDisp: 0,
+                fnavi: 1,
+                fleamarket: '',
+                nonpremium: 1,
+                pagetype: 'form',
+                anchorPos: '',
+                Duration: 7,
+                ypmOK: 1,
+                Quantity: 1,
+                minBidRating: 0,
+                badRatingRatio: 'yes',
+                AutoExtension: 1,
+                CloseEarly: 'yes',
+                ClosingTime: 21,
+                ...payloadImage,
                 auction_server: 'https://auctions.yahoo.co.jp/sell/jp',
                 uploadserver: 'sell.auctions.yahoo.co.jp',
                 ImageCntMax: 10,
                 ypoint: 0,
+                encode: 'utf-8',
+                catalog_id: '',
+                catalog_jan_code: '',
+                catalog_name: '',
+                catalog_brand_id: '',
+                catalog_spec_select_type: '',
+                catalog_spec_numerical_type: '',
+                catalog_no_applicable: 0,
+                item_segment_id: '',
+                item_spec_size_id: '',
+                item_spec_size_type: '',
                 submit_description: 'html',
-                dskPayment: 'ypmOK',
+                Description_rte_work: '',
+                Description_plain: '',
+                Description_plain_work: '',
                 shippinginput: 'now',
+                itemsize: '',
+                itemweight: '',
                 is_yahuneko_nekoposu_ship: '',
                 is_yahuneko_taqbin_compact_ship: '',
                 is_yahuneko_taqbin_ship: '',
                 is_jp_yupacket_official_ship: '',
                 is_jp_yupack_official_ship: '',
-                hokkaidoshipping1: '',
-                okinawashipping1: '',
-                isolatedislandshipping1: '',
-                shipmethod: 'other',
-
                 is_other_ship: 'yes',
+                shipname1: 'ゆうメール',
+                shipmethod_dummy: 'on',
                 submitUnixtime: Date.now(),
-                markdown_ratio: 0,
-                promoteCtoOfficial_shipMethod: 'クリックポスト',
-                shippingSize: 60,
-                promoteTAQBINtoOfficial_shipMethod: '現在の配送方法',
-                promoteYumailtoOfficial_shipMethod: 'ゆうメール',
-                promoteNon_STANDARDtoOfficial_shipMethod: '定形外郵便',
+                tmpClosingTime: '',
+                prereg: 0,
+                premiumTrialStatus: 5,
 
-                ...payloadImage,
+                //======================
                 Title: productData.product_yahoo_title,
                 category: productData.yahoo_auction_category_id,
+                BidOrBuyPrice: productData.bid_or_buy_price != '0' ? productData.bid_or_buy_price : '',
                 salesmode: productData.sales_mode,
                 StartPrice: productData.start_price,
-                BidOrBuyPrice: productData.bid_or_buy_price != '0' ? productData.bid_or_buy_price : '',
-                istatus: productData.status,
-                istatus_comment: productData.status_comment,
-                Quantity: productData.quantity,
                 Duration: productData.duration,
-                ClosingTime: productData.closing_time,
-                // Tạo ra từ Duration + ngày hiện tại
                 tmpClosingYMD: tmpClosingYMD,
+                shipschedule: productData.ship_schedule,
                 ClosingYMD: tmpClosingYMD,
-                //====
-                retpolicy: productData.retpolicy,
-                retpolicy_comment: productData.retpolicy_comment,
-                minBidRating: productData.min_bid_rating, // 0 or 1
-                badRatingRatio: productData.bad_rating_ratio,
-                bidCreditLimit: productData.bid_credit_limit,
-                AutoExtension: productData.auto_extension,
-                numResubmit: productData.num_resubmit,
-                // ReservePrice: productData.reserve_price,
-
+                ClosingTime: productData.closing_time,
+                shipfee1: productData.ship_fee1,
+                shipping_dummy: productData.shipping,
+                shiptime: productData.ship_time,
+                loc_cd: productData.location,
+                shipping: productData.shipping,
                 Description: descrionUpload || productData.description,
                 Description_rte: descrionUpload || productData.description,
-
-                // Ship
-                shiptime: productData.ship_time,
-                shipping: productData.shipping,
-                loc_cd: productData.location,
-                location: location,
-
-                shipname1: productData.ship_name1,
-                shipfee1: productData.ship_fee1,
-                shipname2: productData.ship_name2,
-                shipfee2: productData.ship_fee2,
-                shipname3: productData.ship_name3,
-                shipfee3: productData.ship_fee3,
-                shipschedule: productData.ship_schedule,
-
-                // Amount
-                featuredAmount: productData.featured_amount,
-                BoldFaceCharge: productData.bold,
-                HighlightListingCharge: productData.highlight,
-                GiftIconName: productData.gift,
-                WrappingIconCharge: productData.wrapping,
+                istatus: productData.status,
+                retpolicy: productData.retpolicy === 'no' ? 0 : 1,
+                brand_line_id: keys.brand_line_id,
             };
+
+            console.log(previewParams);
             let payload = Qs.stringify(previewParams);
             headers = {
                 ...headers,
@@ -446,11 +449,14 @@ export default class AuctionYahooService {
                 proxy: proxyConfig,
             });
 
+            // Fs.writeFileSync('resPreview.html', resPreview.data);
+
             // Fs.writeFileSync('preview.html', resPreview.data);
             let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
             if (mgc == null) {
                 let $Preview = cheerio.load(resPreview.data);
-                let message = $Preview('.decErrorBox__title').text().split('\n')[0];
+                let message = $Preview('div.decErrorBox').text();
+                console.log(' ######## 22222 #########: mgc not found!', message);
                 return {
                     status: 'ERROR',
                     statusMessage: message,
@@ -558,49 +564,151 @@ export default class AuctionYahooService {
 
             let $ = cheerio.load(res.data);
 
-            let select_node = $('#auction').find('input');
-            let previewParams = {};
-            for (const nodeInput of select_node) {
-                let name = nodeInput.attribs['name'];
-                let value = nodeInput.attribs['value'];
-                if (name) {
-                    previewParams[name] = value;
-                }
-            }
-            let istatus = $('select[name="istatus"]');
-            let shipschedule = $('select[name="shipschedule"]');
-            let loc_cd = $('select[name="loc_cd"]');
-            let Quantity = $('select[name="Quantity"]');
-            if (Quantity && Quantity.val()) {
-                previewParams['Quantity'] = Quantity.val();
-            }
-            if (!previewParams['Quantity']) {
-                previewParams['Quantity'] = 1;
-            }
-            previewParams['info01'] = -420;
-            previewParams['info02'] = 3;
-            previewParams['info03'] = 'Chrome PDF Plugin|Chrome PDF Viewer|Native Client';
-            previewParams['istatus'] = istatus.val();
-            previewParams['shipschedule'] = shipschedule.val();
-            previewParams['loc_cd'] = loc_cd.val();
-            previewParams['promoteCtoOfficial_shipMethod'] = 'クリックポスト';
-            previewParams['shippingSize'] = 60;
-            previewParams['promoteTAQBINtoOfficial_shipMethod'] = '現在の配送方法';
-            previewParams['promoteYumailtoOfficial_shipMethod'] = 'ゆうメール';
-            previewParams['promoteNon_STANDARDtoOfficial_shipMethod'] = '定形外郵便';
-            previewParams['promoteNon_STANDARDtoOfficial_shipMethod'] = '定形外郵便';
-            previewParams['retpolicy'] = 0;
-            previewParams['markdown_ratio'] = 0;
-            previewParams['tmpClosingTime'] = '';
-            previewParams['retpolicy'] = 0;
+            let previewParams = {
+                aID,
+                oldAID: '',
+                mode: 'oresubmit',
+                category: $('input[name="category"]').val(),
+                md5: $('input[name="md5"]').val(),
+                '.crumb': $('input[name=".crumb"]').val(),
+                tos: 'yes',
+                info01: -420,
+                info02: 2,
+                info03: 'Chromium PDF Plugin|Chromium PDF Viewer',
+                submitTipsDisp: 0,
+                fnavi: 1,
+                fleamarket: '',
+                nonpremium: 1,
+                pagetype: 'form',
+                anchorPos: '',
+                Duration: 7,
+                ypmOK: 1,
+                Quantity: 1,
+                minBidRating: 0,
+                badRatingRatio: 'yes',
+                AutoExtension: 1,
+                CloseEarly: 'yes',
+                ClosingTime: 0,
+                thumbNail: $('input[name="thumbNail"]').val(),
+                image_comment1: $('input[name="image_comment1"]').val(),
+                ImageFullPath1: $('input[name="ImageFullPath1"]').val(),
+                ImageWidth1: $('input[name="ImageWidth1"]').val(),
+                ImageHeight1: $('input[name="ImageHeight1"]').val(),
+                Image1Uploaded: $('input[name="Image1Uploaded"]').val(),
 
-            delete previewParams.salesContract;
-            delete previewParams.bidCreditLimit;
-            delete previewParams.badRatingRatio;
-            delete previewParams.minBidRating;
-            delete previewParams.markdown;
+                image_comment2: $('input[name="image_comment2"]').val(),
+                ImageFullPath2: $('input[name="ImageFullPath2"]').val(),
+                ImageWidth2: $('input[name="ImageWidth2"]').val(),
+                ImageHeight2: $('input[name="ImageHeight2"]').val(),
+                Image2Uploaded: $('input[name="Image2Uploaded"]').val(),
+
+                image_comment3: $('input[name="image_comment3"]').val(),
+                ImageFullPath3: $('input[name="ImageFullPath3"]').val(),
+                ImageWidth3: $('input[name="ImageWidth3"]').val(),
+                ImageHeight3: $('input[name="ImageHeight3"]').val(),
+                Image3Uploaded: $('input[name="Image3Uploaded"]').val(),
+
+                image_comment4: $('input[name="image_comment4"]').val(),
+                ImageFullPath4: $('input[name="ImageFullPath4"]').val(),
+                ImageWidth4: $('input[name="ImageWidth4"]').val(),
+                ImageHeight4: $('input[name="ImageHeight4"]').val(),
+                Image4Uploaded: $('input[name="Image4Uploaded"]').val(),
+
+                image_comment5: $('input[name="image_comment5"]').val(),
+                ImageFullPath5: $('input[name="ImageFullPath5"]').val(),
+                ImageWidth5: $('input[name="ImageWidth5"]').val(),
+                ImageHeight5: $('input[name="ImageHeight5"]').val(),
+                Image5Uploaded: $('input[name="Image5Uploaded"]').val(),
+
+                image_comment6: $('input[name="image_comment6"]').val(),
+                ImageFullPath6: $('input[name="ImageFullPath6"]').val(),
+                ImageWidth6: $('input[name="ImageWidth6"]').val(),
+                ImageHeight6: $('input[name="ImageHeight6"]').val(),
+                Image6Uploaded: $('input[name="Image6Uploaded"]').val(),
+
+                image_comment7: $('input[name="image_comment7"]').val(),
+                ImageFullPath7: $('input[name="ImageFullPath7"]').val(),
+                ImageWidth7: $('input[name="ImageWidth7"]').val(),
+                ImageHeight7: $('input[name="ImageHeight7"]').val(),
+                Image7Uploaded: $('input[name="Image7Uploaded"]').val(),
+
+                image_comment8: $('input[name="image_comment8"]').val(),
+                ImageFullPath8: $('input[name="ImageFullPath8"]').val(),
+                ImageWidth8: $('input[name="ImageWidth8"]').val(),
+                ImageHeight8: $('input[name="ImageHeight8"]').val(),
+                Image8Uploaded: $('input[name="Image8Uploaded"]').val(),
+
+                image_comment9: $('input[name="image_comment9"]').val(),
+                ImageFullPath9: $('input[name="ImageFullPath9"]').val(),
+                ImageWidth9: $('input[name="ImageWidth9"]').val(),
+                ImageHeight9: $('input[name="ImageHeight9"]').val(),
+                Image9Uploaded: $('input[name="Image9Uploaded"]').val(),
+
+                image_comment10: $('input[name="image_comment10"]').val(),
+                ImageFullPath10: $('input[name="ImageFullPath10"]').val(),
+                ImageWidth10: $('input[name="ImageWidth10"]').val(),
+                ImageHeight10: $('input[name="ImageHeight10"]').val(),
+                Image10Uploaded: $('input[name="Image10Uploaded"]').val(),
+
+                auction_server: 'https://auctions.yahoo.co.jp/sell/jp',
+                uploadserver: 'sell.auctions.yahoo.co.jp',
+                ImageCntMax: 10,
+                ypoint: 0,
+                encode: 'utf-8',
+                Title: $('input[name="Title"]').val(),
+                catalog_id: '',
+                catalog_jan_code: '',
+                catalog_name: '',
+                catalog_brand_id: '',
+                catalog_spec_select_type: '',
+                catalog_spec_numerical_type: '',
+                catalog_no_applicable: 0,
+                brand_line_id: $('input[name="brand_line_id"]').val(),
+                item_segment_id: '',
+                item_spec_size_id: '',
+                item_spec_size_type: '',
+                istatus: 'new',
+                retpolicy: $('input[name="retpolicy"]').val(),
+                submit_description: $('input[name="submit_description"]').val(),
+                Description: $('input[name="Description"]').val(),
+                Description_rte: $('input[name="Description_rte"]').val(),
+                Description_rte_work: '',
+                Description_plain: '',
+                Description_plain_work: '',
+                shiptime: $('input[name="shiptime"]').val(),
+                loc_cd: $('select[name="loc_cd"]').val(),
+                shipping: $('input[name="shipping"]').val(),
+                shippinginput: $('input[name="shippinginput"]').val(),
+                shipping_dummy: $('input[name="shipping_dummy"]').val(),
+                itemsize: $('input[name="itemsize"]').val(),
+                itemweight: $('input[name="itemweight"]').val(),
+                is_yahuneko_nekoposu_ship: $('input[name="is_yahuneko_nekoposu_ship"]').val(),
+                is_yahuneko_taqbin_compact_ship: $('input[name="is_yahuneko_taqbin_compact_ship"]').val(),
+                is_yahuneko_taqbin_ship: $('input[name="is_yahuneko_taqbin_ship"]').val(),
+                is_jp_yupacket_official_ship: $('input[name="is_jp_yupacket_official_ship"]').val(),
+                is_jp_yupack_official_ship: $('input[name="is_jp_yupack_official_ship"]').val(),
+                is_other_ship: $('input[name="is_other_ship"]').val(),
+                shipname1: $('input[name="shipname1"]').val(),
+                shipfee1: $('input[name="shipfee1"]').val(),
+                shipmethod_dummy: 'on',
+                shipschedule: 2,
+                ClosingYMD: $('input[name="tmpClosingYMD"]').val(),
+                ClosingTime: $('input[name="ClosingTime"]').val(),
+                submitUnixtime: $('input[name="submitUnixtime"]').val(),
+                Duration: $('input[name="Duration"]').val(),
+                tmpClosingYMD: $('input[name="tmpClosingYMD"]').val(),
+                tmpClosingTime: $('input[name="tmpClosingTime"]').val(),
+                salesmode: $('input[name="salesmode"]').val(),
+                StartPrice: $('input[name="StartPrice"]').val(),
+                BidOrBuyPrice: $('input[name="BidOrBuyPrice"]').val(),
+                prereg: $('input[name="prereg"]').val(),
+                premiumTrialStatus: $('input[name="premiumTrialStatus"]').val(),
+            };
+
+            console.log(' ########## productData: ', productData);
 
             if (productData) {
+
                 if (config.get('env') === 'development') {
                     proxyConfig = null;
                 }
@@ -615,55 +723,86 @@ export default class AuctionYahooService {
                 } else {
                     location = location.display;
                 }
+
+                productData.sales_mode = 'auction';
                 // PREVIEW
                 previewParams = {
                     ...previewParams,
+                    //===============
+
+                    tos: 'yes',
+                    info01: -420,
+                    info02: 2,
+                    info03: 'Chromium PDF Plugin|Chromium PDF Viewer',
+                    submitTipsDisp: 0,
+                    fnavi: 1,
+                    fleamarket: '',
+                    nonpremium: 1,
+                    pagetype: 'form',
+                    anchorPos: '',
+                    Duration: 7,
+                    ypmOK: 1,
+                    Quantity: 1,
+                    minBidRating: 0,
+                    badRatingRatio: 'yes',
+                    AutoExtension: 1,
+                    CloseEarly: 'yes',
+                    ClosingTime: 21,
+                    auction_server: 'https://auctions.yahoo.co.jp/sell/jp',
+                    uploadserver: 'sell.auctions.yahoo.co.jp',
+                    ImageCntMax: 10,
+                    ypoint: 0,
+                    encode: 'utf-8',
+                    catalog_id: '',
+                    catalog_jan_code: '',
+                    catalog_name: '',
+                    catalog_brand_id: '',
+                    catalog_spec_select_type: '',
+                    catalog_spec_numerical_type: '',
+                    catalog_no_applicable: 0,
+                    item_segment_id: '',
+                    item_spec_size_id: '',
+                    item_spec_size_type: '',
+                    submit_description: 'html',
+                    Description_rte_work: '',
+                    Description_plain: '',
+                    Description_plain_work: '',
+                    shippinginput: 'now',
+                    itemsize: '',
+                    itemweight: '',
+                    is_yahuneko_nekoposu_ship: '',
+                    is_yahuneko_taqbin_compact_ship: '',
+                    is_yahuneko_taqbin_ship: '',
+                    is_jp_yupacket_official_ship: '',
+                    is_jp_yupack_official_ship: '',
+                    is_other_ship: 'yes',
+                    shipname1: 'ゆうメール',
+                    shipmethod_dummy: 'on',
+                    submitUnixtime: Date.now(),
+                    tmpClosingTime: '',
+                    prereg: 0,
+                    premiumTrialStatus: 5,
+
+                    //======================
                     Title: productData.product_yahoo_title,
                     category: productData.yahoo_auction_category_id,
+                    BidOrBuyPrice: productData.bid_or_buy_price != '0' ? productData.bid_or_buy_price : '',
                     salesmode: productData.sales_mode,
                     StartPrice: productData.start_price,
-                    BidOrBuyPrice: productData.bid_or_buy_price != '0' ? productData.bid_or_buy_price : '',
-                    istatus: productData.status,
-                    istatus_comment: productData.status_comment,
-                    Quantity: productData.quantity,
                     Duration: productData.duration,
-                    ClosingTime: productData.closing_time,
-                    // Tạo ra từ Duration + ngày hiện tại
                     tmpClosingYMD: tmpClosingYMD,
+                    shipschedule: productData.ship_schedule,
                     ClosingYMD: tmpClosingYMD,
-                    //====
-                    retpolicy: productData.retpolicy,
-                    retpolicy_comment: productData.retpolicy_comment,
-                    minBidRating: productData.min_bid_rating, // 0 or 1
-                    badRatingRatio: productData.bad_rating_ratio,
-                    bidCreditLimit: productData.bid_credit_limit,
-                    AutoExtension: productData.auto_extension,
-                    numResubmit: productData.num_resubmit,
-                    // ReservePrice: productData.reserve_price,
-
+                    ClosingTime: productData.closing_time,
+                    shipfee1: productData.ship_fee1,
+                    shipping_dummy: productData.shipping,
+                    shiptime: productData.ship_time,
+                    loc_cd: productData.location,
+                    shipping: productData.shipping,
                     Description: productData.description,
                     Description_rte: productData.description,
-
-                    // Ship
-                    shiptime: productData.ship_time,
-                    shipping: productData.shipping,
-                    loc_cd: productData.location,
-                    location: location,
-
-                    shipname1: productData.ship_name1,
-                    shipfee1: productData.ship_fee1,
-                    shipname2: productData.ship_name2,
-                    shipfee2: productData.ship_fee2,
-                    shipname3: productData.ship_name3,
-                    shipfee3: productData.ship_fee3,
-                    shipschedule: productData.ship_schedule,
-
-                    // Amount
-                    featuredAmount: productData.featured_amount,
-                    BoldFaceCharge: productData.bold,
-                    HighlightListingCharge: productData.highlight,
-                    GiftIconName: productData.gift,
-                    WrappingIconCharge: productData.wrapping,
+                    istatus: productData.status,
+                    retpolicy: productData.retpolicy === 'no' ? 0 : 1,
                 };
             }
             // salesContract
@@ -671,6 +810,7 @@ export default class AuctionYahooService {
             // badRatingRatio
             // minBidRating
             // markdown
+            console.log(previewParams);
 
             let headers = {
                 cookie,
@@ -695,7 +835,7 @@ export default class AuctionYahooService {
             // Fs.writeFileSync('preview-resubmit.html', resPreview.data);
             let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
             if (mgc == null) {
-                console.log(' ========== ERROR =========');
+                console.log(' ========== ERROR MGC =========');
                 let $Preview = cheerio.load(resPreview.data);
                 let message = $Preview('.decErrorBox__title').text().split('\n')[0];
                 return {
@@ -755,6 +895,7 @@ export default class AuctionYahooService {
                 };
             }
         } catch (error) {
+            console.log(' #### ERROR ', error);
             return {
                 status: 'ERROR',
                 statusMessage: error.message,
@@ -1849,7 +1990,7 @@ export default class AuctionYahooService {
                     status: 'SUCCESS',
                 };
             } else {
-                Fs.writeFileSync('preview.html', reSubmit.data);
+                // Fs.writeFileSync('preview.html', reSubmit.data);
                 return {
                     status: 'ERROR',
                     message: '...!',
@@ -1927,7 +2068,7 @@ export default class AuctionYahooService {
                     status: 'SUCCESS',
                 };
             } else {
-                Fs.writeFileSync('preview.html', reSubmit.data);
+                // Fs.writeFileSync('preview.html', reSubmit.data);
                 return {
                     status: 'ERROR',
                     message: '...!',

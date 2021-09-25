@@ -21,23 +21,24 @@ import ApiKeyController from '../controllers/ApiKeyController';
 var isCalendarUploading = false;
 
 const getPriceProductAmazon = async (asin, user_id) => {
+    let REFRESH_TOKEN = config.get('REFRESH_TOKEN');
+    let SELLING_PARTNER_APP_CLIENT_ID = config.get('SELLING_PARTNER_APP_CLIENT_ID');
+    let SELLING_PARTNER_APP_CLIENT_SECRET = config.get('SELLING_PARTNER_APP_CLIENT_SECRET');
+    let AWS_SELLING_PARTNER_ROLE = config.get('AWS_SELLING_PARTNER_ROLE');
+    let AWS_ACCESS_KEY_ID = config.get('AWS_ACCESS_KEY_ID');
+    let AWS_SECRET_ACCESS_KEY = config.get('AWS_SECRET_ACCESS_KEY');
     try {
-        let REFRESH_TOKEN = config.get('REFRESH_TOKEN');
-        let SELLING_PARTNER_APP_CLIENT_ID = config.get('SELLING_PARTNER_APP_CLIENT_ID');
-        let SELLING_PARTNER_APP_CLIENT_SECRET = config.get('SELLING_PARTNER_APP_CLIENT_SECRET');
-        let AWS_SELLING_PARTNER_ROLE = config.get('AWS_SELLING_PARTNER_ROLE');
-        let AWS_ACCESS_KEY_ID = config.get('AWS_ACCESS_KEY_ID');
-        let AWS_SECRET_ACCESS_KEY = config.get('AWS_SECRET_ACCESS_KEY');
-
         try {
-            let apiKey = await ApiKeyController.getApiKeyByUser(user_id);
-            if (apiKey && apiKey.is_amz && apiKey.REFRESH_TOKEN && apiKey.SELLING_PARTNER_APP_CLIENT_ID && apiKey.SELLING_PARTNER_APP_CLIENT_SECRET && apiKey.AWS_SELLING_PARTNER_ROLE && apiKey.AWS_ACCESS_KEY_ID && apiKey.AWS_SECRET_ACCESS_KEY) {
-                REFRESH_TOKEN = apiKey.REFRESH_TOKEN;
-                SELLING_PARTNER_APP_CLIENT_ID = apiKey.SELLING_PARTNER_APP_CLIENT_ID;
-                SELLING_PARTNER_APP_CLIENT_SECRET = apiKey.SELLING_PARTNER_APP_CLIENT_SECRET;
-                AWS_SELLING_PARTNER_ROLE = apiKey.AWS_SELLING_PARTNER_ROLE;
-                AWS_ACCESS_KEY_ID = apiKey.AWS_ACCESS_KEY_ID;
-                AWS_SECRET_ACCESS_KEY = apiKey.AWS_SECRET_ACCESS_KEY;
+            if (user_id) {
+                let apiKey = await ApiKeyController.getApiKeyByUser(user_id);
+                if (apiKey && apiKey.is_amz && apiKey.REFRESH_TOKEN && apiKey.SELLING_PARTNER_APP_CLIENT_ID && apiKey.SELLING_PARTNER_APP_CLIENT_SECRET && apiKey.AWS_SELLING_PARTNER_ROLE && apiKey.AWS_ACCESS_KEY_ID && apiKey.AWS_SECRET_ACCESS_KEY) {
+                    REFRESH_TOKEN = apiKey.REFRESH_TOKEN;
+                    SELLING_PARTNER_APP_CLIENT_ID = apiKey.SELLING_PARTNER_APP_CLIENT_ID;
+                    SELLING_PARTNER_APP_CLIENT_SECRET = apiKey.SELLING_PARTNER_APP_CLIENT_SECRET;
+                    AWS_SELLING_PARTNER_ROLE = apiKey.AWS_SELLING_PARTNER_ROLE;
+                    AWS_ACCESS_KEY_ID = apiKey.AWS_ACCESS_KEY_ID;
+                    AWS_SECRET_ACCESS_KEY = apiKey.AWS_SECRET_ACCESS_KEY;
+                }
             }
         } catch (error) {
             console.log(' ### Keepa ApiKeyController.getApiKeyByUser: ', error);
@@ -70,6 +71,7 @@ const getPriceProductAmazon = async (asin, user_id) => {
                 version: 'v0',
             },
         });
+        // console.log(' ######### res: ', res);
         if (res && res.status === 'Success') {
             if (res.Offers && res.Offers.length > 0) {
                 let offer = res.Offers[0];
@@ -84,7 +86,7 @@ const getPriceProductAmazon = async (asin, user_id) => {
                 };
             }
         }
-        if (res && res.status === 'NoBuyableOffers' && res.Offers && res.Offers.length === 0) {
+        if (res.Offers && res.Offers.length === 0) {
             return {
                 count: 0,
             };
@@ -97,6 +99,9 @@ const getPriceProductAmazon = async (asin, user_id) => {
     }
 };
 export default class ProductYahooService {
+    static async getPriceAndCountByAmazon(asin, user_id) {
+        return await getPriceProductAmazon(asin, user_id);
+    }
     static async checkStopUpload(productYahooData, defaultSetting) {
         let resultData = {};
 
@@ -405,7 +410,7 @@ export default class ProductYahooService {
         console.log(' ######### Start Cron Upload Sản phẩm trong folder: ', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
         console.log(' ### yahoo_account_id: ', yahoo_account_id);
         console.log(' ### new_list_target_folder: ', new_list_target_folder);
-
+        let totalProduct = 0;
         let result = [];
         let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
         if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
@@ -420,79 +425,93 @@ export default class ProductYahooService {
 
                 for (const folder_id of new_list_target_folder) {
                     let listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id, listing_status: 'NOT_LISTED' });
-
+                    totalProduct += listProduct.length;
                     for (let index = 0; index < listProduct.length; index++) {
+                        let newResult = null;
                         let productYahooData = listProduct[index];
-                        let dataUpdate = {};
 
-                        let resultCheckUpload = await this.checkStopUpload(productYahooData, defaultSetting);
+                        try {
+                            let dataUpdate = {};
 
-                        if (resultCheckUpload.isStopUpload) {
-                            let newResult = {
+                            let resultCheckUpload = await this.checkStopUpload(productYahooData, defaultSetting);
+
+                            if (resultCheckUpload.isStopUpload) {
+                                newResult = {
+                                    product_created: productYahooData.created,
+                                    product_id: productYahooData._id,
+                                    product_aID: '',
+                                    message: resultCheckUpload.message,
+                                    created: Date.now(),
+                                    success: false,
+                                };
+                            } else {
+                                if (!productYahooData.start_price) {
+                                    productYahooData.start_price = resultCheckUpload.start_price;
+                                }
+
+                                if (!productYahooData.bid_or_buy_price) {
+                                    productYahooData.bid_or_buy_price = resultCheckUpload.bid_or_buy_price;
+                                }
+
+                                if (!productYahooData.quantity) {
+                                    productYahooData.quantity = defaultSetting.quantity;
+                                }
+
+                                if (!productYahooData.ship_fee1) {
+                                    productYahooData.ship_fee1 = resultCheckUpload.ship_fee1;
+                                }
+
+                                let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
+
+                                let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
+                                console.log(' ### uploadAuctionResult: ', uploadAuctionResult);
+                                // console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
+                                dataUpdate.upload_status = uploadAuctionResult.status;
+                                dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
+                                dataUpdate.aID = uploadAuctionResult.aID;
+
+                                if (uploadAuctionResult.status === 'SUCCESS') {
+                                    dataUpdate.listing_status = 'UNDER_EXHIBITION';
+                                    dataUpdate.thumbnail = uploadAuctionResult.thumbnail;
+                                    let newProductYahooAuction = { ...productYahooData._doc, ...dataUpdate };
+                                    delete newProductYahooAuction._id;
+                                    await ProductYahooAuctionService.create(newProductYahooAuction);
+                                }
+                                await ProductYahooService.update(productYahooData._id, dataUpdate);
+                                let message = '出品に成功しました';
+                                if (uploadAuctionResult.status === 'ERROR') {
+                                    message = uploadAuctionResult.statusMessage;
+                                    if (message === 'ヤフーアカウントのエラー') {
+                                        yahooAccount.is_error = true;
+                                        await yahooAccount.save();
+                                    }
+                                }
+                                newResult = {
+                                    product_created: productYahooData.created,
+                                    product_id: productYahooData._id,
+                                    product_aID: uploadAuctionResult.aID,
+                                    message: message,
+                                    created: Date.now(),
+                                    success: uploadAuctionResult.status === 'SUCCESS',
+                                };
+                            }
+                        } catch (error) {
+                            newResult = {
                                 product_created: productYahooData.created,
                                 product_id: productYahooData._id,
                                 product_aID: '',
-                                message: '出品に成功しました: ' + resultCheckUpload.message,
+                                message: error.message,
                                 created: Date.now(),
                                 success: false,
                             };
-                            result.push(newResult);
-                            continue;
                         }
 
-                        if (!productYahooData.start_price) {
-                            productYahooData.start_price = resultCheckUpload.start_price;
-                        }
-
-                        if (!productYahooData.bid_or_buy_price) {
-                            productYahooData.bid_or_buy_price = resultCheckUpload.bid_or_buy_price;
-                        }
-
-                        if (!productYahooData.quantity) {
-                            productYahooData.quantity = defaultSetting.quantity;
-                        }
-
-                        if (!productYahooData.ship_fee1) {
-                            productYahooData.ship_fee1 = resultCheckUpload.ship_fee1;
-                        }
-
-                        let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
-
-                        let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
-                        // console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
-                        dataUpdate.upload_status = uploadAuctionResult.status;
-                        dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
-                        dataUpdate.aID = uploadAuctionResult.aID;
-
-                        if (uploadAuctionResult.status === 'SUCCESS') {
-                            dataUpdate.listing_status = 'UNDER_EXHIBITION';
-                            dataUpdate.thumbnail = uploadAuctionResult.thumbnail;
-                            let newProductYahooAuction = { ...productYahooData._doc, ...dataUpdate };
-                            delete newProductYahooAuction._id;
-                            await ProductYahooAuctionService.create(newProductYahooAuction);
-                        }
-                        await ProductYahooService.update(productYahooData._id, dataUpdate);
-                        let message = '出品に成功しました';
-                        if (uploadAuctionResult.status === 'ERROR') {
-                            message = uploadAuctionResult.statusMessage;
-                            if (message === 'ヤフーアカウントのエラー') {
-                                yahooAccount.is_error = true;
-                                await yahooAccount.save();
-                            }
-                        }
-                        let newResult = {
-                            product_created: productYahooData.created,
-                            product_id: productYahooData._id,
-                            product_aID: uploadAuctionResult.aID,
-                            message: '出品に成功しました: ' + message,
-                            created: Date.now(),
-                            success: uploadAuctionResult.status === 'SUCCESS',
-                        };
                         result.push(newResult);
                     }
                 }
             }
         }
+        console.log(' ######## Total product: ', totalProduct);
         return result;
     }
 
@@ -525,7 +544,7 @@ export default class ProductYahooService {
                                         product_created: productYahooData.created,
                                         product_id: productYahooData._id,
                                         product_aID: '',
-                                        message: '出品に成功しました: ' + resultCheckUpload.message,
+                                        message: resultCheckUpload.message,
                                         created: Date.now(),
                                         success: false,
                                     };
@@ -552,6 +571,8 @@ export default class ProductYahooService {
                                 let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
 
                                 let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
+                                console.log(' ### uploadAuctionResult: ', uploadAuctionResult);
+
                                 // console.log(' ### startUploadProductByCalendar uploadAuctionResult: ', uploadAuctionResult);
                                 dataUpdate.upload_status = uploadAuctionResult.status;
                                 dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
@@ -576,7 +597,7 @@ export default class ProductYahooService {
                                     product_created: productYahooData.created,
                                     product_id: productYahooData._id,
                                     product_aID: uploadAuctionResult.aID,
-                                    message: '出品に成功しました: ' + message,
+                                    message: message,
                                     created: Date.now(),
                                     success: uploadAuctionResult.status === 'SUCCESS',
                                 };
@@ -632,6 +653,12 @@ export default class ProductYahooService {
                     let newDataUpload = null;
                     let productYahooData = null;
                     let productAuction = await ProductYahooAuctionModel.findOne({ aID: product.aID });
+                    if (!productAuction) {
+                        let regex = product.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+                        productAuction = await ProductYahooAuctionModel.findOne({
+                            product_yahoo_title: { $regex: regex },
+                        });
+                    }
                     if (productAuction) {
                         productYahooData = await ProductYahooModel.findOne({ asin_amazon: productAuction.asin_amazon, yahoo_account_id });
                         if (productYahooData) {
@@ -641,7 +668,7 @@ export default class ProductYahooService {
                                     product_created: productYahooData.created,
                                     product_id: productYahooData ? productYahooData._id : null,
                                     product_aID: product.aID,
-                                    message: (product.idBuyer ? '再出品に成功しました（落札あり）' : '再出品に成功しました（落札なし）') + ': ' + resultCheckUpload.message,
+                                    message: resultCheckUpload.message,
                                     created: Date.now(),
                                     success: false,
                                 });
@@ -665,7 +692,7 @@ export default class ProductYahooService {
                         await ProductYahooAuctionService.create({ ...newDataUpload, aID: uploadAuctionResult.aID });
                     }
 
-                    let message = '出品に成功しました';
+                    let message = product.idBuyer ? '再出品に成功しました（落札あり）' : '再出品に成功しました（落札なし）';
                     if (uploadAuctionResult.status === 'ERROR') {
                         message = uploadAuctionResult.statusMessage;
                     }
@@ -674,7 +701,7 @@ export default class ProductYahooService {
                         product_created: Date.now(),
                         product_id: productYahooData ? productYahooData._id : null,
                         product_aID: uploadAuctionResult.aID,
-                        message: (product.idBuyer ? '再出品に成功しました（落札あり）' : '再出品に成功しました（落札なし）') + ': ' + message,
+                        message: message,
                         created: Date.now(),
                         success: uploadAuctionResult.status === 'SUCCESS',
                     };
@@ -687,6 +714,7 @@ export default class ProductYahooService {
     }
 
     static async createFromAmazonProduct(productAmazon, user_id, yahoo_account_id) {
+        console.log(' ### createFromAmazonProduct: ', productAmazon);
         //Dùng cate amazon Check xem có trong mapping k
         let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id });
         if (!cateAmazon) {
@@ -710,9 +738,17 @@ export default class ProductYahooService {
         let import_price = productAmazon.price;
 
         let dataCalculatorProduct = await this.calculatorPrice(defaultSetting, import_price, productAmazon.ship_fee);
+        // console.log(" ########### dataCalculatorProduct: ", dataCalculatorProduct);
+
         let productYahoo = {
             ...defaultSetting._doc,
-            ...dataCalculatorProduct,
+            ship_fee1_temp: defaultSetting.yahoo_auction_shipping,
+            bid_or_buy_price_temp: dataCalculatorProduct.bid_or_buy_price,
+            start_price_temp: dataCalculatorProduct.start_price,
+            quantity_temp: defaultSetting.quantity,
+
+            import_price: productAmazon.price,
+            // ...dataCalculatorProduct,
             id_category_amazon: productAmazon.category_id,
             description: productAmazon.description,
             asin_amazon: productAmazon.asin,
@@ -720,7 +756,7 @@ export default class ProductYahooService {
             product_amazon_id: productAmazon._id,
             count: productAmazon.count,
             amazon_shipping_fee: productAmazon.ship_fee,
-            ship_fee1: defaultSetting.yahoo_auction_shipping,
+            // ship_fee1: defaultSetting.yahoo_auction_shipping,
             user_id: user_id,
             product_yahoo_title: title,
             yahoo_account_id: yahoo_account_id,
@@ -731,6 +767,9 @@ export default class ProductYahooService {
             image_overlay_index: null,
         };
         delete productYahoo._id;
+        delete productYahoo.ship_fee1;
+        delete productYahoo.quantity;
+
         let newProduct = new ProductYahooModel(productYahoo);
         //Download image;
         let newImages = [];
@@ -749,10 +788,10 @@ export default class ProductYahooService {
         // await ProductYahooService.create(productYahoo);
     }
 
-    static async UpdateCalculatorPrice(productInfomationDefault) {
+    static async UpdateCalculatorPrice(defaultSetting) {
         let listProduct = await ProductYahooModel.find({
-            user_id: productInfomationDefault.user_id,
-            yahoo_account_id: productInfomationDefault.yahoo_account_id,
+            user_id: defaultSetting.user_id,
+            yahoo_account_id: defaultSetting.yahoo_account_id,
         });
         for (let productYahoo of listProduct) {
             // Product chưa đc user change
@@ -761,15 +800,25 @@ export default class ProductYahooService {
                 let import_price = productYahoo.import_price;
                 let amazon_shipping_fee = productYahoo.amazon_shipping_fee;
 
-                let dataCalculatorProduct = await this.calculatorPrice(productInfomationDefault, import_price, amazon_shipping_fee);
-                delete productInfomationDefault._id;
+                let dataCalculatorProduct = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee);
+                delete defaultSetting._id;
+
                 let dataUpdate = {
                     ...productYahoo._doc,
-                    ...productInfomationDefault,
-                    ...dataCalculatorProduct,
+                    ...defaultSetting,
+                    // ...dataCalculatorProduct,
                     _id: productYahoo._id,
                     created: productYahoo.created,
+                    ship_fee1_temp: defaultSetting.yahoo_auction_shipping,
+                    bid_or_buy_price_temp: dataCalculatorProduct.bid_or_buy_price,
+                    start_price_temp: dataCalculatorProduct.start_price,
+                    quantity_temp: defaultSetting.quantity,
                 };
+                delete dataUpdate._id;
+                delete dataUpdate.ship_fee1;
+                delete dataUpdate.quantity;
+
+                // console.log(' ########## dataUpdate: ', dataUpdate);
                 await this.update(productYahoo._id, dataUpdate);
             }
         }

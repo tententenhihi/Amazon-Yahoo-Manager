@@ -190,7 +190,7 @@
                 </div>
               </div>
 
-              <div class="form-group row">
+              <!-- <div class="form-group row">
                 <label for="" class="col-3 col-form-label"
                   >スキップされた商品の処理 :</label
                 >
@@ -206,7 +206,7 @@
                     <option value="0">しない</option>
                   </select>
                 </div>
-              </div>
+              </div> -->
 
               <div class="row justify-content-center">
                 <button class="btn btn-success" @click="onUpdateSetting()">
