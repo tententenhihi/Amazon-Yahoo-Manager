@@ -9,9 +9,7 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="mx-10">
-        <div class="py-2">
-          Y!オークに出品される商品一覧
-        </div>
+        <div class="py-2">Y!オークに出品される商品一覧</div>
         <hr />
         <div class="account-infomation">
           <div class="info-title">
@@ -218,7 +216,7 @@
         </button>
 
         <JsonCSV
-          style="display: contents;"
+          style="display: contents"
           :data="dataExport"
           :fields="[
             '_id',
@@ -233,7 +231,8 @@
             'note',
             'description',
             'yahoo_auction_category_id',
-            'asin_amazon'
+            'asin_amazon',
+            'folder_name',
           ]"
           :labels="{
             _id: 'ID',
@@ -248,14 +247,15 @@
             note: '備考',
             description: '商品詳細',
             yahoo_auction_category_id: 'ヤフーカテゴリID',
-            asin_amazon: 'ASIN'
+            asin_amazon: 'ASIN',
+            folder_name: 'フォルダ名',
           }"
           :name="nameFolderSelected + '.csv'"
         >
           <button
             :disabled="!nameFolderSelected"
             class="btn btn-info mx-10 px-3"
-            style="float: right;"
+            style="float: right"
           >
             <i class="fa fa-download mr-1"></i>エクスポート
           </button>
@@ -263,7 +263,7 @@
         <button
           @click="$refs.inputCSV.click()"
           class="btn btn-info mx-10 px-3"
-          style="float: right;"
+          style="float: right"
         >
           <i class="fa fa-upload mr-1"></i>インポート
         </button>
@@ -290,14 +290,14 @@
           :page-class="'page-item'"
         >
         </paginate>
-        <table class="table  table-hover" style="width: 100%">
+        <table class="table table-hover" style="width: 100%">
           <thead class="thead-purple">
             <tr>
               <th class="text-center">
                 <input
                   type="checkbox"
                   v-model="isCheckAllProduct"
-                  style="cursor: pointer; width: 15px; height: 15px;"
+                  style="cursor: pointer; width: 15px; height: 15px"
                 />
               </th>
               <th width="120">画像</th>
@@ -309,9 +309,7 @@
               <!-- <th class="text-center" width="70">出品停止<br />在庫数<br /></th> -->
               <th class="text-center" width="80">数量<br /></th>
               <th class="text-center" width="100">仕入元の<br />値段</th>
-              <th class="text-center" width="100">
-                想定利益
-              </th>
+              <th class="text-center" width="100">想定利益</th>
               <th class="text-center" width="70">仕入元の<br />在庫数</th>
               <th class="text-center" width="80">出品中<br /></th>
               <!-- <th class="text-center" width="60">在庫<br />監視<br /></th>
@@ -319,24 +317,16 @@
               <th class="text-center" width="70">
                 プライム<br />のみ監視<br />
               </th> -->
-              <th class="text-center" width="70">
-                画像挿入
-              </th>
+              <th class="text-center" width="70">画像挿入</th>
               <th class="text-center" width="70">
                 Amazon<br />カテゴリ<br />ID
               </th>
               <th class="text-center" width="70">
                 ヤフー<br />カテゴリ<br />ID<br />(出品予定)
               </th>
-              <th class="text-center" width="120">
-                紐付け情報
-              </th>
-              <th width="120" class="text-center">
-                備考
-              </th>
-              <th width="120">
-                備考
-              </th>
+              <th class="text-center" width="120">紐付け情報</th>
+              <th width="120" class="text-center">備考</th>
+              <th width="120">備考</th>
             </tr>
           </thead>
 
@@ -349,7 +339,7 @@
                 > -->
                 <input
                   type="checkbox"
-                  style="cursor: pointer; width: 15px; height: 15px;"
+                  style="cursor: pointer; width: 15px; height: 15px"
                   v-model="selectedProducts"
                   :value="product"
                   :id="product._id"
@@ -364,14 +354,18 @@
                       ? product.images[0]
                       : SERVER_HOST_UPLOAD + product.images[0]
                   "
-                  style="min-width: 50px; max-height: 100px; object-fit: contain;"
+                  style="
+                    min-width: 50px;
+                    max-height: 100px;
+                    object-fit: contain;
+                  "
                 />
               </td>
               <td width="200">
                 <router-link
                   :to="{
                     name: 'CreateProductYahooLocal',
-                    params: { id: product._id }
+                    params: { id: product._id },
                   }"
                   >{{ product.product_yahoo_title }}</router-link
                 >
@@ -396,7 +390,7 @@
                   </div>
                   <span
                     class="p-1"
-                    style="background-color: #b7b6b6;font-size: 10px"
+                    style="background-color: #b7b6b6; font-size: 10px"
                     >自動設定</span
                   >
                 </div>
@@ -419,7 +413,7 @@
                   </div>
                   <span
                     class="p-1"
-                    style="background-color: #b7b6b6;font-size: 10px"
+                    style="background-color: #b7b6b6; font-size: 10px"
                     >自動設定</span
                   >
                 </div>
@@ -443,7 +437,7 @@
                   <span
                     v-if="product.ship_fee1_temp"
                     class="p-1"
-                    style="background-color: #b7b6b6;font-size: 10px"
+                    style="background-color: #b7b6b6; font-size: 10px"
                     >自動設定</span
                   >
                 </div>
@@ -459,7 +453,7 @@
                   </div>
                   <span
                     class="p-1"
-                    style="background-color: #b7b6b6;font-size: 10px"
+                    style="background-color: #b7b6b6; font-size: 10px"
                     >自動設定</span
                   >
                 </div>
@@ -574,7 +568,7 @@
             <div
               v-for="(item, index) in imageInsertion"
               :key="index"
-              style="align-items: center; display: flex;"
+              style="align-items: center; display: flex"
               class="my-2"
             >
               <input
@@ -588,7 +582,11 @@
               <img
                 @click="selectedImageIndex = index + 1"
                 for="flexRadioDefault1"
-                style="cursor: pointer; border:1px solid gray; margin-left: 10px"
+                style="
+                  cursor: pointer;
+                  border: 1px solid gray;
+                  margin-left: 10px;
+                "
                 width="100px"
                 height="100px"
                 :src="item"
@@ -648,8 +646,9 @@
                 v-for="(folder, index) in folders"
                 :value="folder._id"
                 :key="index"
-                >{{ folder.name }}</option
               >
+                {{ folder.name }}
+              </option>
             </select>
           </div>
           に
@@ -689,7 +688,7 @@
       styleModalFooter="justify-content: space-between"
     >
       <template v-slot:header>
-        <h5 style="word-break: break-all;">
+        <h5 style="word-break: break-all">
           「{{ selectedEditProduct.displayName }}」の編集
         </h5>
       </template>
@@ -705,7 +704,7 @@
               @input="onChangeTitlte"
             />
           </div>
-          <div v-if="isShowErrorTitle" style="text-align: end;">
+          <div v-if="isShowErrorTitle" style="text-align: end">
             <span style="color: red">入力最大は65文字</span>
           </div>
         </div>
@@ -814,7 +813,7 @@ import JsonCSV from "vue-json-csv";
 const PRODUCT_STATUS = [
   { display: "中古", value: "used" },
   { display: "新品", value: "new" },
-  { display: "その他", value: "other" }
+  { display: "その他", value: "other" },
 ];
 const HOLDING_PERIOD = [
   { display: "当日終了", value: 0 },
@@ -824,7 +823,7 @@ const HOLDING_PERIOD = [
   { display: "4日間", value: 4 },
   { display: "5日間", value: 5 },
   { display: "6日間", value: 6 },
-  { display: "7日間", value: 7 }
+  { display: "7日間", value: 7 },
 ];
 const ENDING_TIME = [
   { display: "午前0時から午前1時", value: 0 },
@@ -850,7 +849,7 @@ const ENDING_TIME = [
   { display: "午後8時から午後9時", value: 20 },
   { display: "午後9時から午後10時", value: 21 },
   { display: "午後10時から午後11時", value: 22 },
-  { display: "午後11時から午前0時", value: 23 }
+  { display: "午後11時から午前0時", value: 23 },
 ];
 const PREFECTURE = [
   { value: 1, display: "北海道" },
@@ -900,14 +899,14 @@ const PREFECTURE = [
   { value: 45, display: "宮崎県" },
   { value: 46, display: "鹿児島県" },
   { value: 47, display: "沖縄県" },
-  { value: 48, display: "海外" }
+  { value: 48, display: "海外" },
 ];
 const SHIP_SCHEDULE = [
   { display: "１〜２日", value: 1 },
   { display: "２〜３日", value: 7 },
   { display: "３〜７日", value: 2 },
   { display: "７日〜１３日", value: 5 },
-  { display: "１４日以降", value: 6 }
+  { display: "１４日以降", value: 6 },
 ];
 const CONSPICUOUS_ICON = [
   { display: "美品", value: 2 },
@@ -916,20 +915,20 @@ const CONSPICUOUS_ICON = [
   { display: "保証書付", value: 5 },
   { display: "全巻セット", value: 6 },
   { display: "正規店購入", value: 7 },
-  { display: "産地直送", value: 8 }
+  { display: "産地直送", value: 8 },
 ];
 const LISTING_STATUS = [
   { display: "未出品", value: "NOT_LISTED" },
-  { display: "出品中", value: "UNDER_EXHIBITION" }
+  { display: "出品中", value: "UNDER_EXHIBITION" },
 ];
 const SWITCH_OPTION = [
   { display: "OFF", value: "0" },
-  { display: "ON", value: "1" }
+  { display: "ON", value: "1" },
 ];
 const SWITCH_TYPE = {
   watch_stock: "在庫監視",
   watch_profit: "利益監視",
-  watch_only_prime: "プライムのみ監視"
+  watch_only_prime: "プライムのみ監視",
 };
 
 const PROXY_STATUS_DIE = "die";
@@ -937,155 +936,10 @@ const PROXY_STATUS_DIE = "die";
 export default {
   name: "YahooAuctionProducts",
   components: {
-    JsonCSV
+    JsonCSV,
   },
   data() {
     return {
-      label_csv: {
-        _id: "ID",
-        yahoo_auction_category_id: "★カテゴリID",
-        product_yahoo_title: "Y！オーク商品の名前",
-        type_import_desciption: "説明の入力方式(0:直接入力/1:ファイル)",
-        description: "★商品説明またはファイル",
-        image1: "画像1ファイル",
-        image2: "画像2ファイル",
-        image3: "画像3ファイル",
-        image4: "画像4ファイル",
-        image5: "画像5ファイル",
-        image6: "画像6ファイル",
-        image7: "画像7ファイル",
-        image8: "画像8ファイル",
-        image9: "画像9ファイル",
-        image10: "画像10ファイル",
-        image_comment1: "画像1コメント",
-        image_comment2: "画像2コメント",
-        image_comment3: "画像3コメント",
-        image_comment4: "画像4コメント",
-        image_comment5: "画像5コメント",
-        image_comment6: "画像6コメント",
-        image_comment7: "画像7コメント",
-        image_comment8: "画像8コメント",
-        image_comment9: "画像9コメント",
-        image_comment10: "画像10コメント",
-        count: "個数",
-        start_price: "★開始価格",
-        bid_or_buy_price: "即決価格",
-        offer: "値下げ交渉",
-
-        duration: "★開催期間",
-        closing_time: "★終了時刻",
-        num_resubmit: "値下げ交渉",
-        xxx: "自動値下げ率(0)",
-        auto_extension: "自動延長",
-        close_early: "早期終了",
-        min_bid_rating: "入札者制限",
-        bad_rating_ratio: "悪い評価",
-        bid_credit_limit: "本人確認",
-        status: "★商品状態(0:中古/1:新品/2:その他)",
-        status_comment: "状態の備考",
-        retpolicy: "返品可否(0:不可/1:可)",
-        retpolicy_comment: "返品の備考",
-        xxx: "Yahoo!かんたん決済",
-        xxx: "みずほ銀行(3611464/0001)",
-        xxx: "(未設定)",
-        xxx: "(未設定)",
-        xxx: "(未設定)",
-        xxx: "(未設定)",
-        xxx: "(未設定)",
-        xxx: "(未設定)",
-        xxx: "(未設定)",
-        xxx: "(未設定)",
-        xxx: "(未設定)",
-        xxx: "出品者情報開示前チェック",
-        location: "★出品地域(1:北海道～47:沖縄/48:海外)",
-        city: "市区町村",
-        shipping: "送料負担(0:落札者/1:出品者)",
-        xxx: "送料入力方式(0:落札後/1:出品時/2:着払い)",
-        ship_schedule: "発送までの日数(1:1～2日/2:3～7日/3:8日以降)",
-        xxx: "ヤフネコ!(宅急便)",
-        xxx: "ヤフネコ!(宅急便コンパクト)",
-        xxx: "ヤフネコ!(ネコポス)",
-        xxx: "ゆうパック(おてがる版)",
-        xxx: "ゆうパケット(おてがる版)",
-        xxx: "(未使用)",
-        xxx: '"はこBOON mini"',
-        xxx: "荷物のサイズ(1～7)",
-        xxx: "荷物のサイズ(1～7)",
-        xxx: "荷物の重さ(1～7)",
-        ship_name1: "配送方法1",
-        xxx: "全国一律",
-        xxx: "北海道",
-        xxx: "沖縄",
-        xxx: "離島",
-        ship_name2: "配送方法1",
-        xxx: "全国一律",
-        xxx: "北海道",
-        xxx: "沖縄",
-        xxx: "離島",
-        ship_name3: "配送方法1",
-        xxx: "全国一律",
-        xxx: "北海道",
-        xxx: "沖縄",
-        xxx: "離島",
-        ship_name4: "配送方法1",
-        xxx: "全国一律",
-        xxx: "北海道",
-        xxx: "沖縄",
-        xxx: "離島",
-        ship_name5: "配送方法1",
-        xxx: "全国一律",
-        xxx: "北海道",
-        xxx: "沖縄",
-        xxx: "離島",
-        ship_name6: "配送方法1",
-        xxx: "全国一律",
-        xxx: "北海道",
-        xxx: "沖縄",
-        xxx: "離島",
-        ship_name7: "配送方法1",
-        xxx: "全国一律",
-        xxx: "北海道",
-        xxx: "沖縄",
-        xxx: "離島",
-        ship_name8: "配送方法1",
-        xxx: "全国一律",
-        xxx: "北海道",
-        xxx: "沖縄",
-        xxx: "離島",
-        ship_name9: "配送方法1",
-        xxx: "全国一律",
-        xxx: "北海道",
-        xxx: "沖縄",
-        xxx: "離島",
-        ship_name10: "配送方法1",
-        xxx: "全国一律",
-        xxx: "北海道",
-        xxx: "沖縄",
-        xxx: "離島",
-        xxx: "着払い[ゆうパック]",
-        xxx: "着払い[ゆうメール]",
-        xxx: "着払い[ゆうメール]",
-        xxx: "着払い[宅急便(ヤマト運輸)]",
-        xxx: "着払い[飛脚宅配便(佐川急便)]",
-        xxx: "着払い[カンガルー便(西濃運輸)]",
-        foreign_check: "海外対応",
-        featured_amount: "注目オプション(有料)",
-        bold: "太字(有料)",
-        highlight: "背景色(有料)",
-        xxx: "アフィリエイト(有料)",
-        provider: "仕入れ先",
-        asin_amazon: "仕入れ先ID",
-        watch_only_prime: "プライムのみ監視",
-        watch_stock: "在庫監視",
-        watch_profit: "利益監視",
-        xxx: "枠デザイン",
-        xxx:
-          "発送日数(1:１~２日/7:２～３日/2:３～７日/5:７日～１３日/6:１４日以降)",
-        start_price: "想定開始価格",
-        bid_or_buy_price: "想定即決価格",
-        original_price: "仕入れ金額",
-        listing_status: "出品中"
-      },
       products: [],
       HOLDING_PERIOD,
       ENDING_TIME,
@@ -1103,9 +957,9 @@ export default {
         listingStatus: null,
         watch_stock: null,
         watch_profit: null,
-        watch_only_prime: null
+        watch_only_prime: null,
       },
-      nameFolderSelected: 'すべて',
+      nameFolderSelected: "すべて",
       folders: [],
       LISTING_STATUS,
       SWITCH_OPTION,
@@ -1117,7 +971,7 @@ export default {
       selectedEditProduct: {},
       imageInsertion: [],
       selectedImageIndex: null,
-      isShowErrorTitle: false
+      isShowErrorTitle: false,
     };
   },
   async mounted() {
@@ -1129,7 +983,7 @@ export default {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
       userInfo: "getUserInfo",
-      adminViewUser: "getAdminViewUser"
+      adminViewUser: "getAdminViewUser",
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
@@ -1150,7 +1004,7 @@ export default {
         : false;
     },
     dataExport() {
-      let dataExport = this.products.filter(product => {
+      let dataExport = this.products.filter((product) => {
         let condition = true;
         if (this.searchObj.folder) {
           condition = condition && product.folder_id === this.searchObj.folder;
@@ -1158,84 +1012,28 @@ export default {
         return condition;
       });
 
-      dataExport = dataExport.map(item => {
+      dataExport = dataExport.map((item) => {
+        let folder = this.folders.find((x) => x._id == item.folder_id);
         return {
-          ...item,
-          xxx: "",
           _id: "_id|" + item._id,
-          yahoo_auction_category_id: item.yahoo_auction_category_id || "",
-          product_yahoo_title: item.product_yahoo_title || "",
-          type_import_desciption: item.type_import_desciption || "",
-          description: item.description || "",
-          image1: item.image1 || "",
-          image2: item.image2 || "",
-          image3: item.image3 || "",
-          image4: item.image4 || "",
-          image5: item.image5 || "",
-          image6: item.image6 || "",
-          image7: item.image7 || "",
-          image8: item.image8 || "",
-          image9: item.image9 || "",
-          image10: item.image10 || "",
-          image_comment1: item.image_comment1 || "",
-          image_comment2: item.image_comment2 || "",
-          image_comment3: item.image_comment3 || "",
-          image_comment4: item.image_comment4 || "",
-          image_comment5: item.image_comment5 || "",
-          image_comment6: item.image_comment6 || "",
-          image_comment7: item.image_comment7 || "",
-          image_comment8: item.image_comment8 || "",
-          image_comment9: item.image_comment9 || "",
-          image_comment10: item.image_comment10 || "",
+          product_yahoo_title:
+            item.product_yahoo_title.replace(/,/g, "、") || "",
+          start_price: item.start_price || "",
+          bid_or_buy_price: item.bid_or_buy_price || "",
+          ship_fee1: item.ship_fee1 || "",
+          quantity: item.quantity || "",
+          import_price: item.import_price || "",
           count: item.count || "",
-          start_price: item.start_price || "",
-          bid_or_buy_price: item.bid_or_buy_price || "",
-          offer: item.offer || "",
-          duration: item.duration || "",
-          closing_time: item.closing_time || "",
-          num_resubmit: item.num_resubmit || "",
-          auto_extension: item.auto_extension || "",
-          close_early: item.close_early || "",
-          min_bid_rating: item.min_bid_rating || "",
-          bad_rating_ratio: item.bad_rating_ratio || "",
-          bid_credit_limit: item.bid_credit_limit || "",
-          status: item.status || "",
-          status_comment: item.status_comment || "",
-          retpolicy: item.retpolicy || "",
-          retpolicy_comment: item.retpolicy_comment || "",
-          offer: item.offer || "",
-          location: item.location || "",
-          city: item.city || "",
-          shipping: item.shipping || "",
-          ship_schedule: item.ship_schedule || "",
-          ship_name1: item.ship_name1 || "",
-          ship_name2: item.ship_name2 || "",
-          ship_name3: item.ship_name3 || "",
-          ship_name4: item.ship_name4 || "",
-          ship_name5: item.ship_name5 || "",
-          ship_name6: item.ship_name6 || "",
-          ship_name7: item.ship_name7 || "",
-          ship_name8: item.ship_name8 || "",
-          ship_name9: item.ship_name9 || "",
-          ship_name10: item.ship_name10 || "",
-          foreign_check: item.foreign_check || "",
-          featured_amount: item.featured_amount || "",
-          bold: item.bold || "",
-          highlight: item.highlight || "",
-          provider: item.provider || "",
+          image_overlay_index: item.image_overlay_index || "",
+          note: item.note.replace(/,/g, "、") || "",
+          description: item.description.replace(/,/g, "、") || "",
+          yahoo_auction_category_id: item.yahoo_auction_category_id || "",
           asin_amazon: item.asin_amazon || "",
-          watch_only_prime: item.watch_only_prime || "",
-          watch_stock: item.watch_stock || "",
-          watch_profit: item.watch_profit || "",
-          start_price: item.start_price || "",
-          bid_or_buy_price: item.bid_or_buy_price || "",
-          original_price: item.original_price || "",
-          listing_status:
-            item.listing_status === "UNDER_EXHIBITION" ? "出品済み" : "未出品"
+          folder_name: folder ? folder.name : "",
         };
       });
       return dataExport;
-    }
+    },
   },
   methods: {
     getPriceOriginal(product) {
@@ -1251,13 +1049,13 @@ export default {
     onClickTitle(idProduct) {
       this.$router.push({
         name: "CreateProductYahooLocal",
-        params: { id: idProduct }
+        params: { id: idProduct },
       });
     },
     onChangeSelectFolder(event) {
       let _id = event.target.value;
       if (_id) {
-        let folderSelected = this.folders.find(item => item._id === _id);
+        let folderSelected = this.folders.find((item) => item._id === _id);
         if (folderSelected) {
           this.nameFolderSelected = folderSelected.name;
         } else {
@@ -1268,16 +1066,17 @@ export default {
       }
     },
     readFileText(file) {
+      let $vue = this;
       return new Promise((resolve, reject) => {
         try {
           let reader = new FileReader();
-          reader.onload = async function(e) {
+          reader.onload = async function (e) {
             let arrLines = e.target.result
               .split("_id|")
-              .filter(item => item !== "");
+              .filter((item) => item !== "");
             let contentCsv = arrLines.slice(1, arrLines.length);
             let productList = [];
-            contentCsv.forEach(line => {
+            contentCsv.forEach((line) => {
               if (line) {
                 let pros = line.trim().split(",");
                 let start_price = pros[2].replace(/\D+/, "");
@@ -1301,6 +1100,7 @@ export default {
                   ? parseInt(image_overlay_index)
                   : image_overlay_index;
 
+                let folder = $vue.folders.find((x) => x.name === pros[13]);
                 let data = {
                   _id: pros[0],
                   product_yahoo_title: pros[1],
@@ -1314,9 +1114,9 @@ export default {
                   note: pros[9],
                   description: pros[10],
                   yahoo_auction_category_id: pros[11],
-                  asin_amazon: pros[12]
+                  asin_amazon: pros[12],
+                  folder_id: folder ? folder._id : null,
                 };
-                console.log(" ########## data: ", data);
                 productList.push(data);
               }
             });
@@ -1333,8 +1133,6 @@ export default {
       let listProduct = [];
 
       const file = files[0];
-      console.log(" ######################", file);
-
       if (
         file.type !== "application/vnd.ms-excel" &&
         file.type !== "text/csv"
@@ -1343,8 +1141,7 @@ export default {
         return this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text:
-            "CSVファイルしかアップ出来ません。CSVファイルを選択してください。!"
+          text: "CSVファイルしかアップ出来ません。CSVファイルを選択してください。!",
         });
       }
 
@@ -1354,8 +1151,8 @@ export default {
         let res = await ProductYahooApi.updateDataByCsv({ listProduct });
         if (res && res.status === 200) {
           let listResult = res.data.listResult;
-          this.products = this.products.map(item => {
-            let newData = listResult.find(x => x._id === item._id);
+          this.products = this.products.map((item) => {
+            let newData = listResult.find((x) => x._id === item._id);
             if (newData) {
               return newData;
             }
@@ -1364,7 +1161,7 @@ export default {
           this.searchProducts = this.products;
           this.$swal.fire({
             icon: "success",
-            title: "更新成功"
+            title: "更新成功",
           });
         }
       }
@@ -1376,10 +1173,8 @@ export default {
         this.selectedEditProduct.product_yahoo_title &&
         this.selectedEditProduct.product_yahoo_title.length > 65
       ) {
-        this.selectedEditProduct.product_yahoo_title = this.selectedEditProduct.product_yahoo_title.substring(
-          0,
-          65
-        );
+        this.selectedEditProduct.product_yahoo_title =
+          this.selectedEditProduct.product_yahoo_title.substring(0, 65);
         this.isShowErrorTitle = true;
       } else {
         this.isShowErrorTitle = false;
@@ -1388,7 +1183,7 @@ export default {
     async getImageInsertion() {
       let res = await ImageInsertionApi.get(this.yahooAccountId);
       if (res && res.status == 200) {
-        this.imageInsertion = res.data.imageInsertion.images.map(image => {
+        this.imageInsertion = res.data.imageInsertion.images.map((image) => {
           return this.SERVER_HOST_UPLOAD + image;
         });
       }
@@ -1417,20 +1212,20 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: error.message
+          text: error.message,
         });
       }
     },
     onEditProduct(product, index) {
       this.selectedEditProduct = {
         ...product,
-        displayName: product.product_yahoo_title
+        displayName: product.product_yahoo_title,
       };
       this.$refs.modalEditProduct.openModal();
     },
     async onSaveEditProduct() {
       let params = {
-        ...this.selectedEditProduct
+        ...this.selectedEditProduct,
       };
       let formData = new FormData();
       formData.append("payload", JSON.stringify(params));
@@ -1443,11 +1238,11 @@ export default {
           icon: "success",
           title: "商品情報を変更しました。",
           timer: 500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
         this.$refs.modalEditProduct.closeModal();
         let findIndex = this.searchProducts.findIndex(
-          item => item._id === this.selectedEditProduct._id
+          (item) => item._id === this.selectedEditProduct._id
         );
         this.searchProducts[findIndex] = { ...res.data.result };
         this.searchProducts = [...this.searchProducts];
@@ -1464,14 +1259,14 @@ export default {
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
           confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  番号'
+          cancelButtonText: '<i class="fa fa-times"></i>  番号',
         })
-        .then(async result => {
+        .then(async (result) => {
           if (result.isConfirmed) {
             let res = await ProductYahooApi.delete(product._id);
             if (res && res.status == 200) {
               let findIndex = this.searchProducts.findIndex(
-                item => item._id === product._id
+                (item) => item._id === product._id
               );
               this.searchProducts.splice(findIndex, 1);
               if (this.tableData.length === 0) {
@@ -1479,7 +1274,7 @@ export default {
               }
 
               this.selectedProducts = this.selectedProducts.filter(
-                item => item._id !== product._id
+                (item) => item._id !== product._id
               );
               self.$swal.fire(
                 "削除しました！",
@@ -1502,30 +1297,33 @@ export default {
       }
     },
     displayProductStatus(product) {
-      return this.PRODUCT_STATUS.find(item => item.value === product.status)
-        ? this.PRODUCT_STATUS.find(item => item.value === product.status)
+      return this.PRODUCT_STATUS.find((item) => item.value === product.status)
+        ? this.PRODUCT_STATUS.find((item) => item.value === product.status)
             .display
         : "";
     },
     displayDuration(product) {
-      return this.HOLDING_PERIOD.find(item => item.value === product.duration)
-        ? this.HOLDING_PERIOD.find(item => item.value === product.duration)
+      return this.HOLDING_PERIOD.find((item) => item.value === product.duration)
+        ? this.HOLDING_PERIOD.find((item) => item.value === product.duration)
             .display
         : "";
     },
     displayEndingTime(product) {
-      return this.ENDING_TIME.find(item => item.value === product.closing_time)
-        ? this.ENDING_TIME.find(item => item.value === product.closing_time)
+      return this.ENDING_TIME.find(
+        (item) => item.value === product.closing_time
+      )
+        ? this.ENDING_TIME.find((item) => item.value === product.closing_time)
             .display
         : "";
     },
     displayLocation(product) {
-      return this.PREFECTURE.find(item => item.value === product.location)
-        ? this.PREFECTURE.find(item => item.value === product.location).display
+      return this.PREFECTURE.find((item) => item.value === product.location)
+        ? this.PREFECTURE.find((item) => item.value === product.location)
+            .display
         : "";
     },
     onSearchProduct() {
-      this.searchProducts = this.products.filter(product => {
+      this.searchProducts = this.products.filter((product) => {
         let condition = true;
         if (this.searchObj.folder) {
           condition = condition && product.folder_id === this.searchObj.folder;
@@ -1572,7 +1370,7 @@ export default {
         listingStatus: null,
         watch_stock: null,
         watch_profit: null,
-        watch_only_prime: null
+        watch_only_prime: null,
       };
       this.searchProducts = [...this.products];
     },
@@ -1582,9 +1380,9 @@ export default {
     },
     async switchOption(value) {
       let params = {
-        ids: this.selectedProducts.map(item => item._id),
+        ids: this.selectedProducts.map((item) => item._id),
         type: this.selectedTypeWitch,
-        value
+        value,
       };
       let res = await ProductYahooApi.switchWatchOption(params);
       if (res && res.status === 200) {
@@ -1602,7 +1400,7 @@ export default {
           default:
             break;
         }
-        this.selectedProducts = this.selectedProducts.map(item => {
+        this.selectedProducts = this.selectedProducts.map((item) => {
           item[this.selectedTypeWitch] = value;
           return item;
         });
@@ -1610,7 +1408,7 @@ export default {
         this.onCloseModal();
         this.$swal.fire({
           icon: "success",
-          title: title
+          title: title,
         });
       }
     },
@@ -1622,33 +1420,33 @@ export default {
     },
     async onMoveProductToFolder() {
       let params = {
-        ids: this.selectedProducts.map(item => item._id),
-        folder_id: this.selectedFolder
+        ids: this.selectedProducts.map((item) => item._id),
+        folder_id: this.selectedFolder,
       };
       let res = await ProductYahooApi.changeProductFolder(params);
       if (res && res.status === 200) {
-        this.selectedProducts = this.selectedProducts.map(item => {
+        this.selectedProducts = this.selectedProducts.map((item) => {
           item.folder_id = this.selectedFolder;
           return item;
         });
         this.onCloseModal();
         this.$swal.fire({
           icon: "success",
-          title: "取扱商品フォルダの設定を行いました。"
+          title: "取扱商品フォルダの設定を行いました。",
         });
       }
     },
     async onSaveImageOverlay() {
       let params = {
-        ids: this.selectedProducts.map(item => item._id),
-        selectedImageIndex: this.selectedImageIndex
+        ids: this.selectedProducts.map((item) => item._id),
+        selectedImageIndex: this.selectedImageIndex,
       };
       let res = await ProductYahooApi.setOverlayImage(params);
       if (res && res.status === 200) {
         this.isCheckAllProduct = false;
         this.onCloseModal();
 
-        this.selectedProducts = this.selectedProducts.map(item => {
+        this.selectedProducts = this.selectedProducts.map((item) => {
           item.image_overlay_index = this.selectedImageIndex;
           return item;
         });
@@ -1656,19 +1454,19 @@ export default {
         this.selectedProducts = [];
         this.$swal.fire({
           icon: "success",
-          title: "更新成功"
+          title: "更新成功",
         });
       }
     },
     async onDeleteMultipleProduct() {
       let params = {
-        ids: this.selectedProducts.map(item => item._id)
+        ids: this.selectedProducts.map((item) => item._id),
       };
       let res = await ProductYahooApi.deleteMultipleProduct(params);
       if (res && res.status === 200) {
-        this.selectedProducts.forEach(item => {
+        this.selectedProducts.forEach((item) => {
           let findIndex = this.searchProducts.findIndex(
-            product => product._id === item._id
+            (product) => product._id === item._id
           );
           this.searchProducts.splice(findIndex, 1);
         });
@@ -1678,7 +1476,7 @@ export default {
         this.onCloseModal();
         this.$swal.fire({
           icon: "success",
-          title: "取扱商品フォルダの設定を行いました。"
+          title: "取扱商品フォルダの設定を行いました。",
         });
         if (this.tableData.length === 0) {
           this.page -= 1;
@@ -1687,8 +1485,8 @@ export default {
     },
     async onUploadYahooNow() {
       let params = {
-        ids: this.selectedProducts.map(item => item._id),
-        yahoo_account_id: this.yahooAccountId
+        ids: this.selectedProducts.map((item) => item._id),
+        yahoo_account_id: this.yahooAccountId,
       };
       let res = await ProductYahooApi.uploadProductNow(params);
       if (res && res.status === 200) {
@@ -1702,17 +1500,17 @@ export default {
         let html = `
         <div>
           <span style="font-weight: bold; color: green">成功:  ${
-            results.filter(item => item.success).length
+            results.filter((item) => item.success).length
           }</span>
         </div>
         <div>
           <span style="font-weight: bold; color: red">エラー: ${
-            results.filter(item => !item.success).length
+            results.filter((item) => !item.success).length
           }</span>
         </div>
         `;
         this.isCheckAllProduct = false;
-        this.selectedProducts = this.selectedProducts.map(item => {
+        this.selectedProducts = this.selectedProducts.map((item) => {
           for (const result of results) {
             if (result.product_id === item._id && result.success) {
               item.listing_status = "UNDER_EXHIBITION";
@@ -1723,10 +1521,10 @@ export default {
         this.selectedProducts = [];
         this.$swal.fire({
           icon: "success",
-          html
+          html,
         });
       }
-    }
+    },
   },
   watch: {
     isCheckAllProduct() {
@@ -1749,8 +1547,8 @@ export default {
     page() {
       this.isCheckAllProduct = false;
       this.selectedProducts = [];
-    }
-  }
+    },
+  },
 };
 </script>
 

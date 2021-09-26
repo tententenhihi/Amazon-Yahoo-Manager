@@ -75,7 +75,6 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     if (dataUpdate.bid_or_buy_price) {
         dataPrice.bid_or_buy_price = dataUpdate.bid_or_buy_price;
     }
-
     dataUpdate = {
         ...dataUpdate,
         ...dataPrice,
