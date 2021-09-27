@@ -95,61 +95,6 @@
               </select>
             </div>
           </div>
-
-          <!-- <div class="form-row">
-            <div class="form-group col-sm-4">
-              <label for="stock">在庫監視</label>
-              <select
-                id="stock"
-                class="form-control"
-                v-model="searchObj.watch_stock"
-              >
-                <option :value="null" selected>すべて</option>
-                <option
-                  v-for="(option, index) in SWITCH_OPTION"
-                  :key="index"
-                  :value="option.value"
-                >
-                  {{ option.display }}
-                </option>
-              </select>
-            </div>
-            <div class="form-group col-sm-4">
-              <label for="profit">利益監視</label>
-              <select
-                id="profit"
-                class="form-control"
-                v-model="searchObj.watch_profit"
-              >
-                <option :value="null" selected>すべて</option>
-                <option
-                  v-for="(option, index) in SWITCH_OPTION"
-                  :key="index"
-                  :value="option.value"
-                >
-                  {{ option.display }}
-                </option>
-              </select>
-            </div>
-            <div class="form-group col-sm-4">
-              <label for="prime">プライムのみ監視</label>
-              <select
-                id="prime"
-                class="form-control"
-                v-model="searchObj.watch_only_prime"
-              >
-                <option :value="null" selected>すべて</option>
-                <option
-                  v-for="(option, index) in SWITCH_OPTION"
-                  :key="index"
-                  :value="option.value"
-                >
-                  {{ option.display }}
-                </option>
-              </select>
-            </div>
-          </div> -->
-
           <button class="btn btn-primary px-4" @click="onSearchProduct">
             検索
           </button>
@@ -177,28 +122,6 @@
         >
           <i class="far fa-trash-alt mr-1"></i> 削除
         </button>
-        <!-- <button
-          :disabled="!selectedProducts.length"
-          @click="onOpenModalWitchOption('watch_stock')"
-          class="btn btn-info"
-        >
-          在庫監視ON/OFF
-        </button>
-        <button
-          :disabled="!selectedProducts.length"
-          @click="onOpenModalWitchOption('watch_profit')"
-          class="btn btn-info"
-        >
-          利益監視ON/OFF
-        </button>
-        <button
-          :disabled="!selectedProducts.length"
-          @click="onOpenModalWitchOption('watch_only_prime')"
-          class="btn btn-info"
-        >
-          プライムのみ監視ON/OFF
-        </button> -->
-
         <button
           :disabled="!selectedProducts.length"
           @click="openModalOverLayImage"
@@ -560,10 +483,10 @@
         <h5><i class="fa fa-image"></i> 写真を挿入</h5>
       </template>
       <template>
-        <div class="form-group form-line">
-          <label class="col-sm-4 control-label"
-            >挿入する画像を選択します。</label
-          >
+        <div
+          style="display: flex; align-items: center; justify-content: center"
+        >
+          <label class="control-label">挿入する画像を選択します。</label>
           <div class="ml-5">
             <div
               v-for="(item, index) in imageInsertion"

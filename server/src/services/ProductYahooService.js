@@ -748,7 +748,7 @@ export default class ProductYahooService {
             quantity_temp: defaultSetting.quantity,
 
             import_price: productAmazon.price,
-            // ...dataCalculatorProduct,
+            ...dataCalculatorProduct,
             id_category_amazon: productAmazon.category_id,
             description: productAmazon.description,
             asin_amazon: productAmazon.asin,
@@ -766,9 +766,12 @@ export default class ProductYahooService {
             listing_status: 'NOT_LISTED',
             image_overlay_index: null,
         };
+
         delete productYahoo._id;
         delete productYahoo.ship_fee1;
         delete productYahoo.quantity;
+        delete productYahoo.start_price;
+        delete productYahoo.bid_or_buy_price;
 
         let newProduct = new ProductYahooModel(productYahoo);
         //Download image;

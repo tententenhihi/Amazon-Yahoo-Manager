@@ -43,6 +43,7 @@ const getData = async (listAsin, user_id) => {
             try {
                 res = await Axios.post(url);
             } catch (error) {
+                console.log(' ####### KeepaService call api: ', error.message);
                 errorRes = error;
             }
         } while (errorRes && errorRes.response && errorRes.response.status === 429);
@@ -50,7 +51,7 @@ const getData = async (listAsin, user_id) => {
         if (res && res.status === 200) {
             for (const productData of res.data.products) {
                 let priceAndCountData = await ProductYahooService.getPriceAndCountByAmazon(productData.asin, user_id);
-                console.log(" ############# priceAndCountData: ", priceAndCountData);
+                console.log(' ############# priceAndCountData: ', priceAndCountData);
 
                 let result = {
                     asin: '',
@@ -109,7 +110,7 @@ const getData = async (listAsin, user_id) => {
                                 .map((item) => '・' + item)
                                 .join('\n');
                         }
-                    } else if(productData.description) {
+                    } else if (productData.description) {
                         description = productData.description.replace(/\n+/g, '\n');
                         description = description
                             .split('\n')

@@ -257,8 +257,8 @@ export default class AuctionYahooService {
                     const md5Value = $$('input[name="md5"]').val();
                     const brand_line_id = $$('input[name="brand_line_id"]').val();
                     let keys = {
-                        img_crumb: crumbValue,
-                        crumb: imgCrumbValue,
+                        img_crumb: imgCrumbValue,
+                        crumb: crumbValue,
                         md5: md5Value,
                         brand_line_id: brand_line_id,
                     };
@@ -287,6 +287,7 @@ export default class AuctionYahooService {
                     statusMessage: 'ヤフーアカウントのエラー',
                 };
             }
+
             // Upload Image and get thumbnail
             let payloadImage = {};
             for (let i = 0; i < listImage.length; i++) {
@@ -319,13 +320,19 @@ export default class AuctionYahooService {
                             headers: {
                                 ...form.getHeaders(),
                                 cookie: cookie,
+                                'content-type': 'multipart/form-data',
+                                'origin': 'https://auctions.yahoo.co.jp',
+                                'referer': 'https://auctions.yahoo.co.jp/jp/show/submit?category=0',
+                                'x-requested-with': 'XMLHttpRequest'
                             },
                             proxy: proxyConfig,
                         };
                         const resThumbnail = await axios.post('https://auctions.yahoo.co.jp/img/images/new', form, configs);
                         payloadImage = { ...payloadImage, thumbNail: resThumbnail.data.thumbnail };
                     }
-                } catch (error) {}
+                } catch (error) {
+                    console.log(' ######## error: ', error.message);
+                }
             }
 
             if (payloadImage.length < 0) {
@@ -407,7 +414,6 @@ export default class AuctionYahooService {
                 is_jp_yupacket_official_ship: '',
                 is_jp_yupack_official_ship: '',
                 is_other_ship: 'yes',
-                shipname1: 'ゆうメール',
                 shipmethod_dummy: 'on',
                 submitUnixtime: Date.now(),
                 tmpClosingTime: '',
@@ -426,6 +432,7 @@ export default class AuctionYahooService {
                 ClosingYMD: tmpClosingYMD,
                 ClosingTime: productData.closing_time,
                 shipfee1: productData.ship_fee1,
+                shipname1: productData.ship_name1,
                 shipping_dummy: productData.shipping,
                 shiptime: productData.ship_time,
                 loc_cd: productData.location,
@@ -708,7 +715,6 @@ export default class AuctionYahooService {
             console.log(' ########## productData: ', productData);
 
             if (productData) {
-
                 if (config.get('env') === 'development') {
                     proxyConfig = null;
                 }
@@ -776,7 +782,6 @@ export default class AuctionYahooService {
                     is_jp_yupacket_official_ship: '',
                     is_jp_yupack_official_ship: '',
                     is_other_ship: 'yes',
-                    shipname1: 'ゆうメール',
                     shipmethod_dummy: 'on',
                     submitUnixtime: Date.now(),
                     tmpClosingTime: '',
@@ -795,6 +800,7 @@ export default class AuctionYahooService {
                     ClosingYMD: tmpClosingYMD,
                     ClosingTime: productData.closing_time,
                     shipfee1: productData.ship_fee1,
+                    shipname1: productData.ship_name1,
                     shipping_dummy: productData.shipping,
                     shiptime: productData.ship_time,
                     loc_cd: productData.location,
