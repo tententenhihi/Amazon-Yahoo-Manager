@@ -199,7 +199,14 @@ export default class AuctionYahooService {
                     return 'uploads/' + item;
                 });
             }
-
+            let newListImage = [];
+            for (let i = 0; i < listImage.length; i++) {
+                const image = listImage[i];
+                if (Fs.existsSync(image) && i < 10) {
+                    newListImage.push(image);
+                }
+            }
+            listImage = newListImage;
             let listImageOverlay = [];
             if (productData.image_overlay_index != null) {
                 let listImageOverlayOfAccountYahoo = await ImageInsertionService.get(productData.user_id, productData.yahoo_account_id);
@@ -218,7 +225,6 @@ export default class AuctionYahooService {
             if (listImage.length === 0) {
                 throw new Error('画像は必須です');
             }
-
             let thumbnail = listImage[0].replace('uploads/', '');
 
             let headers = {
@@ -292,6 +298,9 @@ export default class AuctionYahooService {
             let payloadImage = {};
             for (let i = 0; i < listImage.length; i++) {
                 try {
+                    if (i === 10) {
+                        break;
+                    }
                     const formData = new FormData();
                     const buffer = Fs.createReadStream(listImage[i]);
 
@@ -310,33 +319,34 @@ export default class AuctionYahooService {
                     payloadImage[`ImageHeight${i + 1}`] = resImage.data.images[0].height;
 
                     // Set Thumbnail is first image
-                    if (!payloadImage.thumbNail && payloadImage.thumbNail !== '') {
-                        let urlImage = resImage.data.images[0].url;
-                        const form = new FormData();
-                        form.append('path', urlImage);
-                        form.append('.crumb', keys.img_crumb);
+                    // if (!payloadImage.thumbNail && payloadImage.thumbNail !== '') {
+                    //     console.log(' ###################### ' + i + ': ', payloadImage.thumbNail);
+                    //     let urlImage = resImage.data.images[0].url;
+                    //     let formData = {
+                    //         path: urlImage,
+                    //         '.crumb': keys.img_crumb,
+                    //     };
+                    //     const configs = {
+                    //         headers: {
+                    //             ...form.getHeaders(),
+                    //             cookie: cookie,
+                    //             'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    //             origin: 'https://auctions.yahoo.co.jp',
+                    //             referer: 'https://auctions.yahoo.co.jp/sell/jp/show/submit?category=0',
+                    //             'x-requested-with': 'XMLHttpRequest',
+                    //         },
+                    //         proxy: proxyConfig,
+                    //     };
+                    //     const resThumbnail = await axios.post('https://auctions.yahoo.co.jp/img/images/new', Qs.stringify(formData), configs);
+                    //     console.log(' ###################### resThumbnail.data.thumbnail: ', resThumbnail.data.thumbnail);
 
-                        const configs = {
-                            headers: {
-                                ...form.getHeaders(),
-                                cookie: cookie,
-                                'content-type': 'multipart/form-data',
-                                'origin': 'https://auctions.yahoo.co.jp',
-                                'referer': 'https://auctions.yahoo.co.jp/jp/show/submit?category=0',
-                                'x-requested-with': 'XMLHttpRequest'
-                            },
-                            proxy: proxyConfig,
-                        };
-                        const resThumbnail = await axios.post('https://auctions.yahoo.co.jp/img/images/new', form, configs);
-                        payloadImage = { ...payloadImage, thumbNail: resThumbnail.data.thumbnail };
-                    }
+                    //     payloadImage.thumbNail = resThumbnail.data.thumbnail;
+                    // }
                 } catch (error) {
                     console.log(' ######## error: ', error.message);
                 }
             }
-
             if (payloadImage.length < 0) {
-                console.log(' ######## 111 : payloadImage');
                 return {
                     status: 'ERROR',
                     statusMessage: 'エラー画像 ',
@@ -444,7 +454,6 @@ export default class AuctionYahooService {
                 brand_line_id: keys.brand_line_id,
             };
 
-            console.log(previewParams);
             let payload = Qs.stringify(previewParams);
             headers = {
                 ...headers,

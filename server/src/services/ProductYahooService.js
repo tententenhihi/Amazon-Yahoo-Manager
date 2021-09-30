@@ -424,7 +424,9 @@ export default class ProductYahooService {
                 let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
 
                 for (const folder_id of new_list_target_folder) {
+                    console.log(' ######## folder_id: ', folder_id);
                     let listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id });
+                    console.log(' ######## listProduct: ', listProduct.length);
                     totalProduct += listProduct.length;
                     for (let index = 0; index < listProduct.length; index++) {
                         let newResult = null;
