@@ -716,11 +716,15 @@ export default class ProductYahooService {
     static async createFromAmazonProduct(productAmazon, user_id, yahoo_account_id) {
         console.log(' ### createFromAmazonProduct: ', productAmazon);
         //Dùng cate amazon Check xem có trong mapping k
-        let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id });
+        let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id, user_id: user_id });
+        console.log(' ######## cateAmazon: ', cateAmazon);
+        console.log(' ######## productAmazon.category_id: ', productAmazon.category_id);
+
         if (!cateAmazon) {
             cateAmazon = await CategoryService.create({
                 amazon_cate_id: productAmazon.category_id,
                 asin: productAmazon.asin,
+                user_id: user_id,
             });
         }
         let cate_yahoo = cateAmazon.yahoo_cate_id || null;
@@ -773,21 +777,38 @@ export default class ProductYahooService {
         delete productYahoo.start_price;
         delete productYahoo.bid_or_buy_price;
 
-        let newProduct = new ProductYahooModel(productYahoo);
-        //Download image;
-        let newImages = [];
-        for (let i = 0; i < productAmazon.images.length; i++) {
-            const imageLink = productAmazon.images[i];
-            let saveFolder = 'uploads/yahoo-products/' + newProduct._id;
-            let saveImage = 'yahoo-products/' + newProduct._id + '/image-' + i + '.jpg';
-            await fsExtra.ensureDirSync(saveFolder);
-            let check = await Utils.downloadFile(imageLink, 'uploads/' + saveImage);
-            if (check) {
-                newImages.push(saveImage);
+        let checkExistProductYahoo = await ProductYahooModel.findOne({
+            user_id: user_id,
+            yahoo_account_id: yahoo_account_id,
+            asin_amazon: productAmazon.asin,
+        });
+        if (checkExistProductYahoo) {
+            await ProductYahooModel.findByIdAndUpdate(checkExistProductYahoo._id, {
+                import_price: productAmazon.price,
+                id_category_amazon: productAmazon.category_id,
+                description: productAmazon.description,
+                product_amazon_id: productAmazon._id,
+                count: productAmazon.count,
+                amazon_shipping_fee: productAmazon.ship_fee,
+            });
+        } else {
+            let newProduct = new ProductYahooModel(productYahoo);
+            //Download image;
+            let newImages = [];
+            for (let i = 0; i < productAmazon.images.length; i++) {
+                const imageLink = productAmazon.images[i];
+                let saveFolder = 'uploads/yahoo-products/' + newProduct._id;
+                let saveImage = 'yahoo-products/' + newProduct._id + '/image-' + i + '.jpg';
+                await fsExtra.ensureDirSync(saveFolder);
+                let check = await Utils.downloadFile(imageLink, 'uploads/' + saveImage);
+                if (check) {
+                    newImages.push(saveImage);
+                }
             }
+            newProduct.images = newImages;
+            await newProduct.save();
         }
-        newProduct.images = newImages;
-        await newProduct.save();
+
         // await ProductYahooService.create(productYahoo);
     }
 

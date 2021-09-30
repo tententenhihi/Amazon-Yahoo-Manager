@@ -38,7 +38,9 @@ export default class ProductYahooEndedService {
                         if (!productExisted) {
                             let productYahoo = await ProductYahooAuctionService.findOne({ aID: product.aID });
                             if (!productYahoo && product.title) {
-                                let regex = product.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+                                console.log(' ####### product.title: ', product.title);
+                                let regex = product.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)').replace(/\[/g, '\\[').replace(/\]/g, '\\]');
+                                console.log(' ####### regex: ', regex);
                                 productYahoo = await ProductYahooAuctionService.findOne({
                                     product_yahoo_title: { $regex: regex },
                                 });

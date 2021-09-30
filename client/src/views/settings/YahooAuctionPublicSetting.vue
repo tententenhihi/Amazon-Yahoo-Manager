@@ -90,7 +90,7 @@
                     v-model="setting.new_list_target_folder"
                   >
                     <option
-                      v-for="(folder, index) in folders"
+                      v-for="(folder, index) in folders.filter(x=> x._id != null)"
                       :key="index"
                       :value="folder._id"
                     >
@@ -349,7 +349,7 @@
                       v-model="setting.calendar_target_folder[i]"
                     >
                       <option
-                        v-for="(folder, index) in folders"
+                        v-for="(folder, index) in folders.filter(x => x._id != -1)"
                         :key="index"
                         :value="folder._id"
                       >
@@ -490,7 +490,7 @@ export default {
     async getFolders() {
       let res = await FolderApi.get(this.selectedYahooAccount._id);
       if (res && res.status === 200) {
-        this.folders = [{ _id: null, name: "すべて" }, ...res.data.folders];
+        this.folders = [{ _id: null, name: "設定しない" }, { _id: -1, name: "すべて" },...res.data.folders];
       }
     },
     async onUpdateSetting(isChangeAuctionDelete = false) {

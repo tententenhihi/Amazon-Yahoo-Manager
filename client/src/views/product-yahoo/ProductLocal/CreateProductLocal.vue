@@ -26,7 +26,7 @@
                   :src="image.preview_url"
                   :id="`image_${index}_preview`"
                   @click="onClickReUploadImage(index)"
-                  style="width:200px; border:1px solid #d2d6de"
+                  style="width: 200px; border: 1px solid #d2d6de"
                 />
                 <i
                   class="fa fa-times image_icon_remove"
@@ -55,7 +55,7 @@
                   name="image_preview"
                   id="image_preview"
                   @click="$refs['inputImage-' + images.length].click()"
-                  style="width:200px; border:1px solid #d2d6de"
+                  style="width: 200px; border: 1px solid #d2d6de"
                 />
               </div>
             </div>
@@ -81,8 +81,9 @@
                         v-for="(folder, index) in folders"
                         :key="index"
                         :value="folder._id"
-                        >{{ folder.name }}</option
                       >
+                        {{ folder.name }}
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -119,7 +120,7 @@
                     />
                   </div>
                 </div>
-                <div v-if="isShowErrorTitle" style="text-align: end;">
+                <div v-if="isShowErrorTitle" style="text-align: end">
                   <span style="color: red; padding-right: 10px"
                     >入力最大は65文字</span
                   >
@@ -152,7 +153,7 @@
                     <br />
                     <span
                       v-if="yahooAuctionCategory === null"
-                      style="color: red;"
+                      style="color: red"
                     >
                       カテゴリーのエラー
                     </span>
@@ -269,8 +270,9 @@
                         v-for="(period, index) in HOLDING_PERIOD"
                         :key="index"
                         :value="period.value"
-                        >{{ period.display }}</option
                       >
+                        {{ period.display }}
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -282,8 +284,9 @@
                         v-for="(time, index) in ENDING_TIME"
                         :key="index"
                         :value="time.value"
-                        >{{ time.display }}</option
                       >
+                        {{ time.display }}
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -407,8 +410,9 @@
                         v-for="(n, index) in 4"
                         :key="index"
                         :value="index"
-                        >{{ n }}</option
                       >
+                        {{ index === 0 ? "設定しない" : index + "回" }}
+                      </option>
                     </select>
                     <div class="mt-2 ml-2">回</div>
                   </div>
@@ -544,8 +548,9 @@
                         v-for="(pref, index) in PREFECTURE"
                         :key="index"
                         :value="pref.value"
-                        >{{ pref.display }}</option
                       >
+                        {{ pref.display }}
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -568,13 +573,13 @@
                       <input
                         type="text"
                         v-model="product.ship_name1"
-                        style="width:45%"
+                        style="width: 45%"
                         class="form-control mr-2"
                       />
                       <input
                         type="text"
                         v-model="product.ship_fee1"
-                        style="width:45%"
+                        style="width: 45%"
                         class="form-control"
                       />
                       <span class="ml-2 mt-2">円</span>
@@ -583,13 +588,13 @@
                       <input
                         type="text"
                         v-model="product.ship_name2"
-                        style="width:45%"
+                        style="width: 45%"
                         class="form-control mr-2"
                       />
                       <input
                         type="text"
                         v-model="product.ship_fee2"
-                        style="width:45%"
+                        style="width: 45%"
                         class="form-control"
                       />
                       <span class="ml-2 mt-2">円</span>
@@ -598,13 +603,13 @@
                       <input
                         type="text"
                         v-model="product.ship_name3"
-                        style="width:45%"
+                        style="width: 45%"
                         class="form-control mr-2"
                       />
                       <input
                         type="text"
                         v-model="product.ship_fee3"
-                        style="width:45%"
+                        style="width: 45%"
                         class="form-control"
                       />
                       <span class="ml-2 mt-2">円</span>
@@ -640,8 +645,9 @@
                         v-for="(ship, index) in SHIP_SCHEDULE"
                         :key="index"
                         :value="ship.value"
-                        >{{ ship.display }}</option
                       >
+                        {{ ship.display }}
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -776,7 +782,7 @@ const HOLDING_PERIOD = [
   { display: "4日間", value: 4 },
   { display: "5日間", value: 5 },
   { display: "6日間", value: 6 },
-  { display: "7日間", value: 7 }
+  { display: "7日間", value: 7 },
 ];
 const ENDING_TIME = [
   { display: "午前0時から午前1時", value: 0 },
@@ -802,7 +808,7 @@ const ENDING_TIME = [
   { display: "午後8時から午後9時", value: 20 },
   { display: "午後9時から午後10時", value: 21 },
   { display: "午後10時から午後11時", value: 22 },
-  { display: "午後11時から午前0時", value: 23 }
+  { display: "午後11時から午前0時", value: 23 },
 ];
 const PREFECTURE = [
   { value: 1, display: "北海道" },
@@ -852,14 +858,14 @@ const PREFECTURE = [
   { value: 45, display: "宮崎県" },
   { value: 46, display: "鹿児島県" },
   { value: 47, display: "沖縄県" },
-  { value: 48, display: "海外" }
+  { value: 48, display: "海外" },
 ];
 const SHIP_SCHEDULE = [
   { display: "１〜２日", value: 1 },
   { display: "２〜３日", value: 7 },
   { display: "３〜７日", value: 2 },
   { display: "７日〜１３日", value: 5 },
-  { display: "１４日以降", value: 6 }
+  { display: "１４日以降", value: 6 },
 ];
 const CONSPICUOUS_ICON = [
   { display: "美品", value: 2 },
@@ -868,7 +874,7 @@ const CONSPICUOUS_ICON = [
   { display: "保証書付", value: 5 },
   { display: "全巻セット", value: 6 },
   { display: "正規店購入", value: 7 },
-  { display: "産地直送", value: 8 }
+  { display: "産地直送", value: 8 },
 ];
 const TARGET_FOLDER = [
   { display: "基本フォルダ", value: 0 },
@@ -877,7 +883,7 @@ const TARGET_FOLDER = [
   { display: "3日目", value: 3 },
   { display: "4日目", value: 4 },
   { display: "5日目", value: 5 },
-  { display: "6日目", value: 6 }
+  { display: "6日目", value: 6 },
 ];
 export default {
   data() {
@@ -925,7 +931,7 @@ export default {
         gift: "",
         wrapping: "",
         images: [],
-        image_length: 0
+        image_length: 0,
       },
       images: [],
       HOLDING_PERIOD,
@@ -941,7 +947,7 @@ export default {
       folders: [],
       SERVER_HOST_UPLOAD: process.env.SERVER_API + "uploads/",
       yahooAuctionCategory: undefined,
-      isShowErrorTitle: false
+      isShowErrorTitle: false,
     };
   },
   computed: {
@@ -949,11 +955,11 @@ export default {
       return this.$route.params.id || 0;
     },
     ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
-    }
+    },
   },
   async mounted() {
     await this.getFolders();
@@ -964,11 +970,11 @@ export default {
         if (this.product.yahoo_account_id !== this.yahooAccountId) {
           this.$router.push({ name: "YahooAuctionProducts" });
         }
-        this.images = this.product.images.map(image => {
+        this.images = this.product.images.map((image) => {
           return {
             preview_url: image.includes("http")
               ? image
-              : this.SERVER_HOST_UPLOAD + image
+              : this.SERVER_HOST_UPLOAD + image,
           };
         });
       } else {
@@ -988,10 +994,8 @@ export default {
         this.product.product_yahoo_title &&
         this.product.product_yahoo_title.length > 65
       ) {
-        this.product.product_yahoo_title = this.product.product_yahoo_title.substring(
-          0,
-          65
-        );
+        this.product.product_yahoo_title =
+          this.product.product_yahoo_title.substring(0, 65);
         this.isShowErrorTitle = true;
       } else {
         this.isShowErrorTitle = false;
@@ -1010,7 +1014,7 @@ export default {
         if (file) {
           this.images.push({
             file,
-            preview_url: URL.createObjectURL(file)
+            preview_url: URL.createObjectURL(file),
           });
         }
       } else {
@@ -1018,7 +1022,7 @@ export default {
         if (file) {
           this.images[index] = {
             file,
-            preview_url: URL.createObjectURL(file)
+            preview_url: URL.createObjectURL(file),
           };
           this.images = [...this.images];
         }
@@ -1038,7 +1042,7 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: "カテゴリーのエラー"
+          text: "カテゴリーのエラー",
         });
         return;
       }
@@ -1059,18 +1063,18 @@ export default {
         this.$swal.fire("成功", "製品が更新されました。", "success");
         this.$router.push({ name: "YahooAuctionProducts" });
       }
-    }
+    },
   },
   watch: {
     async "product.yahoo_auction_category_id"() {
       let resCheckCateYahoo = await ProductYahooApi.checkCategoryYahoo({
-        category_id: this.product.yahoo_auction_category_id
+        category_id: this.product.yahoo_auction_category_id,
       });
       if (resCheckCateYahoo && resCheckCateYahoo.status === 200) {
         this.yahooAuctionCategory = resCheckCateYahoo.data.category;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

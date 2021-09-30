@@ -260,7 +260,7 @@ export default class CronJobService {
 
             console.log(' ########### schedule.new_list_target_folder: ', schedule.new_list_target_folder);
 
-            if (schedule.new_list_target_folder.includes(null)) {
+            if (schedule.new_list_target_folder.includes(-1)) {
                 let allFolder = await FolderModel.find({ user_id: schedule.user_id, yahoo_account_id: schedule.yahoo_account_id });
                 schedule.new_list_target_folder = allFolder.map((item) => item._id);
                 console.log(' ######### schedule.new_list_target_folder: ', schedule.new_list_target_folder);
@@ -318,7 +318,7 @@ export default class CronJobService {
                     cronNewList.cron.stop();
                 }
             }
-
+            
             // Cron relist
             if (schedule.relist_auto) {
                 let timeCron = `0 ${schedule.relist_start_time_minute} ${schedule.relist_start_time_hour} * * *`;

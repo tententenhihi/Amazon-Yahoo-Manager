@@ -4,9 +4,7 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 pb-20 table-responsive">
-        <div class="title">
-          落札者情報
-        </div>
+        <div class="title">落札者情報</div>
         <table class="table table-striped pt-20 mb-30" style="width: 100%">
           <tbody>
             <tr>
@@ -27,47 +25,56 @@
             </tr>
             <tr>
               <td width="130px">想定利益</td>
-              <td>{{ product.profit }}</td>
+              <td>{{ getProfitExpect(product) }}</td>
             </tr>
             <tr>
               <td width="130px">落札手数料</td>
-              <td></td>
+              <td>{{ getYahooFee(product) }}</td>
             </tr>
             <tr>
               <td width="130px">利益率</td>
-              <td></td>
+              <td>{{ getPersentProfit(product) }}</td>
             </tr>
             <tr>
               <td width="130px">予定送料</td>
-              <td></td>
+              <td>{{ getExpectShiping(product) }}</td>
             </tr>
             <tr>
               <td width="130px">購入先</td>
-              <td></td>
+              <td>
+                <a
+                  :href="`https://www.amazon.co.jp/dp/${product.asin_amazon}`"
+                  class="btn btn-info btn-xs"
+                  target="_blank"
+                  style="cursor: pointer"
+                >
+                  購入先を表示
+                </a>
+              </td>
             </tr>
-            <tr>
+            <!-- <tr>
               <td width="130px">決済方法</td>
               <td></td>
-            </tr>
+            </tr> -->
             <tr>
               <td width="130px">予定受取金額</td>
-              <td></td>
+              <td>{{ getExpectInCome(product) }}</td>
             </tr>
             <tr>
               <td width="130px">お届け方法</td>
-              <td></td>
+              <td>{{ product.ship_name1 }}</td>
             </tr>
             <tr>
               <td width="130px">お届け先住所</td>
-              <td></td>
+              <td v-html="getShipInfo(product)"></td>
             </tr>
             <tr>
               <td width="130px">送料</td>
-              <td></td>
+              <td>{{ product.ship_fee1 }}</td>
             </tr>
             <tr>
               <td width="130px">合計金額</td>
-              <td></td>
+              <td>{{ getAmount_Actual(product) }}</td>
             </tr>
           </tbody>
         </table>
@@ -81,7 +88,7 @@
             まとめて確認
           </button>
           <button
-            class="ml-2 btn btn-info "
+            class="ml-2 btn btn-info"
             @click="$refs.modelSetFeeShip.openModal()"
             v-if="product.progress === '送料連絡' && !isSetShipSuccess"
           >
@@ -94,11 +101,11 @@
               'btn-warning':
                 !product ||
                 !product.rating_list ||
-                product.rating_list.length == 0
+                product.rating_list.length == 0,
             }"
             :to="{
               name: 'YahooAuctionTradeRating',
-              params: { id: product._id }
+              params: { id: product._id },
             }"
             >{{
               product && product.rating_list && product.rating_list.length > 0
@@ -130,6 +137,13 @@
           >
             落札者削除
           </button>
+          <button
+            v-if="product.progress === '発送連絡'"
+            class="btn btn-md btn-danger ml-2"
+            @click="onContactShip(product)"
+          >
+            発送連絡
+          </button>
         </div>
         <br />
         <hr />
@@ -138,20 +152,26 @@
         </div>
         <ValidationObserver tag="div" ref="formMessage">
           <div class="input-group mb-2">
-            <select v-model="selectedTemplate" id="" class="form-control">
+            <select
+              v-model="selectedTemplate"
+              id=""
+              class="form-control"
+              style="max-width: 300px"
+            >
               <option :value="null" selected>テンプレートを選択</option>
               <option
                 :key="index"
                 v-for="(template, index) in templates"
                 :value="template"
-                >{{ template.name }}</option
               >
+                {{ template.name }}
+              </option>
             </select>
             <div class="input-group-prepend">
               <div class="input-group-btn">
                 <router-link
                   tag="button"
-                  class="btn btn-primary btn-management"
+                  class="btn px-4 btn-primary btn-management"
                   :to="{ name: 'TradeMessageTemplate' }"
                   >管理</router-link
                 >
@@ -202,7 +222,7 @@
                     その他: {{ message.yahoo_id }}
                   </span>
                 </div>
-                <div style="clear:both" class="my-10"></div>
+                <div style="clear: both" class="my-10"></div>
                 <img
                   class="message-img seller"
                   src="https://dummyimage.com/100x100/000000/FFFFFF.png&text=S"
@@ -229,7 +249,7 @@
                     {{ message.yahoo_id }}: その他
                   </span>
                 </div>
-                <div style="clear:both" class="my-10"></div>
+                <div style="clear: both" class="my-10"></div>
                 <img
                   class="message-img buyer"
                   src="https://dummyimage.com/100x100/000000/FFFFFF.png&text=B"
@@ -259,8 +279,9 @@
                 v-for="(reason, index) in DELETE_REASON"
                 :value="reason.value"
                 :key="index"
-                >{{ reason.display }}</option
               >
+                {{ reason.display }}
+              </option>
             </select>
           </div>
         </div>
@@ -289,7 +310,7 @@
           <div class="mb-3">
             <span>こちらの商品の送料を連絡します。</span>
           </div>
-          <div class="form-group ">
+          <div class="form-group">
             <label class="ml-2">送料</label>
             <div class="col-sm-12">
               <div class="input-group mb-3">
@@ -383,16 +404,17 @@
                     v-for="(item, index) in NEW_SHIP"
                     :key="index"
                     :value="item.value"
-                    >{{ item.display }}</option
                   >
+                    {{ item.display }}
+                  </option>
                 </select>
                 <div
                   v-if="
                     new_fee_ship_type !== 'ヤフネコ!（ネコポス）' &&
-                      new_fee_ship_type !== 'ヤフネコ!（宅急便コンパクト）' &&
-                      new_fee_ship_type !== 'ヤフネコ!（宅急便）' &&
-                      new_fee_ship_type !== 'ゆうパケット（おてがる版）' &&
-                      new_fee_ship_type !== 'ゆうパック（おてがる版）'
+                    new_fee_ship_type !== 'ヤフネコ!（宅急便コンパクト）' &&
+                    new_fee_ship_type !== 'ヤフネコ!（宅急便）' &&
+                    new_fee_ship_type !== 'ゆうパケット（おてがる版）' &&
+                    new_fee_ship_type !== 'ゆうパック（おてがる版）'
                   "
                   class="input-group-prepend"
                 >
@@ -406,10 +428,10 @@
                 <input
                   v-if="
                     new_fee_ship_type !== 'ヤフネコ!（ネコポス）' &&
-                      new_fee_ship_type !== 'ヤフネコ!（宅急便コンパクト）' &&
-                      new_fee_ship_type !== 'ヤフネコ!（宅急便）' &&
-                      new_fee_ship_type !== 'ゆうパケット（おてがる版）' &&
-                      new_fee_ship_type !== 'ゆうパック（おてがる版）'
+                    new_fee_ship_type !== 'ヤフネコ!（宅急便コンパクト）' &&
+                    new_fee_ship_type !== 'ヤフネコ!（宅急便）' &&
+                    new_fee_ship_type !== 'ゆうパケット（おてがる版）' &&
+                    new_fee_ship_type !== 'ゆうパック（おてがる版）'
                   "
                   type="text"
                   class="form-control"
@@ -456,19 +478,19 @@ import ProductYahooEndedApi from "@/services/ProductYahooEndedApi";
 import TradeMessageTemplateApi from "@/services/TradeMessageTemplateApi";
 const DELETE_REASON = [
   { value: "seller", display: "出品者都合" },
-  { value: "winner", display: "落札者都合" }
+  { value: "winner", display: "落札者都合" },
 ];
 
 const NEW_SHIP = [
   { value: "ヤフネコ!（ネコポス）", display: "ヤフネコ!（ネコポス）" },
   {
     value: "ヤフネコ!（宅急便コンパクト）",
-    display: "ヤフネコ!（宅急便コンパクト）"
+    display: "ヤフネコ!（宅急便コンパクト）",
   },
   { value: "ヤフネコ!（宅急便）", display: "ヤフネコ!（宅急便）" },
   {
     value: "ゆうパケット（おてがる版）",
-    display: "ゆうパケット（おてがる版）"
+    display: "ゆうパケット（おてがる版）",
   },
   { value: "ゆうパック（おてがる版）", display: "ゆうパック（おてがる版）" },
   { value: "定形郵便", display: "定形郵便" },
@@ -481,7 +503,7 @@ const NEW_SHIP = [
   { value: "飛脚宅配便（佐川急便）", display: "飛脚宅配便（佐川急便）" },
   { value: "飛脚メール便（佐川急便）", display: "飛脚メール便（佐川急便）" },
   { value: "クリックポスト", display: "クリックポスト" },
-  { value: "カンガルー便（西濃運輸）", display: "カンガルー便（西濃運輸）" }
+  { value: "カンガルー便（西濃運輸）", display: "カンガルー便（西濃運輸）" },
 ];
 
 export default {
@@ -502,7 +524,7 @@ export default {
       use_ship_origin: false,
       new_fee_ship_type: NEW_SHIP[0].value,
       new_fee_ship_price: 0,
-      isSetJoinBillSuccess: false
+      isSetJoinBillSuccess: false,
     };
   },
   async mounted() {
@@ -511,16 +533,110 @@ export default {
   },
   computed: {
     ...mapGetters({
-      selectedYahooAccount: "getSelectedYahooAccount"
+      selectedYahooAccount: "getSelectedYahooAccount",
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
     },
     productId() {
       return this.$route.params.id;
-    }
+    },
   },
   methods: {
+    getPriceEnd(product) {
+      if (product.price_end) {
+        return product.price_end.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
+    getExpectShiping(product) {
+      let feeShipping = product.ship_fee1 * product.product_buy_count;
+      if (feeShipping) {
+        return feeShipping.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
+    getAmount_Actual(product) {
+      let amount_actual = product.amount_actual;
+      if (amount_actual) {
+        return amount_actual.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
+    getExpectInCome(product) {
+      let amount_expected =
+        product.price_end - product.price_end * 0.1 + product.ship_fee1;
+      if (amount_expected) {
+        amount_expected = parseInt(amount_expected);
+        amount_expected = amount_expected * product.product_buy_count;
+        return amount_expected.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
+    getPersentProfit(product) {
+      let persent = product.actual_profit / product.price;
+      if (persent) {
+        persent = parseFloat(persent.toFixed(2)) * 100;
+        persent = parseFloat(persent).toFixed(0);
+        return persent + "%";
+      }
+      return "-";
+    },
+    getYahooFee(product) {
+      let yahooFee = product.price_end * 0.1;
+      if (yahooFee) {
+        yahooFee = yahooFee * product.product_buy_count;
+        return yahooFee.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
+    getPriceOriginal(product) {
+      if (product.import_price && product.amazon_shipping_fee) {
+        return `${product.import_price.toLocaleString("ja-JP")}円 + 送料${
+          product.amazon_shipping_fee
+        }円`;
+      } else if (product.import_price) {
+        return `${product.import_price.toLocaleString("ja-JP")}円`;
+      }
+      return "-";
+    },
+    getProfitExpect(product) {
+      let profit = product.actual_profit;
+      if (profit) {
+        profit = profit * product.product_buy_count;
+        return profit.toLocaleString("ja-JP") + "円";
+      }
+      return "-";
+    },
+    getShipInfo(product) {
+      if (product.ship_info) {
+        return product.ship_info;
+      }
+      return `<span class="label label-danger">未定</span>`;
+    },
+
+    async onContactShip(product) {
+      let result = await this.$swal.fire({
+        icon: "question",
+        title: "発送連絡を行う、よろしいですか。",
+        showConfirmButton: true,
+        showCancelButton: true,
+      });
+      if (result.isConfirmed) {
+        let res = await ProductYahooEndedApi.contactShip({
+          product_id: product._id,
+        });
+        if (res && res.status === 200) {
+          this.$swal.fire({
+            icon: "success",
+            title: "追加成功",
+            timer: 500,
+            showConfirmButton: false,
+          });
+        }
+      }
+    },
+
     async onSetJoinBill() {
       try {
         let payload = {
@@ -528,7 +644,7 @@ export default {
           is_join_bill: this.is_join_bill,
           use_ship_origin: this.use_ship_origin,
           new_fee_ship_type: this.new_fee_ship_type,
-          new_fee_ship_price: this.new_fee_ship_price
+          new_fee_ship_price: this.new_fee_ship_price,
         };
 
         let res = await ProductYahooEndedApi.setJoinBill(payload);
@@ -539,7 +655,7 @@ export default {
             icon: "success",
             title: "成功",
             timer: 500,
-            showConfirmButton: false
+            showConfirmButton: false,
           });
         }
       } catch (error) {}
@@ -547,7 +663,7 @@ export default {
     async onSetFeeShip() {
       let payload = {
         product_id: this.product._id,
-        set_ship_fee: this.set_ship_fee
+        set_ship_fee: this.set_ship_fee,
       };
 
       let res = await ProductYahooEndedApi.setShipFee(payload);
@@ -558,7 +674,7 @@ export default {
           icon: "success",
           title: "成功",
           timer: 500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
       }
     },
@@ -568,12 +684,12 @@ export default {
         title: "取引中止",
         text: "トランザクションのキャンセルを確認する ",
         showConfirmButton: true,
-        showCancelButton: true
+        showCancelButton: true,
       });
       if (result && result.value) {
         try {
           let payload = {
-            product_id: this.product._id
+            product_id: this.product._id,
           };
           let res = await ProductYahooEndedApi.cancelTransaction(payload);
           if (res && res.status === 200) {
@@ -581,7 +697,7 @@ export default {
             this.$swal.fire({
               icon: "success",
               title: "成功",
-              timer: 500
+              timer: 500,
             });
           }
         } catch (error) {}
@@ -590,7 +706,7 @@ export default {
     async deleteBuyer() {
       let payload = {
         product_id: this.product._id,
-        reason: this.deleteReason
+        reason: this.deleteReason,
       };
 
       let res = await ProductYahooEndedApi.deleteBuyer(payload);
@@ -602,7 +718,7 @@ export default {
           icon: "success",
           title: " 落札者の削除が完了しました",
           timer: 500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
       }
     },
@@ -616,7 +732,7 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: error.message
+          text: error.message,
         });
       }
     },
@@ -633,7 +749,7 @@ export default {
       if (result && this.comment.trim() != "") {
         let payload = {
           message: this.comment,
-          product_id: this.product._id
+          product_id: this.product._id,
         };
 
         let res = await ProductYahooEndedApi.sendMessage(payload);
@@ -644,11 +760,11 @@ export default {
             icon: "success",
             title: "メッセージの追加が完了しました",
             timer: 500,
-            showConfirmButton: false
+            showConfirmButton: false,
           });
         }
       }
-    }
+    },
   },
   watch: {
     selectedTemplate() {
@@ -657,8 +773,8 @@ export default {
       } else {
         this.comment = "";
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

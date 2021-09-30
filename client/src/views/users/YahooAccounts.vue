@@ -251,6 +251,7 @@ export default {
               .parent()
               .attr("autocomplete", "off");
           },
+          iDisplayLength: 100,
           responsive: true,
           language: {
             sEmptyTable: "テーブルにデータがありません",

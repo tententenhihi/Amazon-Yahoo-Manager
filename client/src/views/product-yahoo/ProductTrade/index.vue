@@ -167,19 +167,6 @@
               <td class="text-center">{{ product.product_buy_count }}</td>
               <td class="text-center">
                 <div class="field-buyer">{{ product.idBuyer }}</div>
-                <div class="goto">
-                  <a
-                    class="btn btn-xs"
-                    style="
-                      border: 1px solid #d19405;
-                      background: #fece2f;
-                      color: #4c3000;
-                    "
-                    :href="`/yahoo-auction-trades-message/${product._id}`"
-                  >
-                    取引ナビ
-                  </a>
-                </div>
               </td>
               <td class="text-center">{{ product.time_end }}</td>
               <td class="text-center">
@@ -224,6 +211,8 @@
                 {{ getExpectShiping(product) }}
               </td>
               <td>
+                <!-- v-if="product.progress === '発送連絡'" -->
+
                 <button
                   v-if="product.progress === '発送連絡'"
                   class="btn btn-md btn-danger mb-1 mr-1"
@@ -323,7 +312,7 @@ export default {
   async mounted() {
     await this.getListProduct();
     socket = io.connect(process.env.SERVER_API);
-    socket.on(this.$store.state.user._id + '-ENDED', (fetchedData) => {
+    socket.on(this.$store.state.user._id + "-ENDED", (fetchedData) => {
       this.progressData = fetchedData;
       if (fetchedData.listProduct) {
         this.products = fetchedData.listProduct;
@@ -364,16 +353,24 @@ export default {
   },
   methods: {
     async onContactShip(product) {
-      let res = await ProductYahooEndedApi.contactShip({
-        product_id: product._id,
+      let result = await this.$swal.fire({
+        icon: "question",
+        title: "発送連絡を行う、よろしいですか。",
+        showConfirmButton: true,
+        showCancelButton: true,
       });
-      if (res && res.status === 200) {
-        this.$swal.fire({
-          icon: "success",
-          title: "追加成功",
-          timer: 500,
-          showConfirmButton: false,
+      if (result.isConfirmed) {
+        let res = await ProductYahooEndedApi.contactShip({
+          product_id: product._id,
         });
+        if (res && res.status === 200) {
+          this.$swal.fire({
+            icon: "success",
+            title: "追加成功",
+            timer: 500,
+            showConfirmButton: false,
+          });
+        }
       }
     },
     async refreshDataYahoo() {
@@ -460,7 +457,11 @@ export default {
       return "-";
     },
     getShipInfo(product) {
-      if (product.ship_info) {
+      if (
+        product.ship_info &&
+        product.ship_info !== "null" &&
+        product.ship_info.trim() !== ""
+      ) {
         return product.ship_info;
       }
       return `<span class="label label-danger">未定</span>`;

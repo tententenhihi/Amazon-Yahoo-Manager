@@ -38,12 +38,12 @@
               </select>
             </div>
           </div>
-          <button class="btn btn-primary px-4" @click="searchProxy">
+          <button class="btn btn-primary px-4 my-2" @click="searchProxy">
             検索
           </button>
         </div>
         <div
-          class="row align-items-center"
+          class="d-flex align-items-center"
           style="justify-content: space-between;"
         >
           <paginate
@@ -58,6 +58,7 @@
             :page-class="'page-item'"
           >
           </paginate>
+          <div style="flex:1"></div>
           <div>
             <button class="btn btn-success px-4 mr-2" @click="onUnLockAllProxy">
               停止のプロキシを全て開放
@@ -258,11 +259,15 @@ export default {
       let listProxy = this.proxies;
       if (this.searchYahooID !== "") {
         listProxy = [];
+
+        console.log(' ########### this.searchYahooID: ', this.searchYahooID);
+
         this.listYahooAccount.filter(item => {
+          console.log(item);
           if (
-            item.accountId &&
-            item.accountId.toString() &&
-            item.accountId.toString().includes(this.searchYahooID)
+            item.yahoo_id &&
+            item.yahoo_id.toString() &&
+            item.yahoo_id.toString().includes(this.searchYahooID)
           ) {
             let proxy = this.proxies.find(pItem => pItem._id === item.proxy_id);
             listProxy.push(proxy);

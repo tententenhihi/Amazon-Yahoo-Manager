@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper-content">
     <div class="box-header">
-      <i class="fa fa-list mr-2"></i>Y!オーク出品完了分
+      <i class="fa fa-list mr-2"></i>Y!オーク出品終了分
     </div>
     <hr class="mt-10" />
     <div class="box-content px-10 py-20">

@@ -928,7 +928,7 @@ export default class AuctionYahooService {
                     cookie,
                 },
                 proxy: proxyConfig,
-                timeout: 60 * 1000,
+                timeout: 5 * 60 * 1000,
             });
 
             // Fs.writeFileSync(usernameYahoo + ' - preview.html', response.data);
@@ -972,8 +972,9 @@ export default class AuctionYahooService {
                             cookie,
                         },
                         proxy: proxyConfig,
-                        timeout: 30 * 1000,
+                        timeout: 5 * 60 * 1000,
                     });
+                    Fs.writeFileSync("XXX" + i +".html", response.data)
                     $ = cheerio.load(response.data);
                     //message
                     try {
@@ -1034,6 +1035,7 @@ export default class AuctionYahooService {
                         let progress = 'null';
                         let classStatusNode = $('div.acMdStatusImage > ul.acMdStatusImage__status');
                         let classText = classStatusNode.attr('class');
+                        console.log(' ############ classText: ', classText);
                         switch (classText) {
                             case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current05':
                                 progress = '受取連絡';
@@ -1069,6 +1071,8 @@ export default class AuctionYahooService {
                                 progress = '発送連絡';
                                 break;
                         }
+                        console.log(' ############ progress: ', progress);
+
                         // Số tiền nhận thực tế
                         if (progress === '発送連絡' || progress === '受取連絡') {
                             if (!accountYahoo.cookie_aucpay) {

@@ -432,7 +432,7 @@
                             v-for="(n, index) in 4"
                             :key="index"
                             :value="index"
-                            >{{ n }}</option
+                            >{{  index === 0 ? '設定しない' : index + '回'}}</option
                           >
                         </select>
                         <div class="mt-2 ml-2">回</div>
