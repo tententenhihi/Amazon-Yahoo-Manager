@@ -974,7 +974,7 @@ export default class AuctionYahooService {
                         proxy: proxyConfig,
                         timeout: 5 * 60 * 1000,
                     });
-                    Fs.writeFileSync("XXX" + i +".html", response.data)
+                    // Fs.writeFileSync("XXX" + i +".html", response.data)
                     $ = cheerio.load(response.data);
                     //message
                     try {
