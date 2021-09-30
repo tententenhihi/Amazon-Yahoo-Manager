@@ -1,5 +1,5 @@
 {
-    "env": "development",
+    "env": "production",
     "SECRET_KEY": "bacnt2412-amazon-yahoo-manager",
     "LIFE_TIME_TOKEN": "30d",
     "MONGODB_DATABASE_NAME": "Amazon-yahoo-manager",

@@ -5,6 +5,8 @@ import Fs from 'fs';
 class MongoDB {
     static connect(callback) {
         let mongoOptions = null;
+        console.log(' ######### Env: ', config.get('env'));
+
         if (config.get('env') === 'development') {
             mongoOptions = {
                 keepAlive: 1,
