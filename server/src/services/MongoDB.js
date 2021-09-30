@@ -19,6 +19,8 @@ class MongoDB {
                 // authSource:  'admin'
             };
         } else {
+            console.log(' ######### Mongodb.db: ', Fs.existsSync('keys/mongodb.pem'));
+
             mongoOptions = {
                 keepAlive: 1,
                 connectTimeoutMS: 30000,
@@ -29,7 +31,7 @@ class MongoDB {
                 pass: config.get('MONGODB_PASSWORD'),
                 ssl: true,
                 sslValidate: false,
-                sslCA: 'mongodb.pem',
+                sslCA: 'keys/mongodb.pem',
             };
         }
 
