@@ -198,7 +198,7 @@ export default {
           condition = condition && account.users.length && account.users[0].userId && account.users[0].userId.toString().includes(this.searchUserId)
         }
         if (this.searchYahooId) {
-          condition = condition && account.users.length && account.accountId.toString().includes(this.searchYahooId)
+          condition = condition && account.users.length && account.yahoo_id.toString().includes(this.searchYahooId)
         }
         
         if (this.searchUsername) {

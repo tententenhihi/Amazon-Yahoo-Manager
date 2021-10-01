@@ -1877,6 +1877,7 @@ export default class AuctionYahooService {
             return null;
         }
     }
+
     static async cancelTransaction(cookie, proxy, aID, usernameYahoo, idBuyer) {
         try {
             let headers = {
@@ -2247,16 +2248,16 @@ export default class AuctionYahooService {
 
             //============ UPDATE BANK =============
 
-            let resChangeBank = await axios.post('https://edit.wallet.yahoo.co.jp/config/wallet_trans_update?.done=https%3A%2F%2Fsalesmanagement.yahoo.co.jp%2Flist', {
-                headers: {
-                    cookie,
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
-                    origin: 'https://salesmanagement.yahoo.co.jp',
-                    referer: 'https://salesmanagement.yahoo.co.jp/',
-                    'Accept-Encoding': 'gzip, deflate, br',
-                },
-                proxy: proxyConfig,
-            });
+            // let resChangeBank = await axios.post('https://edit.wallet.yahoo.co.jp/config/wallet_trans_update?.done=https%3A%2F%2Fsalesmanagement.yahoo.co.jp%2Flist', {
+            //     headers: {
+            //         cookie,
+            //         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
+            //         origin: 'https://salesmanagement.yahoo.co.jp',
+            //         referer: 'https://salesmanagement.yahoo.co.jp/',
+            //         'Accept-Encoding': 'gzip, deflate, br',
+            //     },
+            //     proxy: proxyConfig,
+            // });
 
             // ============ Payout done =============
             payload = {

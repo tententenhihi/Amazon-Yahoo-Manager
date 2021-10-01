@@ -1,7 +1,6 @@
 <template>
   <div class="wrapper-content">
     <div class="box-header">
-      プロキシ割り当て管理
     </div>
     <hr class="mt-10" />
     <div class="box-content">

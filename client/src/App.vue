@@ -128,7 +128,7 @@ export default {
     },
     async checkApikey() {
       console.log(" #### checkApikey: ", this.apiKey);
-      if (!this.apiKey) {
+      if (!this.apiKey && !this.isAdmin && !this.adminViewUser) {
         await this.getApiKey();
       }
       if (
