@@ -1,58 +1,72 @@
 import Axios from 'axios';
 import ApiKeyController from '../controllers/ApiKeyController';
+import ApiKeyModel from '../models/ApiKeyModel';
 import AsinAmazonModel from '../models/AsinAmazonModel';
 import Utils from '../utils/Utils';
 import ProductYahooService from './ProductYahooService';
+import lodash from 'lodash';
 
 const getData = async (listAsin, user_id) => {
     let listResult = [];
     try {
-        let token = `82stsotg8m0qivjvcbsvn08f1t229kilkljgvi6057buv80631tbtlgdvtinj6e9`;
-        try {
-            let apiKey = await ApiKeyController.getApiKeyByUser(user_id);
-            if (apiKey && apiKey.is_keepa && apiKey.token_keepa) {
-                token = apiKey.token_keepa;
+        let tokenAdmin = `82stsotg8m0qivjvcbsvn08f1t229kilkljgvi6057buv80631tbtlgdvtinj6e9`;
+        let tokenUser = '';
+        let apiKey = await ApiKeyController.getApiKeyByUser(user_id);
+        if (apiKey && apiKey.is_keepa && apiKey.token_keepa) {
+            tokenUser = apiKey.token_keepa;
+        }
+        let listApiKeyAllUser = await ApiKeyModel.find({ is_keepa: true });
+        let listTokenAllUser = listApiKeyAllUser.map((item) => item.token_keepa).filter((x) => x && x.trim() != '' && x.trim() !== tokenUser);
+        listTokenAllUser.unshift(tokenUser);
+        listTokenAllUser.push(tokenAdmin);
+
+        listTokenAllUser = lodash.uniqBy(listTokenAllUser);
+
+        console.log(' ############## listTokenAllUser: ', listTokenAllUser);
+
+        let newListAsin = [];
+        for (let i = 0; i < listAsin.length; i++) {
+            const asin = listAsin[i];
+            let checkExistAsin = await AsinAmazonModel.findOne({ code: asin });
+            if (checkExistAsin) {
+                newListAsin.push(asin);
             }
-        } catch (error) {
-            console.log(' ### Keepa ApiKeyController.getApiKeyByUser: ', error);
+        }
+        listAsin = newListAsin;
+        if (listAsin.length === 0) {
+            return {
+                status: 'SUCCESS',
+                data: [],
+            };
         }
         let res = null;
-        let errorRes = null;
-        do {
-            let newListAsin = [];
-            for (let i = 0; i < listAsin.length; i++) {
-                const asin = listAsin[i];
-                let checkExistAsin = await AsinAmazonModel.findOne({ code: asin });
-                if (checkExistAsin) {
-                    newListAsin.push(asin);
+        var productGetted = false;
+        while (!productGetted) {
+            console.log(' ============ Keepa running =========== ');
+            console.log(listTokenAllUser);
+            for (let i = 0; i < listTokenAllUser.length; i++) {
+                const token = listTokenAllUser[i];
+                console.log(' ##### token: ', token);
+                try {
+                    let url = `https://api.keepa.com/product?key=${token}&domain=5&asin=${listAsin.join(',')}&stock=1&rating=1`;
+                    res = await Axios.post(url);
+                    if (res && res.status === 200) {
+                        productGetted = true;
+                        break;
+                    }
+                } catch (error) {
+                    console.log(' ####### KeepaService call api: ', error.message);
                 }
             }
-            listAsin = newListAsin;
-            if (listAsin.length === 0) {
-                return {
-                    status: 'SUCCESS',
-                    data: [],
-                };
+            if (productGetted) {
+                break;
             }
-            let url = `https://api.keepa.com/product?key=${token}&domain=5&asin=${listAsin.join(',')}&stock=1&rating=1`;
-            if (errorRes && errorRes.response && errorRes.response.status === 429) {
-                console.log(' ======== Sleep 429 ============ ');
-                console.log(' tokensLeft: ', errorRes.response.data.tokensLeft);
-                await Utils.sleep(60 * 1000);
-            }
-            try {
-                res = await Axios.post(url);
-            } catch (error) {
-                console.log(' ####### KeepaService call api: ', error.message);
-                errorRes = error;
-            }
-        } while (errorRes && errorRes.response && errorRes.response.status === 429);
-
+            await Utils.sleep(10 * 60 * 1000);
+        }
         if (res && res.status === 200) {
             for (const productData of res.data.products) {
                 let priceAndCountData = await ProductYahooService.getPriceAndCountByAmazon(productData.asin, user_id);
                 console.log(' ############# priceAndCountData: ', priceAndCountData);
-
                 let result = {
                     asin: '',
                     data: '',

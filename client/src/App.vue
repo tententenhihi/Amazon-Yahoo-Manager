@@ -49,9 +49,6 @@ export default {
     this.$eventBus.$on("showLoading", this.onShowLoading);
   },
   async mounted() {
-    console.log(" ###### this.isAdmin: ", this.isAdmin);
-    console.log(" ###### this.adminViewUser: ", this.adminViewUser);
-
     if (
       (this.isUserLoggedIn && !this.isAdmin) ||
       (this.isAdmin && this.adminViewUser)
@@ -68,6 +65,7 @@ export default {
   methods: {
     async getApiKey() {
       let result = await ApiKey.get();
+      console.log(result);
       if (result && result.status === 200) {
         await this.$store.dispatch("setApiKey", result.data.apiKey);
       }
@@ -128,14 +126,16 @@ export default {
         }
       }
     },
-    checkApikey() {
+    async checkApikey() {
       console.log(" #### checkApikey: ", this.apiKey);
-
+      if (!this.apiKey) {
+        await this.getApiKey();
+      }
       if (
         (this.isUserLoggedIn && !this.isAdmin) ||
         (this.isAdmin && this.adminViewUser)
       ) {
-        if (!this.apiKey.is_amz && !this.apiKey.is_keepa) {
+        if (!this.apiKey || (!this.apiKey.is_amz && !this.apiKey.is_keepa)) {
           if (
             this.$route.name !== "ApiKey" &&
             this.$route.name !== "YahooAccounts"

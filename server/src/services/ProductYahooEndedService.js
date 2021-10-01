@@ -15,7 +15,17 @@ export default class ProductYahooEndedService {
             if (!is_lock_user && accountYahoo.status === 'SUCCESS' && accountYahoo.cookie) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountYahoo.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    let listProductEnded = await AuctionYahooService.getProductAuctionEnded(accountYahoo.yahoo_id, accountYahoo.cookie, proxyResult.data, false, accountYahoo, true);
+                    let listProductEnded = await AuctionYahooService.getProductAuctionEnded(
+                        accountYahoo.yahoo_id,
+                        accountYahoo.cookie,
+                        proxyResult.data,
+                        false,
+                        accountYahoo,
+                        true
+                    );
+                    console.log(' ####### listProductEnded: ', listProductEnded);
+                    console.log(' ####### listProductEnded: ', listProductEnded.length);
+
                     listProductEnded = listProductEnded.reverse();
                     SocketIOService.emitData(accountYahoo.user_id, {
                         type: 'ENDED',
@@ -33,14 +43,14 @@ export default class ProductYahooEndedService {
 
                         //amount_actual
                         //Check Xem có trong db chưa.
-                        let productExisted = listProductEndedInDB.find((item) => item.aID === product.aID);
+                        let productExisted = listProductEndedInDB.find(
+                            (item) => item.aID === product.aID || item.product_yahoo_title.includes(productYAHOO.title)
+                        );
                         //chưa có thì tạo mới.
                         if (!productExisted) {
                             let productYahoo = await ProductYahooAuctionService.findOne({ aID: product.aID });
                             if (!productYahoo && product.title) {
-                                console.log(' ####### product.title: ', product.title);
                                 let regex = product.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)').replace(/\[/g, '\\[').replace(/\]/g, '\\]');
-                                console.log(' ####### regex: ', regex);
                                 productYahoo = await ProductYahooAuctionService.findOne({
                                     product_yahoo_title: { $regex: regex },
                                 });

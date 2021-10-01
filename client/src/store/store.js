@@ -70,6 +70,7 @@ export default new Vuex.Store({
         state.token = null;
         state.isUserLoggedIn = false;
         state.isAdmin = false;
+        state.apiKey = null;
       }
     },
     setLang(state, lang) {
@@ -97,6 +98,7 @@ export default new Vuex.Store({
       state.adminViewUser = false;
       state.yahooAccount = [];
       state.selectedYahooAccount = {};
+      state.apiKey = null;
     }
   },
   actions: {
