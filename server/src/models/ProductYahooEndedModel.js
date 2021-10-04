@@ -106,7 +106,7 @@ var Product = new Schema({
 
     // tiền nhận thực tế
     amount_actual: {
-        type: Number,
+        type: String,
         default: 0,
     },
 

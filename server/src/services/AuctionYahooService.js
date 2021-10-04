@@ -983,7 +983,7 @@ export default class AuctionYahooService {
                         proxy: proxyConfig,
                         timeout: 5 * 60 * 1000,
                     });
-                    // Fs.writeFileSync("XXX" + i +".html", response.data)
+                    // Fs.writeFileSync(product.aID + '_product_detail' + i + '.html', response.data);
                     $ = cheerio.load(response.data);
                     //message
                     try {
@@ -1102,11 +1102,14 @@ export default class AuctionYahooService {
                                             },
                                             proxy: proxyConfig,
                                         });
+
+                                        // Fs.writeFileSync('Actual_Price_' + i + '_.html', response_get_amount.data);
+
                                         if (response_get_amount && response_get_amount.status === 200) {
                                             let $$ = cheerio.load(response_get_amount.data);
                                             let node_amount_actual = $$('#rcvdtl > ul > li.decTotal > dl:nth-child(1) > dd');
                                             if (node_amount_actual) {
-                                                let amount_actual = node_amount_actual.text().match(/\d+/)[0];
+                                                let amount_actual = node_amount_actual.text().replace('��', '');;
                                                 product.amount_actual = amount_actual;
                                             }
                                         }
@@ -1115,6 +1118,8 @@ export default class AuctionYahooService {
                             }
                             if (!product.amount_actual) {
                                 let result = await AuctionYahooService.getCookie(accountYahoo, proxy, true);
+                                console.log(' ########### result: ', result);
+
                                 if (result.status === 'SUCCESS') {
                                     accountYahoo.cookie_aucpay = result.cookie;
                                     await accountYahoo.save();
@@ -1134,7 +1139,7 @@ export default class AuctionYahooService {
                                                 let $$ = cheerio.load(response_get_amount.data);
                                                 let node_amount_actual = $$('#rcvdtl > ul > li.decTotal > dl:nth-child(1) > dd');
                                                 if (node_amount_actual) {
-                                                    let amount_actual = node_amount_actual.text().match(/\d+/)[0];
+                                                    let amount_actual = node_amount_actual.text().replace('��', '');
                                                     product.amount_actual = amount_actual;
                                                 }
                                             }

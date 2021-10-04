@@ -44,7 +44,7 @@ export default class ProductYahooEndedService {
                         //amount_actual
                         //Check Xem có trong db chưa.
                         let productExisted = listProductEndedInDB.find(
-                            (item) => item.aID === product.aID || item.product_yahoo_title.includes(productYAHOO.title)
+                            (item) => item.aID === product.aID || item.product_yahoo_title.includes(product.title)
                         );
                         //chưa có thì tạo mới.
                         if (!productExisted) {
