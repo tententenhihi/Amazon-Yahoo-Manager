@@ -716,12 +716,8 @@ export default class ProductYahooService {
     }
 
     static async createFromAmazonProduct(productAmazon, user_id, yahoo_account_id) {
-        console.log(' ### createFromAmazonProduct: ', productAmazon);
         //Dùng cate amazon Check xem có trong mapping k
-        let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id, user_id: user_id });
-        console.log(' ######## cateAmazon: ', cateAmazon);
-        console.log(' ######## productAmazon.category_id: ', productAmazon.category_id);
-
+        let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id});
         if (!cateAmazon) {
             cateAmazon = await CategoryService.create({
                 amazon_cate_id: productAmazon.category_id,

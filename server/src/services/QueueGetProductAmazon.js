@@ -26,35 +26,39 @@ const getProductByAsin = async (dataInput, cb) => {
         let index = 0;
         while (listAsin && listAsin.length > 0 && count <= listAsin.length) {
             let newListAsin = listAsin.slice(currentIndex, count);
-            let result = await KeepaService.findProduct(newListAsin, dataInput.user_id);
-            if (result.status === 'SUCCESS') {
-                for (const itemData of result.data) {
-                    if (itemData.status === 'SUCCESS') {
-                        if (isUpdateAmazonProduct) {
-                            let checkUpdate = await ProductAmazonService.findOne({ asin: itemData.data.asin });
-                            if (checkUpdate) {
-                                await ProductAmazonService.update(checkUpdate._id, { ...itemData.data, created: Date.now() });
+            try {
+                let result = await KeepaService.findProduct(newListAsin, dataInput.user_id);
+                if (result.status === 'SUCCESS') {
+                    for (const itemData of result.data) {
+                        if (itemData.status === 'SUCCESS') {
+                            if (isUpdateAmazonProduct) {
+                                let checkUpdate = await ProductAmazonService.findOne({ asin: itemData.data.asin });
+                                if (checkUpdate) {
+                                    await ProductAmazonService.update(checkUpdate._id, { ...itemData.data, created: Date.now() });
+                                } else {
+                                    await ProductAmazonService.create(itemData.data);
+                                }
                             } else {
                                 await ProductAmazonService.create(itemData.data);
                             }
-                        } else {
-                            await ProductAmazonService.create(itemData.data);
+                            await ProductYahooService.createFromAmazonProduct(itemData.data, newListAsinModel[index].idUser, newListAsinModel[index].yahoo_account_id);
                         }
-                        await ProductYahooService.createFromAmazonProduct(itemData.data, newListAsinModel[index].idUser, newListAsinModel[index].yahoo_account_id);
+                        newListAsinModel[index].isProductGeted = itemData.status === 'SUCCESS';
+                        newListAsinModel[index].status = itemData.status;
+                        newListAsinModel[index].statusMessage = itemData.message;
+                        await newListAsinModel[index].save();
+                        index++;
                     }
-                    newListAsinModel[index].isProductGeted = itemData.status === 'SUCCESS';
-                    newListAsinModel[index].status = itemData.status;
-                    newListAsinModel[index].statusMessage = itemData.message;
-                    await newListAsinModel[index].save();
-                    index++;
+                } else {
+                    for (const item of newListAsin) {
+                        newListAsinModel[index].status = 'ERROR';
+                        newListAsinModel[index].statusMessage = result.message;
+                        await newListAsinModel[index].save();
+                        index++;
+                    }
                 }
-            } else {
-                for (const item of newListAsin) {
-                    newListAsinModel[index].status = 'ERROR';
-                    newListAsinModel[index].statusMessage = result.message;
-                    await newListAsinModel[index].save();
-                    index++;
-                }
+            } catch (error) {
+                console.log(' ######## error getProductByAsin: ', error);
             }
             currentIndex = count;
             let sub = listAsin.length - count;
@@ -66,7 +70,6 @@ const getProductByAsin = async (dataInput, cb) => {
                 }
             } else {
                 console.log(' ============== break ===============');
-
                 break;
             }
         }

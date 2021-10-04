@@ -22,8 +22,6 @@ const getData = async (listAsin, user_id) => {
 
         listTokenAllUser = lodash.uniqBy(listTokenAllUser);
 
-        console.log(' ############## listTokenAllUser: ', listTokenAllUser);
-
         let newListAsin = [];
         for (let i = 0; i < listAsin.length; i++) {
             const asin = listAsin[i];
@@ -39,6 +37,9 @@ const getData = async (listAsin, user_id) => {
                 data: [],
             };
         }
+        console.log(' ############## listTokenAllUser: ', listTokenAllUser);
+        console.log(' ############## listAsin: ', listAsin.length);
+
         let res = null;
         var productGetted = false;
         while (!productGetted) {
@@ -49,7 +50,11 @@ const getData = async (listAsin, user_id) => {
                 console.log(' ##### token: ', token);
                 try {
                     let url = `https://api.keepa.com/product?key=${token}&domain=5&asin=${listAsin.join(',')}&stock=1&rating=1`;
+                    console.log(' 111111 ', url);
+
                     res = await Axios.post(url);
+                    console.log(' 22222 ', res.status);
+
                     if (res && res.status === 200) {
                         productGetted = true;
                         break;
@@ -64,9 +69,14 @@ const getData = async (listAsin, user_id) => {
             await Utils.sleep(10 * 60 * 1000);
         }
         if (res && res.status === 200) {
-            for (const productData of res.data.products) {
+            console.log(' 2222222222222222222 ', res.data.products.length);
+
+            for (let i = 0; i < res.data.products.length; i++) {
+                const productData = res.data.products[i];
+                console.log(' ############# i: ', i);
+                console.log(' ############# productData: ', productData.asin);
+
                 let priceAndCountData = await ProductYahooService.getPriceAndCountByAmazon(productData.asin, user_id);
-                console.log(' ############# priceAndCountData: ', priceAndCountData);
                 let result = {
                     asin: '',
                     data: '',
@@ -99,15 +109,6 @@ const getData = async (listAsin, user_id) => {
                     if (title.length > 65) {
                         title = title.substring(0, 65);
                     }
-                    // if (productData.liveOffersOrder && productData.liveOffersOrder.length > 0 && productData.offers && productData.offers.length > 0) {
-                    //     let liveOffersOrder = productData.liveOffersOrder[0];
-                    //     let offer = productData.offers[liveOffersOrder];
-                    //     price = offer.offerCSV[offer.offerCSV.length - 2];
-                    //     ship_fee = offer.offerCSV[offer.offerCSV.length - 1];
-                    //     if (offer.isShippable) {
-                    //         count = 1;
-                    //     }
-                    // }
                     if (productData.imagesCSV) {
                         images = productData.imagesCSV.split(',').map((item) => 'https://images-na.ssl-images-amazon.com/images/I/' + item);
                     }
