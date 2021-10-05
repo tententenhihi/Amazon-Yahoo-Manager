@@ -73,98 +73,109 @@ const getData = async (listAsin, user_id) => {
 
             for (let i = 0; i < res.data.products.length; i++) {
                 const productData = res.data.products[i];
-                console.log(' ############# i: ', i);
-                console.log(' ############# productData: ', productData.asin);
-                let result = {
-                    asin: '',
-                    data: '',
-                    status: '',
-                    message: '',
-                };
-                let priceAndCountData = await ProductYahooService.getPriceAndCountByAmazon(productData.asin, user_id);
-                if (!priceAndCountData) {
-                    result = {
-                        asin: productData.asin,
-                        data: null,
-                        status: 'ERROR',
-                        message: 'エラー: ASINから商品が見つかりませんでした',
+                try {
+                    console.log(' ############# i: ', i);
+                    console.log(' ############# productData: ', productData.asin);
+                    let result = {
+                        asin: '',
+                        data: '',
+                        status: '',
+                        message: '',
                     };
-                } else {
-                    try {
-                        let ship_fee = 0;
-                        let price = 0;
-                        let count = 0;
-                        let images = [];
-                        let description = '';
-                        let title = '';
+                    let priceAndCountData = await ProductYahooService.getPriceAndCountByAmazon(productData.asin, user_id);
+                    if (!priceAndCountData) {
+                        result = {
+                            asin: productData.asin,
+                            data: null,
+                            status: 'ERROR',
+                            message: 'エラー: ASINから商品が見つかりませんでした',
+                        };
+                    } else {
+                        try {
+                            let ship_fee = 0;
+                            let price = 0;
+                            let count = 0;
+                            let images = [];
+                            let description = '';
+                            let title = '';
 
-                        if (priceAndCountData) {
-                            count = priceAndCountData.count;
-                            price = priceAndCountData.price || 0;
-                            ship_fee = priceAndCountData.ship_fee || 0;
-                        }
+                            if (priceAndCountData) {
+                                count = priceAndCountData.count;
+                                price = priceAndCountData.price || 0;
+                                ship_fee = priceAndCountData.ship_fee || 0;
+                            }
 
-                        if (productData.title) {
-                            title = productData.title;
-                            if (productData.color) {
-                                title = productData.color + ' ' + title;
+                            if (productData.title) {
+                                title = productData.title;
+                                if (productData.color) {
+                                    title = productData.color + ' ' + title;
+                                }
+                                if (productData.size) {
+                                    title = productData.size + ' ' + title;
+                                }
                             }
-                            if (productData.size) {
-                                title = productData.size + ' ' + title;
+                            if (title.length > 65) {
+                                title = title.substring(0, 65);
                             }
-                        }
-                        if (title.length > 65) {
-                            title = title.substring(0, 65);
-                        }
-                        if (productData.imagesCSV) {
-                            images = productData.imagesCSV.split(',').map((item) => 'https://images-na.ssl-images-amazon.com/images/I/' + item);
-                        }
-                        if (productData.features) {
-                            if (Array.isArray(productData.features)) {
-                                productData.features.map((item) => {
-                                    description += '・' + item + '\n';
-                                });
-                            } else {
-                                description = productData.features;
-                                description = productData.features.replace(/\n+/g, '\n');
+                            if (productData.imagesCSV) {
+                                images = productData.imagesCSV.split(',').map((item) => 'https://images-na.ssl-images-amazon.com/images/I/' + item);
+                            }
+                            if (productData.features) {
+                                if (Array.isArray(productData.features)) {
+                                    productData.features.map((item) => {
+                                        description += '・' + item + '\n';
+                                    });
+                                } else {
+                                    description = productData.features;
+                                    description = productData.features.replace(/\n+/g, '\n');
+                                    description = description
+                                        .split('\n')
+                                        .map((item) => '・' + item)
+                                        .join('\n');
+                                }
+                            } else if (productData.description) {
+                                description = productData.description.replace(/\n+/g, '\n');
                                 description = description
                                     .split('\n')
                                     .map((item) => '・' + item)
                                     .join('\n');
                             }
-                        } else if (productData.description) {
-                            description = productData.description.replace(/\n+/g, '\n');
-                            description = description
-                                .split('\n')
-                                .map((item) => '・' + item)
-                                .join('\n');
-                        }
-                        result = {
-                            asin: productData.asin,
-                            data: {
+                            result = {
                                 asin: productData.asin,
-                                name: title,
-                                category_id: productData.categories && productData.categories[0] ? productData.categories[0] : '',
-                                description,
-                                images,
-                                price,
-                                ship_fee,
-                                count,
-                            },
-                            status: 'SUCCESS',
-                            message: '成功',
-                        };
-                    } catch (error) {
-                        console.log(' #### KEEPA ERROR: ', error.message);
-                        result = {
-                            asin: productData.asin,
-                            data: null,
-                            status: 'ERROR',
-                            message: 'エラー: ' + error.message,
-                        };
+                                data: {
+                                    asin: productData.asin,
+                                    name: title,
+                                    category_id: productData.categories && productData.categories[0] ? productData.categories[0] : '',
+                                    description,
+                                    images,
+                                    price,
+                                    ship_fee,
+                                    count,
+                                },
+                                status: 'SUCCESS',
+                                message: '成功',
+                            };
+                        } catch (error) {
+                            console.log(' #### KEEPA ERROR: ', error);
+                            result = {
+                                asin: productData.asin,
+                                data: null,
+                                status: 'ERROR',
+                                message: 'エラー: ' + error.message,
+                            };
+                        }
                     }
+                    listResult.push(result);
+                } catch (error) {
+                    console.log(' #### KEEPA ERROR: ', error);
+                    result = {
+                        asin: productData.asin,
+                        data: null,
+                        status: 'ERROR',
+                        message: 'エラー: ' + error.message,
+                    };
+                    listResult.push(result);
                 }
-                listResult.push(result);
             }
         } else {
             console.log(' ###### errorRes: ', res);
