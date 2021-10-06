@@ -50,11 +50,7 @@ const getData = async (listAsin, user_id) => {
                 console.log(' ##### token: ', token);
                 try {
                     let url = `https://api.keepa.com/product?key=${token}&domain=5&asin=${listAsin.join(',')}&stock=1&rating=1`;
-                    console.log(' 111111 ', url);
-
                     res = await Axios.post(url);
-                    console.log(' 22222 ', res.status);
-
                     if (res && res.status === 200) {
                         productGetted = true;
                         break;

@@ -76,7 +76,7 @@ export default class AsinAmazonController {
             }
             if (listCode && listCode.length > 0) {
                 // Kiểm tra giới hạn Product Yahoo
-                let countProductYahoo = await ProductYahooModel.find({ user_id: user._id }).countDocuments();
+                let countProductYahoo = await ProductYahooModel.find({ user_id: user._id, yahoo_account_id }).countDocuments();
                 if (countProductYahoo >= 3000) {
                     return response.error400({
                         message: 'ヤフオクの仕様上、1アカウントで3000件までしか出品できないので、1アカウントあたり最大3000件まで登録可能',
@@ -87,6 +87,7 @@ export default class AsinAmazonController {
 
                 let listAsinNew = [];
                 let queryKey = Utils.generateKey();
+                let totalAsin = 0;
                 // Tạo List Object Asin
                 for (let i = 0; i < listCode.length; i++) {
                     const code = listCode[i];
@@ -95,6 +96,16 @@ export default class AsinAmazonController {
                         // Kiểm tra đã tồn tại ProductYahoo chưa. có rồi thì bỏ qua Asin
                         let existProductYahoo = await ProductYahooService.findOne({ asin_amazon: code, yahoo_account_id });
                         if (existProductYahoo) {
+                            await AsinAmazonService.add({
+                                code,
+                                idUser: user._id,
+                                type,
+                                // groupId,
+                                yahoo_account_id,
+                                query_key: queryKey,
+                                status: 'SUCCESS',
+                            });
+                            totalAsin++;
                             continue;
                         }
                     }
@@ -109,11 +120,11 @@ export default class AsinAmazonController {
                     };
                     listAsinNew.push(newAsinData);
                     countProductYahoo++;
-                    if (countProductYahoo >= 3000) {
-                        break;
-                    }
+                    totalAsin++;
+                    // if (countProductYahoo >= 3000) {
+                    //     break;
+                    // }
                 }
-                console.log(' 11111111 listAsinNew: ', listAsinNew.length);
                 // Add list Object Asin
                 let newAsin = await AsinAmazonService.addMany(listAsinNew);
                 //Add List To Queue
@@ -121,6 +132,7 @@ export default class AsinAmazonController {
                     isUpdateAmazonProduct: checkUpdateAsin,
                     newAsin,
                     user_id: user,
+                    yahoo_account_id,
                 });
 
                 // Return List
@@ -128,7 +140,7 @@ export default class AsinAmazonController {
                 return response.success200({
                     newAsin: {
                         asins: newAsin,
-                        countAsin: newAsin.length,
+                        countAsin: totalAsin,
                         countAsinGetProductSuccess: 0,
                         yahoo_account_id: yahoo_account_id,
                         yahoo_id: accountYahoo.yahoo_id,

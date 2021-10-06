@@ -4,6 +4,7 @@ import AsinAmazonService from './AsinAmazonService';
 import BlacklistAsinService from './BlacklistAsinService';
 import ProductYahooService from './ProductYahooService';
 import KeepaService from './KeepaService';
+import ProductYahooModel from '../models/ProductYahooModel';
 
 let queueGetInfoProduct = null;
 const getProductByAsin = async (dataInput, cb) => {
@@ -27,47 +28,65 @@ const getProductByAsin = async (dataInput, cb) => {
         while (listAsin && listAsin.length > 0 && count <= listAsin.length) {
             let newListAsin = listAsin.slice(currentIndex, count);
             try {
-                let result = await KeepaService.findProduct(newListAsin, dataInput.user_id);
-                if (result.status === 'SUCCESS') {
-                    for (const itemData of result.data) {
-                        try {
-                            if (itemData.status === 'SUCCESS') {
-                                if (isUpdateAmazonProduct) {
-                                    let checkUpdate = await ProductAmazonService.findOne({ asin: itemData.data.asin });
-                                    if (checkUpdate) {
-                                        await ProductAmazonService.update(checkUpdate._id, { ...itemData.data, created: Date.now() });
+                let countProductYahoo = await ProductYahooModel.find({ user_id: dataInput.user_id, yahoo_account_id: dataInput.yahoo_account_id }).countDocuments();
+                if (countProductYahoo >= 3000) {
+                    for (const item of newListAsin) {
+                        newListAsinModel[index].status = 'ERROR';
+                        newListAsinModel[index].statusMessage = 'エラー: アカウントは3000件を登録しました。';
+                        await newListAsinModel[index].save();
+                        index++;
+                    }
+                } else {
+                    let result = await KeepaService.findProduct(newListAsin, dataInput.user_id);
+                    if (result.status === 'SUCCESS') {
+                        for (const itemData of result.data) {
+                            try {
+                                if (itemData.status === 'SUCCESS') {
+                                    if (isUpdateAmazonProduct) {
+                                        let checkUpdate = await ProductAmazonService.findOne({ asin: itemData.data.asin });
+                                        if (checkUpdate) {
+                                            await ProductAmazonService.update(checkUpdate._id, { ...itemData.data, created: Date.now() });
+                                        } else {
+                                            await ProductAmazonService.create(itemData.data);
+                                        }
                                     } else {
                                         await ProductAmazonService.create(itemData.data);
                                     }
-                                } else {
-                                    await ProductAmazonService.create(itemData.data);
+                                    countProductYahoo = await ProductYahooModel.find({ user_id: dataInput.user_id, yahoo_account_id: dataInput.yahoo_account_id }).countDocuments();
+                                    if (countProductYahoo >= 3000) {
+                                        newListAsinModel[index].status = 'ERROR';
+                                        newListAsinModel[index].statusMessage = 'エラー: アカウントは3000件を登録しました。';
+                                        await newListAsinModel[index].save();
+                                        index++;
+                                        continue;
+                                    }
+                                    await ProductYahooService.createFromAmazonProduct(itemData.data, newListAsinModel[index].idUser, newListAsinModel[index].yahoo_account_id);
                                 }
-                                await ProductYahooService.createFromAmazonProduct(itemData.data, newListAsinModel[index].idUser, newListAsinModel[index].yahoo_account_id);
+                                newListAsinModel[index].isProductGeted = itemData.status === 'SUCCESS';
+                                newListAsinModel[index].status = itemData.status;
+                                newListAsinModel[index].statusMessage = itemData.message;
+                                await newListAsinModel[index].save();
+                                index++;
+                            } catch (error) {
+                                newListAsinModel[index].status = 'ERROR';
+                                newListAsinModel[index].statusMessage = error.message;
+                                await newListAsinModel[index].save();
+                                index++;
                             }
-                            newListAsinModel[index].isProductGeted = itemData.status === 'SUCCESS';
-                            newListAsinModel[index].status = itemData.status;
-                            newListAsinModel[index].statusMessage = itemData.message;
-                            await newListAsinModel[index].save();
-                            index++;
-                        } catch (error) {
-                            newListAsinModel[index].status = 'ERROR';
-                            newListAsinModel[index].statusMessage = error.message;
-                            await newListAsinModel[index].save();
-                            index++;
                         }
-                    }
-                } else {
-                    for (const item of newListAsin) {
-                        try {
-                            newListAsinModel[index].status = 'ERROR';
-                            newListAsinModel[index].statusMessage = result.message;
-                            await newListAsinModel[index].save();
-                            index++;
-                        } catch (error) {
-                            newListAsinModel[index].status = 'ERROR';
-                            newListAsinModel[index].statusMessage = error.message;
-                            await newListAsinModel[index].save();
-                            index++;
+                    } else {
+                        for (const item of newListAsin) {
+                            try {
+                                newListAsinModel[index].status = 'ERROR';
+                                newListAsinModel[index].statusMessage = result.message;
+                                await newListAsinModel[index].save();
+                                index++;
+                            } catch (error) {
+                                newListAsinModel[index].status = 'ERROR';
+                                newListAsinModel[index].statusMessage = error.message;
+                                await newListAsinModel[index].save();
+                                index++;
+                            }
                         }
                     }
                 }
@@ -148,6 +167,6 @@ export default class QueueGetProductAmazon {
                 }
             }
         }
-        queueGetInfoProduct.push({ newAsin: newListAsinModel, isUpdateAmazonProduct, user_id: dataInput.user_id });
+        queueGetInfoProduct.push({ newAsin: newListAsinModel, isUpdateAmazonProduct, user_id: dataInput.user_id, yahoo_account_id: dataInput.yahoo_account_id });
     }
 }
