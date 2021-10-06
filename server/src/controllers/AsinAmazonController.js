@@ -113,7 +113,7 @@ export default class AsinAmazonController {
                         break;
                     }
                 }
-                console.log(' 11111111 listAsinNew: ', listAsinNew);
+                console.log(' 11111111 listAsinNew: ', listAsinNew.length);
                 // Add list Object Asin
                 let newAsin = await AsinAmazonService.addMany(listAsinNew);
                 //Add List To Queue
