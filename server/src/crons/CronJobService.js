@@ -260,11 +260,11 @@ export default class CronJobService {
 
             console.log(' ########### schedule.new_list_target_folder: ', schedule.new_list_target_folder);
 
-            if (schedule.new_list_target_folder.includes(-1)) {
-                let allFolder = await FolderModel.find({ user_id: schedule.user_id, yahoo_account_id: schedule.yahoo_account_id });
-                schedule.new_list_target_folder = allFolder.map((item) => item._id);
-                console.log(' ######### schedule.new_list_target_folder: ', schedule.new_list_target_folder);
-            }
+            // if (schedule.new_list_target_folder.includes(-1)) {
+            //     let allFolder = await FolderModel.find({ user_id: schedule.user_id, yahoo_account_id: schedule.yahoo_account_id });
+            //     schedule.new_list_target_folder = allFolder.map((item) => item._id);
+            //     console.log(' ######### schedule.new_list_target_folder: ', schedule.new_list_target_folder);
+            // }
 
             //Cron new list
             if (schedule.new_list_auto && schedule.new_list_target_folder.length > 0) {

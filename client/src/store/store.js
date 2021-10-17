@@ -65,7 +65,7 @@ export default new Vuex.Store({
         state.user = user;
         state.token = user.token;
         state.isUserLoggedIn = true;
-        state.isAdmin = false;
+        // state.isAdmin = false;
       } else {
         state.token = null;
         state.isUserLoggedIn = false;

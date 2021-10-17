@@ -36,7 +36,8 @@ Vue.use(VueLodash, { name: "custom", lodash: lodash });
 Vue.use(require("vue-moment"));
 Vue.use(Swal, {
   heightAuto: false,
-  confirmButtonText: `<span style="padding: 0 10px">OK</span>`
+  confirmButtonText: 'はい',
+  cancelButtonText: 'いいえ',
 });
 
 Vue.config.productionTip = false;

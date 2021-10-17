@@ -198,7 +198,23 @@
               <td class="text-center">{{ getExpectInCome(product) }}</td>
               <td class="text-center">{{ getAmount_Actual(product) }}</td>
 
-              <td class="text-center" v-html="getShipInfo(product)"></td>
+              <td class="text-center">
+                <div
+                  v-if="product.ship_info"
+                  style="display: flex; align-items: center"
+                >
+                  <span v-html="product.ship_info"></span>
+                  <div v-if="product.progress === '発送連絡'">
+                    <button
+                      class="btn btn-md btn-danger mb-1 mr-1"
+                      @click="onContactShip(product)"
+                    >
+                      発送連絡
+                    </button>
+                  </div>
+                </div>
+                <span v-else class="label label-danger">未定</span>
+              </td>
 
               <td class="text-center">{{ getPriceOriginal(product) }}</td>
               <td class="text-center">{{ getProfitExpect(product) }}</td>
@@ -213,13 +229,6 @@
               <td>
                 <!-- v-if="product.progress === '発送連絡'" -->
 
-                <button
-                  v-if="product.progress === '発送連絡'"
-                  class="btn btn-md btn-danger mb-1 mr-1"
-                  @click="onContactShip(product)"
-                >
-                  発送連絡
-                </button>
                 <button
                   class="btn btn-md btn-info mb-1 mr-1"
                   @click="addMessage(product)"
@@ -353,9 +362,10 @@ export default {
   },
   methods: {
     async onContactShip(product) {
+
       let result = await this.$swal.fire({
         icon: "question",
-        title: "発送連絡を行う、よろしいですか。",
+        title: "送信します。よろしいですか？",
         showConfirmButton: true,
         showCancelButton: true,
       });
@@ -462,7 +472,8 @@ export default {
         product.ship_info !== "null" &&
         product.ship_info.trim() !== ""
       ) {
-        return product.ship_info;
+        let content = ``;
+        return content;
       }
       return `<span class="label label-danger">未定</span>`;
     },

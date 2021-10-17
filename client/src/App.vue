@@ -22,13 +22,13 @@ export default {
   name: "App",
   data() {
     return {
-      isLoading: false
+      isLoading: false,
     };
   },
   components: {
     NormalLayout,
     AdminLayout,
-    Loading
+    Loading,
   },
   computed: {
     ...mapState(["isUserLoggedIn"]),
@@ -42,8 +42,8 @@ export default {
       selectedYahooAccount: "getSelectedYahooAccount",
       userInfo: "getUserInfo",
       listYahooAccount: "getYahooAccount",
-      apiKey: "getApiKey"
-    })
+      apiKey: "getApiKey",
+    }),
   },
   created() {
     this.$eventBus.$on("showLoading", this.onShowLoading);
@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     async getApiKey() {
-      let result = await ApiKey.get();
+      let result = await ApiKey.get(this.userInfo.token);
       console.log(result);
       if (result && result.status === 200) {
         await this.$store.dispatch("setApiKey", result.data.apiKey);
@@ -101,7 +101,7 @@ export default {
           this.$router.push({ name: "YahooAccounts" });
           this.$swal.fire({
             icon: "warning",
-            title: "ヤフーのアカウントを設定してください"
+            title: "ヤフーのアカウントを設定してください",
           });
         }
       }
@@ -112,7 +112,7 @@ export default {
         this.userInfo.type !== "admin" &&
         this.listYahooAccount &&
         this.userInfo.maxYahooAccount <
-          this.listYahooAccount.filter(item => !item.is_lock).length
+          this.listYahooAccount.filter((item) => !item.is_lock).length
       ) {
         if (!NO_NEED_VALIDATE_ROUTER.includes(this.$route.name)) {
           if (this.$route.name !== "YahooAccounts") {
@@ -121,20 +121,22 @@ export default {
           this.$swal.fire({
             icon: "warning",
             title: `契約数をオーバーしています。
-アカウントを削除して減らすか、取引のみに使用にチェックをして契約数を合わせてください。`
+アカウントを削除して減らすか、取引のみに使用にチェックをして契約数を合わせてください。`,
           });
         }
       }
     },
     async checkApikey() {
-      console.log(" #### checkApikey: ", this.apiKey);
-      if (!this.apiKey && !this.isAdmin && !this.adminViewUser) {
+      // console.log(" #### userInfo: ", this.userInfo);
+      // console.log(" #### checkApikey: ", this.apiKey);
+      // console.log(" ############ this.isAdmin: ", this.isAdmin);
+      // console.log(" ############ this.adminViewUser: ", this.adminViewUser);
+      
+      if (!this.apiKey && (!this.isAdmin || (this.isAdmin && this.adminViewUser)) ) {
         await this.getApiKey();
       }
-      if (
-        (this.isUserLoggedIn && !this.isAdmin) ||
-        (this.isAdmin && this.adminViewUser)
-      ) {
+
+      if (this.isUserLoggedIn && !this.isAdmin) {
         if (!this.apiKey || (!this.apiKey.is_amz && !this.apiKey.is_keepa)) {
           if (
             this.$route.name !== "ApiKey" &&
@@ -144,13 +146,13 @@ export default {
           }
           this.$swal.fire({
             icon: "warning",
-            title: `Please set api Keepa to continue use`
+            title: `Please set api Keepa to continue use`,
           });
         } else if (
           this.apiKey.is_amz &&
           !this.apiKey.is_keepa &&
           this.listYahooAccount &&
-          this.listYahooAccount.filter(item => !item.is_lock).length > 2
+          this.listYahooAccount.filter((item) => !item.is_lock).length > 2
         ) {
           if (
             this.$route.name !== "ApiKey" &&
@@ -160,11 +162,11 @@ export default {
           }
           this.$swal.fire({
             icon: "warning",
-            title: `Please set api Keepa to continue use 3 account yahoo`
+            title: `Please set api Keepa to continue use 3 account yahoo`,
           });
         }
       }
-    }
+    },
   },
   watch: {
     $route() {
@@ -172,8 +174,8 @@ export default {
         this.checkExistYahooAccount();
         this.checkApikey();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style src="@/assets/css/reset.css"></style>

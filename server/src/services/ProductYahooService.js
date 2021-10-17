@@ -425,7 +425,13 @@ export default class ProductYahooService {
 
                 for (const folder_id of new_list_target_folder) {
                     console.log(' ######## folder_id: ', folder_id);
-                    let listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id });
+                    let listProduct;
+                    if (folder_id === -1) {
+                        listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id });
+                    } else {
+                        listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id });
+                    }
+
                     console.log(' ######## listProduct: ', listProduct.length);
                     totalProduct += listProduct.length;
                     for (let index = 0; index < listProduct.length; index++) {
@@ -717,7 +723,7 @@ export default class ProductYahooService {
 
     static async createFromAmazonProduct(productAmazon, user_id, yahoo_account_id) {
         //Dùng cate amazon Check xem có trong mapping k
-        let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id});
+        let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id });
         if (!cateAmazon) {
             cateAmazon = await CategoryService.create({
                 amazon_cate_id: productAmazon.category_id,
