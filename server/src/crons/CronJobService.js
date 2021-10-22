@@ -239,32 +239,38 @@ export default class CronJobService {
         console.log(' ========= startUploadProductYahoo =========');
         let listSchedule = await AuctionPublicSettingModel.find({ $or: [{ new_list_auto: true }, { relist_auto: true }, { calendar_list_setting: true }] });
         for (const schedule of listSchedule) {
-            let cronNewList = listCronJob.find((item) => {
-                if (item.type === 'new_list' && item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() && item.user_id.toString() === schedule.user_id.toString()) {
+            let cronNewListIndex = listCronJob.findIndex((item) => {
+                if (
+                    item.type === 'new_list' &&
+                    item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() &&
+                    item.user_id.toString() === schedule.user_id.toString()
+                ) {
                     return true;
                 }
                 return false;
             });
-            let cronRelist = listCronJob.find((item) => {
-                if (item.type === 'relist' && item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() && item.user_id.toString() === schedule.user_id.toString()) {
+            let cronRelistIndex = listCronJob.findIndex((item) => {
+                if (
+                    item.type === 'relist' &&
+                    item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() &&
+                    item.user_id.toString() === schedule.user_id.toString()
+                ) {
                     return true;
                 }
                 return false;
             });
-            let cronCalendar = listCronJob.find((item) => {
-                if (item.type === 'calendar' && item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() && item.user_id.toString() === schedule.user_id.toString()) {
+            let cronCalendarIndex = listCronJob.findIndex((item) => {
+                if (
+                    item.type === 'calendar' &&
+                    item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() &&
+                    item.user_id.toString() === schedule.user_id.toString()
+                ) {
                     return true;
                 }
                 return false;
             });
-
+            console.log(' ######### cronNewListIndex: ', cronNewListIndex);
             console.log(' ########### schedule.new_list_target_folder: ', schedule.new_list_target_folder);
-
-            // if (schedule.new_list_target_folder.includes(-1)) {
-            //     let allFolder = await FolderModel.find({ user_id: schedule.user_id, yahoo_account_id: schedule.yahoo_account_id });
-            //     schedule.new_list_target_folder = allFolder.map((item) => item._id);
-            //     console.log(' ######### schedule.new_list_target_folder: ', schedule.new_list_target_folder);
-            // }
 
             //Cron new list
             if (schedule.new_list_auto && schedule.new_list_target_folder.length > 0) {
@@ -274,144 +280,148 @@ export default class CronJobService {
                 } else {
                     timeCron = `0 ${schedule.new_list_start_time_minute} ${schedule.new_list_start_time_hour} * * ${schedule.new_list_day_of_week - 1}`;
                 }
-                if (!cronNewList) {
-                    cronNewList = new CronJob(
-                        timeCron,
-                        async function () {
-                            let is_lock_user = await UserService.checkUser_Lock_Exprired(schedule.user_id);
-                            let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(schedule.yahoo_account_id);
-                            if (is_lock_account || is_lock_user) {
-                                console.log(' ========== cronNewList Locked ==========');
-                                return;
-                            }
-                            let results = await ProductYahooService.startUploadProductInListFolderId(schedule.user_id, schedule.yahoo_account_id, schedule.new_list_target_folder);
-                            if (results.length > 0) {
-                                let newCronHistory = {
-                                    success_count: results.filter((item) => item.success).length,
-                                    error_count: results.length - results.filter((item) => item.success).length,
-                                    detail: results,
-                                    user_id: schedule.user_id,
-                                    yahoo_account_id: schedule.yahoo_account_id,
-                                };
-                                await AccountYahooService.setUpCountError(schedule.yahoo_account_id, newCronHistory.error_count);
-                                await CronHistoryModel.create(newCronHistory);
-                            }
-                        },
-                        null,
-                        false
-                    );
-                    cronNewList.start();
+                let newCron = new CronJob(
+                    timeCron,
+                    async function () {
+                        let is_lock_user = await UserService.checkUser_Lock_Exprired(schedule.user_id);
+                        let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(schedule.yahoo_account_id);
+                        if (is_lock_account || is_lock_user) {
+                            console.log(' ========== cronNewList Locked ==========');
+                            return;
+                        }
+                        console.log(' ######### schedule: ', schedule.new_list_target_folder);
+                        let results = await ProductYahooService.startUploadProductInListFolderId(
+                            schedule.user_id,
+                            schedule.yahoo_account_id,
+                            schedule.new_list_target_folder
+                        );
+                        if (results.length > 0) {
+                            let newCronHistory = {
+                                success_count: results.filter((item) => item.success).length,
+                                error_count: results.length - results.filter((item) => item.success).length,
+                                detail: results,
+                                user_id: schedule.user_id,
+                                yahoo_account_id: schedule.yahoo_account_id,
+                            };
+                            await AccountYahooService.setUpCountError(schedule.yahoo_account_id, newCronHistory.error_count);
+                            await CronHistoryModel.create(newCronHistory);
+                        }
+                    },
+                    null,
+                    false
+                );
+                newCron.start();
+
+                if (cronNewListIndex != -1) {
+                    listCronJob[cronNewListIndex].cron.stop();
+                    listCronJob[cronNewListIndex].cron = newCron;
+                } else {
                     listCronJob.push({
                         type: 'new_list',
                         yahoo_account_id: schedule.yahoo_account_id,
                         user_id: schedule.user_id,
-                        cron: cronNewList,
+                        cron: newCron,
                     });
-                } else {
-                    cronNewList.cron.setTime(new CronTime(timeCron));
-                    if (!cronNewList.cron.running) {
-                        cronNewList.cron.start();
-                    }
                 }
             } else {
-                if (cronNewList) {
-                    cronNewList.cron.stop();
+                if (cronNewListIndex != -1) {
+                    listCronJob[cronNewListIndex].cron.stop();
                 }
             }
-            
+
             // Cron relist
             if (schedule.relist_auto) {
                 let timeCron = `0 ${schedule.relist_start_time_minute} ${schedule.relist_start_time_hour} * * *`;
-                if (!cronRelist) {
-                    cronRelist = new CronJob(
-                        timeCron,
-                        async function () {
-                            let is_lock_user = await UserService.checkUser_Lock_Exprired(schedule.user_id);
-                            let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(schedule.yahoo_account_id);
-                            if (is_lock_account || is_lock_user) {
-                                console.log(' ========== cronRelist Locked ==========');
-                                return;
-                            }
-                            let results = await ProductYahooService.startReSubmitProduct(schedule.user_id, schedule.yahoo_account_id);
-                            if (results.length > 0) {
-                                let newCronHistory = {
-                                    success_count: results.filter((item) => item.success).length,
-                                    error_count: results.length - results.filter((item) => item.success).length,
-                                    detail: results,
-                                    user_id: schedule.user_id,
-                                    yahoo_account_id: schedule.yahoo_account_id,
-                                };
-                                await AccountYahooService.setUpCountError(schedule.yahoo_account_id, newCronHistory.error_count);
-                                await CronHistoryModel.create(newCronHistory);
-                            }
-                        },
-                        null,
-                        false
-                    );
-                    cronRelist.start();
+                let newCronRelist = new CronJob(
+                    timeCron,
+                    async function () {
+                        let is_lock_user = await UserService.checkUser_Lock_Exprired(schedule.user_id);
+                        let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(schedule.yahoo_account_id);
+                        if (is_lock_account || is_lock_user) {
+                            console.log(' ========== cronRelist Locked ==========');
+                            return;
+                        }
+                        let results = await ProductYahooService.startReSubmitProduct(schedule.user_id, schedule.yahoo_account_id);
+                        if (results.length > 0) {
+                            let newCronHistory = {
+                                success_count: results.filter((item) => item.success).length,
+                                error_count: results.length - results.filter((item) => item.success).length,
+                                detail: results,
+                                user_id: schedule.user_id,
+                                yahoo_account_id: schedule.yahoo_account_id,
+                            };
+                            await AccountYahooService.setUpCountError(schedule.yahoo_account_id, newCronHistory.error_count);
+                            await CronHistoryModel.create(newCronHistory);
+                        }
+                    },
+                    null,
+                    false
+                );
+                newCronRelist.start();
+                if (cronRelistIndex != -1) {
+                    listCronJob[cronRelistIndex].cron.stop();
+                    listCronJob[cronRelistIndex].cron = newCronRelist;
+                } else {
                     listCronJob.push({
                         type: 'relist',
                         yahoo_account_id: schedule.yahoo_account_id,
                         user_id: schedule.user_id,
-                        cron: cronRelist,
+                        cron: newCronRelist,
                     });
-                } else {
-                    cronRelist.cron.setTime(new CronTime(timeCron));
-                    if (!cronRelist.cron.running) {
-                        cronRelist.cron.start();
-                    }
                 }
             } else {
-                if (cronRelist) {
-                    cronRelist.cron.stop();
+                if (cronRelistIndex != -1) {
+                    listCronJob[cronRelistIndex].cron.stop();
                 }
             }
 
             // Cron calendar
             if (schedule.calendar_list_setting && schedule.new_list_auto && schedule.calendar_target_folder.length > 0) {
                 let timeCron = `0 ${schedule.new_list_start_time_minute} ${schedule.new_list_start_time_hour} * * *`;
-                if (!cronCalendar) {
-                    cronCalendar = new CronJob(
-                        timeCron,
-                        async function () {
-                            let is_lock_user = await UserService.checkUser_Lock_Exprired(schedule.user_id);
-                            let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(schedule.yahoo_account_id);
-                            if (is_lock_account || is_lock_user) {
-                                console.log(' ========== cronCalendar Locked ==========');
-                                return;
-                            }
-                            let results = await ProductYahooService.startUploadProductByCalendar(schedule.user_id, schedule.yahoo_account_id, schedule.calendar_target_folder);
-                            if (results.length > 0) {
-                                let newCronHistory = {
-                                    success_count: results.filter((item) => item.success).length,
-                                    error_count: results.length - results.filter((item) => item.success).length,
-                                    detail: results,
-                                    user_id: schedule.user_id,
-                                    yahoo_account_id: schedule.yahoo_account_id,
-                                };
-                                await AccountYahooService.setUpCountError(schedule.yahoo_account_id, newCronHistory.error_count);
-                                await CronHistoryModel.create(newCronHistory);
-                            }
-                        },
-                        null,
-                        false
-                    );
-                    cronCalendar.start();
+                let newCronCalendar = new CronJob(
+                    timeCron,
+                    async function () {
+                        let is_lock_user = await UserService.checkUser_Lock_Exprired(schedule.user_id);
+                        let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(schedule.yahoo_account_id);
+                        if (is_lock_account || is_lock_user) {
+                            console.log(' ========== cronCalendar Locked ==========');
+                            return;
+                        }
+                        let results = await ProductYahooService.startUploadProductByCalendar(
+                            schedule.user_id,
+                            schedule.yahoo_account_id,
+                            schedule.calendar_target_folder
+                        );
+                        if (results.length > 0) {
+                            let newCronHistory = {
+                                success_count: results.filter((item) => item.success).length,
+                                error_count: results.length - results.filter((item) => item.success).length,
+                                detail: results,
+                                user_id: schedule.user_id,
+                                yahoo_account_id: schedule.yahoo_account_id,
+                            };
+                            await AccountYahooService.setUpCountError(schedule.yahoo_account_id, newCronHistory.error_count);
+                            await CronHistoryModel.create(newCronHistory);
+                        }
+                    },
+                    null,
+                    false
+                );
+                newCronCalendar.start();
+                if (cronCalendarIndex != -1) {
+                    listCronJob[cronCalendarIndex].cron.stop();
+                    listCronJob[cronCalendarIndex].cron = newCronCalendar;
+                } else {
                     listCronJob.push({
                         type: 'calendar',
                         yahoo_account_id: schedule.yahoo_account_id,
                         user_id: schedule.user_id,
-                        cron: cronCalendar,
+                        cron: newCronCalendar,
                     });
-                } else {
-                    cronCalendar.cron.setTime(new CronTime(timeCron));
-                    if (!cronCalendar.cron.running) {
-                        cronCalendar.cron.start();
-                    }
                 }
             } else {
-                if (cronCalendar) {
-                    cronCalendar.cron.stop();
+                if (cronCalendarIndex != -1) {
+                    listCronJob[cronCalendarIndex].cron.stop();
                 }
             }
         }

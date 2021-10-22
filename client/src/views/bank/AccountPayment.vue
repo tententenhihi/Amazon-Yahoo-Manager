@@ -1,7 +1,6 @@
 <template>
   <div class="wrapper-content">
-    <div class="box-header">
-    </div>
+    <div class="box-header"></div>
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 pb-20">
@@ -16,7 +15,7 @@
           <button
             :disabled="!listAccountSelected || listAccountSelected.length === 0"
             class="btn btn-success px-4"
-            @click="searchYahooAccount"
+            @click="onStartWithDrawMoney"
           >
             選択したアカウントの出金を実行する
           </button>
@@ -162,6 +161,26 @@
         </div>
       </template>
     </modal-component>
+    <modal-component ref="modalProgressWithdraw" classModalDialog="modal-lg">
+      <template v-slot:header>
+        <h5>Đang rút tiền</h5>
+      </template>
+      <template>
+        <div>
+          Process Withdraw
+        </div>
+      </template>
+      <template v-slot:button>
+        <div class="button-group">
+          <button
+            class="btn btn-warning"
+            @click="$refs.modalProgressWithdraw.closeModal()"
+          >
+            <i class="fa fa-times"></i> キャンセル
+          </button>
+        </div>
+      </template>
+    </modal-component>
   </div>
 </template>
 
@@ -211,6 +230,21 @@ export default {
     }
   },
   methods: {
+    async onStartWithDrawMoney() {
+      try {
+        console.log(" ####### listAccountSelected: ", this.listAccountSelected);
+        let res = await YahooAccountApi.withDrawMoney({
+          listAccountSelected: this.listAccountSelected
+        });
+        this.$refs.modalProgressWithdraw.openModal();
+      } catch (error) {
+        this.$swal.fire({
+          icon: "error",
+          title: "エラー",
+          text: error.message
+        });
+      }
+    },
     createDatatable() {
       let self = this;
       if (self.$("#tablebank").DataTable()) {

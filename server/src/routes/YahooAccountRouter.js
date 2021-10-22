@@ -11,5 +11,6 @@ YahooAccountRouter.route('/copy-data').post(YahooAccountController.copyDefaultSe
 YahooAccountRouter.route('/get-account-bank').post(YahooAccountController.getAccountBank);
 YahooAccountRouter.route('/set-bank-to-account').post(YahooAccountController.setBankToAccount);
 YahooAccountRouter.route('/get-account-history-withdraw').get(YahooAccountController.getAccountAndHistoryWithRraw);
+YahooAccountRouter.route('/with-draw-money').post(YahooAccountController.withDrawMoney);
 
 export default YahooAccountRouter;

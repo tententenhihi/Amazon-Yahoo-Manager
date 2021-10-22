@@ -6,6 +6,11 @@ export default {
   get() {
     return Api.get(`${prefix}/get-list`);
   },
+  withDrawMoney(credentials) {
+    return Api.post(`${prefix}/with-draw-money`, credentials, {
+      timeout: 15 * 60 * 1000
+    });
+  },
   create(credentials) {
     return Api.post(`${prefix}/create-new`, credentials, {
       timeout: 15 * 60 * 1000

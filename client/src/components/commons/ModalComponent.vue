@@ -56,7 +56,8 @@ export default {
       ref: "modalComponent"
     };
   },
-  computed: {}
+  computed: {},
+  mounted() {}
 };
 </script>
 

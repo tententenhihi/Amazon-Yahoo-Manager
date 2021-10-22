@@ -80,11 +80,24 @@ const setLockAccount = async (yahooAccount) => {
     }
 };
 class YahooAccountController {
+    static async withDrawMoney(req, res) {
+        let response = new Response(res);
+        let user = req.user;
+        try {
+            return response.success200({});
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
     static async getAccountAndHistoryWithRraw(req, res) {
         let response = new Response(res);
         let user = req.user;
         try {
-            let accounts = await YahooAccountModel.aggregate([{ $match: { user_id: mongoose.Types.ObjectId(user._id) } }, { $lookup: { from: 'banks', localField: 'bank_id', foreignField: '_id', as: 'bank' } }]);
+            let accounts = await YahooAccountModel.aggregate([
+                { $match: { user_id: mongoose.Types.ObjectId(user._id) } },
+                { $lookup: { from: 'banks', localField: 'bank_id', foreignField: '_id', as: 'bank' } },
+            ]);
             for (let i = 0; i < accounts.length; i++) {
                 let historyWithDraw = await WithDrawMoneyModel.find({ yahoo_account_id: accounts[i]._id });
                 accounts[i].historyWithDraw = historyWithDraw || [];
@@ -117,7 +130,10 @@ class YahooAccountController {
         let response = new Response(res);
         let user = req.user;
         try {
-            let accounts = await YahooAccountModel.aggregate([{ $match: { user_id: mongoose.Types.ObjectId(user._id) } }, { $lookup: { from: 'banks', localField: 'bank_id', foreignField: '_id', as: 'bank' } }]);
+            let accounts = await YahooAccountModel.aggregate([
+                { $match: { user_id: mongoose.Types.ObjectId(user._id) } },
+                { $lookup: { from: 'banks', localField: 'bank_id', foreignField: '_id', as: 'bank' } },
+            ]);
             let listBank = await BankModel.find({ user_id: mongoose.Types.ObjectId(user._id) });
             response.success200({ accounts, listBank });
         } catch (error) {
@@ -129,7 +145,10 @@ class YahooAccountController {
         let response = new Response(res);
         let user = req.user;
         try {
-            let accounts = await YahooAccountModel.aggregate([{ $match: { user_id: mongoose.Types.ObjectId(user._id) } }, { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxy' } }]).sort({ created: 1});
+            let accounts = await YahooAccountModel.aggregate([
+                { $match: { user_id: mongoose.Types.ObjectId(user._id) } },
+                { $lookup: { from: 'proxies', localField: 'proxy_id', foreignField: '_id', as: 'proxy' } },
+            ]).sort({ created: 1 });
             let infoUser = await UserModel.findById(user._id, { password: 0, hash_password: 0 });
             response.success200({ accounts, infoUser });
         } catch (error) {
