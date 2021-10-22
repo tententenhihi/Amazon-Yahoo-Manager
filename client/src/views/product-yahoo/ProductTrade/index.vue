@@ -149,7 +149,9 @@
               </td> -->
               <td>
                 <a
-                  :href="`https://page.auctions.yahoo.co.jp/jp/auction/${product.aID}`"
+                  :href="
+                    `https://page.auctions.yahoo.co.jp/jp/auction/${product.aID}`
+                  "
                   target="_blank"
                   >{{ product.product_yahoo_title }}</a
                 >
@@ -291,13 +293,13 @@ const LISTING_PROGRESS = [
   { value: "money_received", display: "入金待ち" },
   { value: "preparation_for_shipment", display: "発送連絡中" },
   { value: "shipping", display: "発送完了" },
-  { value: "complete", display: "取引完了" },
+  { value: "complete", display: "取引完了" }
 ];
 const PROXY_STATUS_DIE = "die";
 export default {
   name: "YahooAuctionTrade",
   components: {
-    ProgressLoading,
+    ProgressLoading
   },
   data() {
     return {
@@ -306,7 +308,7 @@ export default {
       selectedEdiNote: {},
       searchObj: {
         queryString: "",
-        progress: null,
+        progress: null
       },
       searchProducts: [],
       page: 1,
@@ -314,14 +316,14 @@ export default {
       progressData: {
         total: 0,
         progress: 0,
-        isLoading: false,
-      },
+        isLoading: false
+      }
     };
   },
   async mounted() {
     await this.getListProduct();
     socket = io.connect(process.env.SERVER_API);
-    socket.on(this.$store.state.user._id + "-ENDED", (fetchedData) => {
+    socket.on(this.$store.state.user._id + "-ENDED", fetchedData => {
       this.progressData = fetchedData;
       if (fetchedData.listProduct) {
         this.products = fetchedData.listProduct;
@@ -335,11 +337,15 @@ export default {
       }
     });
   },
-
+  destroyed() {
+    if (socket) {
+      socket.removeListener(this.$store.state.user._id + "-ENDED");
+    }
+  },
   computed: {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
-      adminViewUser: "getAdminViewUser",
+      adminViewUser: "getAdminViewUser"
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
@@ -358,34 +364,33 @@ export default {
         this.selectedYahooAccount.proxy.length
         ? this.selectedYahooAccount.proxy[0].status === PROXY_STATUS_DIE
         : false;
-    },
+    }
   },
   methods: {
     async onContactShip(product) {
-
       let result = await this.$swal.fire({
         icon: "question",
         title: "送信します。よろしいですか？",
         showConfirmButton: true,
-        showCancelButton: true,
+        showCancelButton: true
       });
       if (result.isConfirmed) {
         let res = await ProductYahooEndedApi.contactShip({
-          product_id: product._id,
+          product_id: product._id
         });
         if (res && res.status === 200) {
           this.$swal.fire({
             icon: "success",
             title: "追加成功",
             timer: 500,
-            showConfirmButton: false,
+            showConfirmButton: false
           });
         }
       }
     },
     async refreshDataYahoo() {
       let res = await ProductYahooEndedApi.refreshDataYahoo({
-        yahoo_account_id: this.yahooAccountId,
+        yahoo_account_id: this.yahooAccountId
       });
       if (res && res.status === 200) {
         this.products = [];
@@ -488,20 +493,20 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: error.message,
+          text: error.message
         });
       }
     },
     addRating(product) {
       this.$router.push({
         name: "YahooAuctionTradeRating",
-        params: { id: product._id },
+        params: { id: product._id }
       });
     },
     addMessage(product) {
       this.$router.push({
         name: "YahooAuctionTradeMessage",
-        params: { id: product._id },
+        params: { id: product._id }
       });
     },
     onOpenModalNote(product) {
@@ -511,14 +516,14 @@ export default {
     async onSaveNote() {
       let res = await ProductYahooEndedApi.setNote({
         product_id: this.selectedEdiNote._id,
-        note: this.$refs.textareaNote.value,
+        note: this.$refs.textareaNote.value
       });
       if (res && res.status === 200) {
         this.$swal.fire({
           icon: "success",
           title: "追加成功",
           timer: 500,
-          showConfirmButton: false,
+          showConfirmButton: false
         });
         this.selectedEdiNote.note = this.$refs.textareaNote.value;
         this.oncloseModal();
@@ -529,7 +534,7 @@ export default {
       this.$refs.modalNote.closeModal();
     },
     onSearchProduct() {
-      this.searchProducts = this.products.filter((product) => {
+      this.searchProducts = this.products.filter(product => {
         let condition = true;
         if (this.searchObj.queryString) {
           condition =
@@ -548,17 +553,17 @@ export default {
     clearSearchProduct() {
       this.searchObj = {
         queryString: "",
-        progress: null,
+        progress: null
       };
       this.searchProducts = [...this.products];
-    },
+    }
   },
   created() {
     const selectedYahooAccount = this.$store.state.selectedYahooAccount;
     // if (selectedYahooAccount && selectedYahooAccount.is_lock) {
     //   this.$routes.push({ name: "YahooAccounts" });
     // }
-  },
+  }
 };
 </script>
 

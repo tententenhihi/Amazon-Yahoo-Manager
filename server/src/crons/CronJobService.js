@@ -269,8 +269,6 @@ export default class CronJobService {
                 }
                 return false;
             });
-            console.log(' ######### cronNewListIndex: ', cronNewListIndex);
-            console.log(' ########### schedule.new_list_target_folder: ', schedule.new_list_target_folder);
 
             //Cron new list
             if (schedule.new_list_auto && schedule.new_list_target_folder.length > 0) {

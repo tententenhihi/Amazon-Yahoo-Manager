@@ -186,6 +186,8 @@
 
 <script>
 import YahooAccountApi from "@/services/YahooAccountApi";
+import io from "socket.io-client";
+var socket = null;
 
 const PAGE_SIZE = 20;
 const STATUS_PROXY = [
@@ -199,6 +201,7 @@ export default {
   name: "YahooAccount",
   data() {
     return {
+      progressData: null,
       isCheckAllAccount: false,
       listAccountSelected: [],
       accounts: [],
@@ -217,6 +220,18 @@ export default {
   async mounted() {
     await this.getYahooAccounts();
     this.createDatatable();
+
+    socket = io.connect(process.env.SERVER_API);
+    socket.on(this.$store.state.user._id + "-PAYMENT", fetchedData => {
+      this.progressData = fetchedData;
+      console.log(' ###### fetchedData: ', fetchedData);
+    
+    });
+  },
+  destroyed() {
+    if (socket) {
+      socket.removeListener(this.$store.state.user._id + "-PAYMENT");
+    }
   },
   computed: {
     tableData() {
