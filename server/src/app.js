@@ -13,13 +13,16 @@ import QueueGetProductAmazon from './services/QueueGetProductAmazon';
 import QueueLoginYahooAuction from './services/QueueLoginYahooAuction';
 import upload from 'express-fileupload';
 import BrightDataService from './services/BrightDataService';
+import CategoryService from './services/CategoryService';
 import CronJobService from './crons/CronJobService';
 import Category from './models/CategoryModel';
+import BankModel from './models/BankModel';
+
 require('dotenv').config();
 
 const app = express();
 // Fix Cross
-var corsOptions = { 
+var corsOptions = {
     origin: function (origin, callback) {
         callback(null, true);
     },
@@ -82,6 +85,9 @@ let initData = async () => {
         await Category.insertMany(listCate);
         console.log(' ====== Import Category Success ======');
     }
+    await CategoryService.checkData();
+
+    // await BankModel.remove({})
 };
 
 // Connect mongo DB

@@ -7,6 +7,10 @@ var WithDrawMoney = new Schema({
         ref: 'YahooAccount',
         require: true,
     },
+    bankNumber: {
+        type: String,
+        require: true,
+    },
     amount: {
         type: String,
         require: true,

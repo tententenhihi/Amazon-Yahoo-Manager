@@ -1,4 +1,4 @@
-export default {
+const data = {
     PREFECTURE: [
         { value: 1, display: '北海道' },
         { value: 2, display: '青森県' },
@@ -50,3 +50,4 @@ export default {
         { value: 48, display: '海外' },
     ],
 };
+module.exports = data;

@@ -37,27 +37,27 @@
                 <td>{{ account.yahoo_id }}</td>
                 <td>
                   <span v-if="account.bank[0]">
-                    {{ account.bank[0].name }}
+                    {{ account.bank[0].bkName }}
                   </span>
                 </td>
                 <td>
                   <span v-if="account.bank[0]">
-                    {{ account.bank[0].branch }}
+                    {{ account.bank[0].bkSubName }}
                   </span>
                 </td>
                 <td>
                   <span v-if="account.bank[0]">
-                    {{ account.bank[0].number }}
+                    {{ account.bank[0].bkAccountNum }}
                   </span>
                 </td>
                 <td>
                   <span v-if="account.bank[0]">
-                    {{ account.bank[0].first_name }}
+                    {{ account.bank[0].bkAccountKanaLast }}
                   </span>
                 </td>
                 <td>
                   <span v-if="account.bank[0]">
-                    {{ account.bank[0].last_name }}
+                    {{ account.bank[0].bkAccountKanaFirst }}
                   </span>
                 </td>
                 <td>
@@ -88,8 +88,8 @@
                 :value="bank._id"
                 :key="index"
               >
-                {{ bank.name }} - {{ bank.number }} -
-                {{ bank.first_name + " " + bank.last_name }}
+                {{ bank.bkName }} - {{ bank.bkAccountNum }} -
+                {{ bank.bkAccountKanaLast + " " + bank.bkAccountKanaFirst }}
               </option>
             </select>
           </div>

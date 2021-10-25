@@ -1,9 +1,9 @@
-import ProxySchema from '../models/ProxyModel';
-import axios from 'axios-https-proxy-fix';
-import Utils from '../utils/Utils';
-import config from 'config';
+const ProxySchema = require('../models/ProxyModel');
+const axios = require('axios-https-proxy-fix');
+const Utils = require('../utils/Utils');
+const config = require('config');
 
-export default class ProxyService {
+class ProxyService {
     static async getProxyById(id) {
         try {
             let proxy = await ProxySchema.findById(id);
@@ -92,3 +92,5 @@ export default class ProxyService {
         }
     }
 }
+
+module.exports = ProxyService;

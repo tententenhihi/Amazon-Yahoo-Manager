@@ -17,4 +17,4 @@ class SocketIOService {
     }
 }
 
-export default SocketIOService;
+module.exports = SocketIOService;

@@ -55,6 +55,15 @@ var YahooAccount = new Schema({
     cookie_aucpay: {
         type: String,
     },
+    old_bank_number: {
+        type: String,
+    },
+    status_withdraw: {
+        type: String,
+    },
+    is_withdraw_running: {
+        type: Boolean,
+    },
     status: {
         type: String,
         require: true,

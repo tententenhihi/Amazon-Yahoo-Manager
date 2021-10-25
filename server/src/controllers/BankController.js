@@ -17,11 +17,10 @@ export default class BankController {
     static async create(req, res) {
         let response = new Response(res);
         try {
-            let { name, branch, number, first_name, last_name } = req.body;
-            if (!name || !branch || !number || !first_name || !last_name) {
+            let { bkCode, bkName, bkSubCode, bkSubName, bkAccountNum, bkAccountKanaLast, bkAccountKanaFirst } = req.body;
+            if (!bkCode || !bkName || !bkSubCode || !bkSubName || !bkAccountNum || !bkAccountKanaLast || !bkAccountKanaFirst) {
                 return response.error400({ message: '完全な情報を入力してください。' });
             }
-
             let user = req.user;
             let newBank = new BankModel({ ...req.body, user_id: user._id });
             await newBank.save();

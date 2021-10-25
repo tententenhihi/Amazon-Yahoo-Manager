@@ -6,8 +6,18 @@ export default {
   get() {
     return Api.get(`${prefix}/get-list`);
   },
+  setOldBankNumber(credentials) {
+    return Api.post(`${prefix}/set_old_bank_number`, credentials, {
+      timeout: 15 * 60 * 1000
+    });
+  },
   withDrawMoney(credentials) {
     return Api.post(`${prefix}/with-draw-money`, credentials, {
+      timeout: 15 * 60 * 1000
+    });
+  },
+  stopWithDrawMoney(credentials) {
+    return Api.post(`${prefix}/stop-with-draw-money`, credentials, {
       timeout: 15 * 60 * 1000
     });
   },

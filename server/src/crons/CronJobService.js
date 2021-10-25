@@ -14,6 +14,7 @@ import ProductInfomationDefaultService from '../services/ProductInfomationDefaul
 import moment from 'moment';
 import AsinAmazonModel from '../models/AsinAmazonModel';
 import FolderModel from '../models/FolderModel';
+const YahooAccountSchema = require('../models/YahooAccount');
 
 let listCronJob = [];
 const CronJob = require('cron').CronJob;
@@ -47,6 +48,16 @@ export default class CronJobService {
             CronJobService.cronDeleteAuctionProductFinished();
             CronJobService.checkProductOriginalForAuctionProductSelling();
         });
+        cron.schedule('0 0 6 * * *', async () => {
+            CronJobService.getCookieAllYahoo();
+        });
+    }
+    static async getCookieAllYahoo() {
+        console.log(' ========== getCookieAllYahoo ==========', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
+        let listYahooAccount = await YahooAccountSchema.find({});
+        for (const yahooAccount of listYahooAccount) {
+            await AccountYahooService.getCookie(yahooAccount._id);
+        }
     }
 
     static async checkProductOriginalForAuctionProductSelling() {
@@ -240,31 +251,19 @@ export default class CronJobService {
         let listSchedule = await AuctionPublicSettingModel.find({ $or: [{ new_list_auto: true }, { relist_auto: true }, { calendar_list_setting: true }] });
         for (const schedule of listSchedule) {
             let cronNewListIndex = listCronJob.findIndex((item) => {
-                if (
-                    item.type === 'new_list' &&
-                    item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() &&
-                    item.user_id.toString() === schedule.user_id.toString()
-                ) {
+                if (item.type === 'new_list' && item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() && item.user_id.toString() === schedule.user_id.toString()) {
                     return true;
                 }
                 return false;
             });
             let cronRelistIndex = listCronJob.findIndex((item) => {
-                if (
-                    item.type === 'relist' &&
-                    item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() &&
-                    item.user_id.toString() === schedule.user_id.toString()
-                ) {
+                if (item.type === 'relist' && item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() && item.user_id.toString() === schedule.user_id.toString()) {
                     return true;
                 }
                 return false;
             });
             let cronCalendarIndex = listCronJob.findIndex((item) => {
-                if (
-                    item.type === 'calendar' &&
-                    item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() &&
-                    item.user_id.toString() === schedule.user_id.toString()
-                ) {
+                if (item.type === 'calendar' && item.yahoo_account_id.toString() === schedule.yahoo_account_id.toString() && item.user_id.toString() === schedule.user_id.toString()) {
                     return true;
                 }
                 return false;
@@ -288,11 +287,7 @@ export default class CronJobService {
                             return;
                         }
                         console.log(' ######### schedule: ', schedule.new_list_target_folder);
-                        let results = await ProductYahooService.startUploadProductInListFolderId(
-                            schedule.user_id,
-                            schedule.yahoo_account_id,
-                            schedule.new_list_target_folder
-                        );
+                        let results = await ProductYahooService.startUploadProductInListFolderId(schedule.user_id, schedule.yahoo_account_id, schedule.new_list_target_folder);
                         if (results.length > 0) {
                             let newCronHistory = {
                                 success_count: results.filter((item) => item.success).length,
@@ -385,11 +380,7 @@ export default class CronJobService {
                             console.log(' ========== cronCalendar Locked ==========');
                             return;
                         }
-                        let results = await ProductYahooService.startUploadProductByCalendar(
-                            schedule.user_id,
-                            schedule.yahoo_account_id,
-                            schedule.calendar_target_folder
-                        );
+                        let results = await ProductYahooService.startUploadProductByCalendar(schedule.user_id, schedule.yahoo_account_id, schedule.calendar_target_folder);
                         if (results.length > 0) {
                             let newCronHistory = {
                                 success_count: results.filter((item) => item.success).length,

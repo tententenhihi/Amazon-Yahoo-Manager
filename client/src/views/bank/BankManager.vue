@@ -3,7 +3,7 @@
     <div class="wrapper-content">
       <div
         class="box-header"
-        style="display: flex;justify-content: space-between;"
+        style="display: flex; justify-content: space-between"
       >
         <span><i class="fa fa-list mr-2"></i>本物口座情報</span>
 
@@ -18,24 +18,33 @@
             <thead class="thead-purple">
               <tr>
                 <th scope="col">No</th>
-                <th scope="col">対応口座</th>
-                <th scope="col">支店名</th>
-                <th scope="col">偽口座情報</th>
-                <th scope="col">名義カナ名字</th>
-                <th scope="col">名義カナ名前</th>
-                <th scope="col">アクション</th>
+                <th scope="col">Bank Code</th>
+                <th scope="col">Bank Name</th>
+                <th scope="col">Bank Sub Code</th>
+                <th scope="col">Bank Sub Name</th>
+                <th scope="col">Bank Number</th>
+                <th scope="col">Bank Account Name Last</th>
+                <th scope="col">Bank Account Name First</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(bank, index) in listBank" :key="bank._id">
                 <th scope="row">{{ index + 1 }}</th>
-                <td>{{ bank.name }}</td>
-                <td>{{ bank.branch }}</td>
-                <td>{{ bank.number }}</td>
-                <td>{{ bank.first_name }}</td>
-                <td>{{ bank.last_name }}</td>
+                <td>{{ bank.bkCode }}</td>
+                <td>{{ bank.bkName }}</td>
+                <td>{{ bank.bkSubCode }}</td>
+                <td>{{ bank.bkSubName }}</td>
+                <td>{{ bank.bkAccountNum }}</td>
+                <td>{{ bank.bkAccountKanaLast }}</td>
+                <td>{{ bank.bkAccountKanaFirst }}</td>
                 <td>
-                  <button class="btn btn-primary" @click="onOpenModalAccount(bank)" >編集</button>
+                  <button
+                    class="btn btn-primary"
+                    @click="onOpenModalAccount(bank)"
+                  >
+                    編集
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -54,61 +63,89 @@
         <div class="form-group form-line">
           <label class="col-sm-4 control-form-label">番号: </label>
           <div class="col-sm-7">
-            <div class="form-control">{{ listBank ? listBank.length + 1 : 0 }}</div>
+            <div class="form-control">
+              {{ listBank ? listBank.length + 1 : 0 }}
+            </div>
           </div>
         </div>
         <div class="form-group form-line">
-          <label class="col-sm-4 control-form-label">対応口座: </label>
+          <label class="col-sm-4 control-form-label">Bank Code: </label>
           <div class="col-sm-7">
             <input
               type="text"
               class="form-control"
-              v-model="newBank.name"
-              id="newBank.name"
+              v-model="newBank.bkCode"
+              id="newBank.bkCode"
             />
           </div>
         </div>
         <div class="form-group form-line">
-          <label class="col-sm-4 control-form-label">支店名: </label>
+          <label class="col-sm-4 control-form-label">Bank Name: </label>
           <div class="col-sm-7">
             <input
               type="text"
               class="form-control"
-              v-model="newBank.branch"
-              id="newBank.branch"
+              v-model="newBank.bkName"
+              id="newBank.bkName"
             />
           </div>
         </div>
         <div class="form-group form-line">
-          <label class="col-sm-4 control-form-label">偽口座情報: </label>
+          <label class="col-sm-4 control-form-label">Bank Sub Code: </label>
           <div class="col-sm-7">
             <input
               type="text"
               class="form-control"
-              v-model="newBank.number"
-              id="newBank.number"
+              v-model="newBank.bkSubCode"
+              id="newBank.bkSubCode"
             />
           </div>
         </div>
         <div class="form-group form-line">
-          <label class="col-sm-4 control-form-label">名義カナ名字: </label>
+          <label class="col-sm-4 control-form-label">Bank Sub Name: </label>
           <div class="col-sm-7">
             <input
               type="text"
               class="form-control"
-              v-model="newBank.first_name"
-              id="newBank.first_name"
+              v-model="newBank.bkSubName"
+              id="newBank.bkSubName"
             />
           </div>
         </div>
         <div class="form-group form-line">
-          <label class="col-sm-4 control-form-label">名義カナ名前: </label>
+          <label class="col-sm-4 control-form-label">Bank Number: </label>
           <div class="col-sm-7">
             <input
               type="text"
               class="form-control"
-              v-model="newBank.last_name"
-              id="newBank.last_name"
+              v-model="newBank.bkAccountNum"
+              id="newBank.bkAccountNum"
+            />
+          </div>
+        </div>
+        <div class="form-group form-line">
+          <label class="col-sm-4 control-form-label"
+            >Bank Account Name Last :
+          </label>
+          <div class="col-sm-7">
+            <input
+              type="text"
+              class="form-control"
+              v-model="newBank.bkAccountKanaLast"
+              id="newBank.bkAccountKanaLast"
+            />
+          </div>
+        </div>
+        <div class="form-group form-line">
+          <label class="col-sm-4 control-form-label"
+            >Bank Account Name First:
+          </label>
+          <div class="col-sm-7">
+            <input
+              type="text"
+              class="form-control"
+              v-model="newBank.bkAccountKanaFirst"
+              id="newBank.bkAccountKanaFirst"
             />
           </div>
         </div>
@@ -137,14 +174,16 @@ export default {
     return {
       keyTable: 0,
       newBank: {
-        name: "",
-        branch: "",
-        number: "",
-        first_name: "",
-        last_name: ""
+        bkCode: "",
+        bkName: "",
+        bkSubCode: "",
+        bkSubName: "",
+        bkAccountNum: "",
+        bkAccountKanaLast: "",
+        bkAccountKanaFirst: "",
       },
       editId: "",
-      listBank: null
+      listBank: null,
     };
   },
   async mounted() {
@@ -156,19 +195,12 @@ export default {
     createDatatable() {
       let self = this;
       if (self.$("#tablebank").DataTable()) {
-        self
-          .$("#tablebank")
-          .DataTable()
-          .destroy();
+        self.$("#tablebank").DataTable().destroy();
       }
       self.$nextTick(() => {
         self.$("#tablebank").DataTable({
-          initComplete: function() {
-            $(
-              this.api()
-                .table()
-                .container()
-            )
+          initComplete: function () {
+            $(this.api().table().container())
               .find("input")
               .parent()
               .wrap("<form>")
@@ -191,24 +223,26 @@ export default {
               sFirst: "先頭",
               sLast: "最終",
               sNext: "次",
-              sPrevious: "前"
+              sPrevious: "前",
             },
             oAria: {
               sSortAscending: ": 列を昇順に並べ替えるにはアクティブにする",
-              sSortDescending: ": 列を降順に並べ替えるにはアクティブにする"
-            }
-          }
+              sSortDescending: ": 列を降順に並べ替えるにはアクティブにする",
+            },
+          },
         });
       });
     },
     onCloseModal() {
       this.$refs.modalInfoAccount.closeModal();
       this.newBank = {
-        name: "",
-        branch: "",
-        number: "",
-        first_name: "",
-        last_name: ""
+        bkCode: "",
+        bkName: "",
+        bkSubCode: "",
+        bkSubName: "",
+        bkAccountNum: "",
+        bkAccountKanaLast: "",
+        bkAccountKanaFirst: "",
       };
     },
     async getListBank() {
@@ -223,11 +257,13 @@ export default {
         this.editId = bankEdit._id;
       } else {
         this.newBank = {
-          name: "",
-          branch: "",
-          number: "",
-          first_name: "",
-          last_name: ""
+          bkCode: "",
+          bkName: "",
+          bkSubCode: "",
+          bkSubName: "",
+          bkAccountNum: "",
+          bkAccountKanaLast: "",
+          bkAccountKanaFirst: "",
         };
         this.editId = null;
       }
@@ -238,7 +274,7 @@ export default {
       if (this.editId) {
         let result = await BankApi.update(credential);
         if (result && result.status === 200) {
-          this.listBank = this.listBank.map(item => {
+          this.listBank = this.listBank.map((item) => {
             if (item._id === credential._id) {
               return credential;
             }
@@ -270,9 +306,9 @@ export default {
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
           confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  キャンセル'
+          cancelButtonText: '<i class="fa fa-times"></i>  キャンセル',
         })
-        .then(async result => {
+        .then(async (result) => {
           if (result.isConfirmed) {
             let res = await YahooAccountApi.delete(account);
             if (res && res.status == 200) {
@@ -289,8 +325,8 @@ export default {
             }
           }
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

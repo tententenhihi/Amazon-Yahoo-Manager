@@ -1,8 +1,8 @@
-import YahooAccountSchema from '../models/YahooAccount';
-import ProxyService from './ProxyService';
-import AuctionYahooService from './AuctionYahooService';
+const YahooAccountSchema = require('../models/YahooAccount');
+const ProxyService = require('./ProxyService');
+const AuctionYahooService = require('./AuctionYahooService');
 
-export default class AccountYahooService {
+class AccountYahooService {
     static async checkAccountYahoo_Lock(id) {
         try {
             let account = await YahooAccountSchema.findById(id);
@@ -36,6 +36,7 @@ export default class AccountYahooService {
     }
     static async find(data) {
         try {
+            console.log(' ########## sadasd : ');
             let accounts = await YahooAccountSchema.find(data);
             return accounts;
         } catch (error) {
@@ -92,3 +93,5 @@ export default class AccountYahooService {
         }
     }
 }
+
+module.exports = AccountYahooService;

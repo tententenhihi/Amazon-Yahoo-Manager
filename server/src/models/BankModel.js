@@ -7,24 +7,31 @@ var Bank = new Schema({
         ref: 'User',
         require: true,
     },
-    name: {
+    bkCode: {
         type: String,
         require: true,
     },
-
-    branch: {
+    bkName: {
         type: String,
         require: true,
     },
-    number: {
+    bkSubCode: {
         type: String,
         require: true,
     },
-    first_name: {
+    bkSubName: {
         type: String,
         require: true,
     },
-    last_name: {
+    bkAccountNum: {
+        type: String,
+        require: true,
+    },
+    bkAccountKanaLast: {
+        type: String,
+        require: true,
+    },
+    bkAccountKanaFirst: {
         type: String,
         require: true,
     },

@@ -1,0 +1,1120 @@
+<!-- <?
+require_once(dirname(__FILE__) . "/../../include/helper/JpwHelper.");
+require_once(dirname(__FILE__) . "/../../include/helper/AdUtil.");
+require_once(dirname(__FILE__) . "/../../include/helper/MtUtil.");
+require_once(dirname(__FILE__) . "/../../include/helper/YtmUtil.");
+
+
+// shortcut
+$v = &$vars;
+$spaceId = "2080271757";
+
+//EMG読み込み
+if (empty($v['mesg_system']) && empty($v['mesg_param'])) { 
+    // 正常表示
+    $adutil = new AdUtil($spaceId);
+} else {
+    // エラー表示
+    $spaceId = "2080271758";
+    $adutil = new AdUtil($spaceId);
+}
+$mt = new MtUtil();
+
+$ytmUtil = new YtmUtil($spaceId);
+?>
+<?
+/**
+ * ウォレット登録情報画面
+ * $Id$
+ */
+?> -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta name="msapplication-TileImage" content="https://s.yimg.jp/images/pst/wallet144.png">
+    <meta name="msapplication-TileColor" content="#005EA9">
+    <link rel="stylesheet" href="https://s.yimg.jp/images/wallet/waltz/common/css/1.0.1/reset.css" media="all" />
+    <link rel="icon" href="https://s.yimg.jp/c/icon/s/bsc/2.0/favicon.ico">
+
+    <script>
+      var device = "pc";
+    </script>
+  
+  <title>Yahoo!ウォレット受取口座の管理 - Yahoo! JAPAN</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="format-detection" content="email=no">
+  <link type="text/css" rel="stylesheet" href="https://s.yimg.jp/images/wallet/pc/css/common/1.1.0/style_pc.css" media="all">
+  <link rel="stylesheet" type="text/css" href="https://s.yimg.jp/images/account/pc/css/lib/common/1.1.0/common-min.css" media="all">
+  <link rel="stylesheet" type="text/css" href="https://s.yimg.jp/images/account/sp/css/lib/module/1.1.0/module-min.css" media="all">
+  <link rel="stylesheet" type="text/css" href="https://s.yimg.jp/images/account/pc/css/lib/module/1.1.0/module-min.css" media="all">
+  <link rel="stylesheet" type="text/css" href="https://s.yimg.jp/images/account/sp/css/lib/winModal/1.0.0/winModal-min.css" media="all">
+  <link rel="stylesheet" type="text/css" href="https://s.yimg.jp/images/account/sp/css/lib/chgForm/1.0.2/chgForm-min.css" media="all">
+  <link rel="stylesheet" type="text/css" href="https://s.yimg.jp/images/account/sp/css/lib/tipView/1.0.0/tipView-min.css" media="all">
+  <link rel="stylesheet" type="text/css" href="https://s.yimg.jp/images/wallet/sp/css/reg/1.0.1/bank-min.css" media="all">
+  <link rel="stylesheet" type="text/css" href="https://s.yimg.jp/images/wallet/sp/css/reg/1.0.0/segment-min.css" media="all">
+  <link type="text/css" rel="stylesheet" href="https://s.yimg.jp/images/wallet/sp/css/edit/1.1.0/segment.css" media="all">
+  <!-- <?
+  if( !empty($vars['MHCSS']) ) :
+    echo $vars['MHCSS'];
+  else :
+    include('/home/y/share/pear/y_jpw_mhd_api_client/template/static_masthead_pc_css.html');
+  endif; ?>
+  <? // require(dirname(__FILE__) . "/../../css/segment.css"); ?> -->
+  
+  
+    
+    <script>
+      var TLDataContext = {
+        ual: {
+          pageview: {
+            opttype: 'pc',
+            content_id: '',
+            id_type: '',
+            nopv: 'false',
+            mtestid: '',
+            ss_join_id: '',
+            ss_join_id_type: '',
+            hierarchy_id: "2080271757"
+          }
+        }
+      };
+    </script>
+    <script>
+      (function () {
+        var tagjs = document.createElement("script");
+        var s = document.getElementsByTagName("script")[0];
+        tagjs.async = true;
+        tagjs.src = "//s.yjtag.jp/tag.js#site=fjT1EkU";
+        s.parentNode.insertBefore(tagjs, s);
+      }());
+    </script>
+  
+  
+</head>
+<body class="yj950-1">
+  
+    <noscript>
+      <iframe src="//b.yjtag.jp/iframe?c=fjT1EkU" width="1" height="1" frameborder="0" scrolling="no" marginheight="0"
+        marginwidth="0"></iframe>
+    </noscript>
+  
+
+  <!-- wrapper -->
+  <div id="wrapper">
+
+    
+    <header id="header">
+      <!-- basic-MH-login -->
+<!-- mhd -->
+<div id="msthd">
+  <div>
+    <div id="msthdtp">
+      <div id="mhd_uhd_pc"></div>
+      <div id="msthdsb">
+        <div class="msthdLink">
+          <ul>
+            <li class="msthdLinkYtop"><a data-redirectadclick href="https://www.yahoo.co.jp/" data-ylk="slk:h_ytop;pos:0" id="msthdYtop">Yahoo! JAPAN</a></li>
+            <!-- mhhl -->
+            <li class="msthdLinkHelp"><a data-redirectadclick href="https://support.yahoo-net.jp/PccWallet/s/" data-ylk="slk:h_hlp;pos:0" id="msthdHelp">ヘルプ</a></li>
+            <!-- /mhhl -->
+          </ul>
+        </div>
+        <div id="msthdsrch">
+          <form data-redirectadclick action="https://search.yahoo.co.jp/search" name="p">
+            <p id="msthdsrchBox">
+              <label id="msthdslb" for="msthdsbox" title="キーワード：" class="offLeft">キーワード：</label>
+              <input id="msthdsbox" type="text" name="p" value="" placeholder="ウェブ検索">
+              <button id="msthdsbt" type="submit" title="検索">検索</button>
+              <input type=hidden name="ei" value="UTF-8" id="msthdei">
+              <input type=hidden name="fr" value="ush">
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- mhlg -->
+    <div class="logo">
+      <a data-redirectadclick href="https://wallet.yahoo.co.jp/" data-ylk="slk:h_srvtop;pos:0" id="msthdLogo">
+        <img src="https://s.yimg.jp/c/logo/f/2.0/wallet_r_34_2x.png" alt="Yahoo!ウォレット" width="218" height="34">
+      </a>
+    </div>
+    <!-- /mhlg -->
+    <!-- mhli_login -->
+    <noscript>
+      <style type="text/css">
+      <!--
+        #msthdLoginUser{display: inline-block;}
+        #msthd #msthdUserIcon #msthdUserIconImg{display: inline;}
+        #msthd #msthdsrch {display: inline-block;}
+      -->
+      </style>
+    </noscript>
+    <div class="msthdtxt">
+      <div id="msthdUserIcon">
+        <a data-redirectadclick href="https://accounts.yahoo.co.jp/profile?.done=https%3A%2F%2Fwallet.yahoo.co.jp%2F&.src=wallet" data-ylk="slk:h_usricn;pos:0"><img src="https://s.yimg.jp/images/account/sp/img/display_name/user/64/00.png" alt="ユーザーアイコン" width="36" height="36" id="msthdUserIconImg"></a>
+      </div>
+      <div id="msthdLoginUser">
+        <p>
+          <a data-redirectadclick href="https://accounts.yahoo.co.jp/profile?.done=https%3A%2F%2Fwallet.yahoo.co.jp%2F&.src=wallet" class="b" id="msthdLoginName" data-ylk="slk:h_reginf;pos:0"></a>
+        </p>
+        <p>
+          <span id="mhd_premium_pc"></span>
+        </p>
+      </div>
+      <div id="msthdPointArea">
+        <p>
+          <a data-redirectadclick href="https://points.yahoo.co.jp/book" data-ylk="slk:h_tpthst;pos:0" id="msthdPoint"><span id="msthdPointNum">-ポイント</span></a><span id="msthdPointTxt"></span>
+        </p>
+        <p>
+          <span id="mhd_text_pc" style="display: none;"></span>
+        </p>
+      </div>
+    </div>
+    <!-- /mhli_login -->
+  </div>
+</div>
+<script type="text/javascript" src="https://s.yimg.jp/images/security/pf/pcore-1.0.2.min.js"></script>
+<script type="text/javascript" src="https://s.yimg.jp/images/security/pf/yjsecure.js"></script>
+<script type="text/javascript" src="https://s.yimg.jp/images/mempf/mhd/2_3_0/mempf.js"></script>
+<script type="text/javascript">
+window.msthdPromo = function() {
+  YAHOO.JP.msthd.Promo.init();
+};
+</script>
+<script type="text/javascript">
+  (function(d,t){var s=d.getElementsByTagName(t)[0],n=d.createElement(t);n.id='msthdScript';n.src='https://s.yimg.jp/yui/jp/mh/pc/1.9.4/js/std-min.js';n.setAttribute('data-s','');n.setAttribute('data-tm','');s.parentNode.insertBefore(n,s);}(document,'script'));
+</script>
+<!-- /mhd -->
+
+      <!-- basic-MHCSS -->
+<!-- mhcss -->
+<link href="https://s.yimg.jp/yui/jp/mh/pc/1.5.7/css/std.css" rel="stylesheet" type="text/css" media="all">
+<!-- /mhcss -->
+
+      <div id="emg"><!-- EMG noResult --></div>
+      <div id="emg2"><!-- EMG2 noResult --></div>
+      <div id="emg3"><!-- EMG3 noResult --></div>
+    </header>
+    <script type="text/javascript" src="https://s.yimg.jp/images/wallet/waltz/common/js/pcheader.js"
+      id="msthdScript"></script>
+    <nav class="header__nav" id="nav_wrp"></nav>
+    <script type="text/javascript" src="https://s.yimg.jp/images/wallet/waltz/common/js/1.1.2/nav_pc.js"></script>
+    <!--  nav  -->
+    <noscript>
+      <div class="js_errorBox">
+        <dl class="js_errorBox__inner">
+          <dt class="fw--bold mgb--10">現在JavaScriptの設定が無効になっています。</dt>
+          <dd>すべての機能を利用するためには、設定を有効にしてください。詳しい設定方法は「<a href="#">JavaScriptの設定方法</a>」をご覧ください。 </dd>
+        </dl>
+      </div>
+    </noscript>
+  
+
+    <div id="pc">
+      
+<div id="content" style="margin-top: 10px; margin-bottom: 10px; height: auto;">
+  <div id="yjContentsHeader">
+    <!--h1-->
+    <div class="labelLarge">
+      <div><h1 class="title">受取口座の管理</h1></div>
+    </div><!--/.labelLarge-->
+    <!--/h1-->
+  </div><!--/#yjContentsHeader-->
+  <!--yjContentsBody-->
+  <div id="yjContentsBody">
+    <div id="yjMain">
+      <div class="yjMainGrid">
+
+        <!-- <?
+        if ($v['message_param'] || $v['message_system'] || $v['message_pay_type']) {
+        ?> -->
+        <div id="msg" class="infoBox--error infoBox--err bold mgr--15 mgl--15 mgb--10">
+        <!-- <div id="msg" class="msgErr small">
+        <span class="yjGuid"><a id="msgStart" name="msgStart">メッセージがあります。</a></span> -->
+          <ul>
+            
+            
+            <li>口座の種類が選択されていません。金融機関、ゆうちょ銀行のいずれかを選択してください。</li>
+          </ul>
+        </div>
+        <!-- <?
+        }
+        ?> -->
+
+        
+        <!-- <? if($v['receipt_account'] === '1'): ?>
+          <? if($v['payment_account'] !== '0'): ?>
+          <? else: ?> -->
+          
+          <!-- <? endif; ?>
+          <? else: ?>
+          <? endif; ?> -->
+        
+
+        <!-- <? if($v['payment_account'] === '0'): ?> -->
+        <!-- <? endif; ?> -->
+
+        <form name="theform" action="/config/wallet_recv_account_control"
+                method="post" autocomplete="off">
+
+          <!-- <input type=hidden name=".crumb" value="<? echo XXX_cookie_issue_crumb("wallet_update") ?>">
+          <? if(array_key_exists(".scrumb" ,$v)): ?>
+          <input type=hidden name=".scrumb" value="<? echo $v['.scrumb'] ?>">
+          <? endif; ?>
+          <input type=hidden name=".done" value="<? echo $v['.done'] ?>">
+          <input type=hidden name=".bail" value="<? echo $v['.bail'] ?>">
+          <input type=hidden name=".src" value="<? echo $v['.src'] ?>">
+          <input type=hidden name=".from" value="<? echo $v['.from'] ?>">
+          <input type=hidden name=".rd" value="<? echo $v['.rd'] ?>">
+          <input type=hidden name=".cope" value="<? echo $v['src_is_cope'] ?>">
+          <input type=hidden name="img_num" value="<? echo $v['img_num'] ?>">
+          <? if(array_key_exists('ntr_account_sync', $v) !== false): ?>
+          <input type="hidden" name="ntr_account_sync" value="<? echo $v['ntr_account_sync']; ?>">
+          <? endif; ?>
+
+          <input type="hidden" id=".bcrumb" value="<? echo yahoo_bcrumb_issue("bcrumb_get_address");?>">
+          <input type="hidden" name="pay_type_rec" id="payTypeRec" value="<? echo $v['pay_type_rec'];?>">
+          <input type="hidden" id="bankCode" name="bankCode" value="<? echo $v['bankCode'];?>">
+          <input type="hidden" id="saveBankCode">
+          <input type="hidden" name="bkname_rec" id="bankName" value="<? echo $v['bkname_rec'] ?>">
+          <input type="hidden" id="saveBankName">
+          <input type="hidden" id="storeCode" name="storeCode" value="<? echo $v['storeCode'];?>">
+          <input type="hidden" id="saveStoreCode">
+          <input type="hidden" name="bksubname_rec" id="storeName" value="<? echo $v['bksubname_rec'] ?>">
+          <input type="hidden" id="saveStoreName"> -->
+          <input type=hidden name=".crumb" value="As2IdmEAcXMNWMDn5fTuhWFDc0mAHK5bXRFgG8hdOSrbVxDi0iqnBSg7HZCpywiz4HszsUvlHiBeQhhok3QoMJpDOOUIU2kqEQIMJpo96ZqvmhBqv5Ykb6FryhM-NusVbRH08Qc0">
+          <input type=hidden name=".done" value="https://salesmanagement.yahoo.co.jp/list">
+          <input type=hidden name=".bail" value="">
+          <input type=hidden name=".src" value="wallet">
+          <input type=hidden name=".from" value="">
+          <input type=hidden name="img_num" value="0">
+          <input type="hidden" name="type" id="payTypeRec" value="BK">
+          <input type="hidden" id="bankCode" name="bkCode" value="0009">
+          <input type="hidden" id="saveBankCode">
+          <input type="hidden" name="bkName" id="bankName" value="三井住友銀行">
+          <input type="hidden" id="saveBankName">
+          <input type="hidden" id="storeCode" name="bkSubCode" value="779">
+          <input type="hidden" id="saveStoreCode">
+          <input type="hidden" name="bkSubName" id="storeName" value="上野支店">
+          <input type="hidden" id="saveStoreName">
+
+          <div class="mainFrame">
+            <div class="itemBox">
+
+              <!-- ★ULT -->
+              <input type="hidden" name="conttype" id="conttype" value="bnkacmgr">
+              <!-- /★ULT -->
+
+              
+
+              <!-- h2 -->
+              <div class="labelMedium">
+                <div>
+                  
+                    
+                      <h2 class="title">受取口座の変更・削除</h2>
+                      <!-- <span class="Del_link" style="position:absolute;right:20px;top:12px;"><a href="/config/wallet_trans_delete?.bail=<? echo $v['here']?>&.crumb=<? echo $v['.crumb']; ?>">削除</a> -->
+                      <span class="Del_link" style="position:absolute;right:20px;top:12px;"><a href="/config/wallet_trans_delete?.bail=https%3A%2F%2Fedit.wallet.yahoo.co.jp%2Fconfig%2Fwallet_recv_account_control&amp;.crumb=">削除</a>
+                      </span>
+                    
+                    
+                  
+
+                  
+                </div>
+              </div><!--/.labelMedium-->
+
+              <div class="exp small">金融機関またはゆうちょ銀行通常貯金を選択してすべての項目を入力してください。なお、ご本人名義の口座に限ります。<br>登録する際の注意点は<a href="https://support.yahoo-net.jp/PccWallet/s/article/H000008752" target="new" class="newWin">こちら</a></div>
+              <div class="center nocard_box blinker">
+                <!-- <?
+                if (isset($v["isSmartphone"]) && $v["isSmartphone"]) { //sp版
+                ?> -->
+                <!-- <p th:if="${test.isSmartphone}" class="small">Yahoo! JAPANで便利で、お得な口座<br><a class="small" target="new" href="<? echo $opening_payment_link; ?>">ＰａｙＰａｙ銀行口座を申し込む<br>（最短当日開設）</a></p> -->
+                <!-- <?
+                } else { //pc版
+                ?> -->
+                <!-- <p th:unless="${test.isSmartphone}" class="small">Yahoo! JAPANで便利で、お得な口座<br><a class="small" target="new" href="<? echo $opening_payment_link; ?>">ＰａｙＰａｙ銀行口座を申し込む（最短当日開設）</a></p> -->
+                
+                <p class="small">Yahoo! JAPANで便利で、お得な口座<br><a class="small" target="new" href="https://rdr.yahoo.co.jp/v1/label=L3dhbGxldHJlZw/p=walletreg/d=redirect/tk=1b3453b6-a390-412d-bb90-cde36979e07f/ru=aHR0cHM6Ly9iYW5rLnlhaG9vLmNvLmpwL2NhbXBhaWduL2F1Y3Rpb25zLz9scGlkPTIwMTUwMDAwMTgmbHB0eXBlPWEmYWF0Yz1vdDE0MTB5ajAxYSZwYXJhbTE9d2FsbGV0MzE/">PayPay銀行口座を申し込む（最短当日開設）</a></p>
+                <!-- <?
+                }
+                ?> -->
+              </div>
+
+              
+<div>
+  <!-- h2 -->
+  <label class="">
+    <!-- <div class="labelMedium tg_btn on<? if(!empty($v['mesg_pay_type'])) echo ' err'; ?>" id="tg_key_2"> -->
+    <div class="labelMedium tg_btn on err" id="tg_key_2">
+      <div>
+        <h3 class="title">
+          <!-- <input 
+            type="radio" 
+            name="bank" 
+            id="bank_select" 
+            <? if($v['pay_type_rec'] === "BK") echo "checked";?>>金融機関（普通口座）</h3> -->
+          <input 
+            type="radio" 
+            name="bank"
+            id="bank_select" checked="checked">金融機関（普通口座）
+        </h3>
+      </div>
+    </div><!--/.labelMedium-->
+  </label>
+  <!-- /h2 -->
+  <!-- 銀行口座 -->
+  <div id="tg_box_2" class="tg_box open">
+    <div class="exp">銀行口座の情報を入力します。「金融機関の選択」ボタンを押してください。</div>
+    <div class="bank_searchArea">
+      <dl class="table">
+        <dt class="bank_search_title">金融機関</dt>
+        <dd>
+          <span class="buttonMedium bankSearchBtn">
+            <a href="javascript:void(0);" id="md_key_2" class="small">金融機関の選択</a>
+          </span><!--/.buttonMedium-->
+          
+        </dd>
+      </dl>
+      <dl class="table">
+        <dt>銀行名</dt>
+        <dd>
+          <!-- <span id="bankTxt" class="noInput"><? echo ($v['bkname_rec'] ? $v['bkname_rec'] : "選択されていません");?></span> -->
+          <span id="bankTxt" class="noInput">三井住友銀行</span>
+        </dd>
+      </dl><!--/.table-->
+      <dl class="table">
+        <dt>支店</dt>
+        <dd>
+          <!-- <span id="storeTxt" class="noInput"><? echo ($v['bksubname_rec'] ? $v['bksubname_rec'] : "選択されていません");?></span> -->
+          <span id="storeTxt" class="noInput">上野支店</span>
+        </dd>
+      </dl><!--/.table.border-->
+      <dl class="table">
+      <dt>
+        <label for="bknum_rec" class="label">口座番号</label>
+      </dt>
+      <dd>
+      <strong id="tip_bank" class="tipView close fadeOut">
+        <span class="tipBody">
+          <span class="chkYidNG">数字を入力してください。</span>
+          <span class="handle">
+            <span class="handleInner"></span>
+          </span>
+        </span>
+      </strong>
+      <!-- <input type="text" name="bknum_rec" id="bknum_rec" size="30" maxlength="7" value="<? echo $v['bknum_rec'] ?>" class="txtbox tel<? if($v['pay_type_rec'] === "BK") JpwHelper::printErr("bknum",$v); ?>"> -->
+      <input 
+        type="text" 
+        name="bkAccountNum"
+        id="bknum_rec" 
+        size="30" 
+        maxlength="7" 
+        value="*****79"
+        class="txtbox tel">
+      <ul class="hint">
+        <li>半角数字、7文字（満たない場合は最初に0）</li>
+      </ul>
+      <!-- <? if($v['pay_type_rec'] === "BK" && !empty($v['mesg_bknum']) && !empty($v['bknum_rec'])): ?> -->
+      
+      
+      </dd>
+    </dl><!--/.table-->
+    <dl class="table">
+      <dt>
+        <label for="bkkanal_rec" class="label">口座名義</label>
+      </dt>
+      <dd class="two">
+        <!-- <input type="text" title="セイ" maxlength="44" value="<? echo $v['bkkanal_rec'] ?>" class="txtbox small<? if($v['pay_type_rec'] === "BK") JpwHelper::printErr("bkkanal",$v); ?>" id="bkkanal_rec" name="bkkanal_rec">
+        <input type="text" title="メイ" maxlength="45" value="<? echo $v['bkkanaf_rec'] ?>" class="txtbox small<? if($v['pay_type_rec'] === "BK") JpwHelper::printErr("bkkanaf",$v); ?>" id="bkkanaf_rec" name="bkkanaf_rec"> -->
+        <input 
+          type="text" 
+          title="セイ" 
+          maxlength="44" 
+          value="ＮＧＵＹＥＮ　ＴＨＩＥＮ"
+          class="txtbox small"
+          id="bkkanal_rec" 
+          name="bkAccountKanaLast">
+        <input 
+          type="text" 
+          title="メイ" 
+          maxlength="45" 
+          value="ＧＩＡＰ"
+          class="txtbox small"
+          id="bkkanaf_rec"
+          name="bkAccountKanaFirst">
+        <ul class="hint">
+          <li>全角カナ　例：ヤマダ　ハナコ</li>
+        </ul>
+        <!-- <? if($v['pay_type_rec'] === "BK" && !empty($v['mesg_bkkana']) && (!empty($v['bkkanal_rec']) || !empty($v['bkkanaf_rec'])) ): ?> -->
+        
+        <!-- <? elseif($v['pay_type_rec'] === "BK" && !empty($v['mesg_bkkana'])): ?> -->
+        
+      </dd>
+    </dl><!--/.table-->
+  </div><!--/.bank_searchArea-->
+</div><!--/#toggleForm2-->
+<!-- /銀行口座 -->
+<!-- h2 -->
+<label class="">
+  <!-- <div class="labelMedium tg_btn on<? if(!empty($v['mesg_pay_type'])) echo ' err'; ?>" id="tg_key_1"> -->
+  <div class="labelMedium tg_btn on err" id="tg_key_1">
+    <div>
+      <h3 class="title">
+        <!-- <input type="radio" name="bank" id="yucho_select" <? if($v['pay_type_rec'] === "YU") echo "checked";?>>ゆうちょ銀行通常貯金 -->
+        <input 
+          type="radio" 
+          name="bank"
+          id="yucho_select">ゆうちょ銀行通常貯金
+      </h3>
+    </div>
+  </div><!--/.labelMedium-->
+</label>
+<!-- /h2 -->
+<!-- ゆうちょ銀行 -->
+<div id="tg_box_1" class="tg_box">
+  <div class="exp">ゆうちょ銀行通常貯金の情報を入力してください。</div>
+    <dl class="table">
+      <dt><label for="yusubname_rec" class="label">記号</label></dt>
+      <dd>
+        <strong id="tip_yuSubName" class="tipView close fadeOut">
+          <span class="tipBody">
+            <span class="chkYidNG">数字を入力してください。</span>
+            <span class="handle"><span class="handleInner"></span></span>
+          </span>
+        </strong>
+        <!-- <input type="text" name="yusubname_rec" id="yusubname_rec" size="30" maxlength="5" class="txtbox tel<? if($v['pay_type_rec'] === "YU") JpwHelper::printErr("bksubcode",$v); ?>" value="<? echo $v['yusubname_rec'] ?>"> -->
+        <input 
+          type="text" 
+          name="bkSubCodeYucho"
+          id="yusubname_rec" 
+          size="30" 
+          maxlength="5" 
+          class="txtbox tel"
+          value="">
+        <ul class="hint">
+          <li>半角数字、5文字</li>
+        </ul>
+        <!-- <? if($v['pay_type_rec'] === 'YU' && !empty($v['mesg_bksubcode']) && !empty($v['yusubname_rec']) ): ?> -->
+        
+        <!-- <? elseif($v['pay_type_rec'] === "YU" && !empty($v['mesg_bksubcode'])): ?> -->
+        
+        <!-- <? endif; ?> -->
+      </dd>
+    </dl>
+    <dl class="table">
+      <dt><label for="yunum_rec" class="label">番号</label></dt>
+      <dd>
+        <strong id="tip_yuNum" class="tipView close fadeOut">
+          <span class="tipBody">
+            <span class="chkYidNG">数字を入力してください。</span>
+            <span class="handle"><span class="handleInner"></span></span>
+          </span>
+        </strong>
+        <!-- <input type="text" name="yunum_rec" id="yunum_rec" size="30" maxlength="8" class="txtbox tel<? if($v['pay_type_rec'] === "YU") JpwHelper::printErr("bknum",$v); ?>" value="<? echo $v['yunum_rec'] ?>"> -->
+        <input 
+          type="text" 
+          name="bkAccountNumYucho"
+          id="yunum_rec" 
+          size="30" 
+          maxlength="8" 
+          class="txtbox tel" 
+          value="">
+        <ul class="hint">
+          <li>半角数字、8文字（満たない場合は最初に0）</li>
+        </ul>
+        <!-- <? if($v['pay_type_rec'] === 'YU' && !empty($v['mesg_bknum']) && !empty($v['yunum_rec']) ):  ?> -->
+        
+          <!-- <? elseif($v['pay_type_rec'] === "YU" && !empty($v['mesg_bknum'])): ?> -->
+        
+          <!-- <? endif; ?> -->
+      </dd>
+    </dl>
+    <dl class="table">
+      <dt><label for="yukanal_rec" class="label">口座名義</label></dt>
+      <dd class="two">
+        <!-- <input type="text" title="セイ" maxlength="44" value="<? echo $v['yukanal_rec'] ?>" class="txtbox small<? if($v['pay_type_rec'] === "YU") JpwHelper::printErr("bkkanal",$v); ?>" id="yukanal_rec" name="yukanal_rec">
+        <input type="text" title="メイ" maxlength="45" value="<? echo $v['yukanaf_rec'] ?>" class="txtbox small<? if($v['pay_type_rec'] === "YU") JpwHelper::printErr("bkkanaf",$v); ?>" id="yukanaf_rec" name="yukanaf_rec"> -->
+        <input 
+          type="text" 
+          title="セイ" 
+          maxlength="44" 
+          value="ＮＧＵＹＥＮ　ＴＨＩＥＮ"
+          class="txtbox small" 
+          id="yukanal_rec" 
+          name="bkAccountKanaLastYucho">
+        <input 
+          type="text" 
+          title="メイ" 
+          maxlength="45" 
+          value="ＧＩＡＰ"
+          class="txtbox small"
+          id="yukanaf_rec" 
+          name="bkAccountKanaFirstYucho">
+        <ul class="hint">
+          <li>全角カナ　例：ヤマダ　ハナコ</li>
+        </ul>
+        <!-- <? if($v['pay_type_rec'] === 'YU' && !empty($v['mesg_bkkana']) && (!empty($v['yukanal_rec']) || !empty($v['yukanaf_rec'])) ):  ?> -->
+        
+        <!-- <? elseif($v['pay_type_rec'] === "BK" && !empty($v['mesg_bkkana'])): ?> -->
+        
+        <!-- <? endif; ?> -->
+      </dd>
+    </dl><!--/.table-->
+  </div><!--/#tg_box_1"-->
+<!-- /ゆうちょ銀行 -->
+</div>
+<!-- /chkbox_area -->
+
+<!-- <? if(!empty($v['mesg_pay_type'])): ?> -->
+
+  <div class="mesg_pay_type"><strong class="err">選択してください。</strong></div>
+
+<!-- <? endif; ?> -->
+
+
+            </div><!--/.itemBox-->
+
+
+            <div class="exp small">
+            ご入力いただいた情報は、Yahoo! JAPANが取得し、管理を行います。Yahoo! JAPANは<a href="https://about.yahoo.co.jp/common/terms/chapter1/#cf2nd" target="new" class="newWin">プライバシーポリシー</a>に従ってお客様の情報を取り扱うものとし、<a href="https://about.yahoo.co.jp/common/terms/chapter1/#cf2nd" target="new" class="newWin">プライバシーポリシー</a>に表明する目的以外に利用することはありません。入力内容をご確認のうえ、変更してください。
+            </div><!--/.exp.xsmall-->
+
+            <!--buttonMedium-->
+            <div class="buttonMedium two">
+              <p class="cancel"><a href="https://edit.wallet.yahoo.co.jp/config/wallet_confirm" type="submit" name="cancel" value="戻る" data-ylk="slk:cancel;pos:0">戻る</a></p>
+              <!-- <? if($v['receipt_account'] === '1'): ?> -->
+              
+                <p class="submit large"><button type="submit" name="edit" id="saveBtn" value="同意して変更" data-ylk="slk:submit;pos:0">同意して変更</button></p>
+              
+              <!-- <? else: ?> -->
+              
+              <!-- <? endif; ?> -->
+
+            </div><!--/.buttonMedium-->
+            <!--/buttonMedium-->
+
+          </div><!--/.mainFrame-->
+
+        </form>
+
+      </div><!--/.yjMainGrid-->
+    </div><!--/#yjMain-->
+  </div><!--/#yjContentsBody-->
+  <!--/yjContentsBody-->
+</div><!--/#content-->
+
+    </div><!--/#pc-->
+
+    
+    <div id="footer" class="footer">
+      <div class="footer__topLink">
+        <a id="" class="js-pageTopBtn" href="javascript:void(0);">ページトップへ</a>
+      </div>
+      <address id="sf">
+        <a href="https://privacy.yahoo.co.jp/">プライバシー</a> - <a href="https://about.yahoo.co.jp/common/terms/">利用規約</a> -
+        <a href="https://about.yahoo.co.jp/common/terms/chapter1/#cf4th">ガイドライン</a> - <a
+          href="https://support.yahoo-net.jp/PccWallet/s/">ヘルプ・お問い合わせ</a><br> &copy; Yahoo Japan </address>
+    </div>
+
+    <script type="text/javascript" src="https://s.yimg.jp/l/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://s.yimg.jp/images/wallet/waltz/common/js/common.js"></script>
+    
+    <script type="text/javascript">
+      (function () {
+        // -----------------------------------------------------------------------------
+        $(document).ready(function(){
+        
+                /**
+                * common.js
+                */
+                
+                //ページトップに戻る
+            YAHOO.JP.waltz.scrollTop.init({
+              "btnClass": "js-pageTopBtn"   
+            });
+          
+        });
+        // -----------------------------------------------------------------------------
+        }());
+    </script>
+  
+
+  </div><!--/#wrapper-->
+
+  
+<!--winModal-->
+<div id="modalOverlay" class="close"></div>
+
+<!--modalOverView-->
+<div id="modalOverView" class="close">
+  <div id="modalMiddle" class="off">
+    <!-- modal -->
+    <div id="modal" class="modalDefault">
+      <div id="modalSide" class="md_btn_close"></div>
+      <div class="modalPopup">
+        <div class="modalPopupInner">
+          <!-- .modalHeader --> 
+          <div class="modalHeader"> 
+            <!-- .buttonIcon --> 
+            <span id="md_btn_close" class="buttonIcon closeButton md_btn_close" title="閉じる">×</span>
+            <!-- /.buttonIcon -->
+            <div id="modalUserHeader">
+              <div id="bankHead" class="ui-header">
+                <h2 id="bankChoiceMHead" class="ui-title">金融機関の選択</h2>
+                <a href="1" id="returnBtnArea" class="ui-btn close">＜</a>
+                <a href="#" id="closeBtnArea" class="ui-btn close">×</a>
+              </div><!--/.ui-header-->
+            </div><!--/#modalUserHeader-->
+          </div><!-- /.modalHeader -->
+          <div class="modalContainer">
+            <div id="bankCont" class="bankDispArea">
+              <div id="phase1" class="bankListMod clearfix">
+                <div class="box">
+                  金融機関名を選んでください。
+                </div><!--/.box-->
+                <div class="customerInfo listRowlink">
+                  <div class="labelSmall">
+                    <div>
+                      <h3 class="title">都市銀行</h3>
+                    </div>
+                  </div>
+                  <ul class="checkList ph1Trgt">
+                    <!-- <li class="0001"><? echo !empty($v['prime_bank_name']['0001']) ? $v['prime_bank_name']['0001'] : 'みずほ銀行'; ?></li> -->
+                    <li class="0001">みずほ銀行</li>
+                  </ul>
+                  <ul class="checkList ph1Trgt">
+                    <!-- <li class="0009"><? echo !empty($v['prime_bank_name']['0009']) ? $v['prime_bank_name']['0009'] : '三井住友銀行'; ?></li> -->
+                    <li class="0009">三井住友銀行</li>
+                  </ul>
+                  <ul class="checkList ph1Trgt">
+                    <!-- <li class="0005"><? echo !empty($v['prime_bank_name']['0005']) ? $v['prime_bank_name']['0005'] : '三菱ＵＦＪ銀行'; ?></li> -->
+                    <li class="0005">三菱ＵＦＪ銀行</li>
+                  </ul>
+                  <ul class="checkList ph1Trgt">
+                    <!-- <li class="0010"><? echo !empty($v['prime_bank_name']['0010']) ? $v['prime_bank_name']['0010'] : 'りそな銀行'; ?></li> -->
+                    <li class="0010">りそな銀行</li>
+                  </ul>
+                  <ul class="checkList ph1Trgt">
+                    <!-- <li class="0017"><? echo !empty($v['prime_bank_name']['0017']) ? $v['prime_bank_name']['0017'] : '埼玉りそな銀行'; ?></li> -->
+                    <li class="0017">埼玉りそな銀行</li>
+                  </ul>
+                  <div class="labelSmall">
+                    <div>
+                      <h3 class="title">ネット銀行</h3>
+                    </div>
+                  </div>
+                  <ul class="checkList ph1Trgt">
+                    <!-- <li class="0033"><? echo !empty($v['prime_bank_name']['0033']) ? $v['prime_bank_name']['0033'] : 'ＰａｙＰａｙ銀行'; ?></li> -->
+                    <li class="0033">ＰａｙＰａｙ銀行</li>
+                  </ul>
+                  <ul class="checkList ph1Trgt">
+                    <!-- <li class="0036"><? echo !empty($v['prime_bank_name']['0036']) ? $v['prime_bank_name']['0036'] : '楽天銀行'; ?></li> -->
+                    <li class="0036">楽天銀行</li>
+                  </ul>
+                  <div class="labelSmall">
+                    <div>
+                      <h3 class="title">銀行（その他）</h3>
+                    </div>
+                  </div>
+                  <ul class="checkList ph1Trgt" title="other">
+                    <li class="title" title="other">上記以外の金融機関</li>
+                  </ul>
+                </div><!--/.customerInfo-->
+              </div><!--/#phase1.bankListMod-->
+              <div id="phase2" class="close clearfix">
+                <div class="box">
+                  金融機関名の最初の文字を選んでください。
+                </div>
+                <div id="ph2Trgt">
+                  <ul class="tbKana firstkana">
+                    <li><a class="link" href="#">ア</a></li>
+                    <li><a class="link" href="#">イ</a></li>
+                    <li><a class="link" href="#">ウ</a></li>
+                    <li><a class="link" href="#">エ</a></li>
+                    <li><a class="link" href="#">オ</a></li>
+                  </ul>
+                  <ul class="tbKana">
+                    <li><a class="link" href="#">カ</a></li>
+                    <li><a class="link" href="#">キ</a></li>
+                    <li><a class="link" href="#">ク</a></li>
+                    <li><a class="link" href="#">ケ</a></li>
+                    <li><a class="link" href="#">コ</a></li>
+                  </ul>
+                  <ul class="tbKana">
+                    <li><a class="link" href="#">サ</a></li>
+                    <li><a class="link" href="#">シ</a></li>
+                    <li><a class="link" href="#">ス</a></li>
+                    <li><a class="link" href="#">セ</a></li>
+                    <li><a class="link" href="#">ソ</a></li>
+                  </ul>
+                  <ul class="tbKana">
+                    <li><a class="link" href="#">タ</a></li>
+                    <li><a class="link" href="#">チ</a></li>
+                    <li><a class="link" href="#">ツ</a></li>
+                    <li><a class="link" href="#">テ</a></li>
+                    <li><a class="link" href="#">ト</a></li>
+                  </ul>
+                  <ul class="tbKana">
+                    <li><a class="link" href="#">ナ</a></li>
+                    <li><a class="link" href="#">ニ</a></li>
+                    <li><a class="link" href="#">ヌ</a></li>
+                    <li><a class="link" href="#">ネ</a></li>
+                    <li><a class="link" href="#">ノ</a></li>
+                  </ul>
+                  <ul class="tbKana">
+                    <li><a class="link" href="#">ハ</a></li>
+                    <li><a class="link" href="#">ヒ</a></li>
+                    <li><a class="link" href="#">フ</a></li>
+                    <li><a class="link" href="#">ヘ</a></li>
+                    <li><a class="link" href="#">ホ</a></li>
+                  </ul>
+                  <ul class="tbKana">
+                    <li><a class="link" href="#">マ</a></li>
+                    <li><a class="link" href="#">ミ</a></li>
+                    <li><a class="link" href="#">ム</a></li>
+                    <li><a class="link" href="#">メ</a></li>
+                    <li><a class="link" href="#">モ</a></li>
+                  </ul>
+                  <ul class="tbKana">
+                    <li><a class="link" href="#">ヤ</a></li>
+                    <li><a class="link" href="#">ユ</a></li>
+                    <li><a class="link" href="#">ヨ</a></li>
+                  </ul>
+                  <ul class="tbKana">
+                    <li><a class="link" href="#">ラ</a></li>
+                    <li><a class="link" href="#">リ</a></li>
+                    <li><a class="link" href="#">ル</a></li>
+                    <li><a class="link" href="#">レ</a></li>
+                    <li><a class="link" href="#">ロ</a></li>
+                  </ul>
+                  <ul class="tbKana lastKana">
+                    <li><a class="link" href="#">ワ</a></li>
+                  </ul>
+                </div><!--/#ph2Trgt-->
+              </div><!--/#phase2-->
+              <div id="phase3" class="bankListMod close clearfix">
+                <div class="box">
+                  金融機関名を選んでください。
+                </div>
+                <div class="customerInfo">
+                  <div class="labelSmall">
+                    <div>
+                      <h3 class="title">最初の文字が<span id="searchBankIdx">ア</span>の銀行名</h3>
+                    </div>
+                  </div>
+                  <ul id="ph3Trgt" class="checkList overFlowList">
+                    <li>もう一度お試しください。</li>
+                  </ul>
+                </div><!--/.customerInfo-->
+                <div class="decideBtn decide disabled">
+                  <button type="button" id="bankDecideBtn">決定</button>
+                </div>
+                <div class="decideBtn decide">
+                  <a id="backPh2Btn" href="2">戻る</a>
+                </div>
+              </div><!--/#phase3.bankListMod-->
+              <div id="phase4" class="close">
+                <div class="bankNameWrap clearfix">
+                  <p>金融機関名</p>
+                  <h3 id="bankNameTtl">埼玉りそな銀行</h3>
+                </div><!--/.bankNameWrap-->
+                <div class="tabMenu clearfix">
+                  <ul>
+                    <li id="nameMenu">支店名で探す</li>
+                    <li id="codeMenu" class="noActive">支店番号で探す</li>
+                  </ul>
+                </div><!--/.tabMenu-->
+                <div class="choiceWrap clearfix">
+                  <div id="ph4Trgt">
+                    <div class="tbKanaIntro">
+                      支店名の最初の文字を選んでください。
+                    </div>
+                    <!-- .kanaTable -->
+                    <ul class="tbKana firstkana">
+                      <li><a class="link" href="#">ア</a></li>
+                      <li><a class="link" href="#">イ</a></li>
+                      <li><a class="link" href="#">ウ</a></li>
+                      <li><a class="link" href="#">エ</a></li>
+                      <li><a class="link" href="#">オ</a></li>
+                    </ul>
+                    <ul class="tbKana">
+                      <li><a class="link" href="#">カ</a></li>
+                      <li><a class="link" href="#">キ</a></li>
+                      <li><a class="link" href="#">ク</a></li>
+                      <li><a class="link" href="#">ケ</a></li>
+                      <li><a class="link" href="#">コ</a></li>
+                    </ul>
+                    <ul class="tbKana">
+                      <li><a class="link" href="#">サ</a></li>
+                      <li><a class="link" href="#">シ</a></li>
+                      <li><a class="link" href="#">ス</a></li>
+                      <li><a class="link" href="#">セ</a></li>
+                      <li><a class="link" href="#">ソ</a></li>
+                    </ul>
+                    <ul class="tbKana">
+                      <li><a class="link" href="#">タ</a></li>
+                      <li><a class="link" href="#">チ</a></li>
+                      <li><a class="link" href="#">ツ</a></li>
+                      <li><a class="link" href="#">テ</a></li>
+                      <li><a class="link" href="#">ト</a></li>
+                    </ul>
+                    <ul class="tbKana">
+                      <li><a class="link" href="#">ナ</a></li>
+                      <li><a class="link" href="#">ニ</a></li>
+                      <li><a class="link" href="#">ヌ</a></li>
+                      <li><a class="link" href="#">ネ</a></li>
+                      <li><a class="link" href="#">ノ</a></li>
+                    </ul>
+                    <ul class="tbKana">
+                      <li><a class="link" href="#">ハ</a></li>
+                      <li><a class="link" href="#">ヒ</a></li>
+                      <li><a class="link" href="#">フ</a></li>
+                      <li><a class="link" href="#">ヘ</a></li>
+                      <li><a class="link" href="#">ホ</a></li>
+                    </ul>
+                    <ul class="tbKana">
+                      <li><a class="link" href="#">マ</a></li>
+                      <li><a class="link" href="#">ミ</a></li>
+                      <li><a class="link" href="#">ム</a></li>
+                      <li><a class="link" href="#">メ</a></li>
+                      <li><a class="link" href="#">モ</a></li>
+                    </ul>
+                    <ul class="tbKana">
+                      <li><a class="link" href="#">ヤ</a></li>
+                      <li><a class="link" href="#">ユ</a></li>
+                      <li><a class="link" href="#">ヨ</a></li>
+                    </ul>
+                    <ul class="tbKana">
+                      <li><a class="link" href="#">ラ</a></li>
+                      <li><a class="link" href="#">リ</a></li>
+                      <li><a class="link" href="#">ル</a></li>
+                      <li><a class="link" href="#">レ</a></li>
+                      <li><a class="link" href="#">ロ</a></li>
+                    </ul>
+                    <ul class="tbKana lastKana">
+                      <li><a class="link" href="#">ワ</a></li>
+                    </ul>
+                  </div><!--/#tbKanaWrap2.clickArea-->
+                  <div id="searchBox" class="close">
+                    <div class="tbKanaIntro">
+                      支店番号を入力して検索します。
+                    </div><!--/.mdIntro-->
+                    <dl class="table">
+                      <dt>支店番号</dt>
+                      <dd>
+                        <input type="text" class="txtbox tel" maxlength="4" id="storeSearchInput">
+                        <span class="buttonMedium">
+                          <span class="cancel">
+                            <a id="storeSearchBtn" class="small button--main">検索</a>
+                          </span>
+                        </span><!--/.buttonMedium-->
+                      </dd>
+                    </dl><!--/.table-->
+                  </div><!--/#searchBox-->
+                </div>
+              </div><!--/#phase4-->
+              <div id="phase5" class="bankListMod close clearfix">
+                <div class="bankNameWrap clearfix">
+                  <p>金融機関名</p>
+                  <h3 id="bankNameTtl2">埼玉りそな銀行</h3>
+                </div><!--/.bankNameWrap-->
+                <div class="box" id="searchStoreText">支店名を確認し、下の「決定」ボタンを押してください。</div>
+                <!-- customerInfo -->
+                <div class="customerInfo">
+                  <div class="labelSmall">
+                    <div>
+                      <h3 class="title">
+                        <span id="searchStoreTitle">最初の文字がアの支店名</span>
+                      </h3>
+                    </div>
+                  </div>
+                  <ul id="ph5Trgt" class="checkList overFlowList">
+                    <li>もう一度お試しください。</li>
+                  </ul>
+                </div>
+                <!-- /.customerInfo -->
+                <div class="decideBtn decide disabled">
+                  <button type="button" id="storeDecideBtn">決定</button>
+                </div><!--/.decideBtn.decide.disabled-->
+                <div class="decideBtn decide">
+                  <a id="backPh4Btn" href="4">戻る</a>
+                </div>
+              </div><!--/#phase5.bankListMod-->
+            </div><!--/.bankDispArea-->
+          </div><!-- /.modalContainer -->
+          <!-- .modalFooter -->
+          <div class="modalFooter">           
+            <div id="footer01">
+              <div class="buttonMedium">
+                <p class="cancel"><a class="md_btn_close">閉じる</a></p>
+              </div><!--/.buttonMedium-->               
+            </div><!--/#footer01-->
+          </div><!-- /.modalFooter -->
+        </div><!-- /.modalPopupInner -->
+      </div><!-- /.modalPopup -->
+    </div><!-- /.modalDefault -->
+  <!-- /modal -->
+  </div><!--/#modalMiddle-->
+</div><!--/#modalOverView-->
+<!--/winModal-->
+
+
+  <script src="/js/common-min-1.0.7.js"></script>
+
+  <script src="/js/chgLayout-min-1.0.0.js"></script>
+  <script src="/js/chgForm-min-1.0.1.js"></script>
+  <script src="/js/winModal-min-1.1.0.js"></script>
+  <script type="text/javascript">
+    (function () {
+      var Y=YAHOO.JP.idpf;Y.WinModal.prototype._init=function(a,c){var b=this;b._build();b._options=c;b.options=Y.Util.extend({header:false,footer:false,dispCnt:".DispArea01",startBtnId:"#md_key_1",width:"none"},c);b.elem=Y.Util.getNodes(a)[0];if(!b.elem){return}if(b.options.header){b.header=Y.Util.getNodes(b.options.header,b.elem)[0]}if(b.options.footer){b.footer=Y.Util.getNodes(b.options.footer,b.elem)[0]}if(b.options.dispCnt){b.dispCnt=Y.Util.getNodes(b.options.dispCnt,b.elem)[0]}b.startBtn=Y.Util.getNodes(b.options.startBtnId)[0];b.closeBtn=Y.Util.getNodes("#md_btn_close")[0];b.closeBtnElem=Y.Util.getNodes(".md_btn_close");b.modalWidthElem=Y.Util.getNodes(".modalPopup")[0];b.modalWidth=b.options.width;b._eventify();
+      //銀行選択イベント追加
+      Y.addEvent(document.getElementById('storeDecideBtn'),'click',function (e) {
+        b._close(e);
+      }, false);
+      }
+    }());
+  </script>
+  <script src="/js/animation-min-1.0.0.js"></script>
+  <script src="/js/ajax-min-1.0.0.js"></script>
+  <script src="/js/bank-min-1.0.5.js"></script>
+  <script src="/js/segment-min-1.0.0.js"></script>
+  <script type="text/javascript">
+  (function(){
+    var Y = YAHOO.JP.idpf;
+    Y.domReady.add(function(){
+    Y.setYjdCookie("chgCookie", "/yjdset/smartphone");
+    Y.toggleChg.init(["tg_key_1", "tg_key_2"]);
+    Y.setLabel();
+    Y.focusColor();
+    Y.disableSubmit();
+    Y.chgType();
+    Y.bankSearch.init(['receive','wallet_recv_account_control']);
+    Y.segment.init();
+    });
+
+    var mor  = new Y.WinModal('#modalOverView', {
+          header     : '.ui-header',
+          dispCnt    : '.bankDispArea',
+          startBtnId : '#md_key_2',
+          width      : 532
+        });
+
+    }());
+  </script>
+
+  
+  
+    
+    <script src="https://s.yimg.jp/images/ds/ult/jp/rapid-4.4.0.js"></script>
+    <script type="text/javascript">
+        (function () {
+            var device,
+                pagetype,
+                conttype,
+                acttype,
+                module = ["header","footer","yjContentsHeader","yjContentsBody","yjContentsFooter"],
+                _d   = document,
+                sp   = _d.getElementById('sp'),
+                msg  = _d.getElementById('msg'),
+                pgt  = _d.getElementById('pagetype'),
+                cnt  = _d.getElementById('conttype'),
+                act  = _d.getElementById('acttype');
+
+            if(cnt){
+                conttype = cnt.value;
+            }
+            if(act){
+                acttype = act.value;
+            }
+
+            /* メッセージあり */
+            if(msg){
+                /* 入力エラーメッセージ */
+                if(msg.classList.contains('msgErr') || msg.classList.contains('infoBox--error') || msg.classList.contains('infoBox--err')){
+                    pagetype = "notification";
+                /* 完了メッセージ */
+                }else if(msg.classList.contains('msgComplete') || msg.classList.contains('infoBox--complete')){
+                    pagetype = "completion";
+                }
+            /* メッセージなし */
+            }else{
+                if(pgt){
+                    pagetype = pgt.value;
+                }else{
+                    /* 入力要素があれば入力画面とする */
+                    if (_d.getElementsByTagName) {
+                        input = _d.getElementsByTagName('input'),
+                            select = _d.getElementsByTagName('select');
+
+                        for (i = 0, l = input.length; i < l; i++) {
+                            if (input[i].getAttribute('type') == 'text' || input[i].getAttribute('type') == 'checkbox' || input[i].getAttribute('type') == 'radio' || input[i].getAttribute('type') == 'submit'){
+                                if(l > 0){
+                                    pagetype = "form";
+                                }else{
+                                    pagetype = "unknown";
+                                }
+                            }
+                        }
+
+                        for (i = 0, l = select.length; i < l; i++) {
+                            if (select[i]){
+                                if(l > 0){
+                                    pagetype = "form";
+                                }else{
+                                    pagetype = "unknown";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            module = module.filter(function(name){
+                if(_d.getElementById(name) != null) {
+                    return true;
+                }
+            });
+
+            var sr = new YAHOO.i13n.JP.simpleRapid();
+            var ins = sr.setSpaceid("2080271757")
+                .setWebWorkerFilePath("https://edit.wallet.yahoo.co.jp/js/ult/rapidworker-1.2.js")
+                .setModule(module)
+                .setService("wallet")
+                .setStatus("login")
+                .setApptype("web")
+                .setMetakeyword("Yahoo! JAPAN,wallet")
+                .setOpttype(device)
+                .setPagetype(pagetype)
+                .setConttype(conttype)
+                .setActtype(acttype)
+                .initRapid();
+        })();
+    </script>
+
+    
+    <script>
+      (function () {
+        var domain = "wallet.yahoo.co.jp";
+        var spaceId = "2080271757";
+        var property = "jp_wallet";
+        var url = "https://pvtag.yahoo.co.jp/t?f=" + spaceId + "&p=" + property + "&domain=" + domain + "&js=1&rnd=" + new Date().getTime();
+        document.write("<sc" + "ript src=\"" + url + "\"></sc" + "ript>");
+      })();
+    </script>
+    <noscript>
+      <iframe src="https://pvtag.yahoo.co.jp/t?f=2080271757&amp;p=jp_wallet&amp;domain=wallet.yahoo.co.jp&amp;js=0" height=1 width=1
+        marginwidth=0 marginheight=0 hspace=0 vspace=0 frameborder=0 scrolling="no"></iframe>
+    </noscript>
+  
+  
+
+</body>
+</html>

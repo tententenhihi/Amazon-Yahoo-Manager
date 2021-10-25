@@ -1,7 +1,7 @@
-import Fs from 'fs';
-import Path from 'path';
-import FS from 'fs';
-import MTD from '../lib/zeltice-mt-downloader';
+const Fs = require('fs');
+const Path = require('path');
+const FS = require('fs');
+const MTD = require('../lib/zeltice-mt-downloader');
 
 var parsrUrlImageAmazon = (url) => {
     try {
@@ -221,5 +221,4 @@ const Utils = {
     toString,
     parsrUrlImageAmazon,
 };
-
-export default Utils;
+module.exports = Utils
