@@ -2152,6 +2152,7 @@ class AuctionYahooService {
             let resPreview = await axios.get(urlPreview, { headers, proxy: proxyConfig });
             let $ = cheerio.load(resPreview.data);
             let urlSetShip = $('input.libBtnBlueL').attr('onclick');
+            console.log(' ######## urlSetShip: ', urlSetShip);
             urlSetShip = 'https://contact.auctions.yahoo.co.jp' + urlSetShip.split("location.href='")[1].replace("'", '');
             let resUrlSetShip = await axios.get(urlSetShip, { headers, proxy: proxyConfig });
             $ = cheerio.load(resUrlSetShip.data);
