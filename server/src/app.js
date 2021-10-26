@@ -85,7 +85,7 @@ let initData = async () => {
         await Category.insertMany(listCate);
         console.log(' ====== Import Category Success ======');
     }
-    await CategoryService.checkData();
+    // await CategoryService.checkData();
 
     // await BankModel.remove({})
 };

@@ -11,6 +11,11 @@ export default {
       timeout: 15 * 60 * 1000
     });
   },
+  refreshAccountPayment() {
+    return Api.get(`${prefix}/refresh-account-payment`, {
+      timeout: 15 * 60 * 1000
+    });
+  },
   withDrawMoney(credentials) {
     return Api.post(`${prefix}/with-draw-money`, credentials, {
       timeout: 15 * 60 * 1000

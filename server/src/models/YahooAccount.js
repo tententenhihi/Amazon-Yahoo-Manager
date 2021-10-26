@@ -6,7 +6,7 @@ var autoIncrement = require('mongoose-auto-increment');
 var YahooAccount = new Schema({
     is_error: {
         type: Boolean,
-        default: false
+        default: false,
     },
     count_error: {
         type: Number,
@@ -22,6 +22,10 @@ var YahooAccount = new Schema({
         lowercase: true,
     },
     auction_point: {
+        type: Number,
+        default: 0,
+    },
+    amount: {
         type: Number,
         default: 0,
     },
@@ -50,9 +54,6 @@ var YahooAccount = new Schema({
         trim: true,
     },
     cookie: {
-        type: String,
-    },
-    cookie_aucpay: {
         type: String,
     },
     old_bank_number: {

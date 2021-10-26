@@ -98,7 +98,6 @@ async function startRutTien(listYahoo) {
     for (const yahoo_account_id of listYahoo) {
         let yahooAccount = await AccountYahooService.findById(yahoo_account_id);
         try {
-            console.log(' ##### yahooAccount.is_withdraw_running: ', yahooAccount.is_withdraw_running);
             if (!yahooAccount.is_withdraw_running) {
                 yahooAccount.status_withdraw = 'Stop';
             } else {
@@ -122,7 +121,6 @@ async function startRutTien(listYahoo) {
                             delete bankInfo.__v;
                             let data = { cookie: yahooAccount.cookie, proxy: proxyResult.data._doc, bankInfo };
                             let result = await startThread(data);
-                            console.log(bankInfo)
                             await WithDrawMoneyModel.create({
                                 yahoo_account_id: yahoo_account_id,
                                 bankNumber: bankInfo.bkAccountNum,
@@ -131,6 +129,9 @@ async function startRutTien(listYahoo) {
                                 status: result.status,
                                 status_message: result.message,
                             });
+                            if (result.status === 'SUCCESS') {
+                                yahooAccount.amount = 0;
+                            }
                             yahooAccount.status_withdraw = result.message;
                             console.log(' ############## result: ', result);
                         } else {
@@ -147,18 +148,37 @@ async function startRutTien(listYahoo) {
             console.log(' ERROR: ', error);
             yahooAccount.status_withdraw = 'Error: ' + error;
         }
+
+        yahooAccount.is_withdraw_running = false;
+        await yahooAccount.save();
+
+        let account = await YahooAccountModel.aggregate([{ $match: { _id: mongoose.Types.ObjectId(yahoo_account_id) } }, { $lookup: { from: 'banks', localField: 'bank_id', foreignField: '_id', as: 'bank' } }]);
+        let historyWithDraw = await WithDrawMoneyModel.find({ yahoo_account_id: yahoo_account_id });
+        account = account[0];
+        account.historyWithDraw = historyWithDraw || [];
+
         SocketIOService.emitData(yahooAccount.user_id, {
             type: 'PAYMENT',
             yahoo_account_id,
             status: yahooAccount.status_withdraw,
             is_withdraw_running: false,
+            account,
         });
-        yahooAccount.is_withdraw_running = false;
-        await yahooAccount.save();
     }
 }
 
 class YahooAccountController {
+    static async refreshAccountPayment(req, res) {
+        let response = new Response(res);
+        let user = req.user;
+        try {
+            let listYahoooAccount = await AccountYahooService.updateAmount(user._id);
+            return response.success200({});
+        } catch (error) {
+            console.log(error);
+            return response.error500(error);
+        }
+    }
     static async withDrawMoney(req, res) {
         let response = new Response(res);
         let user = req.user;

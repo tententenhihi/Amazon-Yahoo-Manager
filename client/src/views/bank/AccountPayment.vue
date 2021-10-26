@@ -12,22 +12,32 @@
           >
             出金ログを見る
           </button>
-          <button
-            v-if="!isWithDrawRunning"
-            :disabled="!listAccountSelected || listAccountSelected.length === 0"
-            class="btn btn-success px-4"
-            @click="onStartWithDrawMoney"
-          >
-            選択したアカウントの出金を実行する
-          </button>
-          <button
-            v-if="isWithDrawRunning"
-            :disabled="!listAccountSelected || listAccountSelected.length === 0"
-            class="btn btn-danger px-4"
-            @click="onStopWithDrawMoney"
-          >
-            Stop
-          </button>
+          <div>
+            <button
+              v-if="!isWithDrawRunning"
+              :disabled="
+                !listAccountSelected || listAccountSelected.length === 0
+              "
+              class="btn btn-success px-4"
+              @click="onStartWithDrawMoney"
+            >
+              選択したアカウントの出金を実行する
+            </button>
+            <button
+              v-if="isWithDrawRunning"
+              :disabled="
+                !listAccountSelected || listAccountSelected.length === 0
+              "
+              class="btn btn-danger px-4"
+              @click="onStopWithDrawMoney"
+            >
+              Stop
+            </button>
+            <button class="btn btn-primary px-2" @click="refreshAccountPayment">
+              <i class="fa fa-sync-alt" style="font-size: 12px"></i>
+              最新の情報を反映する
+            </button>
+          </div>
         </div>
         <paginate
           v-if="pageCount > 1"
@@ -69,6 +79,7 @@
                 <td>
                   <div style="display: flex; align-items: center">
                     <input
+                      :disabled="!account.amount || account.amount < 100"
                       class="mr-2"
                       type="checkbox"
                       v-model="listAccountSelected"
@@ -83,22 +94,32 @@
                 </td>
                 <td>{{ account.yahoo_id }}</td>
                 <td>
-                  <span v-if="account && account.historyWithDraw && account.historyWithDraw.length > 0">
-                    {{ account.historyWithDraw[0].bankNumber }}
+                  <span
+                    v-if="account && account.bank && account.bank.length > 0"
+                  >
+                    {{ account.bank[0].bkAccountNum }}
                   </span>
                 </td>
                 <td>
-                  <span v-if="account && account.historyWithDraw && account.historyWithDraw.length > 0">
+                  <span
+                    v-if="
+                      account &&
+                      account.historyWithDraw &&
+                      account.historyWithDraw.length > 0
+                    "
+                  >
                     {{
-                      $moment(account.historyWithDraw[0].created).format(
-                        "YYYY/MM/DD HH:mm"
-                      )
+                      $moment(
+                        account.historyWithDraw[
+                          account.historyWithDraw.length - 1
+                        ].created
+                      ).format("YYYY/MM/DD HH:mm")
                     }}
                   </span>
                 </td>
                 <td>
-                  <span v-if="account && account.historyWithDraw && account.historyWithDraw.length > 0">
-                    {{ account.historyWithDraw[0].amount }}
+                  <span>
+                    {{ account.amount || 0 }}
                   </span>
                 </td>
                 <td>
@@ -146,13 +167,6 @@
               <tr>
                 <th name="stt" scope="col">
                   <div style="display: flex; align-items: center">
-                    <input
-                      class="mr-2"
-                      type="checkbox"
-                      v-model="isCheckAllAccount"
-                      style="cursor: pointer; width: 15px; height: 15px"
-                      id="checkAll"
-                    />
                     <label style="cursor: pointer" for="checkAll">全選択</label>
                   </div>
                 </th>
@@ -236,7 +250,6 @@ export default {
   name: "YahooAccount",
   data() {
     return {
-      progressData: null,
       isCheckAllAccount: false,
       listAccountSelected: [],
       accounts: [],
@@ -258,7 +271,12 @@ export default {
 
     socket = io.connect(process.env.SERVER_API);
     socket.on(this.$store.state.user._id + "-PAYMENT", (fetchedData) => {
+      console.log(" ###### fetchedData: ", fetchedData);
+
       this.accounts = this.accounts.map((item) => {
+        if (fetchedData.account && fetchedData.account._id === item._id) {
+          return fetchedData.account;
+        }
         if (item._id === fetchedData.yahoo_account_id) {
           return {
             ...item,
@@ -268,11 +286,7 @@ export default {
         }
         return item;
       });
-
       this.searchData = this.accounts;
-
-      this.progressData = fetchedData;
-      console.log(" ###### fetchedData: ", fetchedData);
     });
   },
   destroyed() {
@@ -298,6 +312,10 @@ export default {
     },
   },
   methods: {
+    async refreshAccountPayment() {
+      let res = await YahooAccountApi.refreshAccountPayment();
+      await this.getYahooAccounts();
+    },
     async onClickRunAgain(yahoo_account_id, old_bank_number) {
       try {
         let res = await YahooAccountApi.setOldBankNumber({
@@ -496,7 +514,10 @@ export default {
   watch: {
     isCheckAllAccount: function () {
       if (this.isCheckAllAccount) {
-        this.listAccountSelected = this.accounts.map((item) => item._id);
+        let accountRight = this.accounts.filter(
+          (item) => item.amount || item.amount >= 100
+        );
+        this.listAccountSelected = accountRight.map((item) => item._id);
       } else {
         this.listAccountSelected = [];
       }

@@ -57,6 +57,53 @@ async function getHtmlWithPuppeteer(url, proxy, cookie) {
     page.setDefaultNavigationTimeout(0);
 }
 class AuctionYahooService {
+    static async getAmount(cookie, proxy) {
+        try {
+            let proxyConfig = {
+                host: proxy.host,
+                port: proxy.port,
+                auth: {
+                    username: proxy.username,
+                    password: proxy.password,
+                },
+            };
+            if (config.get('env') === 'development') {
+                proxyConfig = null;
+            }
+            let res = await axios.get(`https://salesmanagement.yahoo.co.jp/list`, {
+                headers: {
+                    cookie,
+                    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15',
+                    origin: 'https://auctions.yahoo.co.jp',
+                    authority: 'auctions.yahoo.co.jp',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    Connection: 'keep-alive',
+                    timeout: 30 * 1000,
+                },
+                proxy: proxyConfig,
+            });
+            let $ = cheerio.load(res.data);
+            let textAmount = $('#box > div > dl > dd > em').text();
+            if (textAmount) {
+                return {
+                    status: 'SUCCESS',
+                    message: '',
+                    amount: parseInt(textAmount) || 0,
+                };
+            } else {
+                return {
+                    status: 'ERROR',
+                    message: 'textAmount not found',
+                };
+            }
+        } catch (error) {
+            console.log(' ####### getAmount: ', error);
+            return {
+                status: 'ERROR',
+                message: error.message,
+            };
+        }
+    }
     static async getPointAuction(cookie, proxy) {
         try {
             let headers = {
@@ -99,7 +146,6 @@ class AuctionYahooService {
         }
         return 0;
     }
-
     static async getAllCategory(cateId) {
         let listCateId = [];
         try {
@@ -1382,7 +1428,6 @@ class AuctionYahooService {
             console.log(' #### Submit');
             await waitAndClick('#btnSubmit');
             await page.waitForSelector('input[type=text]', { timeout: 30000 });
-  
 
             // 2222222222222222222
 
@@ -1520,7 +1565,7 @@ class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService stopTransaction: ', error);
+            console.log(' #### AuctionYahooService deleteBuyer: ', error);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -2069,7 +2114,7 @@ class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService stopTransaction: ', error);
+            console.log(' #### AuctionYahooService setFeeShip: ', error);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -2147,7 +2192,7 @@ class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService stopTransaction: ', error);
+            console.log(' #### AuctionYahooService contactShip: ', error);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -2247,7 +2292,7 @@ class AuctionYahooService {
                 }
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService stopTransaction: ', error);
+            console.log(' #### AuctionYahooService setJoinBill: ', error);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -2287,18 +2332,11 @@ class AuctionYahooService {
             };
             let resPayoutConfirm = await axios.post('https://salesmanagement.yahoo.co.jp/payout_confirm', Qs.stringify(payload), { headers, proxy: proxyConfig });
             $ = cheerio.load(resPayoutConfirm.data);
-            
+
             let amount = $('#balanceAmount > em').text().trim();
             amount = parseInt(amount);
             let backCurrentText = $('#yjMain > div.acMdPaymentInfo.mT30.mB40 > div.TransferDetails > div > div > div:nth-child(5) > div:nth-child(3) > span');
-     
 
-
-
-
-
-
-            
             throw new Error('');
             //============ UPDATE BANK =============
 

@@ -14,7 +14,6 @@ YahooAccountRouter.route('/get-account-history-withdraw').get(YahooAccountContro
 YahooAccountRouter.route('/with-draw-money').post(YahooAccountController.withDrawMoney);
 YahooAccountRouter.route('/stop-with-draw-money').post(YahooAccountController.stopWithDrawMoney);
 YahooAccountRouter.route('/set_old_bank_number').post(YahooAccountController.setOldBankNumber);
-
-
+YahooAccountRouter.route('/refresh-account-payment').get(YahooAccountController.refreshAccountPayment);
 
 export default YahooAccountRouter;
