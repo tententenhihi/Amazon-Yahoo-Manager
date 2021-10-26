@@ -79,7 +79,6 @@
                 <td>
                   <div style="display: flex; align-items: center">
                     <input
-                      :disabled="!account.amount || account.amount < 100"
                       class="mr-2"
                       type="checkbox"
                       v-model="listAccountSelected"
@@ -514,10 +513,7 @@ export default {
   watch: {
     isCheckAllAccount: function () {
       if (this.isCheckAllAccount) {
-        let accountRight = this.accounts.filter(
-          (item) => item.amount || item.amount >= 100
-        );
-        this.listAccountSelected = accountRight.map((item) => item._id);
+        this.listAccountSelected = this.accounts.map((item) => item._id);
       } else {
         this.listAccountSelected = [];
       }
