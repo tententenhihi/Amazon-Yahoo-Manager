@@ -23,9 +23,6 @@ export default class ProductYahooEndedService {
                         accountYahoo,
                         true
                     );
-                    console.log(' ####### listProductEnded: ', listProductEnded);
-                    console.log(' ####### listProductEnded: ', listProductEnded.length);
-
                     listProductEnded = listProductEnded.reverse();
                     SocketIOService.emitData(accountYahoo.user_id, {
                         type: 'ENDED',
@@ -36,7 +33,6 @@ export default class ProductYahooEndedService {
 
                     let listProductEndedInDB = await ProductYahooEndedService.find({ yahoo_account_id: accountYahoo._id });
 
-                    // console.log(' ##### startGetProductYahoo listProductEnded: ', listProductEnded);
                     // tạo , update product
                     for (let j = 0; j < listProductEnded.length; j++) {
                         const product = listProductEnded[j];

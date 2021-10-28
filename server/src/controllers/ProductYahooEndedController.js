@@ -55,7 +55,6 @@ export default class ProductYahooEndedController {
             if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS') {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    console.log(productEnded);
                     let result = await AuctionYahooService.contactShip(yahooAccount.cookie, proxyResult.data, productEnded.aID, yahooAccount.yahoo_id, productEnded.idBuyer);
                     if (result.status === 'SUCCESS') {
                         await ProductYahooEndedService.update(productEnded._id, { progress: '受取連絡' });

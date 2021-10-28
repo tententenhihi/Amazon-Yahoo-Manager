@@ -3,11 +3,7 @@ import ProductYahooSchema from '../models/ProductYahooModel';
 export default class CategoryService {
     static async get(userId) {
         try {
-            console.log(' ######### userId: ', userId);
-
             let result = await Category.find({ user_id: userId, is_success_yahoo_cate_id: false }).sort({ created_at: -1 });
-            console.log(' ######### result: ', result);
-
             return result;
         } catch (error) {
             console.log(error);
@@ -49,9 +45,6 @@ export default class CategoryService {
             let allCalte = await Category.find({});
             let listCateSuccess = await Category.find({ is_success_yahoo_cate_id: true });
             let listCateError = await Category.find({ is_success_yahoo_cate_id: false });
-            console.log(' #### allCalte:', allCalte.length);
-            console.log(' #### listCateSuccess:', listCateSuccess.length);
-            console.log(' #### listCateError:', listCateError.length);
             for (const cateError of listCateError) {
                 let checkExist = listCateSuccess.find((item) => item.amazon_cate_id === cateError.amazon_cate_id);
                 if (checkExist) {

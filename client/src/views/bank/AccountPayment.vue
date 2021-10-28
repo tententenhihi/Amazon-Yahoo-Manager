@@ -270,8 +270,6 @@ export default {
 
     socket = io.connect(process.env.SERVER_API);
     socket.on(this.$store.state.user._id + "-PAYMENT", (fetchedData) => {
-      console.log(" ###### fetchedData: ", fetchedData);
-
       this.accounts = this.accounts.map((item) => {
         if (fetchedData.account && fetchedData.account._id === item._id) {
           return fetchedData.account;
@@ -368,7 +366,6 @@ export default {
     },
     async onStartWithDrawMoney() {
       try {
-        console.log(" ####### listAccountSelected: ", this.listAccountSelected);
         let res = await YahooAccountApi.withDrawMoney({
           listAccountSelected: this.listAccountSelected,
         });

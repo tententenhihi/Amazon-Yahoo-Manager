@@ -14,7 +14,6 @@ var showError = res => {
       });
       break;
     case 1001:
-      console.log(res.message);
       vue.$swal.fire({
         icon: "warning",
         title: "更新完了"

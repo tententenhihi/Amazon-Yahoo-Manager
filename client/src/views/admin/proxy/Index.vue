@@ -259,11 +259,7 @@ export default {
       let listProxy = this.proxies;
       if (this.searchYahooID !== "") {
         listProxy = [];
-
-        console.log(' ########### this.searchYahooID: ', this.searchYahooID);
-
         this.listYahooAccount.filter(item => {
-          console.log(item);
           if (
             item.yahoo_id &&
             item.yahoo_id.toString() &&

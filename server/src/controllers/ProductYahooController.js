@@ -139,9 +139,7 @@ export default class ProductYahooController {
 
                     for (const product_id of ids) {
                         let productYahooData = await ProductYahooService.findOne({ _id: product_id });
-
                         let resultCheckUpload = await ProductYahooService.checkStopUpload(productYahooData, defaultSetting);
-                        console.log(' ### uploadProductYahooNow resultCheckUpload: ', resultCheckUpload);
                         if (resultCheckUpload.isStopUpload) {
                             let newResult = {
                                 product_created: productYahooData.created,
@@ -174,7 +172,6 @@ export default class ProductYahooController {
                         let dataUpdate = {};
                         let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
                         let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
-                        console.log(" ### uploadAuctionResult: ", uploadAuctionResult);
                         dataUpdate.upload_status = uploadAuctionResult.status;
                         dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                         dataUpdate.aID = uploadAuctionResult.aID;
@@ -322,10 +319,7 @@ export default class ProductYahooController {
             if (data.bid_or_buy_price) {
                 dataPrice.bid_or_buy_price = data.bid_or_buy_price;
             }
-            console.log(dataPrice);
-
             data = { ...data, ...dataPrice };
-            console.log(data);
             let result = await ProductYahooService.create(data);
             response.success200({ result });
         } catch (error) {
@@ -353,8 +347,6 @@ export default class ProductYahooController {
             let user = req.user;
             const { _id } = req.params;
             let payload = JSON.parse(req.body.payload);
-
-            console.log(payload.yahoo_auction_category_id);
             if (payload.yahoo_auction_category_id) {
                 let checkCateRight = await CategoryYahooService.findOne({ id: payload.yahoo_auction_category_id });
                 if (!checkCateRight) {

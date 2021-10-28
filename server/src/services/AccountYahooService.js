@@ -36,7 +36,6 @@ class AccountYahooService {
     }
     static async find(data) {
         try {
-            console.log(' ########## sadasd : ');
             let accounts = await YahooAccountSchema.find(data);
             return accounts;
         } catch (error) {

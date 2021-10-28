@@ -327,15 +327,12 @@ class AuctionYahooService {
             };
 
             let keys = await getKeys(cookie);
-            console.log(' ####### keys: ', keys);
-
             if (keys && keys.status === 'ERROR') {
                 console.log(' ######## 111 : Get Key Errror');
                 return keys;
             }
             if (keys && !keys.img_crumb) {
                 console.log(' ######## 111: keys.img_crumb');
-
                 return {
                     status: 'ERROR',
                     statusMessage: 'ヤフーアカウントのエラー',
@@ -768,9 +765,6 @@ class AuctionYahooService {
                 prereg: $('input[name="prereg"]').val(),
                 premiumTrialStatus: $('input[name="premiumTrialStatus"]').val(),
             };
-
-            console.log(' ########## productData: ', productData);
-
             if (productData) {
                 if (config.get('env') === 'development') {
                     proxyConfig = null;
@@ -873,8 +867,6 @@ class AuctionYahooService {
             // badRatingRatio
             // minBidRating
             // markdown
-            console.log(previewParams);
-
             let headers = {
                 cookie,
                 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15',
@@ -1092,7 +1084,6 @@ class AuctionYahooService {
                         let progress = 'null';
                         let classStatusNode = $('div.acMdStatusImage > ul.acMdStatusImage__status');
                         let classText = classStatusNode.attr('class');
-                        console.log(' ############ classText: ', classText);
                         switch (classText) {
                             case 'acMdStatusImage__status acMdStatusImage__status--st05 acMdStatusImage__status--current05':
                                 progress = '受取連絡';
@@ -1128,8 +1119,6 @@ class AuctionYahooService {
                                 progress = '発送連絡';
                                 break;
                         }
-                        console.log(' ############ progress: ', progress);
-
                         // Số tiền nhận thực tế
                         if (progress === '発送連絡' || progress === '受取連絡') {
                             if (!accountYahoo.cookie) {
@@ -1166,8 +1155,6 @@ class AuctionYahooService {
                             }
                             if (!product.amount_actual) {
                                 let result = await AuctionYahooService.getCookie(accountYahoo, proxy, 'aucpay');
-                                console.log(' ########### result: ', result);
-
                                 if (result.status === 'SUCCESS') {
                                     accountYahoo.cookie = result.cookie;
                                     await accountYahoo.save();
@@ -1388,7 +1375,7 @@ class AuctionYahooService {
             } else if (status === 'wallet') {
                 urlLogin = 'https://login.yahoo.co.jp/config/login?.done=https%3A%2F%2Fsalesmanagement.yahoo.co.jp%2Flist&.src=pay';
             }
-            let timeout = 5 * 60 * 1000;
+            let timeout = 2 * 60 * 1000;
             await page.goto(urlLogin, { waitUntil: 'load', timeout: timeout });
             page.setDefaultNavigationTimeout(0);
             await Utils.sleep(1000);
@@ -1429,35 +1416,6 @@ class AuctionYahooService {
             await waitAndClick('#btnSubmit');
             await page.waitForSelector('input[type=text]', { timeout: 30000 });
 
-            // 2222222222222222222
-
-            // await page.goto('https://salesmanagement.yahoo.co.jp/list', { waitUntil: 'load', timeout: timeout });
-
-            // await Utils.sleep(1000);
-            // try {
-            //     await page.waitForSelector('#mynapmdl > div > div.MynaPointModal__body > button', { timeout: 3000 });
-            //     await page.click('#mynapmdl > div > div.MynaPointModal__body > button');
-            // } catch (error) {
-            //     await page.waitForSelector('#wrapper > div.DirectionPayPay.js-directionPayPay.js-directionPayPay-directionPayPay.tracked_mods > div > h2 > a', { timeout: 3000 });
-            //     await page.click('#wrapper > div.DirectionPayPay.js-directionPayPay.js-directionPayPay-directionPayPay.tracked_mods > div > h2 > a');
-            // }
-
-            // //
-            // await Utils.sleep(1000);
-            // await Utils.sleep(1000);
-            // await page.click('#box > div > ul > li:nth-child(2) > p.Btn > a');
-
-            // await page.waitForSelector('#transferDetails > div > div > div:nth-child(5) > div:nth-child(3) > span > a', { timeout: 30000 });
-            // await page.click('#transferDetails > div > div > div:nth-child(5) > div:nth-child(3) > span > a');
-
-            // try {
-            //     await page.waitForSelector('#saveBtn', { timeout: 1000 });
-            // } catch (error) {
-            //     await page.type('#bank', '8533179')
-            //     await page.waitForSelector('#saveBtn', { timeout: 1000 });
-            //     await page.waitForSelector('button[name="next"]', { timeout: 30000 });
-            // }
-
             await Utils.sleep(1000);
             const cookies = await page.cookies();
 
@@ -1471,7 +1429,6 @@ class AuctionYahooService {
                         return `${c.name}=${c.value}`;
                     })
                     .join('; ');
-                console.log(' ######### cookie: ', cookie);
                 return {
                     status: 'SUCCESS',
                     cookie,
@@ -1575,13 +1532,6 @@ class AuctionYahooService {
 
     static async sendMessage(cookie, proxy, aID, usernameYahoo, idBuyer, message) {
         try {
-            // console.log('### cookie: ', cookie);
-            // console.log('### proxy: ', proxy);
-            // console.log('### aID: ', aID);
-            // console.log('### usernameYahoo: ', usernameYahoo);
-            // console.log('### idBuyer: ', idBuyer);
-            // console.log('### message: ', message);
-
             let headers = {
                 cookie,
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
@@ -2152,7 +2102,6 @@ class AuctionYahooService {
             let resPreview = await axios.get(urlPreview, { headers, proxy: proxyConfig });
             let $ = cheerio.load(resPreview.data);
             let urlSetShip = $('input.libBtnBlueL').attr('onclick');
-            console.log(' ######## urlSetShip: ', urlSetShip);
             urlSetShip = 'https://contact.auctions.yahoo.co.jp' + urlSetShip.split("location.href='")[1].replace("'", '');
             let resUrlSetShip = await axios.get(urlSetShip, { headers, proxy: proxyConfig });
             $ = cheerio.load(resUrlSetShip.data);
@@ -2233,7 +2182,6 @@ class AuctionYahooService {
             if (!is_join_bill) {
                 let urlCancelJoinBill = $('#mBoxPay2 > div > input.libBtnRedL').attr('onclick');
                 urlCancelJoinBill = 'https://contact.auctions.yahoo.co.jp' + urlCancelJoinBill.split("'")[1];
-                console.log(urlCancelJoinBill);
                 let resCancelJoinBill = await axios.get(urlCancelJoinBill, { headers, proxy: proxyConfig });
                 if (resCancelJoinBill && resCancelJoinBill.data && resCancelJoinBill.data.includes('取引情報')) {
                     return {
@@ -2249,7 +2197,6 @@ class AuctionYahooService {
             } else {
                 let urlJoinBill = $('div.acMdTradeBtn > a.libBtnBlueL').attr('href');
                 urlJoinBill = 'https://contact.auctions.yahoo.co.jp' + urlJoinBill;
-                console.log(urlJoinBill);
                 let resCancelJoinBill = await axios.get(urlJoinBill, { headers, proxy: proxyConfig });
                 $ = cheerio.load(resCancelJoinBill.data);
                 let oid = $('input[name="oid"]').val();

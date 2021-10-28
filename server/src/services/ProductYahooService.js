@@ -417,14 +417,12 @@ export default class ProductYahooService {
             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
             if (proxyResult.status === 'SUCCESS') {
                 while (isCalendarUploading) {
-                    console.log('  isCalendarUploading: ', isCalendarUploading);
                     await Utils.sleep(5000);
                 }
 
                 let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
 
                 for (const folder_id of new_list_target_folder) {
-                    console.log(' ######## folder_id: ', folder_id);
                     let listProduct;
                     if (folder_id === -1) {
                         listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id });
@@ -432,7 +430,6 @@ export default class ProductYahooService {
                         listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id });
                     }
 
-                    console.log(' ######## listProduct: ', listProduct.length);
                     totalProduct += listProduct.length;
                     for (let index = 0; index < listProduct.length; index++) {
                         let newResult = null;
@@ -519,7 +516,6 @@ export default class ProductYahooService {
                 }
             }
         }
-        console.log(' ######## Total product: ', totalProduct);
         return result;
     }
 
@@ -579,7 +575,6 @@ export default class ProductYahooService {
                                 let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
 
                                 let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
-                                console.log(' ### uploadAuctionResult: ', uploadAuctionResult);
 
                                 // console.log(' ### startUploadProductByCalendar uploadAuctionResult: ', uploadAuctionResult);
                                 dataUpdate.upload_status = uploadAuctionResult.status;
@@ -655,7 +650,6 @@ export default class ProductYahooService {
                     }
                     return false;
                 });
-                console.log(' ########## listProductResubmit: ', listProductResubmit);
                 // return;
                 for (const product of listProductResubmit) {
                     let newDataUpload = null;

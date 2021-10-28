@@ -37,17 +37,12 @@ const getData = async (listAsin, user_id) => {
                 data: [],
             };
         }
-        console.log(' ############## listTokenAllUser: ', listTokenAllUser);
-        console.log(' ############## listAsin: ', listAsin.length);
-
         let res = null;
         var productGetted = false;
         while (!productGetted) {
             console.log(' ============ Keepa running =========== ');
-            console.log(listTokenAllUser);
             for (let i = 0; i < listTokenAllUser.length; i++) {
                 const token = listTokenAllUser[i];
-                console.log(' ##### token: ', token);
                 try {
                     let url = `https://api.keepa.com/product?key=${token}&domain=5&asin=${listAsin.join(',')}&stock=1&rating=1`;
                     res = await Axios.post(url);
@@ -65,13 +60,9 @@ const getData = async (listAsin, user_id) => {
             await Utils.sleep(10 * 60 * 1000);
         }
         if (res && res.status === 200) {
-            console.log(' 2222222222222222222 ', res.data.products.length);
-
             for (let i = 0; i < res.data.products.length; i++) {
                 const productData = res.data.products[i];
                 try {
-                    console.log(' ############# i: ', i);
-                    console.log(' ############# productData: ', productData.asin);
                     let result = {
                         asin: '',
                         data: '',

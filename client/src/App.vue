@@ -68,7 +68,6 @@ export default {
   methods: {
     async getApiKey() {
       let result = await ApiKey.get(this.userInfo.token);
-      console.log(result);
       if (result && result.status === 200) {
         await this.$store.dispatch("setApiKey", result.data.apiKey);
       }

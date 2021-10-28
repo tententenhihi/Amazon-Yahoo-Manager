@@ -30,7 +30,6 @@ export default class TradeMessageTemplateService {
     }
     static async show (Id) {
         try {
-            console.log(Id)
             let template = await TradeMessageTemplateSchema.findById(Id);
             if (!template) {
                 throw new Error('取引ナビテンプレート見つかりません');

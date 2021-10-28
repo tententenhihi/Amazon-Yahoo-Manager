@@ -105,7 +105,6 @@ export default {
               "CSVファイルしかアップ出来ません。CSVファイルを選択してください。!"
           });
         }
-        console.log(file);
         this.asinString = await this.readFileText(file);
       } catch (error) {
         this.$swal.fire({

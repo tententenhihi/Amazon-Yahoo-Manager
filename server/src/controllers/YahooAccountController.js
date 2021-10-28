@@ -133,7 +133,6 @@ async function startRutTien(listYahoo) {
                                 yahooAccount.amount = 0;
                             }
                             yahooAccount.status_withdraw = result.message;
-                            console.log(' ############## result: ', result);
                         } else {
                             yahooAccount.status_withdraw = 'Bank not found';
                         }
@@ -230,7 +229,6 @@ class YahooAccountController {
                 let historyWithDraw = await WithDrawMoneyModel.find({ yahoo_account_id: accounts[i]._id });
                 accounts[i].historyWithDraw = historyWithDraw || [];
             }
-            console.log(' ############ accounts: ', accounts.length);
             response.success200({ accounts });
         } catch (error) {
             console.log(error);
