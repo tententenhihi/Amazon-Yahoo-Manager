@@ -48,9 +48,9 @@ export default class CronJobService {
             CronJobService.cronDeleteAuctionProductFinished();
             CronJobService.checkProductOriginalForAuctionProductSelling();
         });
-        // cron.schedule('0 0 6 * * *', async () => {
-        //     CronJobService.getCookieAllYahoo();
-        // });
+        cron.schedule('0 0 6 * * *', async () => {
+            CronJobService.getCookieAllYahoo();
+        });
     }
     static async getCookieAllYahoo() {
         console.log(' ========== getCookieAllYahoo ==========', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
