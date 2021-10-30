@@ -1346,9 +1346,9 @@ class AuctionYahooService {
     }
 
     static async getCookie(account, proxy, status) {
+        let browser;
         try {
             console.log(' ==== Start login Yahoo ====');
-
             let sock5 = `http://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`;
             const newProxyUrl = await proxyChain.anonymizeProxy(sock5);
             let args = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-infobars', '--window-position=0,0', '--ignore-certifcate-errors', '--ignore-certifcate-errors-spki-list', '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"', `--proxy-server=${newProxyUrl}`];
@@ -1367,7 +1367,7 @@ class AuctionYahooService {
                 // userDataDir: './tmp',
             };
 
-            const browser = await puppeteer.launch(options);
+            browser = await puppeteer.launch(options);
             const page = await browser.newPage();
             let urlLogin = 'https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2F&sr_required=birthday%20gender%20postcode%20deliver';
             if (status === 'aucpay') {
@@ -1421,7 +1421,7 @@ class AuctionYahooService {
 
             if (cookies.length > 4) {
                 try {
-                    // await browser.close();
+                    await browser.close();
                 } catch (error) {}
                 console.log(' ======== SUCCESS ======= ');
                 let cookie = cookies
@@ -1438,7 +1438,7 @@ class AuctionYahooService {
                 // Fs.writeFileSync('preview.html', data);
                 console.log(' ======== Failse ======= ');
                 try {
-                    // await browser.close();
+                    await browser.close();
                 } catch (error) {}
                 return {
                     status: 'ERROR',
@@ -1447,6 +1447,11 @@ class AuctionYahooService {
             }
         } catch (error) {
             console.log(' ##### error: ', error);
+            try {
+                if (browser) {
+                    await browser.close();
+                }
+            } catch (error) {}
             return {
                 status: 'ERROR',
                 message: 'エラー。 管理者に連絡する ',
