@@ -5,8 +5,12 @@ export default class BankController {
     static async get(req, res) {
         let response = new Response(res);
         try {
+            let type = req.body.type;
+            if (!type) {
+                type = 'FAKE'
+            }
             let user = req.user;
-            let listBank = await BankModel.find({ user_id: user._id });
+            let listBank = await BankModel.find({ user_id: user._id, type });
             return response.success200({ listBank });
         } catch (error) {
             console.log(error);

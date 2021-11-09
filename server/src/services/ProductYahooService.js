@@ -27,36 +27,81 @@ const getPriceProductAmazon = async (asin, user_id) => {
     let AWS_SELLING_PARTNER_ROLE = config.get('AWS_SELLING_PARTNER_ROLE');
     let AWS_ACCESS_KEY_ID = config.get('AWS_ACCESS_KEY_ID');
     let AWS_SECRET_ACCESS_KEY = config.get('AWS_SECRET_ACCESS_KEY');
+
+    let credentials = {
+        SELLING_PARTNER_APP_CLIENT_ID: SELLING_PARTNER_APP_CLIENT_ID,
+        SELLING_PARTNER_APP_CLIENT_SECRET: SELLING_PARTNER_APP_CLIENT_SECRET,
+        AWS_SELLING_PARTNER_ROLE: AWS_SELLING_PARTNER_ROLE,
+        AWS_ACCESS_KEY_ID: AWS_ACCESS_KEY_ID,
+        AWS_SECRET_ACCESS_KEY: AWS_SECRET_ACCESS_KEY,
+    };
+    console.log(' ##################### credentials: ', credentials);
+
     try {
+        let sellingPartner = null;
+
         try {
             if (user_id) {
                 let apiKey = await ApiKeyController.getApiKeyByUser(user_id);
-                if (apiKey && apiKey.is_amz && apiKey.REFRESH_TOKEN && apiKey.SELLING_PARTNER_APP_CLIENT_ID && apiKey.SELLING_PARTNER_APP_CLIENT_SECRET && apiKey.AWS_SELLING_PARTNER_ROLE && apiKey.AWS_ACCESS_KEY_ID && apiKey.AWS_SECRET_ACCESS_KEY) {
-                    REFRESH_TOKEN = apiKey.REFRESH_TOKEN;
-                    SELLING_PARTNER_APP_CLIENT_ID = apiKey.SELLING_PARTNER_APP_CLIENT_ID;
-                    SELLING_PARTNER_APP_CLIENT_SECRET = apiKey.SELLING_PARTNER_APP_CLIENT_SECRET;
-                    AWS_SELLING_PARTNER_ROLE = apiKey.AWS_SELLING_PARTNER_ROLE;
-                    AWS_ACCESS_KEY_ID = apiKey.AWS_ACCESS_KEY_ID;
-                    AWS_SECRET_ACCESS_KEY = apiKey.AWS_SECRET_ACCESS_KEY;
+                console.log(' ########### apiKey: ', apiKey);
+                
+                if (apiKey && apiKey.is_amz && apiKey.OAUTH_CODE && !apiKey.REFRESH_TOKEN) {
+                    console.log(' ========== 11111111 ========== ')
+                    sellingPartner = new SellingPartnerAPI({
+                        region: 'fe',
+                        options: {
+                            only_grantless_operations: true
+                        },
+                        credentials
+                    });
+                    let res = await sellingPartner.exchange(apiKey.OAUTH_CODE);
+                    console.log(" ################# Res: ", res)
+                    apiKey.REFRESH_TOKEN = res.refresh_token;
+                    sellingPartner = new SellingPartnerAPI({
+                        region: 'fe',
+                        refresh_token: apiKey.REFRESH_TOKEN,
+                        credentials,
+                        options: {
+                            auto_request_tokens: false,
+                        },
+                    });
+                    await sellingPartner.refreshAccessToken();
+                    await sellingPartner.refreshRoleCredentials();
+                    console.log(' ========== 111111 ========== ', sellingPartner)
+
+                    await apiKey.save();
+                } else if (apiKey && apiKey.is_amz && apiKey.OAUTH_CODE && apiKey.REFRESH_TOKEN) {
+                    console.log(' ========== 222222222 ========== ')
+                    sellingPartner = new SellingPartnerAPI({
+                        region: 'fe',
+                        refresh_token: apiKey.REFRESH_TOKEN,
+                        credentials,
+                        options: {
+                            auto_request_tokens: false,
+                        },
+                    });
+                    await sellingPartner.refreshAccessToken();
+                    await sellingPartner.refreshRoleCredentials();
+                    console.log(' ========== 333333333 ========== ', sellingPartner)
+
                 }
             }
         } catch (error) {
             console.log(' ### Keepa ApiKeyController.getApiKeyByUser: ', error);
         }
-        let sellingPartner = new SellingPartnerAPI({
-            region: 'fe', // The region to use for the SP-API endpoints ("eu", "na" or "fe")
-            refresh_token: REFRESH_TOKEN, // The refresh token of your app user
-            credentials: {
-                SELLING_PARTNER_APP_CLIENT_ID,
-                SELLING_PARTNER_APP_CLIENT_SECRET,
-                AWS_SELLING_PARTNER_ROLE,
-                AWS_ACCESS_KEY_ID,
-                AWS_SECRET_ACCESS_KEY,
-            },
-            options: {
-                auto_request_tokens: true,
-            },
-        });
+
+        if (!sellingPartner) {
+            console.log(' ====================== 44444 ======================= ');
+            sellingPartner = new SellingPartnerAPI({
+                region: 'fe', // The region to use for the SP-API endpoints ("eu", "na" or "fe")
+                refresh_token: REFRESH_TOKEN, // The refresh token of your app user
+                credentials,
+                options: {
+                    auto_request_tokens: true,
+                },
+            });
+        }
+
         let res = await sellingPartner.callAPI({
             operation: 'getItemOffers',
             endpoint: 'productPricing',
@@ -71,7 +116,7 @@ const getPriceProductAmazon = async (asin, user_id) => {
                 version: 'v0',
             },
         });
-        // console.log(' ######### res: ', res);
+        console.log(' ######### res: ', res);
         if (res && res.status === 'Success') {
             if (res.Offers && res.Offers.length > 0) {
                 let offer = res.Offers[0];
@@ -109,7 +154,9 @@ export default class ProductYahooService {
         let newProductData = null;
         // Kiểm tra hết hàng
         // 1. Check trong DB
-        let productAmazonInDB = await ProductAmazonService.findOne({ asin: productYahooData.asin_amazon });
+        let productAmazonInDB = await ProductAmazonService.findOne({
+            asin: productYahooData.asin_amazon
+        });
         if (productAmazonInDB) {
             // checkDate
             let dateProduct = new Date(productAmazonInDB.created);
@@ -125,12 +172,19 @@ export default class ProductYahooService {
             newProductData = await getPriceProductAmazon(productYahooData.asin_amazon, defaultSetting.user_id);
             if (newProductData && productAmazonInDB) {
                 // update product yahoo
-                newProductData = await ProductAmazonService.update(productAmazonInDB._id, { ...newProductData, created: Date.now() });
+                newProductData = await ProductAmazonService.update(productAmazonInDB._id, {
+                    ...newProductData,
+                    created: Date.now()
+                });
             }
         }
         if (newProductData) {
             // Update data yahoo
-            await ProductYahooService.update(productYahooData._id, { import_price: newProductData.price, amazon_shipping_fee: newProductData.ship_fee, count: newProductData.count });
+            await ProductYahooService.update(productYahooData._id, {
+                import_price: newProductData.price,
+                amazon_shipping_fee: newProductData.ship_fee,
+                count: newProductData.count
+            });
             if (newProductData.count === 0) {
                 resultData = {
                     isStopUpload: true,
@@ -267,7 +321,12 @@ export default class ProductYahooService {
     }
     static async get(idUser, yahoo_account_id) {
         try {
-            let result = await ProductYahooModel.find({ user_id: idUser, yahoo_account_id }).sort({ created: -1 });
+            let result = await ProductYahooModel.find({
+                user_id: idUser,
+                yahoo_account_id
+            }).sort({
+                created: -1
+            });
             return result;
         } catch (error) {
             console.log(error);
@@ -294,7 +353,11 @@ export default class ProductYahooService {
     }
     static async update(_id, data) {
         try {
-            let product = await ProductYahooModel.findOneAndUpdate({ _id: _id }, data, { new: true });
+            let product = await ProductYahooModel.findOneAndUpdate({
+                _id: _id
+            }, data, {
+                new: true
+            });
             if (product) {
                 return product._doc;
             }
@@ -412,7 +475,9 @@ export default class ProductYahooService {
         console.log(' ### new_list_target_folder: ', new_list_target_folder);
         let totalProduct = 0;
         let result = [];
-        let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
+        let yahooAccount = await AccountYahooService.findOne({
+            _id: yahoo_account_id
+        });
         if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
             if (proxyResult.status === 'SUCCESS') {
@@ -420,14 +485,24 @@ export default class ProductYahooService {
                     await Utils.sleep(5000);
                 }
 
-                let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
+                let defaultSetting = await ProductInfomationDefaultService.findOne({
+                    yahoo_account_id,
+                    user_id
+                });
 
                 for (const folder_id of new_list_target_folder) {
                     let listProduct;
                     if (folder_id === -1) {
-                        listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id });
+                        listProduct = await ProductYahooModel.find({
+                            user_id,
+                            yahoo_account_id
+                        });
                     } else {
-                        listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id });
+                        listProduct = await ProductYahooModel.find({
+                            user_id,
+                            yahoo_account_id,
+                            folder_id
+                        });
                     }
 
                     totalProduct += listProduct.length;
@@ -478,7 +553,10 @@ export default class ProductYahooService {
                                 if (uploadAuctionResult.status === 'SUCCESS') {
                                     dataUpdate.listing_status = 'UNDER_EXHIBITION';
                                     dataUpdate.thumbnail = uploadAuctionResult.thumbnail;
-                                    let newProductYahooAuction = { ...productYahooData._doc, ...dataUpdate };
+                                    let newProductYahooAuction = {
+                                        ...productYahooData._doc,
+                                        ...dataUpdate
+                                    };
                                     delete newProductYahooAuction._id;
                                     await ProductYahooAuctionService.create(newProductYahooAuction);
                                 }
@@ -531,12 +609,21 @@ export default class ProductYahooService {
             if (calendar_target_folder.length >= today) {
                 let folder_id = calendar_target_folder[today - 1];
                 if (folder_id) {
-                    let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
+                    let yahooAccount = await AccountYahooService.findOne({
+                        _id: yahoo_account_id
+                    });
                     if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
                         let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                         if (proxyResult.status === 'SUCCESS') {
-                            let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
-                            let listProduct = await ProductYahooModel.find({ user_id, yahoo_account_id, folder_id });
+                            let defaultSetting = await ProductInfomationDefaultService.findOne({
+                                yahoo_account_id,
+                                user_id
+                            });
+                            let listProduct = await ProductYahooModel.find({
+                                user_id,
+                                yahoo_account_id,
+                                folder_id
+                            });
                             for (let index = 0; index < listProduct.length; index++) {
                                 let productYahooData = listProduct[index];
                                 let dataUpdate = {};
@@ -583,7 +670,10 @@ export default class ProductYahooService {
                                 if (uploadAuctionResult.status === 'SUCCESS') {
                                     dataUpdate.listing_status = 'UNDER_EXHIBITION';
 
-                                    let newProductYahooAuction = { ...productYahooData._doc, ...dataUpdate };
+                                    let newProductYahooAuction = {
+                                        ...productYahooData._doc,
+                                        ...dataUpdate
+                                    };
                                     delete newProductYahooAuction._id;
                                     await ProductYahooAuctionService.create(newProductYahooAuction);
                                 }
@@ -623,11 +713,16 @@ export default class ProductYahooService {
         // console.log(' ### new_list_target_folder: ', listAid);
 
         let result = [];
-        let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
+        let yahooAccount = await AccountYahooService.findOne({
+            _id: yahoo_account_id
+        });
         if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
             if (proxyResult.status === 'SUCCESS') {
-                let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
+                let defaultSetting = await ProductInfomationDefaultService.findOne({
+                    yahoo_account_id,
+                    user_id
+                });
                 let listProductFinished = await AuctionYahooService.getProductAuctionFinished(yahooAccount.cookie, proxyResult.data);
                 let listProductEnded = await AuctionYahooService.getProductAuctionEnded('', yahooAccount.cookie, proxyResult.data, true);
                 let listProductResubmit = [...listProductFinished, ...listProductEnded];
@@ -654,15 +749,22 @@ export default class ProductYahooService {
                 for (const product of listProductResubmit) {
                     let newDataUpload = null;
                     let productYahooData = null;
-                    let productAuction = await ProductYahooAuctionModel.findOne({ aID: product.aID });
+                    let productAuction = await ProductYahooAuctionModel.findOne({
+                        aID: product.aID
+                    });
                     if (!productAuction) {
                         let regex = product.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
                         productAuction = await ProductYahooAuctionModel.findOne({
-                            product_yahoo_title: { $regex: regex },
+                            product_yahoo_title: {
+                                $regex: regex
+                            },
                         });
                     }
                     if (productAuction) {
-                        productYahooData = await ProductYahooModel.findOne({ asin_amazon: productAuction.asin_amazon, yahoo_account_id });
+                        productYahooData = await ProductYahooModel.findOne({
+                            asin_amazon: productAuction.asin_amazon,
+                            yahoo_account_id
+                        });
                         if (productYahooData) {
                             let resultCheckUpload = await this.checkStopUpload(productYahooData, defaultSetting);
                             if (resultCheckUpload.isStopUpload) {
@@ -691,7 +793,10 @@ export default class ProductYahooService {
                     // Đối với sp có người bán. sẽ trả về aID mới nên cần tạo map cho n
                     if (product.idBuyer && uploadAuctionResult.status === 'SUCCESS' && newDataUpload) {
                         delete newDataUpload._id;
-                        await ProductYahooAuctionService.create({ ...newDataUpload, aID: uploadAuctionResult.aID });
+                        await ProductYahooAuctionService.create({
+                            ...newDataUpload,
+                            aID: uploadAuctionResult.aID
+                        });
                     }
 
                     let message = product.idBuyer ? '再出品に成功しました（落札あり）' : '再出品に成功しました（落札なし）';
@@ -717,7 +822,9 @@ export default class ProductYahooService {
 
     static async createFromAmazonProduct(productAmazon, user_id, yahoo_account_id) {
         //Dùng cate amazon Check xem có trong mapping k
-        let cateAmazon = await CategoryService.findOne({ amazon_cate_id: productAmazon.category_id });
+        let cateAmazon = await CategoryService.findOne({
+            amazon_cate_id: productAmazon.category_id
+        });
         if (!cateAmazon) {
             cateAmazon = await CategoryService.create({
                 amazon_cate_id: productAmazon.category_id,
@@ -734,7 +841,10 @@ export default class ProductYahooService {
         }
 
         // Data default
-        let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
+        let defaultSetting = await ProductInfomationDefaultService.findOne({
+            yahoo_account_id,
+            user_id
+        });
 
         //Giá sản phẩm gốc
         let import_price = productAmazon.price;

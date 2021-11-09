@@ -59,6 +59,7 @@ const AdminYahooAccounts = () =>
   import("@/views/admin/yahoo-accounts/Index.vue");
 const AdminAsins = () => import("@/views/admin/asins/Index.vue");
 const BankManager = () => import("@/views/bank/BankManager.vue");
+const BankRealManager = () => import("@/views/bank/BankRealManager.vue");
 const MappingBank = () => import("@/views/bank/MappingBank.vue");
 const AccountPayment = () => import("@/views/bank/AccountPayment.vue");
 const ApiKey = () => import("@/views/ApiKey");
@@ -67,8 +68,7 @@ Vue.use(Router);
 
 const router = new Router({
   mode: "history",
-  routes: [
-    {
+  routes: [{
       path: "/login",
       name: "Login",
       component: Login
@@ -355,6 +355,15 @@ const router = new Router({
       redirect: "/"
     },
     {
+      path: "/bank-real-manager",
+      name: "BankRealManager",
+      component: BankRealManager,
+      meta: {
+        requiredAuth: true,
+        type: "bank"
+      }
+    },
+    {
       path: "/bank-manager",
       name: "BankManager",
       component: BankManager,
@@ -402,24 +411,34 @@ const waitForStorageToBeReady = async (to, from, next) => {
     selectedYahooAccount &&
     selectedYahooAccount.is_lock
   ) {
-    return next({ name: "YahooAccounts" });
+    return next({
+      name: "YahooAccounts"
+    });
   }
   if (
     ((to.name !== "Login" && to.meta.requiredAuth) || to.name === null) &&
     !authUser
   ) {
-    next({ name: "Login" });
+    next({
+      name: "Login"
+    });
   } else if (to.meta.isAdmin && authUser) {
     if (user.type == "admin" || (admin && adminViewUser)) {
       next();
     } else {
-      next({ name: "AsinManagement" });
+      next({
+        name: "AsinManagement"
+      });
     }
   } else if (!to.meta.isAdmin && authUser && user.type == "admin") {
-    next({ name: "AdminUsers" });
+    next({
+      name: "AdminUsers"
+    });
   } else {
     if ((to.name === null || to.name === "Login") && authUser) {
-      next({ name: "AsinManagement" });
+      next({
+        name: "AsinManagement"
+      });
     }
     next();
   }

@@ -1362,7 +1362,7 @@ class AuctionYahooService {
             // }
             const options = {
                 args,
-                headless: true,
+                headless: false,
                 ignoreHTTPSErrors: true,
                 // userDataDir: './tmp',
             };
@@ -1389,32 +1389,32 @@ class AuctionYahooService {
             console.log(' ##### btnNext ');
             await waitAndClick('#btnNext');
             console.log(' ### password');
-            let password = await page.waitForSelector('#passwd');
+            let password = await page.waitForSelector('#passwd', { visible: true});
             await password.type(account.password);
             await Utils.sleep(1000);
             console.log(' #### Submit');
             await waitAndClick('#btnSubmit');
-            await page.waitForSelector('input[type=text]', { timeout: 30000 });
+            await page.waitForSelector('input[type=text]', { timeout: 30000, visible: true });
 
             urlLogin = 'https://login.yahoo.co.jp/config/login?auth_lv=capin&.src=pay&.done=https%3A%2F%2Faucpay.yahoo.co.jp%2Fdetail-front%2FPaymentDetailList&.crumb=0';
             await page.goto(urlLogin, { waitUntil: 'load', timeout: timeout });
             console.log(' ### password');
-            password = await page.waitForSelector('#passwd');
+            password = await page.waitForSelector('#passwd', { visible: true});
             await password.type(account.password);
             await Utils.sleep(1000);
             console.log(' #### Submit');
             await waitAndClick('#btnSubmit');
-            await page.waitForSelector('input[type=text]', { timeout: 30000 });
+            await page.waitForSelector('input[type=text]', { timeout: 30000, visible: true });
 
             urlLogin = 'https://login.yahoo.co.jp/config/login?.done=https%3A%2F%2Fsalesmanagement.yahoo.co.jp%2Flist&.src=pay';
             await page.goto(urlLogin, { waitUntil: 'load', timeout: timeout });
             console.log(' ### password');
-            password = await page.waitForSelector('#passwd');
+            password = await page.waitForSelector('#passwd', { visible: true});
             await password.type(account.password);
             await Utils.sleep(1000);
             console.log(' #### Submit');
             await waitAndClick('#btnSubmit');
-            await page.waitForSelector('input[type=text]', { timeout: 30000 });
+            await page.waitForSelector('input[type=text]', { timeout: 30000, visible: true });
 
             await Utils.sleep(1000);
             const cookies = await page.cookies();

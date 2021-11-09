@@ -29,10 +29,10 @@ const getProductByAsin = async (dataInput, cb) => {
             let newListAsin = listAsin.slice(currentIndex, count);
             try {
                 let countProductYahoo = await ProductYahooModel.find({ user_id: dataInput.user_id, yahoo_account_id: dataInput.yahoo_account_id }).countDocuments();
-                if (countProductYahoo >= 3000) {
+                if (countProductYahoo >= 6000) {
                     for (const item of newListAsin) {
                         newListAsinModel[index].status = 'ERROR';
-                        newListAsinModel[index].statusMessage = 'エラー: アカウントは3000件を登録しました。';
+                        newListAsinModel[index].statusMessage = 'エラー: アカウントは6000件を登録しました。';
                         await newListAsinModel[index].save();
                         index++;
                     }
@@ -53,9 +53,9 @@ const getProductByAsin = async (dataInput, cb) => {
                                         await ProductAmazonService.create(itemData.data);
                                     }
                                     countProductYahoo = await ProductYahooModel.find({ user_id: dataInput.user_id, yahoo_account_id: dataInput.yahoo_account_id }).countDocuments();
-                                    if (countProductYahoo >= 3000) {
+                                    if (countProductYahoo >= 6000) {
                                         newListAsinModel[index].status = 'ERROR';
-                                        newListAsinModel[index].statusMessage = 'エラー: アカウントは3000件を登録しました。';
+                                        newListAsinModel[index].statusMessage = 'エラー: アカウントは6000件を登録しました。';
                                         await newListAsinModel[index].save();
                                         index++;
                                         continue;

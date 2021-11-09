@@ -6,7 +6,7 @@
         id="group-id" v-model="groupId">
     </div> -->
     <span class="fs-12 font-weight-bold"
-      >ヤフオクの仕様上、1アカウントで3000件までしか出品できないので、1アカウントあたり最大3000件まで登録可能</span
+      >ヤフオクの仕様上、1アカウントで6000件までしか出品できないので、1アカウントあたり最大6000件まで登録可能</span
     >
     <div class="row ">
       <textarea
@@ -136,12 +136,12 @@ export default {
         let listCode = this.asinString
           .split("\n")
           .filter(item => item.trim() != "");
-        if (listCode.length > 3000) {
+        if (listCode.length > 6000) {
           this.$swal.fire({
             icon: "error",
             title: "エラー",
             text:
-              "ヤフオクの仕様上、1アカウントで3000件までしか出品できないので、1アカウントあたり最大3000件まで登録可能"
+              "ヤフオクの仕様上、1アカウントで6000件までしか出品できないので、1アカウントあたり最大6000件まで登録可能"
           });
           return;
         }

@@ -39,6 +39,11 @@ var Bank = new Schema({
         type: Date,
         default: Date.now,
     },
+    type: {
+        type: String,
+        require: true,
+        default: 'FAKE'
+    }
 });
 var BankModel = mongoose.model('Bank', Bank);
 module.exports = BankModel;

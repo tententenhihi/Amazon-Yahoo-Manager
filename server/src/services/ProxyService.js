@@ -15,7 +15,13 @@ class ProxyService {
 
     static async updateProxy(id, dataUpdate) {
         try {
-            let newProxy = await ProxySchema.findByIdAndUpdate(id, { $set: { ...dataUpdate } }, { new: true });
+            let newProxy = await ProxySchema.findByIdAndUpdate(id, {
+                $set: {
+                    ...dataUpdate
+                }
+            }, {
+                new: true
+            });
             return newProxy != null;
         } catch (error) {
             console.log(' Error ProxyService updateProxy: ', error);
@@ -58,6 +64,12 @@ class ProxyService {
 
     static async findByIdAndCheckLive(id) {
         let proxy = await this.getProxyById(id);
+        if (config.get('env') === 'development') {
+            return {
+                status: 'SUCCESS',
+                data: proxy,
+            };
+        }
         if (!proxy) {
             return {
                 status: 'ERROR',
@@ -78,7 +90,10 @@ class ProxyService {
             }
             let checkLive = await this.checkLiveProxy(proxy);
             if (!checkLive) {
-                await this.updateProxy({ _id: proxy._id, status: 'die' });
+                await this.updateProxy({
+                    _id: proxy._id,
+                    status: 'die'
+                });
                 return {
                     status: 'ERROR',
                     statusMessage: 'プロキシが壊れた',

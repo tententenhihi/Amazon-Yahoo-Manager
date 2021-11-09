@@ -5,9 +5,9 @@
         class="box-header"
         style="display: flex; justify-content: space-between"
       >
-        <span><i class="fa fa-list mr-2"></i>偽口座情報</span>
+        <span><i class="fa fa-list mr-2"></i>本物口座情報</span>
 
-        <button class="btn btn-success" @click="onOpenModalAccount()">
+        <button v-if="listBank && listBank.length === 0" class="btn btn-success" @click="onOpenModalAccount()">
           <i class="fa fa-plus"></i> 新しい銀行を追加する
         </button>
       </div>
@@ -180,10 +180,10 @@ export default {
         bkSubName: "",
         bkAccountNum: "",
         bkAccountKanaLast: "",
-        bkAccountKanaFirst: "",
+        bkAccountKanaFirst: ""
       },
       editId: "",
-      listBank: null,
+      listBank: null
     };
   },
   async mounted() {
@@ -195,12 +195,19 @@ export default {
     createDatatable() {
       let self = this;
       if (self.$("#tablebank").DataTable()) {
-        self.$("#tablebank").DataTable().destroy();
+        self
+          .$("#tablebank")
+          .DataTable()
+          .destroy();
       }
       self.$nextTick(() => {
         self.$("#tablebank").DataTable({
-          initComplete: function () {
-            $(this.api().table().container())
+          initComplete: function() {
+            $(
+              this.api()
+                .table()
+                .container()
+            )
               .find("input")
               .parent()
               .wrap("<form>")
@@ -223,13 +230,13 @@ export default {
               sFirst: "先頭",
               sLast: "最終",
               sNext: "次",
-              sPrevious: "前",
+              sPrevious: "前"
             },
             oAria: {
               sSortAscending: ": 列を昇順に並べ替えるにはアクティブにする",
-              sSortDescending: ": 列を降順に並べ替えるにはアクティブにする",
-            },
-          },
+              sSortDescending: ": 列を降順に並べ替えるにはアクティブにする"
+            }
+          }
         });
       });
     },
@@ -242,11 +249,11 @@ export default {
         bkSubName: "",
         bkAccountNum: "",
         bkAccountKanaLast: "",
-        bkAccountKanaFirst: "",
+        bkAccountKanaFirst: ""
       };
     },
     async getListBank() {
-      let result = await BankApi.get();
+      let result = await BankApi.get({ type: "REAL" });
       if (result && result.status === 200) {
         this.listBank = result.data.listBank || [];
       }
@@ -263,7 +270,7 @@ export default {
           bkSubName: "",
           bkAccountNum: "",
           bkAccountKanaLast: "",
-          bkAccountKanaFirst: "",
+          bkAccountKanaFirst: ""
         };
         this.editId = null;
       }
@@ -271,10 +278,14 @@ export default {
     },
     async onSaveAccount() {
       let credential = this.newBank;
+      credential = {
+        ...credential,
+        type: "REAL"
+      };
       if (this.editId) {
         let result = await BankApi.update(credential);
         if (result && result.status === 200) {
-          this.listBank = this.listBank.map((item) => {
+          this.listBank = this.listBank.map(item => {
             if (item._id === credential._id) {
               return credential;
             }
@@ -306,9 +317,9 @@ export default {
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
           confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  キャンセル',
+          cancelButtonText: '<i class="fa fa-times"></i>  キャンセル'
         })
-        .then(async (result) => {
+        .then(async result => {
           if (result.isConfirmed) {
             let res = await YahooAccountApi.delete(account);
             if (res && res.status == 200) {
@@ -325,8 +336,8 @@ export default {
             }
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

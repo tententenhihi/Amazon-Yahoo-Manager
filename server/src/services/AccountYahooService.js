@@ -53,10 +53,14 @@ class AccountYahooService {
         }
     }
     static async updateAmount(user_id) {
-        let listYahooAccount = await YahooAccountSchema.find({ user_id });
+        let listYahooAccount = await YahooAccountSchema.find({
+            user_id
+        });
         for (const accountData of listYahooAccount) {
             if (accountData && accountData.proxy_id && accountData.cookie && accountData.status === 'SUCCESS' && !accountData.is_error && accountData.count_error < 3000) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountData.proxy_id);
+                console.log(' ========= proxyResult: ', proxyResult)
+
                 if (proxyResult.status === 'SUCCESS') {
                     let proxy = proxyResult.data;
                     let resultGetAmount = await AuctionYahooService.getAmount(accountData.cookie, proxy);

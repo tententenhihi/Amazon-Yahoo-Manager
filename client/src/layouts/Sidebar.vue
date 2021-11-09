@@ -256,6 +256,12 @@
                   <li>
                     <router-link :to="{ name: 'BankManager' }">
                       <i class="fa fa-university m-0"></i>
+                      <span>偽口座情報</span>
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link :to="{ name: 'BankRealManager' }">
+                      <i class="fa fa-university m-0"></i>
                       <span>本物口座情報</span>
                     </router-link>
                   </li>
@@ -287,14 +293,14 @@ export default {
   data() {
     return {
       dropdownOpen: 0,
-      isShowCloseSidebar: true,
+      isShowCloseSidebar: true
     };
   },
   computed: {
     ...mapState(["adminViewUser"]),
     ...mapGetters({
       userInfo: "getUserInfo",
-      selectedYahooAccount: "getSelectedYahooAccount",
+      selectedYahooAccount: "getSelectedYahooAccount"
     }),
     isAdmin() {
       return this.adminViewUser;
@@ -303,7 +309,7 @@ export default {
       if (this.selectedYahooAccount && this.selectedYahooAccount.is_lock) {
         return true;
       } else return false;
-    },
+    }
   },
   methods: {
     onClickLogout() {
@@ -314,7 +320,7 @@ export default {
       this.dropdownOpen == index
         ? (this.dropdownOpen = 0)
         : (this.dropdownOpen = index);
-    },
+    }
   },
   watch: {
     $route() {
@@ -339,8 +345,8 @@ export default {
           this.dropdownOpen = 0;
           break;
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

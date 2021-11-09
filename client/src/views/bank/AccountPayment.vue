@@ -103,8 +103,8 @@
                   <span
                     v-if="
                       account &&
-                      account.historyWithDraw &&
-                      account.historyWithDraw.length > 0
+                        account.historyWithDraw &&
+                        account.historyWithDraw.length > 0
                     "
                   >
                     {{
@@ -127,9 +127,9 @@
                     <div
                       v-if="
                         account.status_withdraw &&
-                        account.status_withdraw.includes(
-                          'Enter Old Bank Number'
-                        )
+                          account.status_withdraw.includes(
+                            'Enter Old Bank Number'
+                          )
                       "
                     >
                       <input
@@ -243,7 +243,7 @@ const STATUS_PROXY = [
   { value: "live", display: "活動中" },
   { value: "used", display: "使用済み" },
   { value: "lock", display: "ロック" },
-  { value: "die", display: "壊れた" },
+  { value: "die", display: "壊れた" }
 ];
 export default {
   name: "YahooAccount",
@@ -261,7 +261,7 @@ export default {
       searchUsername: "",
       searchBankNumber: "",
       searchData: [],
-      listHistoryWithRraw: [],
+      listHistoryWithRraw: []
     };
   },
   async mounted() {
@@ -269,8 +269,8 @@ export default {
     this.createDatatable();
 
     socket = io.connect(process.env.SERVER_API);
-    socket.on(this.$store.state.user._id + "-PAYMENT", (fetchedData) => {
-      this.accounts = this.accounts.map((item) => {
+    socket.on(this.$store.state.user._id + "-PAYMENT", fetchedData => {
+      this.accounts = this.accounts.map(item => {
         if (fetchedData.account && fetchedData.account._id === item._id) {
           return fetchedData.account;
         }
@@ -278,7 +278,7 @@ export default {
           return {
             ...item,
             is_withdraw_running: fetchedData.is_withdraw_running,
-            status_withdraw: fetchedData.status,
+            status_withdraw: fetchedData.status
           };
         }
         return item;
@@ -293,9 +293,7 @@ export default {
   },
   computed: {
     isWithDrawRunning() {
-      let checkIsRunning = this.accounts.find(
-        (item) => item.is_withdraw_running
-      );
+      let checkIsRunning = this.accounts.find(item => item.is_withdraw_running);
       return checkIsRunning;
     },
     tableData() {
@@ -306,7 +304,7 @@ export default {
     },
     pageCount() {
       return Math.ceil(this.searchData.length / PAGE_SIZE);
-    },
+    }
   },
   methods: {
     async refreshAccountPayment() {
@@ -317,14 +315,14 @@ export default {
       try {
         let res = await YahooAccountApi.setOldBankNumber({
           yahoo_account_id: yahoo_account_id,
-          old_bank_number: old_bank_number,
+          old_bank_number: old_bank_number
         });
-        this.accounts = this.accounts.map((item) => {
+        this.accounts = this.accounts.map(item => {
           if (item._id === yahoo_account_id) {
             return {
               ...item,
               is_withdraw_running: true,
-              status_withdraw: "Waitting...",
+              status_withdraw: "Waitting..."
             };
           }
           return item;
@@ -335,21 +333,21 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: error.message,
+          text: error.message
         });
       }
     },
     async onStopWithDrawMoney() {
       try {
         let res = await YahooAccountApi.stopWithDrawMoney({
-          listAccountSelected: this.listAccountSelected,
+          listAccountSelected: this.listAccountSelected
         });
-        this.accounts = this.accounts.map((item) => {
+        this.accounts = this.accounts.map(item => {
           if (this.listAccountSelected.includes(item._id)) {
             return {
               ...item,
               is_withdraw_running: false,
-              status_withdraw: "Stop",
+              status_withdraw: "Stop"
             };
           }
           return item;
@@ -360,25 +358,27 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: error.message,
+          text: error.message
         });
       }
     },
     async onStartWithDrawMoney() {
       try {
         let res = await YahooAccountApi.withDrawMoney({
-          listAccountSelected: this.listAccountSelected,
+          listAccountSelected: this.listAccountSelected
         });
-        this.accounts = this.accounts.map((item) => {
-          if (this.listAccountSelected.includes(item._id)) {
-            return {
-              ...item,
-              is_withdraw_running: true,
-              status_withdraw: "Waitting...",
-            };
-          }
-          return item;
-        });
+        if (res.status === 200) {
+          this.accounts = this.accounts.map(item => {
+            if (this.listAccountSelected.includes(item._id)) {
+              return {
+                ...item,
+                is_withdraw_running: true,
+                status_withdraw: "Waitting..."
+              };
+            }
+            return item;
+          });
+        }
 
         this.searchData = this.accounts;
 
@@ -387,18 +387,21 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: error.message,
+          text: error.message
         });
       }
     },
     createDatatable() {
       let self = this;
       if (self.$("#tablebank").DataTable()) {
-        self.$("#tablebank").DataTable().destroy();
+        self
+          .$("#tablebank")
+          .DataTable()
+          .destroy();
       }
       self.$nextTick(() => {
         self.$("#tablebank").DataTable({
-          initComplete: function () {
+          initComplete: function() {
             // $(this.api().table().container())
             //   .find("input")
             //   .parent()
@@ -410,8 +413,8 @@ export default {
           columnDefs: [
             {
               targets: 0,
-              orderable: false,
-            },
+              orderable: false
+            }
           ],
           language: {
             sEmptyTable: "テーブルにデータがありません",
@@ -428,18 +431,18 @@ export default {
               sFirst: "先頭",
               sLast: "最終",
               sNext: "次",
-              sPrevious: "前",
+              sPrevious: "前"
             },
             oAria: {
               sSortAscending: ": 列を昇順に並べ替えるにはアクティブにする",
-              sSortDescending: ": 列を降順に並べ替えるにはアクティブにする",
-            },
-          },
+              sSortDescending: ": 列を降順に並べ替えるにはアクティブにする"
+            }
+          }
         });
       });
     },
     displayStatus(status) {
-      return this.STATUS_PROXY.find((item) => item.value === status).display;
+      return this.STATUS_PROXY.find(item => item.value === status).display;
     },
     async getYahooAccounts() {
       try {
@@ -452,22 +455,22 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: error.message,
+          text: error.message
         });
       }
     },
     openPayment() {
       let listHistory = [];
-      this.listAccountSelected.map((item) => {
-        let account = this.accounts.find((itemx) => itemx._id === item);
-        account.historyWithDraw.map((itemXX) => {
+      this.listAccountSelected.map(item => {
+        let account = this.accounts.find(itemx => itemx._id === item);
+        account.historyWithDraw.map(itemXX => {
           listHistory.push({
             yahoo_id: account.yahoo_id,
             bank_number: itemXX.bankNumber,
             ip: itemXX.client,
             created: itemXX.created,
             amount: itemXX.amount,
-            status: itemXX.status,
+            status: itemXX.status
           });
         });
       });
@@ -478,7 +481,7 @@ export default {
       this.$refs.modelHistoryPayment.closeModal();
     },
     searchYahooAccount() {
-      this.searchData = this.accounts.filter((account) => {
+      this.searchData = this.accounts.filter(account => {
         let condition = true;
         if (this.searchUserId) {
           condition =
@@ -505,17 +508,17 @@ export default {
         }
       });
       this.page = 1;
-    },
+    }
   },
   watch: {
-    isCheckAllAccount: function () {
+    isCheckAllAccount: function() {
       if (this.isCheckAllAccount) {
-        this.listAccountSelected = this.accounts.map((item) => item._id);
+        this.listAccountSelected = this.accounts.map(item => item._id);
       } else {
         this.listAccountSelected = [];
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

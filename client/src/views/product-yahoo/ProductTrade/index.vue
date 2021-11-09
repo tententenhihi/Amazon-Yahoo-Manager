@@ -539,7 +539,9 @@ export default {
         if (this.searchObj.queryString) {
           condition =
             condition &&
-            product.product_yahoo_title.includes(this.searchObj.queryString);
+            (product.product_yahoo_title.includes(this.searchObj.queryString) ||
+              product.aID.includes(this.searchObj.queryString) ||
+              product.idBuyer.includes(this.searchObj.queryString));
         }
         if (this.searchObj.progress) {
           condition = condition && product.progress === this.searchObj.progress;

@@ -6,6 +6,10 @@ var ApiKey = new Schema({
         type: String,
         trim: true,
     },
+    OAUTH_CODE: {
+        type: String,
+        trim: true,
+    },
     REFRESH_TOKEN: {
         type: String,
         trim: true,

@@ -3,8 +3,8 @@ import Api from "./api";
 const prefix = "/api/v1/bank";
 
 export default {
-  get() {
-    return Api.get(`${prefix}/get`);
+  get(type) {
+    return Api.post(`${prefix}/get`, type);
   },
   create(credentials) {
     return Api.post(`${prefix}/create`, credentials, {

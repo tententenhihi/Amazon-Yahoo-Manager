@@ -77,9 +77,9 @@ export default class AsinAmazonController {
             if (listCode && listCode.length > 0) {
                 // Kiểm tra giới hạn Product Yahoo
                 let countProductYahoo = await ProductYahooModel.find({ user_id: user._id, yahoo_account_id }).countDocuments();
-                if (countProductYahoo >= 3000) {
+                if (countProductYahoo >= 6000) {
                     return response.error400({
-                        message: 'ヤフオクの仕様上、1アカウントで3000件までしか出品できないので、1アカウントあたり最大3000件まで登録可能',
+                        message: 'ヤフオクの仕様上、1アカウントで6000件までしか出品できないので、1アカウントあたり最大6000件まで登録可能',
                     });
                 }
                 // Kiểm tra trùng trong List
@@ -121,9 +121,6 @@ export default class AsinAmazonController {
                     listAsinNew.push(newAsinData);
                     countProductYahoo++;
                     totalAsin++;
-                    // if (countProductYahoo >= 3000) {
-                    //     break;
-                    // }
                 }
                 // Add list Object Asin
                 let newAsin = await AsinAmazonService.addMany(listAsinNew);
