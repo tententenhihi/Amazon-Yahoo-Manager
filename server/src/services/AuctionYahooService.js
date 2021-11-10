@@ -1362,7 +1362,7 @@ class AuctionYahooService {
             // }
             const options = {
                 args,
-                headless: false,
+                headless: true,
                 ignoreHTTPSErrors: true,
                 // userDataDir: './tmp',
             };
