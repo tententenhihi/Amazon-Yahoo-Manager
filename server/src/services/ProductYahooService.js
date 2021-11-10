@@ -36,6 +36,8 @@ const getPriceProductAmazon = async (asin, user_id) => {
         AWS_SECRET_ACCESS_KEY: AWS_SECRET_ACCESS_KEY,
     };
     console.log(' ##################### credentials: ', credentials);
+    console.log(' ##################### REFRESH_TOKEN: ', REFRESH_TOKEN);
+
 
     try {
         let sellingPartner = null;
@@ -44,9 +46,8 @@ const getPriceProductAmazon = async (asin, user_id) => {
             if (user_id) {
                 let apiKey = await ApiKeyController.getApiKeyByUser(user_id);
                 console.log(' ########### apiKey: ', apiKey);
-                
+
                 if (apiKey && apiKey.is_amz && apiKey.OAUTH_CODE && !apiKey.REFRESH_TOKEN) {
-                    console.log(' ========== 11111111 ========== ')
                     sellingPartner = new SellingPartnerAPI({
                         region: 'fe',
                         options: {
@@ -55,43 +56,31 @@ const getPriceProductAmazon = async (asin, user_id) => {
                         credentials
                     });
                     let res = await sellingPartner.exchange(apiKey.OAUTH_CODE);
-                    console.log(" ################# Res: ", res)
                     apiKey.REFRESH_TOKEN = res.refresh_token;
                     sellingPartner = new SellingPartnerAPI({
                         region: 'fe',
                         refresh_token: apiKey.REFRESH_TOKEN,
                         credentials,
                         options: {
-                            auto_request_tokens: false,
+                            auto_request_tokens: true,
                         },
                     });
-                    await sellingPartner.refreshAccessToken();
-                    await sellingPartner.refreshRoleCredentials();
-                    console.log(' ========== 111111 ========== ', sellingPartner)
-
                     await apiKey.save();
                 } else if (apiKey && apiKey.is_amz && apiKey.OAUTH_CODE && apiKey.REFRESH_TOKEN) {
-                    console.log(' ========== 222222222 ========== ')
                     sellingPartner = new SellingPartnerAPI({
                         region: 'fe',
                         refresh_token: apiKey.REFRESH_TOKEN,
                         credentials,
                         options: {
-                            auto_request_tokens: false,
+                            auto_request_tokens: true,
                         },
                     });
-                    await sellingPartner.refreshAccessToken();
-                    await sellingPartner.refreshRoleCredentials();
-                    console.log(' ========== 333333333 ========== ', sellingPartner)
-
                 }
             }
         } catch (error) {
             console.log(' ### Keepa ApiKeyController.getApiKeyByUser: ', error);
         }
-
         if (!sellingPartner) {
-            console.log(' ====================== 44444 ======================= ');
             sellingPartner = new SellingPartnerAPI({
                 region: 'fe', // The region to use for the SP-API endpoints ("eu", "na" or "fe")
                 refresh_token: REFRESH_TOKEN, // The refresh token of your app user
@@ -101,7 +90,6 @@ const getPriceProductAmazon = async (asin, user_id) => {
                 },
             });
         }
-
         let res = await sellingPartner.callAPI({
             operation: 'getItemOffers',
             endpoint: 'productPricing',
@@ -116,7 +104,6 @@ const getPriceProductAmazon = async (asin, user_id) => {
                 version: 'v0',
             },
         });
-        console.log(' ######### res: ', res);
         if (res && res.status === 'Success') {
             if (res.Offers && res.Offers.length > 0) {
                 let offer = res.Offers[0];
@@ -145,7 +132,9 @@ const getPriceProductAmazon = async (asin, user_id) => {
 };
 export default class ProductYahooService {
     static async getPriceAndCountByAmazon(asin, user_id) {
-        return await getPriceProductAmazon(asin, user_id);
+        let newProductData = await getPriceProductAmazon(asin, user_id);
+        console.log(' ### getPriceAndCountByAmazon: ', newProductData)
+        return newProductData
     }
     static async checkStopUpload(productYahooData, defaultSetting) {
         let resultData = {};
