@@ -318,7 +318,7 @@ class AuctionYahooService {
                     };
                     return keys;
                 } catch (err) {
-                    console.log(' ### AuctionYahooService -> uploadNewProduct -> getKeys: ', err);
+                    console.log(' ### AuctionYahooService -> uploadNewProduct -> getKeys: ', err.message);
                     return {
                         status: 'ERROR',
                         statusMessage: 'Lỗi get key',
@@ -1446,7 +1446,7 @@ class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' ##### error: ', error);
+            console.log(' ##### error: ', error.message);
             try {
                 if (browser) {
                     await browser.close();
@@ -1527,7 +1527,7 @@ class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService deleteBuyer: ', error);
+            console.log(' #### AuctionYahooService deleteBuyer: ', error.message);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -1592,7 +1592,7 @@ class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService sendMessage: ', error);
+            console.log(' #### AuctionYahooService sendMessage: ', error.message);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -1686,7 +1686,7 @@ class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService sendRating: ', error);
+            console.log(' #### AuctionYahooService sendRating: ', error.message);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -1992,7 +1992,7 @@ class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService cancelTransaction: ', error);
+            console.log(' #### AuctionYahooService cancelTransaction: ', error.message);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -2069,7 +2069,7 @@ class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService setFeeShip: ', error);
+            console.log(' #### AuctionYahooService setFeeShip: ', error.message);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -2147,7 +2147,7 @@ class AuctionYahooService {
                 };
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService contactShip: ', error);
+            console.log(' #### AuctionYahooService contactShip: ', error.message);
             return {
                 status: 'ERROR',
                 message: error.message,
@@ -2245,7 +2245,7 @@ class AuctionYahooService {
                 }
             }
         } catch (error) {
-            console.log(' #### AuctionYahooService setJoinBill: ', error);
+            console.log(' #### AuctionYahooService setJoinBill: ', error.message);
             return {
                 status: 'ERROR',
                 message: error.message,

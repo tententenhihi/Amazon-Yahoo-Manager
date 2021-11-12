@@ -97,7 +97,7 @@ const getProductByAsin = async (dataInput, cb) => {
                     await newListAsinModel[index].save();
                     index++;
                 }
-                console.log(' ######## error getProductByAsin: ', error);
+                console.log(' ######## error getProductByAsin: ', error.message);
             }
             currentIndex = count;
             let sub = listAsin.length - count;

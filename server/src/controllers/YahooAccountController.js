@@ -165,8 +165,8 @@ async function startRutTien(listYahoo, realBank) {
                 }
             }
         } catch (error) {
-            console.log(' ERROR: ', error);
-            yahooAccount.status_withdraw = 'Error: ' + error;
+            console.log(' ERROR: ', error.message);
+            yahooAccount.status_withdraw = 'Error: ' + error.message;
         }
 
         yahooAccount.is_withdraw_running = false;

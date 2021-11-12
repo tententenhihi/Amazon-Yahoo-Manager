@@ -91,7 +91,6 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         dataUpdate.ship_fee1_temp = dataUpdate.ship_fee1;
         dataUpdate.ship_fee1 = null;
     }
-    // console.log(" ########## dataUpdate: ", dataUpdate)
     let result = await ProductYahooService.update(dataUpdate._id, dataUpdate);
     return result;
 };

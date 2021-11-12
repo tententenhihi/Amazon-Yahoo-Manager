@@ -35,18 +35,12 @@ const getPriceProductAmazon = async (asin, user_id) => {
         AWS_ACCESS_KEY_ID: AWS_ACCESS_KEY_ID,
         AWS_SECRET_ACCESS_KEY: AWS_SECRET_ACCESS_KEY,
     };
-    console.log(' ##################### credentials: ', credentials);
-    console.log(' ##################### REFRESH_TOKEN: ', REFRESH_TOKEN);
-
-
     try {
         let sellingPartner = null;
 
         try {
             if (user_id) {
                 let apiKey = await ApiKeyController.getApiKeyByUser(user_id);
-                console.log(' ########### apiKey: ', apiKey);
-
                 if (apiKey && apiKey.is_amz && apiKey.OAUTH_CODE && !apiKey.REFRESH_TOKEN) {
                     sellingPartner = new SellingPartnerAPI({
                         region: 'fe',
@@ -78,7 +72,7 @@ const getPriceProductAmazon = async (asin, user_id) => {
                 }
             }
         } catch (error) {
-            console.log(' ### Keepa ApiKeyController.getApiKeyByUser: ', error);
+            console.log(' ### Keepa ApiKeyController.getApiKeyByUser: ', error.message);
         }
         if (!sellingPartner) {
             sellingPartner = new SellingPartnerAPI({
@@ -126,7 +120,7 @@ const getPriceProductAmazon = async (asin, user_id) => {
         return null;
         // console.log(res2);
     } catch (error) {
-        console.log(' ### Error getPriceProductAmazon: ', error);
+        console.log(' ### Error getPriceProductAmazon: ', error.message);
         return null;
     }
 };

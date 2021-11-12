@@ -13,10 +13,9 @@ import QueueGetProductAmazon from './services/QueueGetProductAmazon';
 import QueueLoginYahooAuction from './services/QueueLoginYahooAuction';
 import upload from 'express-fileupload';
 import BrightDataService from './services/BrightDataService';
-import CategoryService from './services/CategoryService';
 import CronJobService from './crons/CronJobService';
 import Category from './models/CategoryModel';
-import BankModel from './models/BankModel';
+import moment from 'moment';
 
 require('dotenv').config();
 
@@ -44,6 +43,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/', indexRouter);
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 let initData = async () => {
+    console.log(' ========== App Start ==========', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
     UserService.addUser({
         username: 'admin',
         password: 'admin',
