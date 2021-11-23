@@ -62,6 +62,7 @@ async function getHtmlWithPuppeteer(url, proxy, cookie) {
 class AuctionYahooService {
     static async getAmount(cookie, proxy) {
         try {
+            console.log(' #### getAmount ');
             let proxyConfig = {
                 host: proxy.host,
                 port: proxy.port,
@@ -85,15 +86,20 @@ class AuctionYahooService {
                 },
                 proxy: proxyConfig,
             });
+            console.log(' #### Res Success ');
             let $ = cheerio.load(res.data);
             let textAmount = $('#box > div > dl > dd > em').text();
             if (textAmount) {
+                console.log(' SUCCESS ');
+
                 return {
                     status: 'SUCCESS',
                     message: '',
                     amount: parseInt(textAmount) || 0,
                 };
             } else {
+                console.log(' textAmount not found ');
+
                 return {
                     status: 'ERROR',
                     message: 'textAmount not found',
