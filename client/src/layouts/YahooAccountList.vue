@@ -13,14 +13,19 @@
           v-for="(account, index) in yahooAccount"
           :key="index"
           :value="account._id"
-          :selected="selectedYahooAccount && selectedYahooAccount._id === account._id"
+          :selected="
+            selectedYahooAccount && selectedYahooAccount._id === account._id
+          "
         >
-          <span class="warning" v-if="account && account.count_error >= 3000"
+          <span
+            class="warning"
+            v-if="
+              account &&
+                (account.status === 'ERROR' || account.count_error >= 3000)
+            "
             >▲</span
           >
-          <span class="error" v-if="account && (account.status === 'ERROR' || account.is_error )"
-            >🆇</span
-          >
+          <span class="error" v-if="account && account.is_error">🆇</span>
 
           {{ account.name }}</option
         >

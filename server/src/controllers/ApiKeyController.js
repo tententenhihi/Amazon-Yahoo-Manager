@@ -58,10 +58,11 @@ export default class ApiKeyController {
             // payload.AWS_SECRET_ACCESS_KEY.trim() !== ''
             let REFRESH_TOKEN = '';
             let oldApi = await ApiKeyModel.findById(payload._id);
-            if (oldApi.OAUTH_CODE === payload.OAUTH_CODE) {
+            if (oldApi && payload && oldApi.OAUTH_CODE === payload.OAUTH_CODE) {
                 REFRESH_TOKEN = oldApi.REFRESH_TOKEN
             }
             if (
+                payload &&
                 payload.OAUTH_CODE &&
                 payload.OAUTH_CODE.trim() !== ''
             ) {

@@ -12,7 +12,9 @@ import ProductInfomationDefaultService from '../services/ProductInfomationDefaul
 import CategoryService from '../services/CategoryService';
 
 const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
-    let current_product = await ProductYahooService.findOne({ _id: dataUpdate._id });
+    let current_product = await ProductYahooService.findOne({
+        _id: dataUpdate._id
+    });
 
     let defaultSetting = await ProductInfomationDefaultService.findOne({
         yahoo_account_id: current_product.yahoo_account_id,
@@ -45,7 +47,9 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     }
 
     if (!dataUpdate.yahoo_auction_category_id) {
-        let cateAmazon = await CategoryService.findOne({ amazon_cate_id: current_product.id_category_amazon });
+        let cateAmazon = await CategoryService.findOne({
+            amazon_cate_id: current_product.id_category_amazon
+        });
         if (cateAmazon) {
             dataUpdate.yahoo_auction_category_id = cateAmazon.yahoo_cate_id;
         }
@@ -60,7 +64,9 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         for (let index = 0; index < dataUpdate.image_length; index++) {
             const element = files[`image-` + index];
             if (element) {
-                dataUpdate.images[index] = await UploadFile(element, { disk: 'yahoo-products/' + yahooAccount.user_id + '/' });
+                dataUpdate.images[index] = await UploadFile(element, {
+                    disk: 'yahoo-products/' + yahooAccount.user_id + '/'
+                });
             }
         }
     }
@@ -99,7 +105,9 @@ export default class ProductYahooController {
     static async updateDataCSV(req, res) {
         let response = new Response(res);
         try {
-            let { listProduct } = req.body;
+            let {
+                listProduct
+            } = req.body;
             if (listProduct) {
                 let listResult = [];
                 for (const data of listProduct) {
@@ -110,9 +118,13 @@ export default class ProductYahooController {
                         listResult.push(newData);
                     } catch (error) {}
                 }
-                return response.success200({ listResult });
+                return response.success200({
+                    listResult
+                });
             } else {
-                return response.error400({ message: '更新失敗' });
+                return response.error400({
+                    message: '更新失敗'
+                });
             }
         } catch (error) {
             console.log(error);
@@ -123,21 +135,33 @@ export default class ProductYahooController {
     static async uploadProductYahooNow(req, res) {
         let response = new Response(res);
         try {
-            let { ids, yahoo_account_id } = req.body;
+            let {
+                ids,
+                yahoo_account_id
+            } = req.body;
             let user_id = req.user._id;
             let is_lock_account = await AccountYahooService.checkAccountYahoo_Lock(yahoo_account_id);
             if (is_lock_account) {
-                return response.error400({ message: 'ヤフーアカウントが機能しない ' });
+                return response.error400({
+                    message: 'ヤフーアカウントが機能しない '
+                });
             }
             let results = [];
-            let yahooAccount = await AccountYahooService.findOne({ _id: yahoo_account_id });
+            let yahooAccount = await AccountYahooService.findOne({
+                _id: yahoo_account_id
+            });
             if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                 if (proxyResult.status === 'SUCCESS') {
-                    let defaultSetting = await ProductInfomationDefaultService.findOne({ yahoo_account_id, user_id });
+                    let defaultSetting = await ProductInfomationDefaultService.findOne({
+                        yahoo_account_id,
+                        user_id
+                    });
 
                     for (const product_id of ids) {
-                        let productYahooData = await ProductYahooService.findOne({ _id: product_id });
+                        let productYahooData = await ProductYahooService.findOne({
+                            _id: product_id
+                        });
                         let resultCheckUpload = await ProductYahooService.checkStopUpload(productYahooData, defaultSetting);
                         if (resultCheckUpload.isStopUpload) {
                             let newResult = {
@@ -177,7 +201,10 @@ export default class ProductYahooController {
                         if (uploadAuctionResult.status === 'SUCCESS') {
                             dataUpdate.listing_status = 'UNDER_EXHIBITION';
                             dataUpdate.thumbnail = uploadAuctionResult.thumbnail;
-                            let newProductYahooAuction = { ...productYahooData._doc, ...dataUpdate };
+                            let newProductYahooAuction = {
+                                ...productYahooData._doc,
+                                ...dataUpdate
+                            };
                             delete newProductYahooAuction._id;
                             await ProductYahooAuctionService.create(newProductYahooAuction);
                         }
@@ -188,6 +215,9 @@ export default class ProductYahooController {
                             message = uploadAuctionResult.statusMessage;
                             if (message === 'ヤフーアカウントのエラー') {
                                 yahooAccount.is_error = true;
+                                await yahooAccount.save();
+                            } else {
+                                yahooAccount.count_error = 3000;
                                 await yahooAccount.save();
                             }
                         }
@@ -227,7 +257,9 @@ export default class ProductYahooController {
                 await CronHistoryModel.create(newCronHistory);
             }
 
-            return response.success200({ results });
+            return response.success200({
+                results
+            });
         } catch (error) {
             console.log(error);
             return response.error500(error);
@@ -237,9 +269,15 @@ export default class ProductYahooController {
     static async checkCategory(req, res) {
         let response = new Response(res);
         try {
-            let { category_id } = req.body;
-            let category = await CategoryYahooService.findOne({ id: category_id });
-            return response.success200({ category });
+            let {
+                category_id
+            } = req.body;
+            let category = await CategoryYahooService.findOne({
+                id: category_id
+            });
+            return response.success200({
+                category
+            });
         } catch (error) {
             console.log(error);
             return response.error500(error);
@@ -250,9 +288,13 @@ export default class ProductYahooController {
         let response = new Response(res);
         try {
             let user = req.user;
-            let { yahoo_account_id } = req.params;
+            let {
+                yahoo_account_id
+            } = req.params;
             let products = await ProductYahooService.get(user._id, yahoo_account_id);
-            return response.success200({ products });
+            return response.success200({
+                products
+            });
         } catch (error) {
             console.log(error);
             return response.error500(error);
@@ -266,7 +308,9 @@ export default class ProductYahooController {
             let payload = JSON.parse(req.body.payload);
 
             if (!payload.folder_id || !payload.product_yahoo_title || !payload.yahoo_auction_category_id || !payload.description || !payload.location || !payload.import_price) {
-                return response.error400({ message: '必須フィールドをすべて入力してください' });
+                return response.error400({
+                    message: '必須フィールドをすべて入力してください'
+                });
             }
 
             let yahooAccount = await AccountYahooService.findById(payload.yahoo_account_id);
@@ -285,10 +329,14 @@ export default class ProductYahooController {
             if (req.files && payload.image_length) {
                 for (let index = 0; index < payload.image_length; index++) {
                     const element = req.files[`image-` + index];
-                    data.images.push(await UploadFile(element, { disk: 'yahoo-products/' + user._id + '/' }));
+                    data.images.push(await UploadFile(element, {
+                        disk: 'yahoo-products/' + user._id + '/'
+                    }));
                 }
             } else {
-                return response.error400({ message: '画像は必須です' });
+                return response.error400({
+                    message: '画像は必須です'
+                });
             }
 
             let defaultSetting = await ProductInfomationDefaultService.findOne({
@@ -318,9 +366,14 @@ export default class ProductYahooController {
             if (data.bid_or_buy_price) {
                 dataPrice.bid_or_buy_price = data.bid_or_buy_price;
             }
-            data = { ...data, ...dataPrice };
+            data = {
+                ...data,
+                ...dataPrice
+            };
             let result = await ProductYahooService.create(data);
-            response.success200({ result });
+            response.success200({
+                result
+            });
         } catch (error) {
             console.log(error);
             response.error500(error);
@@ -330,7 +383,9 @@ export default class ProductYahooController {
     static async getDetailProduct(req, res) {
         let response = new Response(res);
         try {
-            const { _id } = req.params;
+            const {
+                _id
+            } = req.params;
             let result = await ProductYahooService.show(_id);
             if (result) {
                 response.success200(result);
@@ -344,16 +399,27 @@ export default class ProductYahooController {
         let response = new Response(res);
         try {
             let user = req.user;
-            const { _id } = req.params;
+            const {
+                _id
+            } = req.params;
             let payload = JSON.parse(req.body.payload);
             if (payload.yahoo_auction_category_id) {
-                let checkCateRight = await CategoryYahooService.findOne({ id: payload.yahoo_auction_category_id });
+                let checkCateRight = await CategoryYahooService.findOne({
+                    id: payload.yahoo_auction_category_id
+                });
                 if (!checkCateRight) {
-                    return response.error400({ message: 'カテゴリーのエラー' });
+                    return response.error400({
+                        message: 'カテゴリーのエラー'
+                    });
                 }
             }
-            let result = await updateProductWithCaculatorProfit({ _id, ...payload }, req.files);
-            response.success200({ result });
+            let result = await updateProductWithCaculatorProfit({
+                _id,
+                ...payload
+            }, req.files);
+            response.success200({
+                result
+            });
         } catch (error) {
             console.log(error);
             response.error500(error);
@@ -363,10 +429,14 @@ export default class ProductYahooController {
     static async deleteProduct(req, res) {
         let response = new Response(res);
         try {
-            const { _id } = req.params;
+            const {
+                _id
+            } = req.params;
             let result = await ProductYahooService.delete(_id);
             if (result) {
-                response.success200({ success: true });
+                response.success200({
+                    success: true
+                });
             }
         } catch (error) {
             response.error500(error);
@@ -376,7 +446,11 @@ export default class ProductYahooController {
     static async switchWatchOption(req, res) {
         let response = new Response(res);
         try {
-            const { ids, type, value } = req.body;
+            const {
+                ids,
+                type,
+                value
+            } = req.body;
             const TYPES = ['watch_stock', 'watch_profit', 'watch_only_prime'];
             const VALUES = ['0', '1'];
             if (!TYPES.includes(type) || !VALUES.includes(value)) {
@@ -384,7 +458,9 @@ export default class ProductYahooController {
             }
             let res = await ProductYahooService.switchWatchOption(ids, type, value);
             if (res) {
-                return response.success200({ success: res });
+                return response.success200({
+                    success: res
+                });
             }
         } catch (error) {
             response.error500(error);
@@ -393,10 +469,15 @@ export default class ProductYahooController {
     static async setImageOverlay(req, res) {
         let response = new Response(res);
         try {
-            const { ids, selectedImageIndex } = req.body;
+            const {
+                ids,
+                selectedImageIndex
+            } = req.body;
             let res = await ProductYahooService.setImageOverlay(ids, selectedImageIndex);
             if (res) {
-                return response.success200({ success: res });
+                return response.success200({
+                    success: res
+                });
             }
         } catch (error) {
             response.error500(error);
@@ -405,10 +486,15 @@ export default class ProductYahooController {
     static async changeProductFolder(req, res) {
         let response = new Response(res);
         try {
-            const { ids, folder_id } = req.body;
+            const {
+                ids,
+                folder_id
+            } = req.body;
             let res = await ProductYahooService.changeProductFolder(ids, folder_id);
             if (res) {
-                return response.success200({ success: res });
+                return response.success200({
+                    success: res
+                });
             }
         } catch (error) {
             response.error500(error);
@@ -418,14 +504,18 @@ export default class ProductYahooController {
     static async deleteMultipleProduct(req, res) {
         let response = new Response(res);
         try {
-            const { ids } = req.body;
+            const {
+                ids
+            } = req.body;
             for (let index = 0; index < ids.length; index++) {
                 const _id = ids[index];
                 try {
                     await ProductYahooService.delete(_id);
                 } catch (error) {}
             }
-            return response.success200({ success: true });
+            return response.success200({
+                success: true
+            });
         } catch (error) {
             response.error500(error);
         }

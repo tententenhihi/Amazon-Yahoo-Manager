@@ -72,6 +72,7 @@ const getPriceProductAmazon = async (asin, user_id) => {
                 }
             }
         } catch (error) {
+            sellingPartner = null;
             console.log(' ### Keepa ApiKeyController.getApiKeyByUser: ', error.message);
         }
         if (!sellingPartner) {
@@ -550,6 +551,9 @@ export default class ProductYahooService {
                                     if (message === 'ヤフーアカウントのエラー') {
                                         yahooAccount.is_error = true;
                                         await yahooAccount.save();
+                                    } else {
+                                        yahooAccount.count_error = 3000;
+                                        await yahooAccount.save();
                                     }
                                 }
                                 newResult = {
@@ -666,6 +670,9 @@ export default class ProductYahooService {
                                     message = uploadAuctionResult.statusMessage;
                                     if (message === 'ヤフーアカウントのエラー') {
                                         yahooAccount.is_error = true;
+                                        await yahooAccount.save();
+                                    } else {
+                                        yahooAccount.count_error = 3000;
                                         await yahooAccount.save();
                                     }
                                 }

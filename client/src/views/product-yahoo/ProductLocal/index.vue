@@ -95,6 +95,12 @@
               </select>
             </div>
           </div>
+          <div class="py-3 fs-14">
+            <span>全6,955件: ページ 1/232</span>
+            <span>
+              表示件数: 30件
+            </span>
+          </div>
           <button class="btn btn-primary px-4" @click="onSearchProduct">
             検索
           </button>
@@ -155,7 +161,7 @@
             'description',
             'yahoo_auction_category_id',
             'asin_amazon',
-            'folder_name',
+            'folder_name'
           ]"
           :labels="{
             _id: 'ID',
@@ -171,7 +177,7 @@
             description: '商品詳細',
             yahoo_auction_category_id: 'ヤフーカテゴリID',
             asin_amazon: 'ASIN',
-            folder_name: 'フォルダ名',
+            folder_name: 'フォルダ名'
           }"
           :name="nameFolderSelected + '.csv'"
         >
@@ -288,7 +294,7 @@
                 <router-link
                   :to="{
                     name: 'CreateProductYahooLocal',
-                    params: { id: product._id },
+                    params: { id: product._id }
                   }"
                   >{{ product.product_yahoo_title }}</router-link
                 >
@@ -736,7 +742,7 @@ import JsonCSV from "vue-json-csv";
 const PRODUCT_STATUS = [
   { display: "中古", value: "used" },
   { display: "新品", value: "new" },
-  { display: "その他", value: "other" },
+  { display: "その他", value: "other" }
 ];
 const HOLDING_PERIOD = [
   { display: "当日終了", value: 0 },
@@ -746,7 +752,7 @@ const HOLDING_PERIOD = [
   { display: "4日間", value: 4 },
   { display: "5日間", value: 5 },
   { display: "6日間", value: 6 },
-  { display: "7日間", value: 7 },
+  { display: "7日間", value: 7 }
 ];
 const ENDING_TIME = [
   { display: "午前0時から午前1時", value: 0 },
@@ -772,7 +778,7 @@ const ENDING_TIME = [
   { display: "午後8時から午後9時", value: 20 },
   { display: "午後9時から午後10時", value: 21 },
   { display: "午後10時から午後11時", value: 22 },
-  { display: "午後11時から午前0時", value: 23 },
+  { display: "午後11時から午前0時", value: 23 }
 ];
 const PREFECTURE = [
   { value: 1, display: "北海道" },
@@ -822,14 +828,14 @@ const PREFECTURE = [
   { value: 45, display: "宮崎県" },
   { value: 46, display: "鹿児島県" },
   { value: 47, display: "沖縄県" },
-  { value: 48, display: "海外" },
+  { value: 48, display: "海外" }
 ];
 const SHIP_SCHEDULE = [
   { display: "１〜２日", value: 1 },
   { display: "２〜３日", value: 7 },
   { display: "３〜７日", value: 2 },
   { display: "７日〜１３日", value: 5 },
-  { display: "１４日以降", value: 6 },
+  { display: "１４日以降", value: 6 }
 ];
 const CONSPICUOUS_ICON = [
   { display: "美品", value: 2 },
@@ -838,20 +844,20 @@ const CONSPICUOUS_ICON = [
   { display: "保証書付", value: 5 },
   { display: "全巻セット", value: 6 },
   { display: "正規店購入", value: 7 },
-  { display: "産地直送", value: 8 },
+  { display: "産地直送", value: 8 }
 ];
 const LISTING_STATUS = [
   { display: "未出品", value: "NOT_LISTED" },
-  { display: "出品中", value: "UNDER_EXHIBITION" },
+  { display: "出品中", value: "UNDER_EXHIBITION" }
 ];
 const SWITCH_OPTION = [
   { display: "OFF", value: "0" },
-  { display: "ON", value: "1" },
+  { display: "ON", value: "1" }
 ];
 const SWITCH_TYPE = {
   watch_stock: "在庫監視",
   watch_profit: "利益監視",
-  watch_only_prime: "プライムのみ監視",
+  watch_only_prime: "プライムのみ監視"
 };
 
 const PROXY_STATUS_DIE = "die";
@@ -859,7 +865,7 @@ const PROXY_STATUS_DIE = "die";
 export default {
   name: "YahooAuctionProducts",
   components: {
-    JsonCSV,
+    JsonCSV
   },
   data() {
     return {
@@ -880,7 +886,7 @@ export default {
         listingStatus: null,
         watch_stock: null,
         watch_profit: null,
-        watch_only_prime: null,
+        watch_only_prime: null
       },
       nameFolderSelected: "すべて",
       folders: [],
@@ -894,7 +900,7 @@ export default {
       selectedEditProduct: {},
       imageInsertion: [],
       selectedImageIndex: null,
-      isShowErrorTitle: false,
+      isShowErrorTitle: false
     };
   },
   async mounted() {
@@ -906,7 +912,7 @@ export default {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
       userInfo: "getUserInfo",
-      adminViewUser: "getAdminViewUser",
+      adminViewUser: "getAdminViewUser"
     }),
     yahooAccountId() {
       return this.selectedYahooAccount._id;
@@ -927,7 +933,7 @@ export default {
         : false;
     },
     dataExport() {
-      let dataExport = this.products.filter((product) => {
+      let dataExport = this.products.filter(product => {
         let condition = true;
         if (this.searchObj.folder) {
           condition = condition && product.folder_id === this.searchObj.folder;
@@ -935,8 +941,8 @@ export default {
         return condition;
       });
 
-      dataExport = dataExport.map((item) => {
-        let folder = this.folders.find((x) => x._id == item.folder_id);
+      dataExport = dataExport.map(item => {
+        let folder = this.folders.find(x => x._id == item.folder_id);
         return {
           _id: "_id|" + item._id,
           product_yahoo_title:
@@ -952,11 +958,11 @@ export default {
           description: item.description.replace(/,/g, "、") || "",
           yahoo_auction_category_id: item.yahoo_auction_category_id || "",
           asin_amazon: item.asin_amazon || "",
-          folder_name: folder ? folder.name : "",
+          folder_name: folder ? folder.name : ""
         };
       });
       return dataExport;
-    },
+    }
   },
   methods: {
     getPriceOriginal(product) {
@@ -972,13 +978,13 @@ export default {
     onClickTitle(idProduct) {
       this.$router.push({
         name: "CreateProductYahooLocal",
-        params: { id: idProduct },
+        params: { id: idProduct }
       });
     },
     onChangeSelectFolder(event) {
       let _id = event.target.value;
       if (_id) {
-        let folderSelected = this.folders.find((item) => item._id === _id);
+        let folderSelected = this.folders.find(item => item._id === _id);
         if (folderSelected) {
           this.nameFolderSelected = folderSelected.name;
         } else {
@@ -993,13 +999,13 @@ export default {
       return new Promise((resolve, reject) => {
         try {
           let reader = new FileReader();
-          reader.onload = async function (e) {
+          reader.onload = async function(e) {
             let arrLines = e.target.result
               .split("_id|")
-              .filter((item) => item !== "");
+              .filter(item => item !== "");
             let contentCsv = arrLines.slice(1, arrLines.length);
             let productList = [];
-            contentCsv.forEach((line) => {
+            contentCsv.forEach(line => {
               if (line) {
                 let pros = line.trim().split(",");
                 let start_price = pros[2].replace(/\D+/, "");
@@ -1023,7 +1029,7 @@ export default {
                   ? parseInt(image_overlay_index)
                   : image_overlay_index;
 
-                let folder = $vue.folders.find((x) => x.name === pros[13]);
+                let folder = $vue.folders.find(x => x.name === pros[13]);
                 let data = {
                   _id: pros[0],
                   product_yahoo_title: pros[1],
@@ -1038,7 +1044,7 @@ export default {
                   description: pros[10],
                   yahoo_auction_category_id: pros[11],
                   asin_amazon: pros[12],
-                  folder_id: folder ? folder._id : null,
+                  folder_id: folder ? folder._id : null
                 };
                 productList.push(data);
               }
@@ -1064,7 +1070,8 @@ export default {
         return this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: "CSVファイルしかアップ出来ません。CSVファイルを選択してください。!",
+          text:
+            "CSVファイルしかアップ出来ません。CSVファイルを選択してください。!"
         });
       }
 
@@ -1074,8 +1081,8 @@ export default {
         let res = await ProductYahooApi.updateDataByCsv({ listProduct });
         if (res && res.status === 200) {
           let listResult = res.data.listResult;
-          this.products = this.products.map((item) => {
-            let newData = listResult.find((x) => x._id === item._id);
+          this.products = this.products.map(item => {
+            let newData = listResult.find(x => x._id === item._id);
             if (newData) {
               return newData;
             }
@@ -1084,7 +1091,7 @@ export default {
           this.searchProducts = this.products;
           this.$swal.fire({
             icon: "success",
-            title: "更新成功",
+            title: "更新成功"
           });
         }
       }
@@ -1096,8 +1103,10 @@ export default {
         this.selectedEditProduct.product_yahoo_title &&
         this.selectedEditProduct.product_yahoo_title.length > 65
       ) {
-        this.selectedEditProduct.product_yahoo_title =
-          this.selectedEditProduct.product_yahoo_title.substring(0, 65);
+        this.selectedEditProduct.product_yahoo_title = this.selectedEditProduct.product_yahoo_title.substring(
+          0,
+          65
+        );
         this.isShowErrorTitle = true;
       } else {
         this.isShowErrorTitle = false;
@@ -1106,7 +1115,7 @@ export default {
     async getImageInsertion() {
       let res = await ImageInsertionApi.get(this.yahooAccountId);
       if (res && res.status == 200) {
-        this.imageInsertion = res.data.imageInsertion.images.map((image) => {
+        this.imageInsertion = res.data.imageInsertion.images.map(image => {
           return this.SERVER_HOST_UPLOAD + image;
         });
       }
@@ -1135,20 +1144,20 @@ export default {
         this.$swal.fire({
           icon: "error",
           title: "エラー",
-          text: error.message,
+          text: error.message
         });
       }
     },
     onEditProduct(product, index) {
       this.selectedEditProduct = {
         ...product,
-        displayName: product.product_yahoo_title,
+        displayName: product.product_yahoo_title
       };
       this.$refs.modalEditProduct.openModal();
     },
     async onSaveEditProduct() {
       let params = {
-        ...this.selectedEditProduct,
+        ...this.selectedEditProduct
       };
       let formData = new FormData();
       formData.append("payload", JSON.stringify(params));
@@ -1161,11 +1170,11 @@ export default {
           icon: "success",
           title: "商品情報を変更しました。",
           timer: 500,
-          showConfirmButton: false,
+          showConfirmButton: false
         });
         this.$refs.modalEditProduct.closeModal();
         let findIndex = this.searchProducts.findIndex(
-          (item) => item._id === this.selectedEditProduct._id
+          item => item._id === this.selectedEditProduct._id
         );
         this.searchProducts[findIndex] = { ...res.data.result };
         this.searchProducts = [...this.searchProducts];
@@ -1182,14 +1191,14 @@ export default {
           confirmButtonColor: "#00a65a",
           cancelButtonColor: "#f39c12",
           confirmButtonText: '<i class="fa fa-check-square"></i> はい',
-          cancelButtonText: '<i class="fa fa-times"></i>  番号',
+          cancelButtonText: '<i class="fa fa-times"></i>  番号'
         })
-        .then(async (result) => {
+        .then(async result => {
           if (result.isConfirmed) {
             let res = await ProductYahooApi.delete(product._id);
             if (res && res.status == 200) {
               let findIndex = this.searchProducts.findIndex(
-                (item) => item._id === product._id
+                item => item._id === product._id
               );
               this.searchProducts.splice(findIndex, 1);
               if (this.tableData.length === 0) {
@@ -1197,7 +1206,7 @@ export default {
               }
 
               this.selectedProducts = this.selectedProducts.filter(
-                (item) => item._id !== product._id
+                item => item._id !== product._id
               );
               self.$swal.fire(
                 "削除しました！",
@@ -1220,33 +1229,30 @@ export default {
       }
     },
     displayProductStatus(product) {
-      return this.PRODUCT_STATUS.find((item) => item.value === product.status)
-        ? this.PRODUCT_STATUS.find((item) => item.value === product.status)
+      return this.PRODUCT_STATUS.find(item => item.value === product.status)
+        ? this.PRODUCT_STATUS.find(item => item.value === product.status)
             .display
         : "";
     },
     displayDuration(product) {
-      return this.HOLDING_PERIOD.find((item) => item.value === product.duration)
-        ? this.HOLDING_PERIOD.find((item) => item.value === product.duration)
+      return this.HOLDING_PERIOD.find(item => item.value === product.duration)
+        ? this.HOLDING_PERIOD.find(item => item.value === product.duration)
             .display
         : "";
     },
     displayEndingTime(product) {
-      return this.ENDING_TIME.find(
-        (item) => item.value === product.closing_time
-      )
-        ? this.ENDING_TIME.find((item) => item.value === product.closing_time)
+      return this.ENDING_TIME.find(item => item.value === product.closing_time)
+        ? this.ENDING_TIME.find(item => item.value === product.closing_time)
             .display
         : "";
     },
     displayLocation(product) {
-      return this.PREFECTURE.find((item) => item.value === product.location)
-        ? this.PREFECTURE.find((item) => item.value === product.location)
-            .display
+      return this.PREFECTURE.find(item => item.value === product.location)
+        ? this.PREFECTURE.find(item => item.value === product.location).display
         : "";
     },
     onSearchProduct() {
-      this.searchProducts = this.products.filter((product) => {
+      this.searchProducts = this.products.filter(product => {
         let condition = true;
         if (this.searchObj.folder) {
           condition = condition && product.folder_id === this.searchObj.folder;
@@ -1293,7 +1299,7 @@ export default {
         listingStatus: null,
         watch_stock: null,
         watch_profit: null,
-        watch_only_prime: null,
+        watch_only_prime: null
       };
       this.searchProducts = [...this.products];
     },
@@ -1303,9 +1309,9 @@ export default {
     },
     async switchOption(value) {
       let params = {
-        ids: this.selectedProducts.map((item) => item._id),
+        ids: this.selectedProducts.map(item => item._id),
         type: this.selectedTypeWitch,
-        value,
+        value
       };
       let res = await ProductYahooApi.switchWatchOption(params);
       if (res && res.status === 200) {
@@ -1323,7 +1329,7 @@ export default {
           default:
             break;
         }
-        this.selectedProducts = this.selectedProducts.map((item) => {
+        this.selectedProducts = this.selectedProducts.map(item => {
           item[this.selectedTypeWitch] = value;
           return item;
         });
@@ -1331,7 +1337,7 @@ export default {
         this.onCloseModal();
         this.$swal.fire({
           icon: "success",
-          title: title,
+          title: title
         });
       }
     },
@@ -1343,33 +1349,33 @@ export default {
     },
     async onMoveProductToFolder() {
       let params = {
-        ids: this.selectedProducts.map((item) => item._id),
-        folder_id: this.selectedFolder,
+        ids: this.selectedProducts.map(item => item._id),
+        folder_id: this.selectedFolder
       };
       let res = await ProductYahooApi.changeProductFolder(params);
       if (res && res.status === 200) {
-        this.selectedProducts = this.selectedProducts.map((item) => {
+        this.selectedProducts = this.selectedProducts.map(item => {
           item.folder_id = this.selectedFolder;
           return item;
         });
         this.onCloseModal();
         this.$swal.fire({
           icon: "success",
-          title: "取扱商品フォルダの設定を行いました。",
+          title: "取扱商品フォルダの設定を行いました。"
         });
       }
     },
     async onSaveImageOverlay() {
       let params = {
-        ids: this.selectedProducts.map((item) => item._id),
-        selectedImageIndex: this.selectedImageIndex,
+        ids: this.selectedProducts.map(item => item._id),
+        selectedImageIndex: this.selectedImageIndex
       };
       let res = await ProductYahooApi.setOverlayImage(params);
       if (res && res.status === 200) {
         this.isCheckAllProduct = false;
         this.onCloseModal();
 
-        this.selectedProducts = this.selectedProducts.map((item) => {
+        this.selectedProducts = this.selectedProducts.map(item => {
           item.image_overlay_index = this.selectedImageIndex;
           return item;
         });
@@ -1377,19 +1383,19 @@ export default {
         this.selectedProducts = [];
         this.$swal.fire({
           icon: "success",
-          title: "更新成功",
+          title: "更新成功"
         });
       }
     },
     async onDeleteMultipleProduct() {
       let params = {
-        ids: this.selectedProducts.map((item) => item._id),
+        ids: this.selectedProducts.map(item => item._id)
       };
       let res = await ProductYahooApi.deleteMultipleProduct(params);
       if (res && res.status === 200) {
-        this.selectedProducts.forEach((item) => {
+        this.selectedProducts.forEach(item => {
           let findIndex = this.searchProducts.findIndex(
-            (product) => product._id === item._id
+            product => product._id === item._id
           );
           this.searchProducts.splice(findIndex, 1);
         });
@@ -1399,7 +1405,7 @@ export default {
         this.onCloseModal();
         this.$swal.fire({
           icon: "success",
-          title: "取扱商品フォルダの設定を行いました。",
+          title: "取扱商品フォルダの設定を行いました。"
         });
         if (this.tableData.length === 0) {
           this.page -= 1;
@@ -1408,8 +1414,8 @@ export default {
     },
     async onUploadYahooNow() {
       let params = {
-        ids: this.selectedProducts.map((item) => item._id),
-        yahoo_account_id: this.yahooAccountId,
+        ids: this.selectedProducts.map(item => item._id),
+        yahoo_account_id: this.yahooAccountId
       };
       let res = await ProductYahooApi.uploadProductNow(params);
       if (res && res.status === 200) {
@@ -1423,17 +1429,17 @@ export default {
         let html = `
         <div>
           <span style="font-weight: bold; color: green">成功:  ${
-            results.filter((item) => item.success).length
+            results.filter(item => item.success).length
           }</span>
         </div>
         <div>
           <span style="font-weight: bold; color: red">エラー: ${
-            results.filter((item) => !item.success).length
+            results.filter(item => !item.success).length
           }</span>
         </div>
         `;
         this.isCheckAllProduct = false;
-        this.selectedProducts = this.selectedProducts.map((item) => {
+        this.selectedProducts = this.selectedProducts.map(item => {
           for (const result of results) {
             if (result.product_id === item._id && result.success) {
               item.listing_status = "UNDER_EXHIBITION";
@@ -1444,10 +1450,10 @@ export default {
         this.selectedProducts = [];
         this.$swal.fire({
           icon: "success",
-          html,
+          html
         });
       }
-    },
+    }
   },
   watch: {
     isCheckAllProduct() {
@@ -1470,8 +1476,8 @@ export default {
     page() {
       this.isCheckAllProduct = false;
       this.selectedProducts = [];
-    },
-  },
+    }
+  }
 };
 </script>
 
