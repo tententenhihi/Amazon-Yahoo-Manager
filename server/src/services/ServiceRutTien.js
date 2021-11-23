@@ -2,7 +2,7 @@ const {
     workerData,
     parentPort
 } = require('worker_threads');
-const axios = require('axios');
+const axios = require('axios-https-proxy-fix');
 const Qs = require('query-string');
 const config = require('config');
 const cheerio = require('cheerio');

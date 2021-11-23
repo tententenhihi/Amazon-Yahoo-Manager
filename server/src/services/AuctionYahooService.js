@@ -1,5 +1,5 @@
 const FormData = require('form-data');
-const axios = require('axios');
+const axios = require('axios-https-proxy-fix');
 const Fs = require('fs');
 const cheerio = require('cheerio');
 const Qs = require('query-string');

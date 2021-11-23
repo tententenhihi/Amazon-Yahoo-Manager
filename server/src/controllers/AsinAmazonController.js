@@ -109,6 +109,7 @@ export default class AsinAmazonController {
                 let totalAsin = 0;
                 // Tạo List Object Asin
                 for (let i = 0; i < listCode.length; i++) {
+                    console.log(' ===== ', i);
                     const code = listCode[i];
 
                     if (!checkUpdateAsin) {
