@@ -15,11 +15,15 @@ export default class AsinAmazonController {
             let user = req.user;
             if (req.body.query_keys) {
                 for (const query_key of req.body.query_keys) {
-                    let result = await AsinAmazonService.deleteMany({ query_key }, user._id);
+                    let result = await AsinAmazonService.deleteMany({
+                        query_key
+                    }, user._id);
                 }
                 return response.success200({});
             }
-            return response.error400({ message: 'データエラー' });
+            return response.error400({
+                message: 'データエラー'
+            });
         } catch (error) {
             console.log(error);
             return response.error500(error);
@@ -35,7 +39,9 @@ export default class AsinAmazonController {
             //     idUser: user._id,
             // };
             // let listAsin = await AsinAmazonService.get(payload);
-            return response.success200({ listAsinBlackList: [] });
+            return response.success200({
+                listAsinBlackList: []
+            });
         } catch (error) {
             console.log(error);
             return response.error500(error);
@@ -54,7 +60,10 @@ export default class AsinAmazonController {
             };
             let listAsin = await AsinAmazonService.get(payload, user._id);
             let getBackList = await BlacklistAsinService.getBlackList();
-            return response.success200({ listAsin, black_list: getBackList });
+            return response.success200({
+                listAsin,
+                black_list: getBackList
+            });
         } catch (error) {
             console.log(error);
             return response.error500(error);
@@ -64,7 +73,7 @@ export default class AsinAmazonController {
     static async add(req, res) {
         let response = new Response(res);
         try {
-            console.log(' ######### add: ', req)
+            console.log(' 111111111 ');
             let user = req.user;
             let listCode = req.body.listCode;
             // let groupId = req.body.groupId;
@@ -75,14 +84,23 @@ export default class AsinAmazonController {
             if (!type) {
                 type = 'ASIN';
             }
+            console.log(' 2222222222 ');
+
             if (listCode && listCode.length > 0) {
+                console.log(' 3333333333 ');
+
                 // Kiểm tra giới hạn Product Yahoo
-                let countProductYahoo = await ProductYahooModel.find({ user_id: user._id, yahoo_account_id }).countDocuments();
+                let countProductYahoo = await ProductYahooModel.find({
+                    user_id: user._id,
+                    yahoo_account_id
+                }).countDocuments();
                 if (countProductYahoo >= 6000) {
                     return response.error400({
                         message: 'ヤフオクの仕様上、1アカウントで6000件までしか出品できないので、1アカウントあたり最大6000件まで登録可能',
                     });
                 }
+                console.log(' 44444444444 ');
+
                 // Kiểm tra trùng trong List
                 listCode = _.uniqBy(listCode);
 
@@ -95,7 +113,10 @@ export default class AsinAmazonController {
 
                     if (!checkUpdateAsin) {
                         // Kiểm tra đã tồn tại ProductYahoo chưa. có rồi thì bỏ qua Asin
-                        let existProductYahoo = await ProductYahooService.findOne({ asin_amazon: code, yahoo_account_id });
+                        let existProductYahoo = await ProductYahooService.findOne({
+                            asin_amazon: code,
+                            yahoo_account_id
+                        });
                         if (existProductYahoo) {
                             await AsinAmazonService.add({
                                 code,
@@ -123,18 +144,25 @@ export default class AsinAmazonController {
                     countProductYahoo++;
                     totalAsin++;
                 }
+                console.log(' 55555555555 ');
+
                 // Add list Object Asin
                 let newAsin = await AsinAmazonService.addMany(listAsinNew);
                 //Add List To Queue
+                console.log(' 66666666666 ');
+
                 QueueGetProductAmazon.addNew({
                     isUpdateAmazonProduct: checkUpdateAsin,
                     newAsin,
                     user_id: user,
                     yahoo_account_id,
                 });
+                console.log(' 77777777 ');
 
                 // Return List
                 let accountYahoo = await AccountYahooService.findById(yahoo_account_id);
+                console.log(' 88888888 ');
+
                 return response.success200({
                     newAsin: {
                         asins: newAsin,
@@ -145,8 +173,13 @@ export default class AsinAmazonController {
                     },
                 });
             }
-            return response.error400({ message: 'データエラー' });
+            console.log(' 99999999 ');
+
+            return response.error400({
+                message: 'データエラー'
+            });
         } catch (error) {
+            console.log(' ======sssadasdasd=sadsadsadsad====== ');
             console.log(error);
             return response.error500(error);
         }
@@ -158,7 +191,9 @@ export default class AsinAmazonController {
             if (req.body) {
                 return response.success200({});
             }
-            return response.error400({ message: 'データエラー' });
+            return response.error400({
+                message: 'データエラー'
+            });
         } catch (error) {
             console.log(error);
             return response.error500(error);
@@ -171,9 +206,13 @@ export default class AsinAmazonController {
             let user = req.user;
             if (req.body.idAsin) {
                 let result = await AsinAmazonService.delete(req.body.idAsin, user._id);
-                return response.success200({ result });
+                return response.success200({
+                    result
+                });
             }
-            return response.error400({ message: 'データエラー' });
+            return response.error400({
+                message: 'データエラー'
+            });
         } catch (error) {
             console.log(error);
             return response.error500(error);

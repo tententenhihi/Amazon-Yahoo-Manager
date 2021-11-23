@@ -58,6 +58,21 @@ app.use('/uploads', express.static('uploads'));
 app.use('/', indexRouter);
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 let initData = async () => {
+    // try {
+    //     let res = await axios.get('http://lumtest.com/myip.json', {
+    //         proxy: {
+    //             host: "zproxy.lum-superproxy.io",
+    //             port: "22225",
+    //             auth: {
+    //                 username: 'lum-customer-c_84db29ae-zone-zone2-ip-194.110.89.239',
+    //                 password: '7ox35md3j0jm',
+    //             },
+    //         },
+    //     });
+    //     console.log(' ########## res: ', res);
+    // } catch (error) {
+    //     console.log(' ########## error: ', error);
+    // }
     console.log(' ========== App Start ==========', moment(new Date()).format('DD/MM/YYYY - HH:mm:ss:ms'));
     UserService.addUser({
         username: 'admin',
