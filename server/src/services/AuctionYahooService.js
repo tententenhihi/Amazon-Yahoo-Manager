@@ -82,9 +82,9 @@ class AuctionYahooService {
                     authority: 'auctions.yahoo.co.jp',
                     'Accept-Encoding': 'gzip, deflate, br',
                     Connection: 'keep-alive',
-                    timeout: 30 * 1000,
                 },
                 proxy: proxyConfig,
+                timeout: 30 * 1000,
             });
             console.log(' #### Res Success ');
             let $ = cheerio.load(res.data);

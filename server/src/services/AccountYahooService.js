@@ -61,6 +61,7 @@ class AccountYahooService {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountData.proxy_id);
 
                 if (proxyResult.status === 'SUCCESS') {
+                    console.log(' #### updateAmount:', accountData);
                     let proxy = proxyResult.data;
                     let resultGetAmount = await AuctionYahooService.getAmount(accountData.cookie, proxy);
                     if (resultGetAmount.status === 'SUCCESS') {
