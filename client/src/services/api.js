@@ -1,6 +1,8 @@
 import Axios from "axios";
 import store from "../store/store";
-import { EventBus } from "@/events/EventBus";
+import {
+  EventBus
+} from "@/events/EventBus";
 
 import Vue from "vue";
 var vue = new Vue({});
@@ -70,15 +72,17 @@ export default class Api {
       headers: {
         Authorization: "Bearer " + store.state.token
       },
-      timeout: 60000
+      timeout: 5 * 60 * 1000
     };
-    var newConfig = { ...config, ...exConfig };
+    var newConfig = {
+      ...config,
+      ...exConfig
+    };
     newConfig.headers = {
       ...newConfig.headers,
-      ...{
-        Authorization: "Bearer " + store.state.token
-      }
+      Authorization: "Bearer " + store.state.token
     };
+    // console.log(' #### Api post newConfig: ', newConfig);
     var res = {};
     try {
       EventBus.$emit("showLoading", true);
@@ -123,10 +127,14 @@ export default class Api {
       headers: {
         Authorization: "Bearer " + store.state.token
       },
-      timeout: 60000
+      timeout: 5 * 60 * 1000
     };
-    var newConfig = { ...config, ...exConfig };
+    var newConfig = {
+      ...config,
+      ...exConfig
+    };
 
+    // console.log(' #### Api post get: ', newConfig);
     var res = {};
     try {
       EventBus.$emit("showLoading", true);

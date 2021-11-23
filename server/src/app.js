@@ -27,14 +27,28 @@ var corsOptions = {
     },
 };
 app.use(cors(corsOptions));
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Origin,Accept');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
 
 // ================ use passport and jwt ================
 var passport = PassportService.init();
 app.use(passport.initialize());
-app.use('/api', passport.authenticate('jwt', { session: false }));
+app.use('/api', passport.authenticate('jwt', {
+    session: false
+}));
 app.use(logger('dev'));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ imit: '50mb', extended: false }));
+app.use(express.json({
+    limit: '50mb'
+}));
+app.use(express.urlencoded({
+    imit: '50mb',
+    extended: false
+}));
 
 app.use(cookieParser());
 app.use('/public', express.static(Path.join(__dirname, '../public')));

@@ -3,12 +3,12 @@ import Api from "./api";
 export default {
   add(credentials) {
     return Api.post("/api/v1/amazon/asin/add", credentials, {
-      timeout: 10 * 60 * 10000
+      timeout: 5 * 60 * 1000
     });
   },
   get(yahooAccountId) {
     return Api.get("/api/v1/amazon/asin/get/" + yahooAccountId, {
-      timeout: 10 * 60 * 10000
+      timeout: 5 * 60 * 1000
     });
   },
   getBlackList(credentials) {
