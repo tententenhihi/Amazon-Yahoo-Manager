@@ -152,11 +152,11 @@ export default {
           checkUpdateAsin: this.checkUpdateAsin
         });
         if (res && res.status === 200) {
-          let newAsin = res.data.newAsin;
+          // let newAsin = res.data.newAsin;
 
-          this.asinString = "";
-          // this.groupId = "";
-          await this.$emit("pushNewAsin", newAsin);
+          // this.asinString = "";
+          // // this.groupId = "";
+          // await this.$emit("pushNewAsin", newAsin);
           this.$swal.fire({
             icon: "success",
             title: "成功.!"
