@@ -80,7 +80,21 @@ export default {
         await this.$store.dispatch("setYahooAccount", accounts);
         await this.$store.dispatch("setUser", infoUser);
         if (accounts.length > 0) {
-          this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", accounts[0]);
+          let checkAselected = true;
+          if (!this.selectedYahooAccount) {
+            checkAselected = false;
+          } else {
+            for (const account of accounts) {
+              if (account._id === this.selectedYahooAccount._id) {
+                checkAselected = false;
+                break;
+              }
+            }
+          }
+          if (checkAselected) {
+            console.log(" ========= SET_SELECTED_YAHOO_ACCOUNT ======== ");
+            this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", accounts[0]);
+          }
         }
       } else if (result.status === 401) {
         await this.$store.dispatch("setUser", null);

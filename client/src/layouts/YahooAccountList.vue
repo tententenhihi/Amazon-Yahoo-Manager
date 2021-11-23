@@ -13,6 +13,7 @@
           v-for="(account, index) in yahooAccount"
           :key="index"
           :value="account._id"
+          :selected="selectedYahooAccount && selectedYahooAccount._id === account._id"
         >
           <span class="warning" v-if="account && account.count_error >= 3000"
             >▲</span
@@ -25,14 +26,6 @@
         >
       </select>
     </div>
-    <!-- <ul class="list-inline text-center align-items-center">
-      <li class="list-inline-item" v-for="(account, index) in yahooAccount"
-          :class="{'active': selectedYahooAccount._id === account._id}"
-        @click="setYahooAccount(account)"  
-      >
-        {{ account.name }}
-      </li>
-    </ul> -->
   </div>
 </template>
 

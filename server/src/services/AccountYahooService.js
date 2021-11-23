@@ -93,6 +93,8 @@ class AccountYahooService {
             if (resultGetCookie.status === 'SUCCESS') {
                 accountData.cookie = resultGetCookie.cookie;
                 accountData.status = 'SUCCESS';
+                accountData.count_error = 0;
+                accountData.is_error = false;
                 await accountData.save();
                 setTimeout(async () => {
                     let point = await AuctionYahooService.getPointAuction(resultGetCookie.cookie, proxy);
