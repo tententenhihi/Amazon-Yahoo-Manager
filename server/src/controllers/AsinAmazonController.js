@@ -64,6 +64,7 @@ export default class AsinAmazonController {
     static async add(req, res) {
         let response = new Response(res);
         try {
+            console.log(' ######### add: ', req)
             let user = req.user;
             let listCode = req.body.listCode;
             // let groupId = req.body.groupId;

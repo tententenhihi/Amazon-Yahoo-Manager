@@ -16,6 +16,7 @@ import BrightDataService from './services/BrightDataService';
 import CronJobService from './crons/CronJobService';
 import Category from './models/CategoryModel';
 import moment from 'moment';
+import axios from 'axios';
 
 require('dotenv').config();
 

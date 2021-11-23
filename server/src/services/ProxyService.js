@@ -1,5 +1,5 @@
 const ProxySchema = require('../models/ProxyModel');
-const axios = require('axios-https-proxy-fix');
+const axios = require('axios');
 const Utils = require('../utils/Utils');
 const config = require('config');
 

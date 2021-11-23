@@ -80,14 +80,21 @@ export default class Api {
     };
     newConfig.headers = {
       ...newConfig.headers,
-      Authorization: "Bearer " + store.state.token
+      ...{
+        Authorization: "Bearer " + store.state.token
+      }
     };
-    // console.log(' #### Api post newConfig: ', newConfig);
     var res = {};
+    console.log(' ##### 33333333: ', newConfig)
+
     try {
       EventBus.$emit("showLoading", true);
       res = await Axios.post(url, data, newConfig);
     } catch (err) {
+      console.log(' ##### 4444: ', err)
+      console.log(' ##### res: ', res)
+
+
       if (err.message.includes("timeout")) {
         res = {
           status: 1001,
@@ -127,14 +134,13 @@ export default class Api {
       headers: {
         Authorization: "Bearer " + store.state.token
       },
-      timeout: 5 * 60 * 1000
+      timeout: 60000
     };
     var newConfig = {
       ...config,
       ...exConfig
     };
 
-    // console.log(' #### Api post get: ', newConfig);
     var res = {};
     try {
       EventBus.$emit("showLoading", true);

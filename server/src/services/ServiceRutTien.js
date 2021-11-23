@@ -2,7 +2,7 @@ const {
     workerData,
     parentPort
 } = require('worker_threads');
-const axios = require('axios-https-proxy-fix');
+const axios = require('axios');
 const Qs = require('query-string');
 const config = require('config');
 const cheerio = require('cheerio');
@@ -18,9 +18,7 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
 
     let payload = null;
     let crumb = null;
-
-
-
+    
     let resChangeBank = await axios.get('https://edit.wallet.yahoo.co.jp/config/wallet_trans_update?.done=https%3A%2F%2Fsalesmanagement.yahoo.co.jp%2Flist', {
         headers: {
             cookie,

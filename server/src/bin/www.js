@@ -41,6 +41,7 @@ server.listen(port, () => {
 });
 server.on('error', onError);
 server.on('listening', onListening);
+server.timeout = 60 * 5 * 1000; // 4 min
 
 /**
  * Normalize a port into a number, string, or false.

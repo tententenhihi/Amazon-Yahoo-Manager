@@ -1,5 +1,5 @@
 const FormData = require('form-data');
-const axios = require('axios-https-proxy-fix');
+const axios = require('axios');
 const Fs = require('fs');
 const cheerio = require('cheerio');
 const Qs = require('query-string');
@@ -104,6 +104,7 @@ class AuctionYahooService {
             };
         }
     }
+    
     static async getPointAuction(cookie, proxy) {
         try {
             let headers = {
@@ -146,6 +147,7 @@ class AuctionYahooService {
         }
         return 0;
     }
+
     static async getAllCategory(cateId) {
         let listCateId = [];
         try {
