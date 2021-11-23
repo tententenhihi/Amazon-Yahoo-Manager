@@ -95,11 +95,23 @@
               </select>
             </div>
           </div>
-          <div class="py-3 fs-14">
-            <span>全6,955件: ページ 1/232</span>
-            <span>
-              表示件数: 30件
+          <div class="py-3 fs-14" style="align-items: center; display: flex">
+            <span
+              >全{{ (searchProducts && searchProducts.length) || 0 }}件: ページ
+              {{ page }}/{{ pageCount }}</span
+            >
+            <span class="ml-3">
+              表示件数:
             </span>
+            <select
+              class="form-control form-control-sm"
+              style="width: 80px !important"
+              v-model="PAGE_SIZE"
+            >
+              <option :value="100">100件</option>
+              <option :value="200">200件</option>
+              <option :value="300">300件</option>
+            </select>
           </div>
           <button class="btn btn-primary px-4" @click="onSearchProduct">
             検索
@@ -900,7 +912,8 @@ export default {
       selectedEditProduct: {},
       imageInsertion: [],
       selectedImageIndex: null,
-      isShowErrorTitle: false
+      isShowErrorTitle: false,
+      PAGE_SIZE: 100
     };
   },
   async mounted() {
@@ -919,12 +932,12 @@ export default {
     },
     tableData() {
       return this.searchProducts.slice(
-        (this.page - 1) * this.$constants.PAGE_SIZE,
-        this.page * this.$constants.PAGE_SIZE
+        (this.page - 1) * this.PAGE_SIZE,
+        this.page * this.PAGE_SIZE
       );
     },
     pageCount() {
-      return Math.ceil(this.searchProducts.length / this.$constants.PAGE_SIZE);
+      return Math.ceil(this.searchProducts.length / this.PAGE_SIZE);
     },
     isDieProxy() {
       return this.selectedYahooAccount.proxy &&
@@ -1078,17 +1091,21 @@ export default {
       let data = await this.readFileText(file);
       listProduct = [...listProduct, ...data];
       if (listProduct.length > 0) {
-        let res = await ProductYahooApi.updateDataByCsv({ listProduct });
+        let res = await ProductYahooApi.updateDataByCsv({
+          listProduct,
+          yahoo_account_id: this.yahooAccountId
+        });
         if (res && res.status === 200) {
-          let listResult = res.data.listResult;
-          this.products = this.products.map(item => {
-            let newData = listResult.find(x => x._id === item._id);
-            if (newData) {
-              return newData;
-            }
-            return item;
-          });
-          this.searchProducts = this.products;
+          await this.getListProduct();
+          // let listResult = res.data.listResult;
+          // this.products = this.products.map(item => {
+          //   let newData = listResult.find(x => x._id === item._id);
+          //   if (newData) {
+          //     return newData;
+          //   }
+          //   return item;
+          // });
+          // this.searchProducts = this.products;
           this.$swal.fire({
             icon: "success",
             title: "更新成功"

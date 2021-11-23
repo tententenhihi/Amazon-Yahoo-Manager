@@ -379,31 +379,6 @@ class AuctionYahooService {
                     payloadImage[`ImageFullPath${i + 1}`] = resImage.data.images[0].url;
                     payloadImage[`ImageWidth${i + 1}`] = resImage.data.images[0].width;
                     payloadImage[`ImageHeight${i + 1}`] = resImage.data.images[0].height;
-
-                    // Set Thumbnail is first image
-                    // if (!payloadImage.thumbNail && payloadImage.thumbNail !== '') {
-                    //     console.log(' ###################### ' + i + ': ', payloadImage.thumbNail);
-                    //     let urlImage = resImage.data.images[0].url;
-                    //     let formData = {
-                    //         path: urlImage,
-                    //         '.crumb': keys.img_crumb,
-                    //     };
-                    //     const configs = {
-                    //         headers: {
-                    //             ...form.getHeaders(),
-                    //             cookie: cookie,
-                    //             'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    //             origin: 'https://auctions.yahoo.co.jp',
-                    //             referer: 'https://auctions.yahoo.co.jp/sell/jp/show/submit?category=0',
-                    //             'x-requested-with': 'XMLHttpRequest',
-                    //         },
-                    //         proxy: proxyConfig,
-                    //     };
-                    //     const resThumbnail = await axios.post('https://auctions.yahoo.co.jp/img/images/new', Qs.stringify(formData), configs);
-                    //     console.log(' ###################### resThumbnail.data.thumbnail: ', resThumbnail.data.thumbnail);
-
-                    //     payloadImage.thumbNail = resThumbnail.data.thumbnail;
-                    // }
                 } catch (error) {
                     console.log(' ######## error: ', error.message);
                 }
@@ -516,6 +491,11 @@ class AuctionYahooService {
                 brand_line_id: keys.brand_line_id,
             };
 
+            // console.log(' ########## productData: ', productData)
+
+            // console.log(' ########## previewParams.descrionUpload: ', previewParams.Description)
+
+
             let payload = Qs.stringify(previewParams);
             headers = {
                 ...headers,
@@ -529,7 +509,6 @@ class AuctionYahooService {
 
             // Fs.writeFileSync('resPreview.html', resPreview.data);
 
-            // Fs.writeFileSync('preview.html', resPreview.data);
             let mgc = /<input type="hidden" name="mgc" value="(.*)">/.exec(resPreview.data);
             if (mgc == null) {
                 let $Preview = cheerio.load(resPreview.data);
@@ -572,7 +551,7 @@ class AuctionYahooService {
                 headers,
                 proxy: proxyConfig,
             });
-            // Fs.writeFileSync('submit.html', resSubmit.data);
+            //  Fs.writeFileSync('submit.html', resSubmit.data);
 
             console.log(' =========== Upload Product Auction DONE ============= ');
             let $ = cheerio.load(resSubmit.data);
@@ -989,40 +968,87 @@ class AuctionYahooService {
             if (config.get('env') === 'development') {
                 proxyConfig = null;
             }
-            let response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=1', {
-                headers: {
-                    cookie,
-                },
-                proxy: proxyConfig,
-                timeout: 5 * 60 * 1000,
-            });
+            let isEndPage = false;
+            let $ = null;
+            let response = null;
+            let page = 1;
 
-            // Fs.writeFileSync(usernameYahoo + ' - preview.html', response.data);
-            let $ = cheerio.load(response.data);
+            let now = new Date();
+            let currentMonth = now.getMonth() + 1;
+            let currentDay = now.getDate();
+            console.log(' ### currentMonth: ', currentMonth)
+            console.log(' ### currentDay: ', currentDay)
 
-            let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
-            for (const row of rowTable) {
-                let aID = $(row).find('td:nth-child(2)').text().trim();
-                let title = $(row).find('td:nth-child(3)').text().replace('未使用', '').replace('...', '').trim();
-                let idBuyer = $(row).find('td:nth-child(6)').text().trim().replace('-', '');
-                let time_end = $(row).find('td:nth-child(5)').text().trim();
-                let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '').replace('-', '');
-                let progress_message = $(row).find('td:nth-child(7)').text();
-                let check_progress = $(row).find('td:nth-child(7) > p > img');
-                if (check_progress.length > 0) {
-                    progress_message = `<img src="https://s.yimg.jp/images/auct/template/ui/auc_mod/ic_6002.gif" alt="落札者" width="16" height="16">` + progress_message;
+            while (!isEndPage) {
+                console.log(' =========== isEndPage ============ ')
+                response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=1&apg=' + page, {
+                    headers: {
+                        cookie,
+                    },
+                    proxy: proxyConfig,
+                    timeout: 5 * 60 * 1000,
+                });
+
+                // Fs.writeFileSync(usernameYahoo + ' - preview.html', response.data);
+                $ = cheerio.load(response.data);
+                let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
+                if (!rowTable || rowTable.length === 0) break;
+
+                for (const row of rowTable) {
+                    let aID = $(row).find('td:nth-child(2)').text().trim();
+                    let title = $(row).find('td:nth-child(3)').text().replace('未使用', '').replace('...', '').trim();
+                    let idBuyer = $(row).find('td:nth-child(6)').text().trim().replace('-', '');
+                    let time_end = $(row).find('td:nth-child(5)').text().trim();
+                    if (time_end) {
+                        try {
+                            console.log(' ### time_end: ', time_end)
+                            let month = time_end.split('月')[0].trim();
+                            let day = time_end.split('月')[1].split('日')[0].trim();
+                            console.log(' ### month: ', month)
+                            console.log(' ### day: ', day)
+                            if (currentMonth - month >= 2) {
+                                isEndPage = true;
+                                console.log(' ### isEndPage #### ')
+
+                                break;
+                            } else {
+                                //15 - 9
+                                // 20 - 10
+                                let totalDay = 30 - day + currentDay;
+                                if (totalDay > 30) {
+                                    console.log(' ### isEndPage #### ')
+                                    isEndPage = true;
+                                    break;
+                                }
+                            }
+
+                        } catch (error) {
+
+                        }
+                    }
+                    let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '').replace('-', '');
+                    let progress_message = $(row).find('td:nth-child(7)').text();
+                    let check_progress = $(row).find('td:nth-child(7) > p > img');
+                    if (check_progress.length > 0) {
+                        progress_message = `<img src="https://s.yimg.jp/images/auct/template/ui/auc_mod/ic_6002.gif" alt="落札者" width="16" height="16">` + progress_message;
+                    }
+                    if (aID && aID !== '商品ID' && aID.trim() !== '' && aID.length > 5) {
+                        listProduct.push({
+                            aID,
+                            idBuyer,
+                            time_end,
+                            price_end,
+                            title,
+                            progress_message
+                        });
+                    }
                 }
-                if (aID && aID !== '商品ID' && aID.trim() !== '' && aID.length > 5) {
-                    listProduct.push({
-                        aID,
-                        idBuyer,
-                        time_end,
-                        price_end,
-                        title,
-                        progress_message
-                    });
-                }
+                page++;
+
             }
+
+
+
             if (getAidOnly) {
                 return listProduct;
             }
@@ -1288,31 +1314,77 @@ class AuctionYahooService {
             if (config.get('env') === 'development') {
                 proxyConfig = null;
             }
-            let response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0', {
-                headers: {
-                    cookie,
-                },
-                proxy: proxyConfig,
-                timeout: 60 * 1000,
-            });
 
-            let $ = cheerio.load(response.data);
-            let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
-            for (const row of rowTable) {
-                let aID = $(row).find('td:nth-child(2)').text().trim();
-                let title = $(row).find('td:nth-child(3)').text().replace('未使用', '').replace('...', '').trim();
-                let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '');
-                let time_end = $(row).find('td:nth-child(5)').text().trim().replace('-', '');
+            let isEndPage = false;
+            let $ = null;
+            let response = null;
+            let page = 1;
 
-                if (aID && aID !== '商品ID' && aID.trim() !== '' && aID.length > 5) {
-                    listProduct.push({
-                        aID,
-                        price_end,
-                        time_end,
-                        title,
-                    });
+            let now = new Date();
+            let currentMonth = now.getMonth() + 1;
+            let currentDay = now.getDate();
+            console.log(' ### currentMonth: ', currentMonth)
+            console.log(' ### currentDay: ', currentDay)
+
+            while (!isEndPage) {
+                response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0&apg=' + page, {
+                    headers: {
+                        cookie,
+                    },
+                    proxy: proxyConfig,
+                    timeout: 60 * 1000,
+                });
+
+                $ = cheerio.load(response.data);
+                let rowTable = $('#acWrContents > div > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td > table:nth-child(6) > tbody > tr');
+                if (!rowTable || rowTable.length === 0) break;
+                for (const row of rowTable) {
+                    let aID = $(row).find('td:nth-child(2)').text().trim();
+                    let title = $(row).find('td:nth-child(3)').text().replace('未使用', '').replace('...', '').trim();
+                    let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '');
+                    let time_end = $(row).find('td:nth-child(5)').text().trim().replace('-', '');
+
+                    if (time_end) {
+                        try {
+                            console.log(' ### time_end: ', time_end)
+                            let month = time_end.split('月')[0].trim();
+                            let day = time_end.split('月')[1].split('日')[0].trim();
+                            console.log(' ### month: ', month)
+                            console.log(' ### day: ', day)
+                            if (currentMonth - month >= 2) {
+                                isEndPage = true;
+                                console.log(' ### isEndPage Month #### ', currentMonth - month)
+
+                                break;
+                            } else if (currentMonth - month === 1) {
+                                //15 - 9
+                                // 20 - 10
+                                let totalDay = 30 - day + currentDay;
+                                if (totalDay > 30) {
+                                    console.log(' ### isEndPage Day #### ', totalDay)
+                                    isEndPage = true;
+                                    break;
+                                }
+                            }
+
+                        } catch (error) {
+
+                        }
+                    }
+
+                    if (aID && aID !== '商品ID' && aID.trim() !== '' && aID.length > 5) {
+                        listProduct.push({
+                            aID,
+                            price_end,
+                            time_end,
+                            title,
+                        });
+                    }
                 }
+                page++;
             }
+
+            console.log(listProduct)
         } catch (error) {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
         }

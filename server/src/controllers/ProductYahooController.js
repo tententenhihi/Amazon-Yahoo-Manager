@@ -10,12 +10,37 @@ import CronHistoryModel from '../models/CronHistoryModel';
 import ProductGlobalSettingService from '../services/ProductGlobalSettingService';
 import ProductInfomationDefaultService from '../services/ProductInfomationDefaultService';
 import CategoryService from '../services/CategoryService';
+import Fs from 'fs';
+import Path from 'path';
 
-const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
+const updateProductWithCaculatorProfit = async (dataUpdate, files, isCreateifNotExist) => {
     let current_product = await ProductYahooService.findOne({
-        _id: dataUpdate._id
+        _id: dataUpdate._id,
+        yahoo_account_id: dataUpdate.yahoo_account_id
     });
-
+    if (!current_product && isCreateifNotExist) {
+        if (!dataUpdate.import_price) {
+            dataUpdate.import_price = 0
+        }
+        current_product = await ProductYahooService.create(dataUpdate);
+        let listImage = [];
+        let pathImageSource = Path.join('uploads', 'yahoo-products', dataUpdate.oldId.toString());
+        let pathImageDist = Path.join('yahoo-products', current_product._id.toString());
+        if (!Fs.existsSync(Path.join('uploads', pathImageDist))) {
+            Fs.mkdirSync(Path.join('uploads', pathImageDist), {
+                recursive: true
+            })
+        }
+        let countImage = Fs.readdirSync(pathImageSource);
+        for (const image of countImage) {
+            listImage.push(Path.join(pathImageDist, image));
+            Fs.copyFileSync(Path.join(pathImageSource, image), Path.join('uploads', pathImageDist, image))
+        }
+        current_product.images = listImage;
+        await current_product.save();
+    }
+    // console.log(' #### current_product:', current_product);
+    // return;
     let defaultSetting = await ProductInfomationDefaultService.findOne({
         yahoo_account_id: current_product.yahoo_account_id,
         user_id: current_product.user_id,
@@ -72,7 +97,7 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
     }
 
     if (dataUpdate.product_yahoo_title.length && dataUpdate.product_yahoo_title.length > 65) {
-        dataUpdate.product_yahoo_title = product_yahoo_title.substring(0, 65);
+        dataUpdate.product_yahoo_title = dataUpdate.product_yahoo_title.substring(0, 65);
     }
 
     dataUpdate.is_user_change = true;
@@ -97,26 +122,41 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files) => {
         dataUpdate.ship_fee1_temp = dataUpdate.ship_fee1;
         dataUpdate.ship_fee1 = null;
     }
-    let result = await ProductYahooService.update(dataUpdate._id, dataUpdate);
+    let result = await ProductYahooService.update(current_product._id, dataUpdate);
+
     return result;
 };
 
 export default class ProductYahooController {
     static async updateDataCSV(req, res) {
         let response = new Response(res);
+        let user = req.user;
         try {
             let {
-                listProduct
+                listProduct,
+                yahoo_account_id
             } = req.body;
             if (listProduct) {
                 let listResult = [];
-                for (const data of listProduct) {
+                for (let data of listProduct) {
                     try {
-                        // Data default
-                        let newData = await updateProductWithCaculatorProfit(data);
-                        // let newData = await ProductYahooService.update(dataUpdate._id, data);
-                        listResult.push(newData);
-                    } catch (error) {}
+                        let current_product = await ProductYahooService.findByID(data._id);
+                        data.yahoo_account_id = yahoo_account_id;
+                        if (!current_product || current_product.yahoo_account_id != yahoo_account_id) {
+                            data.oldId = data._id;
+                            // Data default
+                            delete data.user_id;
+                            delete data._id;
+                            data.user_id = user._id;
+                            let newData = await updateProductWithCaculatorProfit(data, null, true);
+                            listResult.push(newData);
+                        } else {
+                            let newData = await updateProductWithCaculatorProfit(data);
+                            listResult.push(newData);
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
                 }
                 return response.success200({
                     listResult

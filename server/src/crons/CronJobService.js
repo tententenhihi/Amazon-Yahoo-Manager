@@ -78,7 +78,7 @@ export default class CronJobService {
                             let productYahoo = await ProductYahooAuctionService.findOne({ aID: productSelling.aID });
                             if (!productYahoo && productSelling.title) {
                                 productYahoo = await ProductYahooAuctionService.findOne({
-                                    product_yahoo_title: { $regex: productSelling.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)') },
+                                    product_yahoo_title: { $regex: productSelling.title.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)') },
                                 });
                             }
                             if (productYahoo && productYahoo.asin_amazon) {

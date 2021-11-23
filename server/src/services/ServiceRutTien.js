@@ -18,12 +18,13 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
 
     let payload = null;
     let crumb = null;
-    
+
     let resChangeBank = await axios.get('https://edit.wallet.yahoo.co.jp/config/wallet_trans_update?.done=https%3A%2F%2Fsalesmanagement.yahoo.co.jp%2Flist', {
         headers: {
             cookie,
         },
         proxy: proxyConfig,
+        maxRedirects: 1,
     });
     let $ = cheerio.load(resChangeBank.data);
     crumb = $('input[name=".crumb"]').val();
@@ -46,6 +47,8 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
             },
             proxy: proxyConfig,
+            maxRedirects: 1,
+
         });
         $ = cheerio.load(resConfirmOldBank.data);
         crumb = $('input[name=".crumb"]').val();
@@ -57,6 +60,8 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
         },
         proxy: proxyConfig,
+        maxRedirects: 1,
+
     });
     // Fs.writeFileSync('resChangeBankB1.html', resChangeBankB1.data)
     $ = cheerio.load(resChangeBankB1.data);
@@ -88,6 +93,8 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
         },
         proxy: proxyConfig,
+        maxRedirects: 1,
+
     });
 
     // Fs.writeFileSync('resChangeBankB2.html', resChangeBankB2.data);
@@ -137,7 +144,9 @@ const start = async () => {
                 cookie,
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
             },
-            proxy: proxyConfig
+            proxy: proxyConfig,
+            maxRedirects: 1,
+
         });
         $ = cheerio.load(resList.data);
         crumb = $('input[name=".crumb"]').val();
@@ -150,7 +159,9 @@ const start = async () => {
                 cookie,
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
             },
-            proxy: proxyConfig
+            proxy: proxyConfig,
+            maxRedirects: 1,
+
         });
         $ = cheerio.load(resPayoutConfirm.data);
         // Fs.writeFileSync('resPayoutConfirm.html', resPayoutConfirm.data);
@@ -179,6 +190,8 @@ const start = async () => {
                 referer: 'https://salesmanagement.yahoo.co.jp/payout_confirm',
             },
             proxy: proxyConfig,
+            maxRedirects: 1,
+
         });
         // ================= Đổi Bank =====================
         await changeBank(cookie, proxyConfig, realBank, fakeBank);
