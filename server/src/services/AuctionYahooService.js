@@ -980,11 +980,6 @@ class AuctionYahooService {
             let page = 1;
 
             let now = new Date();
-            let currentMonth = now.getMonth() + 1;
-            let currentDay = now.getDate();
-            console.log(' ### currentMonth: ', currentMonth)
-            console.log(' ### currentDay: ', currentDay)
-
             while (!isEndPage) {
                 console.log(' =========== isEndPage ============ ')
                 response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=1&apg=' + page, {
@@ -1010,24 +1005,16 @@ class AuctionYahooService {
                             console.log(' ### time_end: ', time_end)
                             let month = time_end.split('月')[0].trim();
                             let day = time_end.split('月')[1].split('日')[0].trim();
-                            console.log(' ### month: ', month)
-                            console.log(' ### day: ', day)
-                            if (currentMonth - month >= 2) {
-                                isEndPage = true;
-                                console.log(' ### isEndPage #### ')
-
-                                break;
-                            } else {
-                                //15 - 9
-                                // 20 - 10
-                                let totalDay = 30 - day + currentDay;
-                                if (totalDay > 30) {
-                                    console.log(' ### isEndPage #### ')
+                            if (month && day) {
+                                let dateProduct = new Date(month + '-' + day + '-' + now.getFullYear());
+                                dateProduct.setDate(dateProduct.getDate() + 30);
+                                console.log(' #### dateProduct: ', dateProduct);
+                                if (dateProduct < now) {
+                                    console.log(' ### isEndPage Day #### ')
                                     isEndPage = true;
                                     break;
                                 }
                             }
-
                         } catch (error) {
 
                         }
@@ -1050,10 +1037,7 @@ class AuctionYahooService {
                     }
                 }
                 page++;
-
             }
-
-
 
             if (getAidOnly) {
                 return listProduct;
@@ -1327,11 +1311,6 @@ class AuctionYahooService {
             let page = 1;
 
             let now = new Date();
-            let currentMonth = now.getMonth() + 1;
-            let currentDay = now.getDate();
-            console.log(' ### currentMonth: ', currentMonth)
-            console.log(' ### currentDay: ', currentDay)
-
             while (!isEndPage) {
                 response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0&apg=' + page, {
                     headers: {
@@ -1355,24 +1334,17 @@ class AuctionYahooService {
                             console.log(' ### time_end: ', time_end)
                             let month = time_end.split('月')[0].trim();
                             let day = time_end.split('月')[1].split('日')[0].trim();
-                            console.log(' ### month: ', month)
-                            console.log(' ### day: ', day)
-                            if (currentMonth - month >= 2) {
-                                isEndPage = true;
-                                console.log(' ### isEndPage Month #### ', currentMonth - month)
 
-                                break;
-                            } else if (currentMonth - month === 1) {
-                                //15 - 9
-                                // 20 - 10
-                                let totalDay = 30 - day + currentDay;
-                                if (totalDay > 30) {
-                                    console.log(' ### isEndPage Day #### ', totalDay)
+                            if (month && day) {
+                                let dateProduct = new Date(month + '-' + day + '-' + now.getFullYear());
+                                dateProduct.setDate(dateProduct.getDate() + 30);
+                                console.log(' #### dateProduct: ', dateProduct);
+                                if (dateProduct < now) {
+                                    console.log(' ### isEndPage Day #### ')
                                     isEndPage = true;
                                     break;
                                 }
                             }
-
                         } catch (error) {
 
                         }
