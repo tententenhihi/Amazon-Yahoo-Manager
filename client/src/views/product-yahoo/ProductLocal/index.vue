@@ -741,6 +741,11 @@
         </button>
       </template>
     </modal-component>
+    <ProgressLoading
+      v-if="progressData.isLoading"
+      :progressData="progressData"
+      ref="ProgressLoading"
+    />
   </div>
 </template>
 
@@ -750,6 +755,9 @@ import FolderApi from "@/services/FolderApi";
 import { mapGetters } from "vuex";
 import ImageInsertionApi from "@/services/ImageInsertionApi";
 import JsonCSV from "vue-json-csv";
+import ProgressLoading from "../../components/ProgressLoading.vue";
+import io from "socket.io-client";
+var socket = null;
 
 const PRODUCT_STATUS = [
   { display: "中古", value: "used" },
@@ -877,7 +885,8 @@ const PROXY_STATUS_DIE = "die";
 export default {
   name: "YahooAuctionProducts",
   components: {
-    JsonCSV
+    JsonCSV,
+    ProgressLoading
   },
   data() {
     return {
@@ -913,14 +922,38 @@ export default {
       imageInsertion: [],
       selectedImageIndex: null,
       isShowErrorTitle: false,
-      PAGE_SIZE: 100
+      PAGE_SIZE: 100,
+      progressData: {
+        total: 0,
+        progress: 0,
+        isLoading: false
+      }
     };
   },
   async mounted() {
     await this.getListProduct();
     await this.getImageInsertion();
-    this.getFolders();
+    await this.getFolders();
+    socket = io.connect(process.env.SERVER_API);
+    socket.on(this.$store.state.user._id + "-LOCAL", async fetchedData => {
+      this.progressData = fetchedData;
+      if (!fetchedData.isLoading) {
+        await this.getListProduct();
+      }
+
+      // if (fetchedData.listProduct) {
+      //   this.products = fetchedData.listProduct;
+      //   this.searchProducts = fetchedData.listProduct;
+      // } else {
+      //   this.products = [];
+      //   this.searchProducts = [];
+      // }
+    });
   },
+  beforeDestroy() {
+    socket.removeAllListeners();
+  },
+
   computed: {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",
@@ -1096,7 +1129,6 @@ export default {
           yahoo_account_id: this.yahooAccountId
         });
         if (res && res.status === 200) {
-          await this.getListProduct();
           // let listResult = res.data.listResult;
           // this.products = this.products.map(item => {
           //   let newData = listResult.find(x => x._id === item._id);

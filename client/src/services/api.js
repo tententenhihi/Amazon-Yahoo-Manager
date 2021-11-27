@@ -85,16 +85,10 @@ export default class Api {
       }
     };
     var res = {};
-    console.log(' ##### 33333333: ', newConfig)
-
     try {
       EventBus.$emit("showLoading", true);
       res = await Axios.post(url, data, newConfig);
     } catch (err) {
-      console.log(' ##### 4444: ', err)
-      console.log(' ##### res: ', res)
-
-
       if (err.message.includes("timeout")) {
         res = {
           status: 1001,

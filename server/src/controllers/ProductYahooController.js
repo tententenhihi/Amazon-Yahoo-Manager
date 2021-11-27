@@ -12,6 +12,8 @@ import ProductInfomationDefaultService from '../services/ProductInfomationDefaul
 import CategoryService from '../services/CategoryService';
 import Fs from 'fs';
 import Path from 'path';
+import SocketIOService from '../services/SocketIOService';
+
 
 const updateProductWithCaculatorProfit = async (dataUpdate, files, isCreateifNotExist) => {
     let current_product = await ProductYahooService.findOne({
@@ -137,30 +139,48 @@ export default class ProductYahooController {
                 yahoo_account_id
             } = req.body;
             if (listProduct) {
-                let listResult = [];
-                for (let data of listProduct) {
-                    try {
-                        let current_product = await ProductYahooService.findByID(data._id);
-                        data.yahoo_account_id = yahoo_account_id;
-                        if (!current_product || current_product.yahoo_account_id != yahoo_account_id) {
-                            data.oldId = data._id;
-                            // Data default
-                            delete data.user_id;
-                            delete data._id;
-                            data.user_id = user._id;
-                            let newData = await updateProductWithCaculatorProfit(data, null, true);
-                            listResult.push(newData);
-                        } else {
-                            let newData = await updateProductWithCaculatorProfit(data);
-                            listResult.push(newData);
+                setTimeout(async () => {
+                    let listResult = [];
+                    SocketIOService.emitData(user._id, {
+                        type: 'LOCAL',
+                        isLoading: true,
+                    });
+                    let index = 1;
+                    for (let data of listProduct) {
+                        SocketIOService.emitData(user._id, {
+                            type: 'LOCAL',
+                            isLoading: true,
+                            progress: index,
+                            total: listProduct.length,
+                        });
+                        try {
+                            let current_product = await ProductYahooService.findByID(data._id);
+                            data.yahoo_account_id = yahoo_account_id;
+                            if (!current_product || current_product.yahoo_account_id != yahoo_account_id) {
+                                data.oldId = data._id;
+                                // Data default
+                                delete data.user_id;
+                                delete data._id;
+                                data.user_id = user._id;
+                                let newData = await updateProductWithCaculatorProfit(data, null, true);
+                                listResult.push(newData);
+                            } else {
+                                let newData = await updateProductWithCaculatorProfit(data);
+                                listResult.push(newData);
+                            }
+                        } catch (error) {
+                            console.log(error);
                         }
-                    } catch (error) {
-                        console.log(error);
+                        index++;
                     }
-                }
-                return response.success200({
-                    listResult
-                });
+
+                    SocketIOService.emitData(user._id, {
+                        type: 'LOCAL',
+                        isLoading: false,
+                    });
+                }, 1)
+
+                return response.success200({});
             } else {
                 return response.error400({
                     message: '更新失敗'

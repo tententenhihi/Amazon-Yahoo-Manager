@@ -98,7 +98,6 @@ export default {
   mounted() {
     socket = io.connect(process.env.SERVER_API);
     socket.on(this.$store.state.user._id + "-ASIN", fetchedData => {
-      console.log(" ######### fetchedData: ", fetchedData);
       this.progressData = fetchedData;
 
       if (fetchedData.newAsin) {
