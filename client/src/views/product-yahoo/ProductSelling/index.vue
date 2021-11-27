@@ -309,7 +309,9 @@ export default {
       }
     });
   },
-
+  beforeDestroy() {
+    socket.removeAllListeners();
+  },
   computed: {
     ...mapGetters({
       selectedYahooAccount: "getSelectedYahooAccount",

@@ -55,21 +55,38 @@
         </div>
       </div>
     </div>
+    <ProgressLoading
+      v-if="progressData.isLoading"
+      :progressData="progressData"
+      ref="ProgressLoading"
+    />
   </div>
 </template>
 
 <script>
 import AsinApi from "@/services/asinApi";
+import ProgressLoading from "../../components/ProgressLoading.vue";
+
 import { mapGetters } from "vuex";
+import io from "socket.io-client";
+var socket = null;
 
 export default {
   name: "ImportAsin",
+  components: {
+    ProgressLoading
+  },
   data() {
     return {
       checkUpdateAsin: false,
       asinString: "",
       isErrorGroupId: false,
-      isErrorasinString: false
+      isErrorasinString: false,
+      progressData: {
+        total: 0,
+        progress: 0,
+        isLoading: false
+      }
     };
   },
   computed: {
@@ -77,6 +94,31 @@ export default {
       selectedYahooAccount: "getSelectedYahooAccount",
       adminViewUser: "getAdminViewUser"
     })
+  },
+  mounted() {
+    socket = io.connect(process.env.SERVER_API);
+    socket.on(this.$store.state.user._id + "-ASIN", fetchedData => {
+      console.log(" ######### fetchedData: ", fetchedData);
+      this.progressData = fetchedData;
+
+      if (fetchedData.newAsin) {
+        let newAsin = fetchedData.newAsin;
+        this.asinString = "";
+        // this.groupId = "";
+        this.$emit("pushNewAsin", newAsin);
+      }
+
+      // if (fetchedData.listProduct) {
+      //   this.products = fetchedData.listProduct;
+      //   this.searchProducts = fetchedData.listProduct;
+      // } else {
+      //   this.products = [];
+      //   this.searchProducts = [];
+      // }
+    });
+  },
+  beforeDestroy() {
+    socket.removeAllListeners();
   },
   methods: {
     async readFileText(file) {
@@ -153,7 +195,6 @@ export default {
         });
         if (res && res.status === 200) {
           // let newAsin = res.data.newAsin;
-
           // this.asinString = "";
           // // this.groupId = "";
           // await this.$emit("pushNewAsin", newAsin);

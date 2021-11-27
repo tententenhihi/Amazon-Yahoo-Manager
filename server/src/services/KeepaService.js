@@ -9,6 +9,7 @@ import lodash from 'lodash';
 const getData = async (listAsin, user_id) => {
     let listResult = [];
     try {
+        console.log(' getData ====== listAsin: ', listAsin);
         let tokenAdmin = `82stsotg8m0qivjvcbsvn08f1t229kilkljgvi6057buv80631tbtlgdvtinj6e9`;
         let tokenUser = '';
         let apiKey = await ApiKeyController.getApiKeyByUser(user_id);

@@ -497,17 +497,14 @@ export default class ProductYahooService {
                             folder_id
                         });
                     }
-
                     totalProduct += listProduct.length;
                     for (let index = 0; index < listProduct.length; index++) {
                         let newResult = null;
                         let productYahooData = listProduct[index];
-
+                        let uploadAuctionResult = null;
                         try {
                             let dataUpdate = {};
-
                             let resultCheckUpload = await this.checkStopUpload(productYahooData, defaultSetting);
-
                             if (resultCheckUpload.isStopUpload) {
                                 newResult = {
                                     product_created: productYahooData.created,
@@ -521,28 +518,21 @@ export default class ProductYahooService {
                                 if (!productYahooData.start_price) {
                                     productYahooData.start_price = resultCheckUpload.start_price;
                                 }
-
                                 if (!productYahooData.bid_or_buy_price) {
                                     productYahooData.bid_or_buy_price = resultCheckUpload.bid_or_buy_price;
                                 }
-
                                 if (!productYahooData.quantity) {
                                     productYahooData.quantity = defaultSetting.quantity;
                                 }
-
                                 if (!productYahooData.ship_fee1) {
                                     productYahooData.ship_fee1 = resultCheckUpload.ship_fee1;
                                 }
-
                                 let descrionUpload = await ProductGlobalSettingService.getDescriptionByYahooAccountId(yahooAccount.user_id, yahooAccount._id, yahooAccount.yahoo_id, productYahooData.description, productYahooData.note);
-
-                                let uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
-                                console.log(' ### uploadAuctionResult: ', uploadAuctionResult);
+                                uploadAuctionResult = await AuctionYahooService.uploadNewProduct(yahooAccount.cookie, productYahooData, proxyResult.data, descrionUpload);
                                 // console.log(' ### startUploadProductInListFolderId uploadAuctionResult: ', uploadAuctionResult);
                                 dataUpdate.upload_status = uploadAuctionResult.status;
                                 dataUpdate.upload_status_message = uploadAuctionResult.statusMessage;
                                 dataUpdate.aID = uploadAuctionResult.aID;
-
                                 if (uploadAuctionResult.status === 'SUCCESS') {
                                     dataUpdate.listing_status = 'UNDER_EXHIBITION';
                                     dataUpdate.thumbnail = uploadAuctionResult.thumbnail;
@@ -560,7 +550,7 @@ export default class ProductYahooService {
                                     if (message === 'ヤフーアカウントのエラー') {
                                         yahooAccount.is_error = true;
                                         await yahooAccount.save();
-                                    } else {
+                                    } else if (uploadAuctionResult.isBreak) {
                                         yahooAccount.count_error = 3000;
                                         await yahooAccount.save();
                                     }
@@ -586,6 +576,9 @@ export default class ProductYahooService {
                         }
 
                         result.push(newResult);
+                        if (uploadAuctionResult.isBreak) {
+                            break;
+                        }
                     }
                 }
             }
@@ -680,7 +673,7 @@ export default class ProductYahooService {
                                     if (message === 'ヤフーアカウントのエラー') {
                                         yahooAccount.is_error = true;
                                         await yahooAccount.save();
-                                    } else {
+                                    } else if (uploadAuctionResult.isBreak) {
                                         yahooAccount.count_error = 3000;
                                         await yahooAccount.save();
                                     }
@@ -694,6 +687,9 @@ export default class ProductYahooService {
                                     success: uploadAuctionResult.status === 'SUCCESS',
                                 };
                                 result.push(newResult);
+                                if (uploadAuctionResult.isBreak) {
+                                    break;
+                                }
                             }
                         }
                     }

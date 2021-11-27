@@ -286,6 +286,7 @@ export default class CronJobService {
                             console.log(' ========== cronNewList Locked ==========');
                             return;
                         }
+                        console.log(' ======= startUploadProductInListFolderId ====== ');
                         let results = await ProductYahooService.startUploadProductInListFolderId(schedule.user_id, schedule.yahoo_account_id, schedule.new_list_target_folder);
                         if (results.length > 0) {
                             let newCronHistory = {

@@ -224,6 +224,7 @@ class AuctionYahooService {
                 return {
                     status: 'ERROR',
                     statusMessage: 'カテゴリ未設定',
+
                 };
             }
             if (!productData.start_price) {
@@ -335,6 +336,7 @@ class AuctionYahooService {
                     return {
                         status: 'ERROR',
                         statusMessage: 'Lỗi get key',
+                        isBreak: true,
                     };
                 }
             };
@@ -344,6 +346,7 @@ class AuctionYahooService {
                 console.log(' ######## 111 : Get Key Errror');
                 return {
                     status: 'ERROR',
+                    isBreak: true,
                 };
             }
             if (keys && !keys.img_crumb) {
@@ -353,10 +356,12 @@ class AuctionYahooService {
                     return {
                         status: 'ERROR',
                         statusMessage: 'ヤフーアカウントのエラー',
+                        isBreak: true,
                     };
                 } else {
                     return {
                         status: 'ERROR',
+                        isBreak: true,
                     };
                 }
 

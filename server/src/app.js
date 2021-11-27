@@ -44,10 +44,10 @@ app.use('/api', passport.authenticate('jwt', {
 }));
 app.use(logger('dev'));
 app.use(express.json({
-    limit: '50mb'
+    limit: '500mb'
 }));
 app.use(express.urlencoded({
-    imit: '50mb',
+    imit: '500mb',
     extended: false
 }));
 

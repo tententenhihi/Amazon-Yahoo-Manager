@@ -256,10 +256,11 @@ export default class ProductYahooController {
                             if (message === 'ヤフーアカウントのエラー') {
                                 yahooAccount.is_error = true;
                                 await yahooAccount.save();
-                            } else {
+                            } else if (uploadAuctionResult.isBreak) {
                                 yahooAccount.count_error = 3000;
                                 await yahooAccount.save();
                             }
+
                         }
                         if (uploadAuctionResult.status === 'SUCCESS' && !uploadAuctionResult.aID) {
                             message = '仮出品とは、出品手続きされたオークションを、Yahoo! JAPANが確認させていただくためのものです。';
@@ -273,6 +274,9 @@ export default class ProductYahooController {
                             success: uploadAuctionResult.status === 'SUCCESS',
                         };
                         results.push(newResult);
+                        if (uploadAuctionResult.isBreak) {
+                            break;
+                        }
                     }
                 } else {
                     return response.error400({
