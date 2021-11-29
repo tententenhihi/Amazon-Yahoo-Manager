@@ -467,17 +467,30 @@ class AdminController {
                 const element = listProxyNew[i];
                 await ProxyModel.create(element);
             }
-            console.log(' ######### listAccountWithoutProxy: ', listAccountWithoutProxy);
-            for (const newAccount of listAccountWithoutProxy) {
-                let proxy = await ProxyModel.findOne({
-                    status: 'live'
-                });
-                newAccount.proxy_id = proxy._id;
-
-                await newAccount.save();
-                proxy.status = 'used';
-                await proxy.save();
+            let listAccount = await YahooAccountModel.find({});
+            for (const accountYahoo of listAccount) {
+                let proxy = await ProxyModel.findById(accountYahoo.proxy_id);
+                if (!proxy) {
+                    let newProxy = await ProxyModel.findOne({
+                        status: 'live'
+                    });
+                    accountYahoo.proxy_id = newProxy._id;
+                    await accountYahoo.save();
+                    newProxy.status = 'used';
+                    await newProxy.save();
+                }
             }
+            // console.log(' ######### listAccountWithoutProxy: ', listAccountWithoutProxy);
+            // for (const newAccount of listAccountWithoutProxy) {
+            //     let proxy = await ProxyModel.findOne({
+            //         status: 'live'
+            //     });
+            //     newAccount.proxy_id = proxy._id;
+
+            //     await newAccount.save();
+            //     proxy.status = 'used';
+            //     await proxy.save();
+            // }
             let proxies = await ProxyModel.find({});
             return response.success200({
                 proxies
