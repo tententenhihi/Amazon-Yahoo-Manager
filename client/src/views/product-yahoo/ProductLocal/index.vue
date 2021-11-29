@@ -931,13 +931,14 @@ export default {
     };
   },
   async mounted() {
+    await this.getFolders();
     await this.getListProduct();
     await this.getImageInsertion();
-    await this.getFolders();
     socket = io.connect(process.env.SERVER_API);
     socket.on(this.$store.state.user._id + "-LOCAL", async fetchedData => {
       this.progressData = fetchedData;
       if (!fetchedData.isLoading) {
+        console.log(' ===== Finist ===== ');
         await this.getListProduct();
       }
 
