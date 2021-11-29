@@ -277,7 +277,9 @@ class AdminController {
                         as: 'proxies'
                     }
                 },
-            ]);
+            ]).sort({
+                accountId: 1
+            });
             let proxies = await ProxyModel.find({
                 status: 'live'
             });
