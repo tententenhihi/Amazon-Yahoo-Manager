@@ -576,7 +576,7 @@ export default class ProductYahooService {
                         }
 
                         result.push(newResult);
-                        if (uploadAuctionResult.isBreak) {
+                        if (uploadAuctionResult && uploadAuctionResult.isBreak) {
                             break;
                         }
                     }
