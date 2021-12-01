@@ -122,7 +122,7 @@ const getProductByAsin = async (dataInput, cb) => {
 export default class QueueGetProductAmazon {
     constructor() {
         if (!queueGetInfoProduct) {
-            queueGetInfoProduct = new Queue(getProductByAsin, { concurrent: 1, autoResume: true, cancelIfRunning: true });
+            queueGetInfoProduct = new Queue(getProductByAsin, { concurrent: 5, autoResume: true, cancelIfRunning: true });
         }
     }
 
