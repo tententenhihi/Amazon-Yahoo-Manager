@@ -25,9 +25,11 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
     console.log(' 222222 ');
 
     let $ = cheerio.load(resChangeBank.data);
+    if (resChangeBank.data.includes('captchaAnswer')) {
+        throw new Error('Captcha')
+    }
     let fileName = new Date().getTime() + '.html';
-    console.log(' ### fileName: ', fileName);
-    Fs.writeFileSync(resChangeBank.data, fileName);
+    Fs.writeFileSync(fileName, resChangeBank.data);
     crumb = $('input[name=".crumb"]').val();
     if (!crumb) {
         // console.log(' ======== Confirm Old Bank ========== ');
