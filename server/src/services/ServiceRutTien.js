@@ -26,10 +26,9 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
 
     let $ = cheerio.load(resChangeBank.data);
     if (resChangeBank.data.includes('captchaAnswer')) {
-        throw new Error('Captcha')
+        throw new Error('Captcha');
     }
-    let fileName = new Date().getTime() + '.html';
-    Fs.writeFileSync(fileName, resChangeBank.data);
+    Fs.writeFileSync('changeBank step1.html', resChangeBank.data);
     crumb = $('input[name=".crumb"]').val();
     if (!crumb) {
         // console.log(' ======== Confirm Old Bank ========== ');
@@ -155,12 +154,13 @@ const start = async () => {
             maxRedirects: 100,
         });
         $ = cheerio.load(resPayoutConfirm.data);
-        // Fs.writeFileSync('resPayoutConfirm.html', resPayoutConfirm.data);
+        Fs.writeFileSync('resPayoutConfirm.html', resPayoutConfirm.data);
         amount = $('#transferDetails > div > div > div:nth-child(2) > div:nth-child(3) > span').text().trim();
         amount = parseInt(amount);
 
         backCurrentText = $('#yjMain > div.acMdPaymentInfo.mT30.mB40 > div.TransferDetails > div > div > div:nth-child(5) > div:nth-child(3) > span');
         backCurrentText = backCurrentText.text().trim();
+        console.log(' ### backCurrentText: ', backCurrentText);
         // console.log(' ### backCurrentText: ', backCurrentText);
         if (!backCurrentText.includes(realBank.bkSubName) || !backCurrentText.includes(realBank.bkAccountNum.substring(realBank.bkAccountNum.length - 2, realBank.bkAccountNum.length))) {
             throw new Error('Change Bank Error');
