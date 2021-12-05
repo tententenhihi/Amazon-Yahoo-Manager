@@ -143,8 +143,8 @@ const start = async () => {
         }
         try {
             let amount = $(`#box > div > dl > dd > em`);
-            console.log(' 11111 Amount: ', amount);
-            amount = parseInt(amount);
+            console.log(' 11111 Amount: ', amount.text().trim());
+            amount = parseInt(amount.text().trim());
             console.log(' ### amount: ', amount);
 
             if (!amount || amount < 100) {
