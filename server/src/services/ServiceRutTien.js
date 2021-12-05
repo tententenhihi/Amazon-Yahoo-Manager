@@ -163,6 +163,11 @@ const start = async () => {
         console.log(' ### backCurrentText: ', backCurrentText);
         // console.log(' ### backCurrentText: ', backCurrentText);
         if (!backCurrentText.includes(realBank.bkSubName) || !backCurrentText.includes(realBank.bkAccountNum.substring(realBank.bkAccountNum.length - 2, realBank.bkAccountNum.length))) {
+           console.log(' ############# 1111 ', !backCurrentText.includes(realBank.bkSubName));
+           console.log(realBank.bkAccountNum.substring(realBank.bkAccountNum.length - 2, realBank.bkAccountNum.length));
+           console.log(' ############# 2222 ', !backCurrentText.includes(realBank.bkAccountNum.substring(realBank.bkAccountNum.length - 2, realBank.bkAccountNum.length)));
+
+           
             throw new Error('Change Bank Error');
         }
         crumb = resPayoutConfirm.data.split('.crumb')[1].split('form.appendChild(input1)')[0].replace(/\n/g, '').replace('";  input2.value = "', '').replace('"', '').replace(';', '').trim();
