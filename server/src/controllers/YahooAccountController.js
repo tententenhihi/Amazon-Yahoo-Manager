@@ -109,6 +109,7 @@ async function startRutTien(listYahoo, realBank) {
             } else {
                 if (yahooAccount.bank_id && yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
                     let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
+                    console.log(' ### proxyResult: ', proxyResult);
                     if (proxyResult.status === 'SUCCESS') {
                         yahooAccount.status_withdraw = 'Running...';
                         await yahooAccount.save();

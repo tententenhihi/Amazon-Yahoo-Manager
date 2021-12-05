@@ -18,7 +18,7 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
 
     let payload = null;
     let crumb = null;
-
+    console.log(' 11111 ');
     let resChangeBank = await axios.get('https://edit.wallet.yahoo.co.jp/config/wallet_trans_update?.done=https%3A%2F%2Fsalesmanagement.yahoo.co.jp%2Flist', {
         headers: {
             cookie,
@@ -26,6 +26,8 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
         proxy: proxyConfig,
         maxRedirects: 100,
     });
+    console.log(' 222222 ');
+
     let $ = cheerio.load(resChangeBank.data);
     crumb = $('input[name=".crumb"]').val();
     if (!crumb) {
