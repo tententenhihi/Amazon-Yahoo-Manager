@@ -24,6 +24,7 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
             cookie,
         },
         proxy: proxyConfig,
+        maxRedirects: 100,
     });
     let $ = cheerio.load(resChangeBank.data);
     crumb = $('input[name=".crumb"]').val();
@@ -46,6 +47,7 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
             },
             proxy: proxyConfig,
+            maxRedirects: 100,
 
         });
         $ = cheerio.load(resConfirmOldBank.data);
@@ -58,6 +60,7 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
         },
         proxy: proxyConfig,
+        maxRedirects: 100,
 
     });
     // Fs.writeFileSync('resChangeBankB1.html', resChangeBankB1.data)
@@ -90,6 +93,7 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
         },
         proxy: proxyConfig,
+        maxRedirects: 100,
 
     });
 
@@ -141,11 +145,10 @@ const start = async () => {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
             },
             proxy: proxyConfig,
-
+            maxRedirects: 100,
         });
         $ = cheerio.load(resList.data);
         crumb = $('input[name=".crumb"]').val();
-
         payload = {
             '.crumb': crumb,
         };
@@ -155,11 +158,10 @@ const start = async () => {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
             },
             proxy: proxyConfig,
-
+            maxRedirects: 100,
         });
         $ = cheerio.load(resPayoutConfirm.data);
         // Fs.writeFileSync('resPayoutConfirm.html', resPayoutConfirm.data);
-
         amount = $('#transferDetails > div > div > div:nth-child(2) > div:nth-child(3) > span').text().trim();
         amount = parseInt(amount);
 
@@ -184,7 +186,7 @@ const start = async () => {
                 referer: 'https://salesmanagement.yahoo.co.jp/payout_confirm',
             },
             proxy: proxyConfig,
-
+            maxRedirects: 100,
         });
         // ================= Đổi Bank =====================
         await changeBank(cookie, proxyConfig, realBank, fakeBank);

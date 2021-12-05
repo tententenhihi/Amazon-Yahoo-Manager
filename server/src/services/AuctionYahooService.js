@@ -54,7 +54,7 @@ async function getHtmlWithPuppeteer(url, proxy, cookie) {
     let timeout = 5 * 60 * 1000;
     await page.goto(url, {
         waitUntil: 'load',
-        timeout: timeout
+        timeout: timeout,
     });
 
     page.setDefaultNavigationTimeout(0);
@@ -62,7 +62,6 @@ async function getHtmlWithPuppeteer(url, proxy, cookie) {
 class AuctionYahooService {
     static async getAmount(cookie, proxy) {
         try {
-            console.log(' #### getAmount ');
             let proxyConfig = {
                 host: proxy.host,
                 port: proxy.port,
@@ -84,9 +83,9 @@ class AuctionYahooService {
                     Connection: 'keep-alive',
                 },
                 proxy: proxyConfig,
-                timeout: 30 * 1000,
+                timeout: 5 * 60 * 1000,
+                maxRedirects: 100,
             });
-            console.log(' #### Res Success ');
             let $ = cheerio.load(res.data);
             let textAmount = $('#box > div > dl > dd > em').text();
             if (textAmount) {
@@ -224,7 +223,6 @@ class AuctionYahooService {
                 return {
                     status: 'ERROR',
                     statusMessage: 'カテゴリ未設定',
-
                 };
             }
             if (!productData.start_price) {
@@ -318,7 +316,7 @@ class AuctionYahooService {
                     };
                     const response = await axios.get('https://auctions.yahoo.co.jp/jp/show/submit', configs);
                     // Fs.writeFileSync('get-key.html', response.data);
-                    htmlDataGetKey = response.data
+                    htmlDataGetKey = response.data;
                     let $$ = cheerio.load(response.data);
                     const crumbValue = $$('input[name=".crumb"]').val();
                     const imgCrumbValue = $$('input[id="img_crumb"]').val();
@@ -364,7 +362,6 @@ class AuctionYahooService {
                         isBreak: true,
                     };
                 }
-
             }
 
             // Upload Image and get thumbnail
@@ -505,7 +502,6 @@ class AuctionYahooService {
             // console.log(' ########## productData: ', productData)
 
             // console.log(' ########## previewParams.descrionUpload: ', previewParams.Description)
-
 
             let payload = Qs.stringify(previewParams);
             headers = {
@@ -986,7 +982,7 @@ class AuctionYahooService {
 
             let now = new Date();
             while (!isEndPage) {
-                console.log(' =========== isEndPage ============ ')
+                console.log(' =========== isEndPage ============ ');
                 response = await axios.get('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=1&apg=' + page, {
                     headers: {
                         cookie,
@@ -1007,7 +1003,7 @@ class AuctionYahooService {
                     let time_end = $(row).find('td:nth-child(5)').text().trim();
                     if (time_end) {
                         try {
-                            console.log(' ### time_end: ', time_end)
+                            console.log(' ### time_end: ', time_end);
                             let month = time_end.split('月')[0].trim();
                             let day = time_end.split('月')[1].split('日')[0].trim();
                             if (month && day) {
@@ -1015,14 +1011,12 @@ class AuctionYahooService {
                                 dateProduct.setDate(dateProduct.getDate() + 30);
                                 console.log(' #### dateProduct: ', dateProduct);
                                 if (dateProduct < now) {
-                                    console.log(' ### isEndPage Day #### ')
+                                    console.log(' ### isEndPage Day #### ');
                                     isEndPage = true;
                                     break;
                                 }
                             }
-                        } catch (error) {
-
-                        }
+                        } catch (error) {}
                     }
                     let price_end = $(row).find('td:nth-child(4)').text().trim().replace(/\D+/g, '').replace('-', '');
                     let progress_message = $(row).find('td:nth-child(7)').text();
@@ -1037,7 +1031,7 @@ class AuctionYahooService {
                             time_end,
                             price_end,
                             title,
-                            progress_message
+                            progress_message,
                         });
                     }
                 }
@@ -1336,7 +1330,7 @@ class AuctionYahooService {
 
                     if (time_end) {
                         try {
-                            console.log(' ### time_end: ', time_end)
+                            console.log(' ### time_end: ', time_end);
                             let month = time_end.split('月')[0].trim();
                             let day = time_end.split('月')[1].split('日')[0].trim();
 
@@ -1345,14 +1339,12 @@ class AuctionYahooService {
                                 dateProduct.setDate(dateProduct.getDate() + 30);
                                 console.log(' #### dateProduct: ', dateProduct);
                                 if (dateProduct < now) {
-                                    console.log(' ### isEndPage Day #### ')
+                                    console.log(' ### isEndPage Day #### ');
                                     isEndPage = true;
                                     break;
                                 }
                             }
-                        } catch (error) {
-
-                        }
+                        } catch (error) {}
                     }
 
                     if (aID && aID !== '商品ID' && aID.trim() !== '' && aID.length > 5) {
@@ -1367,7 +1359,7 @@ class AuctionYahooService {
                 page++;
             }
 
-            console.log(listProduct)
+            console.log(listProduct);
         } catch (error) {
             console.log(' ### Error AuctionYahooService getProductAuctionEnded ', error);
         }
@@ -1457,7 +1449,7 @@ class AuctionYahooService {
             let timeout = 2 * 60 * 1000;
             await page.goto(urlLogin, {
                 waitUntil: 'load',
-                timeout: timeout
+                timeout: timeout,
             });
             page.setDefaultNavigationTimeout(0);
             await Utils.sleep(1000);
@@ -1472,7 +1464,7 @@ class AuctionYahooService {
             await waitAndClick('#btnNext');
             console.log(' ### password');
             let password = await page.waitForSelector('#passwd', {
-                visible: true
+                visible: true,
             });
             await password.type(account.password);
             await Utils.sleep(1000);
@@ -1480,17 +1472,17 @@ class AuctionYahooService {
             await waitAndClick('#btnSubmit');
             await page.waitForSelector('input[type=text]', {
                 timeout: 30000,
-                visible: true
+                visible: true,
             });
 
             urlLogin = 'https://login.yahoo.co.jp/config/login?auth_lv=capin&.src=pay&.done=https%3A%2F%2Faucpay.yahoo.co.jp%2Fdetail-front%2FPaymentDetailList&.crumb=0';
             await page.goto(urlLogin, {
                 waitUntil: 'load',
-                timeout: timeout
+                timeout: timeout,
             });
             console.log(' ### password');
             password = await page.waitForSelector('#passwd', {
-                visible: true
+                visible: true,
             });
             await password.type(account.password);
             await Utils.sleep(1000);
@@ -1498,17 +1490,17 @@ class AuctionYahooService {
             await waitAndClick('#btnSubmit');
             await page.waitForSelector('input[type=text]', {
                 timeout: 30000,
-                visible: true
+                visible: true,
             });
 
             urlLogin = 'https://login.yahoo.co.jp/config/login?.done=https%3A%2F%2Fsalesmanagement.yahoo.co.jp%2Flist&.src=pay';
             await page.goto(urlLogin, {
                 waitUntil: 'load',
-                timeout: timeout
+                timeout: timeout,
             });
             console.log(' ### password');
             password = await page.waitForSelector('#passwd', {
-                visible: true
+                visible: true,
             });
             await password.type(account.password);
             await Utils.sleep(1000);
@@ -1516,7 +1508,7 @@ class AuctionYahooService {
             await waitAndClick('#btnSubmit');
             await page.waitForSelector('input[type=text]', {
                 timeout: 30000,
-                visible: true
+                visible: true,
             });
 
             await Utils.sleep(1000);
@@ -1596,7 +1588,7 @@ class AuctionYahooService {
             let payloadPreview = Qs.stringify(dataPreview);
             let resPreview = await axios.post('https://auctions.yahoo.co.jp/jp/show/remove_winner', payloadPreview, {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
 
             // Fs.writeFileSync('preview.html', resPreview.data);
@@ -1615,7 +1607,7 @@ class AuctionYahooService {
 
                 let resSubmit = await axios.post('https://auctions.yahoo.co.jp/jp/config/remove_winner', payload, {
                     headers,
-                    proxy: proxyConfig
+                    proxy: proxyConfig,
                 });
                 if (resSubmit.data.includes('以下のとおり落札者を削除しました')) {
                     return {
@@ -1668,7 +1660,7 @@ class AuctionYahooService {
             let urlPreview = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${aID}&syid=${usernameYahoo}&bid=${idBuyer}`;
             let resPreview = await axios.get(urlPreview, {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             let $ = cheerio.load(resPreview.data);
             let oid = $('#oid').val();
@@ -1732,7 +1724,7 @@ class AuctionYahooService {
             let urlGetCrumb = `https://auctions.yahoo.co.jp/jp/show/leavefeedback?t=${idBuyer}&aID=${aID}&nr=1`;
             let resGetCrumb = await axios.get(urlGetCrumb, {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             let $ = cheerio.load(resGetCrumb.data);
             let crumb = $('input[name="crumb"]').val();
@@ -2072,7 +2064,7 @@ class AuctionYahooService {
             let urlPreview = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${aID}&syid=${usernameYahoo}&bid=${idBuyer}`;
             let resPreview = await axios.get(urlPreview, {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             let $ = cheerio.load(resPreview.data);
             let oid = $('input[name="oid"]').val();
@@ -2147,7 +2139,7 @@ class AuctionYahooService {
             let urlPreview = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${aID}&syid=${usernameYahoo}&bid=${idBuyer}`;
             let resPreview = await axios.get(urlPreview, {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             let $ = cheerio.load(resPreview.data);
             let oid = $('#oid').val();
@@ -2156,7 +2148,7 @@ class AuctionYahooService {
 
             let resUrlSetShip = await axios.get(urlSetShip, {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             $ = cheerio.load(resUrlSetShip.data);
             let shipMethodName = $('input[name="shipMethodName"]').val();
@@ -2175,7 +2167,7 @@ class AuctionYahooService {
             let urlShipOverview = 'https://contact.auctions.yahoo.co.jp/seller/shippreview';
             let resOverview = await axios.post(urlShipOverview, Qs.stringify(paramsOverview), {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
 
             $ = cheerio.load(resOverview.data);
@@ -2185,7 +2177,7 @@ class AuctionYahooService {
             let urlShipSubmit = 'https://contact.auctions.yahoo.co.jp/seller/shipsubmit';
             let reSubmit = await axios.post(urlShipSubmit, Qs.stringify(paramsOverview), {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             if (reSubmit && reSubmit.data && reSubmit.data.includes('取引情報')) {
                 return {
@@ -2236,14 +2228,14 @@ class AuctionYahooService {
             let urlPreview = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${aID}&syid=${usernameYahoo}&bid=${idBuyer}`;
             let resPreview = await axios.get(urlPreview, {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             let $ = cheerio.load(resPreview.data);
             let urlSetShip = $('input.libBtnBlueL').attr('onclick');
             urlSetShip = 'https://contact.auctions.yahoo.co.jp' + urlSetShip.split("location.href='")[1].replace("'", '');
             let resUrlSetShip = await axios.get(urlSetShip, {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             $ = cheerio.load(resUrlSetShip.data);
             let oid = $('input[name="oid"]').val();
@@ -2262,7 +2254,7 @@ class AuctionYahooService {
             let urlShipOverview = 'https://contact.auctions.yahoo.co.jp/seller/preview';
             let resOverview = await axios.post(urlShipOverview, Qs.stringify(paramsOverview), {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
 
             $ = cheerio.load(resOverview.data);
@@ -2275,7 +2267,7 @@ class AuctionYahooService {
             let urlShipSubmit = 'https://contact.auctions.yahoo.co.jp/seller/submit';
             let reSubmit = await axios.post(urlShipSubmit, Qs.stringify(paramsOverview), {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             if (reSubmit && reSubmit.data && reSubmit.data.includes('取引情報')) {
                 return {
@@ -2326,7 +2318,7 @@ class AuctionYahooService {
             let urlPreview = `https://contact.auctions.yahoo.co.jp/seller/top?aid=${aID}&syid=${usernameYahoo}&bid=${idBuyer}`;
             let resPreview = await axios.get(urlPreview, {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             let $ = cheerio.load(resPreview.data);
             if (!is_join_bill) {
@@ -2334,7 +2326,7 @@ class AuctionYahooService {
                 urlCancelJoinBill = 'https://contact.auctions.yahoo.co.jp' + urlCancelJoinBill.split("'")[1];
                 let resCancelJoinBill = await axios.get(urlCancelJoinBill, {
                     headers,
-                    proxy: proxyConfig
+                    proxy: proxyConfig,
                 });
                 if (resCancelJoinBill && resCancelJoinBill.data && resCancelJoinBill.data.includes('取引情報')) {
                     return {
@@ -2352,7 +2344,7 @@ class AuctionYahooService {
                 urlJoinBill = 'https://contact.auctions.yahoo.co.jp' + urlJoinBill;
                 let resCancelJoinBill = await axios.get(urlJoinBill, {
                     headers,
-                    proxy: proxyConfig
+                    proxy: proxyConfig,
                 });
                 $ = cheerio.load(resCancelJoinBill.data);
                 let oid = $('input[name="oid"]').val();
@@ -2376,7 +2368,7 @@ class AuctionYahooService {
                 let urlSetShipPreview = 'https://contact.auctions.yahoo.co.jp/seller/bundle/shippreview';
                 let resSetShipPreview = await axios.post(urlSetShipPreview, Qs.stringify(payload), {
                     headers,
-                    proxy: proxyConfig
+                    proxy: proxyConfig,
                 });
 
                 // Fs.writeFileSync('resSetShipPreview.html', resSetShipPreview.data);
@@ -2387,7 +2379,7 @@ class AuctionYahooService {
                 let urlSetShipSubmit = `https://contact.auctions.yahoo.co.jp/seller/bundle/shipsubmit`;
                 let resSetShipSubmit = await axios.post(urlSetShipSubmit, Qs.stringify(payload), {
                     headers,
-                    proxy: proxyConfig
+                    proxy: proxyConfig,
                 });
                 if (resSetShipSubmit && resSetShipSubmit.data && resSetShipSubmit.data.includes('取引情報')) {
                     return {
@@ -2436,7 +2428,7 @@ class AuctionYahooService {
             let $ = null;
             let resList = await axios.get('https://salesmanagement.yahoo.co.jp/list', {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             $ = cheerio.load(resList.data);
             let crumb = $('input[name=".crumb"]').val();
@@ -2445,7 +2437,7 @@ class AuctionYahooService {
             };
             let resPayoutConfirm = await axios.post('https://salesmanagement.yahoo.co.jp/payout_confirm', Qs.stringify(payload), {
                 headers,
-                proxy: proxyConfig
+                proxy: proxyConfig,
             });
             $ = cheerio.load(resPayoutConfirm.data);
 
