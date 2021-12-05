@@ -59,7 +59,6 @@ class AccountYahooService {
         for (const accountData of listYahooAccount) {
             if (accountData && accountData.proxy_id && accountData.cookie && accountData.status === 'SUCCESS' && !accountData.is_error && accountData.count_error < 3000) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountData.proxy_id);
-
                 if (proxyResult.status === 'SUCCESS') {
                     let proxy = proxyResult.data;
                     let resultGetAmount = await AuctionYahooService.getAmount(accountData.cookie, proxy);

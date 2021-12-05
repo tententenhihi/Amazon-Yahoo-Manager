@@ -73,6 +73,7 @@ class AuctionYahooService {
             if (config.get('env') === 'development') {
                 proxyConfig = null;
             }
+            console.log(' 11111 ');
             let res = await axios.get(`https://salesmanagement.yahoo.co.jp/list`, {
                 headers: {
                     cookie,
@@ -83,9 +84,11 @@ class AuctionYahooService {
                     Connection: 'keep-alive',
                 },
                 proxy: proxyConfig,
-                timeout: 5 * 60 * 1000,
+                timeout: 60 * 1000,
                 maxRedirects: 100,
             });
+            console.log(' 22222 ');
+
             let $ = cheerio.load(res.data);
             let textAmount = $('#box > div > dl > dd > em').text();
             if (textAmount) {
