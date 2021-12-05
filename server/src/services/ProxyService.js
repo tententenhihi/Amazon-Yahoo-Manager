@@ -48,7 +48,6 @@ class ProxyService {
                         },
                     });
                     if (res && res.status === 200 && res.data.ip === proxy.ip) {
-                        console.log(' ### res: ', res.data);
                         return true;
                     }
                 } catch (error) {}

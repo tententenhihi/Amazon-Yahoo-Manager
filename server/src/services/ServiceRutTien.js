@@ -141,17 +141,13 @@ const start = async () => {
         if (resCheckAmount.data.includes('captchaAnswer')) {
             throw new Error('Captcha');
         }
-        try {
-            let amount = $(`#box > div > dl > dd > em`);
-            console.log(' 11111 Amount: ', amount.text().trim());
-            amount = parseInt(amount.text().trim());
-            console.log(' ### amount: ', amount);
+        let amount = $(`#box > div > dl > dd > em`);
+        console.log(' 11111 Amount: ', amount.text().trim());
+        amount = parseInt(amount.text().trim());
+        console.log(' ### amount: ', amount);
 
-            if (!amount || amount < 100) {
-                throw new Error('Amount < 100円');
-            }
-        } catch (error) {
-            throw new Error('Get Amount');
+        if (amount < 100) {
+            throw new Error('Amount < 100円');
         }
         // ================= Đổi Bank =====================
         await changeBank(cookie, proxyConfig, fakeBank, realBank);
