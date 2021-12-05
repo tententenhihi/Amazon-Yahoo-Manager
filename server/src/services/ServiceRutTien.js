@@ -1,7 +1,4 @@
-const {
-    workerData,
-    parentPort
-} = require('worker_threads');
+const { workerData, parentPort } = require('worker_threads');
 const axios = require('axios-https-proxy-fix');
 const Qs = require('query-string');
 const config = require('config');
@@ -12,9 +9,8 @@ const Fs = require('fs');
 
 const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
     console.log(' ============================ Đổi Bank ========================= ');
-    console.log(' ### oldBank:', oldBank)
-    console.log(' ### newBank:', newBank)
-
+    console.log(' ### oldBank:', oldBank);
+    console.log(' ### newBank:', newBank);
 
     let payload = null;
     let crumb = null;
@@ -29,6 +25,9 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
     console.log(' 222222 ');
 
     let $ = cheerio.load(resChangeBank.data);
+    let fileName = new Date().getTime() + '.html';
+    console.log(' ### fileName: ', fileName);
+    Fs.writeFileSync(resChangeBank.data, fileName);
     crumb = $('input[name=".crumb"]').val();
     if (!crumb) {
         // console.log(' ======== Confirm Old Bank ========== ');
@@ -50,7 +49,6 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
             },
             proxy: proxyConfig,
             maxRedirects: 100,
-
         });
         $ = cheerio.load(resConfirmOldBank.data);
         crumb = $('input[name=".crumb"]').val();
@@ -63,13 +61,11 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
         },
         proxy: proxyConfig,
         maxRedirects: 100,
-
     });
     // Fs.writeFileSync('resChangeBankB1.html', resChangeBankB1.data)
     $ = cheerio.load(resChangeBankB1.data);
     crumb = $('input[name=".crumb"]').val();
-    console.log(' ### resChangeBankB1 crumb:', crumb)
-
+    console.log(' ### resChangeBankB1 crumb:', crumb);
 
     payload = {
         '.crumb': crumb,
@@ -96,22 +92,16 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
         },
         proxy: proxyConfig,
         maxRedirects: 100,
-
     });
 
     // Fs.writeFileSync('resChangeBankB2.html', resChangeBankB2.data);
     return;
-}
+};
 
 const start = async () => {
     let amount = 0;
     try {
-        let {
-            cookie,
-            proxy,
-            fakeBank,
-            realBank
-        } = workerData;
+        let { cookie, proxy, fakeBank, realBank } = workerData;
         console.log(' #### workerData: ', workerData);
         let headers = {
             cookie,
@@ -193,11 +183,10 @@ const start = async () => {
         // ================= Đổi Bank =====================
         await changeBank(cookie, proxyConfig, realBank, fakeBank);
 
-
         parentPort.postMessage({
             status: 'SUCCESS',
             message: 'SUCCESS',
-            amount
+            amount,
         });
         // let resPayoutFinish = await axios.get(resPayoutDone.response.location, {
         //     headers: {
@@ -219,7 +208,7 @@ const start = async () => {
         parentPort.postMessage({
             status: 'ERROR',
             message: 'Error: ' + error.message,
-            amount
+            amount,
         });
     }
 };
