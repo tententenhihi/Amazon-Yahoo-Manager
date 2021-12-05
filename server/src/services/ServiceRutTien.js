@@ -143,10 +143,11 @@ const start = async () => {
         }
         try {
             let amount = $(`#box > div > dl > dd > em`);
+            console.log(' 11111 Amount: ', amount);
             amount = parseInt(amount);
             console.log(' ### amount: ', amount);
 
-            if (amount < 100) {
+            if (!amount || amount < 100) {
                 throw new Error('Amount < 100円');
             }
         } catch (error) {
