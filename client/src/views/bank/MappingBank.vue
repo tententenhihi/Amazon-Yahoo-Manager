@@ -5,18 +5,6 @@
     <hr class="mt-10" />
     <div class="box-content">
       <div class="px-30 pb-20">
-        <paginate
-          v-if="pageCount > 1"
-          v-model="page"
-          :page-count="pageCount"
-          :page-range="3"
-          :margin-pages="2"
-          :prev-text="'«'"
-          :next-text="'»'"
-          :container-class="'pagination'"
-          :page-class="'page-item'"
-        >
-        </paginate>
         <div class="table-responsive">
           <table id="tablebank" class="table table-striped display pt-10 my-20">
             <thead class="thead-purple">
@@ -143,10 +131,7 @@ export default {
   },
   computed: {
     tableData() {
-      return this.searchData.slice(
-        (this.page - 1) * PAGE_SIZE,
-        this.page * PAGE_SIZE
-      );
+      return this.searchData;
     },
     pageCount() {
       return Math.ceil(this.searchData.length / PAGE_SIZE);

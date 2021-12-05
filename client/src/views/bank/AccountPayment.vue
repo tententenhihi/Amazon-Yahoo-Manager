@@ -39,7 +39,7 @@
             </button>
           </div>
         </div>
-        <paginate
+        <!-- <paginate
           v-if="pageCount > 1"
           v-model="page"
           :page-count="pageCount"
@@ -50,7 +50,7 @@
           :container-class="'pagination'"
           :page-class="'page-item'"
         >
-        </paginate>
+        </paginate> -->
         <div class="table-responsive">
           <table id="tablebank" class="table table-striped display pt-10 my-20">
             <thead class="thead-purple">
@@ -253,7 +253,7 @@ export default {
       listAccountSelected: [],
       accounts: [],
       STATUS_PROXY,
-      page: 1,
+      // page: 1,
       selectedBank: null,
       selectAccount: null,
       searchUserId: "",
@@ -297,10 +297,11 @@ export default {
       return checkIsRunning;
     },
     tableData() {
-      return this.searchData.slice(
-        (this.page - 1) * PAGE_SIZE,
-        this.page * PAGE_SIZE
-      );
+      return this.searchData;
+      // return this.searchData.slice(
+      //   (this.page - 1) * PAGE_SIZE,
+      //   this.page * PAGE_SIZE
+      // );
     },
     pageCount() {
       return Math.ceil(this.searchData.length / PAGE_SIZE);
@@ -507,7 +508,7 @@ export default {
           return account;
         }
       });
-      this.page = 1;
+      // this.page = 1;
     }
   },
   watch: {

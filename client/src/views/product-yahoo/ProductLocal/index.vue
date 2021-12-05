@@ -938,7 +938,7 @@ export default {
     socket.on(this.$store.state.user._id + "-LOCAL", async fetchedData => {
       this.progressData = fetchedData;
       if (!fetchedData.isLoading) {
-        console.log(' ===== Finist ===== ');
+        console.log(" ===== Finist ===== ");
         await this.getListProduct();
       }
 
