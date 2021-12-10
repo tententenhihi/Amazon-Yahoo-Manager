@@ -20,9 +20,7 @@ import BankModel from '../models/BankModel';
 import WithDrawMoneyModel from '../models/WithDrawMoneyModel';
 const SocketIOService = require('../services/SocketIOService');
 
-const {
-    Worker
-} = require('worker_threads');
+const { Worker } = require('worker_threads');
 
 const createDataDefault = async (user_id, yahoo_account_id) => {
     await ProductInfomationDefaultSchema.create({
@@ -37,7 +35,8 @@ const createDataDefault = async (user_id, yahoo_account_id) => {
         user_id,
         yahoo_account_id,
         name: '発送しました',
-        content: `商品発送いたしました。到着までしばらくお待ちください。届きましたら、評価よりご連絡ください。\n` +
+        content:
+            `商品発送いたしました。到着までしばらくお待ちください。届きましたら、評価よりご連絡ください。\n` +
             `なお、作業円滑化のため、追跡番号連絡や時間指定はできませんのでご了承ください。\n` +
             `1週間過ぎても商品が届かない場合はご連絡ください。\n` +
             `以上、ありがとうございました。\n` +
@@ -56,7 +55,7 @@ const createDataDefault = async (user_id, yahoo_account_id) => {
 
     await AuctionPublicSettingService.create({
         user_id,
-        yahoo_account_id
+        yahoo_account_id,
     });
 };
 const setLockAccount = async (yahooAccount) => {
@@ -90,7 +89,7 @@ const setLockAccount = async (yahooAccount) => {
 async function startThread(workerData) {
     return new Promise((resolve, reject) => {
         const worker = new Worker('../server/src/services/ServiceRutTien.js', {
-            workerData
+            workerData,
         });
         worker.on('message', resolve);
         worker.on('error', reject);
@@ -123,7 +122,7 @@ async function startRutTien(listYahoo, realBank) {
                         if (bankInfo) {
                             bankInfo = {
                                 ...bankInfo._doc,
-                                old_bank_number: yahooAccount.old_bank_number
+                                old_bank_number: yahooAccount.old_bank_number,
                             };
                             delete bankInfo._id;
                             delete bankInfo.user_id;
@@ -140,7 +139,7 @@ async function startRutTien(listYahoo, realBank) {
                                 cookie: yahooAccount.cookie,
                                 proxy: proxyResult.data._doc,
                                 fakeBank: bankInfo,
-                                realBank
+                                realBank,
                             };
                             let result = await startThread(data);
                             await WithDrawMoneyModel.create({
@@ -173,20 +172,23 @@ async function startRutTien(listYahoo, realBank) {
         yahooAccount.is_withdraw_running = false;
         await yahooAccount.save();
 
-        let account = await YahooAccountModel.aggregate([{
-            $match: {
-                _id: mongoose.Types.ObjectId(yahoo_account_id)
-            }
-        }, {
-            $lookup: {
-                from: 'banks',
-                localField: 'bank_id',
-                foreignField: '_id',
-                as: 'bank'
-            }
-        }]);
+        let account = await YahooAccountModel.aggregate([
+            {
+                $match: {
+                    _id: mongoose.Types.ObjectId(yahoo_account_id),
+                },
+            },
+            {
+                $lookup: {
+                    from: 'banks',
+                    localField: 'bank_id',
+                    foreignField: '_id',
+                    as: 'bank',
+                },
+            },
+        ]);
         let historyWithDraw = await WithDrawMoneyModel.find({
-            yahoo_account_id: yahoo_account_id
+            yahoo_account_id: yahoo_account_id,
         });
         account = account[0];
         account.historyWithDraw = historyWithDraw || [];
@@ -206,7 +208,8 @@ class YahooAccountController {
         let response = new Response(res);
         let user = req.user;
         try {
-            let listYahoooAccount = await AccountYahooService.updateAmount(user._id);
+            let yahoo_account_id = req.body.yahoo_account_id;
+            let listYahoooAccount = AccountYahooService.updateAmount(user._id, yahoo_account_id);
             return response.success200({});
         } catch (error) {
             console.log(error);
@@ -219,19 +222,19 @@ class YahooAccountController {
         try {
             let realBank = await BankModel.findOne({
                 user_id: user._id,
-                type: 'REAL'
+                type: 'REAL',
             });
             if (!realBank) {
                 return response.error400({
-                    message: `実際の銀行情報を入力していません!`
+                    message: `実際の銀行情報を入力していません!`,
                 });
             }
             let listAccountYahoo = req.body.listAccountSelected;
-            // let bankInfo = 
+            // let bankInfo =
             for (const yahoo_account_id of listAccountYahoo) {
                 await AccountYahooService.update(yahoo_account_id, {
                     is_withdraw_running: true,
-                    status_withdraw: 'Watting...'
+                    status_withdraw: 'Watting...',
                 });
             }
             startRutTien(listAccountYahoo, realBank._doc);
@@ -250,7 +253,7 @@ class YahooAccountController {
             await AccountYahooService.update(yahoo_account_id, {
                 old_bank_number,
                 is_withdraw_running: true,
-                status_withdraw: 'Watting...'
+                status_withdraw: 'Watting...',
             });
             // startRutTien([yahoo_account_id]);
             return response.success200({});
@@ -268,7 +271,7 @@ class YahooAccountController {
             for (const yahoo_account_id of listAccountYahoo) {
                 await AccountYahooService.update(yahoo_account_id, {
                     is_withdraw_running: false,
-                    status_withdraw: 'Stop'
+                    status_withdraw: 'Stop',
                 });
             }
             return response.success200({});
@@ -281,26 +284,29 @@ class YahooAccountController {
         let response = new Response(res);
         let user = req.user;
         try {
-            let accounts = await YahooAccountModel.aggregate([{
-                $match: {
-                    user_id: mongoose.Types.ObjectId(user._id)
-                }
-            }, {
-                $lookup: {
-                    from: 'banks',
-                    localField: 'bank_id',
-                    foreignField: '_id',
-                    as: 'bank'
-                }
-            }]);
+            let accounts = await YahooAccountModel.aggregate([
+                {
+                    $match: {
+                        user_id: mongoose.Types.ObjectId(user._id),
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'banks',
+                        localField: 'bank_id',
+                        foreignField: '_id',
+                        as: 'bank',
+                    },
+                },
+            ]);
             for (let i = 0; i < accounts.length; i++) {
                 let historyWithDraw = await WithDrawMoneyModel.find({
-                    yahoo_account_id: accounts[i]._id
+                    yahoo_account_id: accounts[i]._id,
                 });
                 accounts[i].historyWithDraw = historyWithDraw || [];
             }
             response.success200({
-                accounts
+                accounts,
             });
         } catch (error) {
             console.log(error);
@@ -316,14 +322,14 @@ class YahooAccountController {
 
             if (!data._id || !data.bank_id) {
                 return response.error400({
-                    message: '完全な情報を入力してください。'
+                    message: '完全な情報を入力してください。',
                 });
             }
             let newAccount = await YahooAccountModel.findByIdAndUpdate(data._id, {
-                bank_id: data.bank_id
+                bank_id: data.bank_id,
             });
             response.success200({
-                newAccount
+                newAccount,
             });
         } catch (error) {
             console.log(error);
@@ -335,25 +341,28 @@ class YahooAccountController {
         let response = new Response(res);
         let user = req.user;
         try {
-            let accounts = await YahooAccountModel.aggregate([{
-                $match: {
-                    user_id: mongoose.Types.ObjectId(user._id)
-                }
-            }, {
-                $lookup: {
-                    from: 'banks',
-                    localField: 'bank_id',
-                    foreignField: '_id',
-                    as: 'bank'
-                }
-            }]);
+            let accounts = await YahooAccountModel.aggregate([
+                {
+                    $match: {
+                        user_id: mongoose.Types.ObjectId(user._id),
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'banks',
+                        localField: 'bank_id',
+                        foreignField: '_id',
+                        as: 'bank',
+                    },
+                },
+            ]);
             let listBank = await BankModel.find({
                 user_id: mongoose.Types.ObjectId(user._id),
-                type: 'FAKE'
+                type: 'FAKE',
             });
             response.success200({
                 accounts,
-                listBank
+                listBank,
             });
         } catch (error) {
             response.error500(error);
@@ -364,27 +373,30 @@ class YahooAccountController {
         let response = new Response(res);
         let user = req.user;
         try {
-            let accounts = await YahooAccountModel.aggregate([{
-                $match: {
-                    user_id: mongoose.Types.ObjectId(user._id)
-                }
-            }, {
-                $lookup: {
-                    from: 'proxies',
-                    localField: 'proxy_id',
-                    foreignField: '_id',
-                    as: 'proxy'
-                }
-            }]).sort({
-                created: 1
+            let accounts = await YahooAccountModel.aggregate([
+                {
+                    $match: {
+                        user_id: mongoose.Types.ObjectId(user._id),
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'proxies',
+                        localField: 'proxy_id',
+                        foreignField: '_id',
+                        as: 'proxy',
+                    },
+                },
+            ]).sort({
+                created: 1,
             });
             let infoUser = await UserModel.findById(user._id, {
                 password: 0,
-                hash_password: 0
+                hash_password: 0,
             });
             response.success200({
                 accounts,
-                infoUser
+                infoUser,
             });
         } catch (error) {
             response.error500(error);
@@ -392,23 +404,19 @@ class YahooAccountController {
     }
     static async createNewAccount(req, res) {
         let response = new Response(res);
-        const {
-            name,
-            yahoo_id,
-            password
-        } = req.body;
+        const { name, yahoo_id, password } = req.body;
         let user = req.user;
         try {
             if (name && yahoo_id && password) {
                 let quantityAccount = await YahooAccountModel.find({
                     user_id: user._id,
-                    is_lock: false
+                    is_lock: false,
                 }).countDocuments();
                 user = await UserModel.findById(user._id);
                 if (quantityAccount >= user.maxYahooAccount) {
                     return response.error404({
                         ...req.body,
-                        message: 'アカウントは最大です。新しいアカウントを作成することはできません。 '
+                        message: 'アカウントは最大です。新しいアカウントを作成することはできません。 ',
                     });
                 }
                 let isExistAccount = await YahooAccountModel.findOne({
@@ -425,7 +433,7 @@ class YahooAccountController {
                         user_id: user._id,
                     });
                     let proxy = await ProxySchema.findOne({
-                        status: 'live'
+                        status: 'live',
                     });
                     newAccount.proxy_id = proxy._id;
 
@@ -438,17 +446,17 @@ class YahooAccountController {
                     let result = await AccountYahooService.getCookie(newAccount._id);
                     if (result.status === 'ERROR') {
                         return response.error400({
-                            message: result.message
+                            message: result.message,
                         });
                     } else {
                         return response.success200({
-                            account: result.data
+                            account: result.data,
                         });
                     }
                 }
             } else {
                 return response.error400({
-                    message: 'パラメータが必要です。'
+                    message: 'パラメータが必要です。',
                 });
             }
         } catch (error) {
@@ -458,16 +466,8 @@ class YahooAccountController {
 
     static async editAccount(req, res) {
         let response = new Response(res);
-        const {
-            name,
-            yahoo_id,
-            password,
-            type,
-            is_lock
-        } = req.body;
-        const {
-            _id
-        } = req.params;
+        const { name, yahoo_id, password, type, is_lock } = req.body;
+        const { _id } = req.params;
         let user = req.user;
 
         try {
@@ -475,11 +475,11 @@ class YahooAccountController {
                 let result = await AccountYahooService.getCookie(_id);
                 if (result.status === 'ERROR') {
                     return response.error400({
-                        message: result.message
+                        message: result.message,
                     });
                 } else {
                     return response.success200({
-                        account: result.data
+                        account: result.data,
                     });
                 }
             } else {
@@ -488,13 +488,13 @@ class YahooAccountController {
                     if (!existAccount) {
                         return response.error404({
                             ...req.body,
-                            message: 'アカウントが見つかりませんでした'
+                            message: 'アカウントが見つかりませんでした',
                         });
                     } else {
                         if (!is_lock) {
                             let quantityAccount = await YahooAccountModel.find({
                                 user_id: user._id,
-                                is_lock: false
+                                is_lock: false,
                             }).countDocuments();
                             user = await UserModel.findById(user._id);
                             if (quantityAccount >= user.maxYahooAccount) {
@@ -517,17 +517,17 @@ class YahooAccountController {
                             let result = await AccountYahooService.getCookie(existAccount._id);
                             if (result.status === 'ERROR') {
                                 return response.error400({
-                                    message: result.message
+                                    message: result.message,
                                 });
                             } else {
                                 return response.success200({
-                                    account: result.data
+                                    account: result.data,
                                 });
                             }
                         } else {
                             let result = await existAccount.save();
                             return response.success200({
-                                account: result._doc
+                                account: result._doc,
                             });
                         }
                     }
@@ -542,25 +542,23 @@ class YahooAccountController {
 
     static async deleteAccount(req, res) {
         let response = new Response(res);
-        const {
-            _id
-        } = req.params;
+        const { _id } = req.params;
         try {
             if (_id) {
                 let existAccount = await YahooAccountModel.findById(_id);
                 if (existAccount.proxy_id) {
                     await ProxyService.updateProxy(existAccount.proxy_id, {
-                        status: 'lock'
+                        status: 'lock',
                     });
                 }
                 if (!existAccount) {
                     return response.error404({
-                        message: 'Account not found'
+                        message: 'Account not found',
                     });
                 } else {
                     await existAccount.remove();
                     response.success200({
-                        success: true
+                        success: true,
                     });
                 }
             } else {
@@ -574,31 +572,28 @@ class YahooAccountController {
     static async copyDefaultSetting(req, res) {
         let response = new Response(res);
         try {
-            const {
-                yahoo_account_id,
-                account_id_selected
-            } = req.body;
+            const { yahoo_account_id, account_id_selected } = req.body;
 
             let user = req.user;
             let existAccount = await YahooAccountModel.findById(yahoo_account_id);
             if (!existAccount) {
                 return response.error404({
-                    message: 'Account not found'
+                    message: 'Account not found',
                 });
             }
 
             let productInfomationDefault = await ProductInfomationDefaultSchema.findOne({
                 user_id: user._id,
-                yahoo_account_id
+                yahoo_account_id,
             });
             productInfomationDefault = {
-                ...productInfomationDefault._doc
+                ...productInfomationDefault._doc,
             };
             productInfomationDefault.yahoo_account_id = account_id_selected;
 
             let dataExist1 = await ProductInfomationDefaultSchema.findOne({
                 user_id: user._id,
-                yahoo_account_id: account_id_selected
+                yahoo_account_id: account_id_selected,
             });
             if (dataExist1) {
                 productInfomationDefault._id = dataExist1._id;
@@ -610,16 +605,16 @@ class YahooAccountController {
 
             let auctionPublicSetting = await AuctionPublicSettingSchema.findOne({
                 user_id: user._id,
-                yahoo_account_id
+                yahoo_account_id,
             });
             auctionPublicSetting = {
-                ...auctionPublicSetting._doc
+                ...auctionPublicSetting._doc,
             };
             auctionPublicSetting.yahoo_account_id = account_id_selected;
 
             let dataExist2 = await AuctionPublicSettingSchema.findOne({
                 user_id: user._id,
-                yahoo_account_id: account_id_selected
+                yahoo_account_id: account_id_selected,
             });
             if (dataExist2) {
                 auctionPublicSetting._id = dataExist2._id;
@@ -631,16 +626,16 @@ class YahooAccountController {
 
             let productGlobalSetting = await ProductGlobalSettingSchema.findOne({
                 user_id: user._id,
-                yahoo_account_id
+                yahoo_account_id,
             });
             productGlobalSetting = {
-                ...productGlobalSetting._doc
+                ...productGlobalSetting._doc,
             };
             productGlobalSetting.yahoo_account_id = account_id_selected;
 
             let dataExist3 = await ProductGlobalSettingSchema.findOne({
                 user_id: user._id,
-                yahoo_account_id: account_id_selected
+                yahoo_account_id: account_id_selected,
             });
             if (dataExist3) {
                 productGlobalSetting._id = dataExist3._id;
@@ -652,16 +647,16 @@ class YahooAccountController {
 
             let listTradeMessageTemplate = await TradeMessageTemplateSchema.find({
                 user_id: user._id,
-                yahoo_account_id
+                yahoo_account_id,
             });
             await TradeMessageTemplateSchema.deleteMany({
                 user_id: user._id,
-                yahoo_account_id: account_id_selected
+                yahoo_account_id: account_id_selected,
             });
 
             for (const tradeMessageTemplate of listTradeMessageTemplate) {
                 tradeMessageTemplate = {
-                    ...tradeMessageTemplate._doc
+                    ...tradeMessageTemplate._doc,
                 };
                 tradeMessageTemplate._id = null;
                 tradeMessageTemplate.yahoo_account_id = account_id_selected;
@@ -670,23 +665,23 @@ class YahooAccountController {
 
             let listRatingTemplate = await RatingTemplateSchema.find({
                 user_id: user._id,
-                yahoo_account_id
+                yahoo_account_id,
             });
             await RatingTemplateSchema.deleteMany({
                 user_id: user._id,
-                yahoo_account_id: account_id_selected
+                yahoo_account_id: account_id_selected,
             });
 
             for (const ratingTemplate of listRatingTemplate) {
                 ratingTemplate = {
-                    ...ratingTemplate._doc
+                    ...ratingTemplate._doc,
                 };
                 ratingTemplate._id = null;
                 ratingTemplate.yahoo_account_id = account_id_selected;
                 await RatingTemplateSchema.create(ratingTemplate);
             }
             return response.success200({
-                success: true
+                success: true,
             });
         } catch (error) {
             console.log(' ### error: ', error);

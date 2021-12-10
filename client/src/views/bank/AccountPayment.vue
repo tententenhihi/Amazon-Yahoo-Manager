@@ -229,12 +229,19 @@
         </div>
       </template>
     </modal-component>
+    <ProgressLoading
+      v-if="progressData.isLoading"
+      :progressData="progressData"
+      ref="ProgressLoading"
+    />
   </div>
 </template>
 
 <script>
 import YahooAccountApi from "@/services/YahooAccountApi";
 import io from "socket.io-client";
+import ProgressLoading from "../components/ProgressLoading.vue";
+
 var socket = null;
 
 const PAGE_SIZE = 20;
@@ -247,6 +254,9 @@ const STATUS_PROXY = [
 ];
 export default {
   name: "YahooAccount",
+  components: {
+    ProgressLoading
+  },
   data() {
     return {
       isCheckAllAccount: false,
@@ -261,7 +271,12 @@ export default {
       searchUsername: "",
       searchBankNumber: "",
       searchData: [],
-      listHistoryWithRraw: []
+      listHistoryWithRraw: [],
+      progressData: {
+        total: 0,
+        progress: 0,
+        isLoading: false
+      }
     };
   },
   async mounted() {
@@ -284,6 +299,14 @@ export default {
         return item;
       });
       this.searchData = this.accounts;
+    });
+
+    socket.on(this.$store.state.user._id + "-PAYMENT-LOAD", async fetchedData => {
+      this.progressData = fetchedData;
+      if (!fetchedData.isLoading) {
+        await this.getYahooAccounts();
+      }
+
     });
   },
   destroyed() {
@@ -309,7 +332,7 @@ export default {
   },
   methods: {
     async refreshAccountPayment() {
-      let res = await YahooAccountApi.refreshAccountPayment();
+      let res = await YahooAccountApi.refreshAccountPayment({ yahoo_account_id: this.$store.state.user._id});
       await this.getYahooAccounts();
     },
     async onClickRunAgain(yahoo_account_id, old_bank_number) {

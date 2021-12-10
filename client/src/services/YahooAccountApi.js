@@ -11,8 +11,8 @@ export default {
       timeout: 15 * 60 * 1000
     });
   },
-  refreshAccountPayment() {
-    return Api.get(`${prefix}/refresh-account-payment`, {
+  refreshAccountPayment(data) {
+    return Api.post(`${prefix}/refresh-account-payment`,data, {
       timeout: 15 * 60 * 1000
     });
   },

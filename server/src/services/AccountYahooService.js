@@ -1,6 +1,7 @@
 const YahooAccountSchema = require('../models/YahooAccount');
 const ProxyService = require('./ProxyService');
 const AuctionYahooService = require('./AuctionYahooService');
+import SocketIOService from './SocketIOService';
 
 class AccountYahooService {
     static async checkAccountYahoo_Lock(id) {
@@ -52,11 +53,19 @@ class AccountYahooService {
             return null;
         }
     }
-    static async updateAmount(user_id) {
+    static async updateAmount(user_id, yahoo_account_id) {
         let listYahooAccount = await YahooAccountSchema.find({
             user_id
         });
+        SocketIOService.emitData(yahoo_account_id, {
+            type: 'PAYMENT-LOAD',
+            isLoading: true,
+            progress: 0,
+            total: listYahooAccount.length,
+        });
+
         listYahooAccount = listYahooAccount.reverse();
+        let indexAccount = 0;
         for (const accountData of listYahooAccount) {
             if (accountData && accountData.proxy_id && accountData.cookie && accountData.status === 'SUCCESS' && !accountData.is_error && accountData.count_error < 3000) {
                 let proxyResult = await ProxyService.findByIdAndCheckLive(accountData.proxy_id);
@@ -82,7 +91,23 @@ class AccountYahooService {
                 accountData.status_withdraw = 'Account Error';
                 await accountData.save();
             }
+            indexAccount++;
+            SocketIOService.emitData(yahoo_account_id, {
+                type: 'PAYMENT-LOAD',
+                isLoading: true,
+                progress: indexAccount,
+                total: listYahooAccount.length,
+            });
         }
+
+        SocketIOService.emitData(yahoo_account_id, {
+            type: 'PAYMENT-LOAD',
+            isLoading: false,
+            progress: 0,
+            total: 0,
+            listProduct: listYahooAccount,
+        });
+
     }
     static async getCookie(id) {
         let accountData = await YahooAccountSchema.findById(id);

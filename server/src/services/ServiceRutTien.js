@@ -101,8 +101,19 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
 
 const start = async () => {
     let amount = 0;
+    let { cookie, proxy, fakeBank, realBank } = workerData;
+    let proxyConfig = {
+        host: proxy.host,
+        port: proxy.port,
+        auth: {
+            username: proxy.username,
+            password: proxy.password,
+        },
+    };
+    if (config.get('env') === 'development') {
+        proxyConfig = null;
+    }
     try {
-        let { cookie, proxy, fakeBank, realBank } = workerData;
         console.log(' #### workerData: ', workerData);
         let headers = {
             cookie,
@@ -114,17 +125,6 @@ const start = async () => {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             timeout: 60 * 10000,
         };
-        let proxyConfig = {
-            host: proxy.host,
-            port: proxy.port,
-            auth: {
-                username: proxy.username,
-                password: proxy.password,
-            },
-        };
-        if (config.get('env') === 'development') {
-            proxyConfig = null;
-        }
         let $ = null;
         let crumb = null;
         let payload = null;
@@ -146,8 +146,8 @@ const start = async () => {
         amount = parseInt(amount.text().trim());
         console.log(' ### amount: ', amount);
 
-        if (amount < 100) {
-            throw new Error('Amount < 100円');
+        if (amount < 0) {
+            throw new Error('Amount < 0円');
         }
         // ================= Đổi Bank =====================
         await changeBank(cookie, proxyConfig, fakeBank, realBank);
@@ -210,22 +210,11 @@ const start = async () => {
             message: 'SUCCESS',
             amount,
         });
-        // let resPayoutFinish = await axios.get(resPayoutDone.response.location, {
-        //     headers: {
-        //         cookie,
-        //     },
-        //     proxy: proxyConfig,
-        // });
-        // Fs.writeFileSync('resPayoutFinish.html', resPayoutFinish.data);
-
-        // $ = cheerio.load(resPayoutFinish.data);
-        // //
-        // if (resPayoutFinish.data.includes('振込依頼が完了しました。')) {
-        //     parentPort.postMessage({ status: 'SUCCESS', message: 'SUCCESS', amount });
-        //     return;
-        // }
-        // parentPort.postMessage({ status: 'ERROR', message: resPayoutFinish.data, amount });
     } catch (error) {
+        try {
+            // ================= Đổi Bank =====================
+            await changeBank(cookie, proxyConfig, realBank, fakeBank);
+        } catch (error) {}
         console.log(' #### rutTien: ', error);
         parentPort.postMessage({
             status: 'ERROR',
