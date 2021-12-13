@@ -206,6 +206,7 @@
 <script>
 import AdminApi from "@/services/AdminApi";
 import YahooAccountApi from "@/services/YahooAccountApi";
+import AuthApi from "@/services/auth";
 
 const STATUS_USER = [
   { value: "LIVE", display: "活動中" },
@@ -264,19 +265,29 @@ export default {
   },
   methods: {
     async onAdminLogin(user, index) {
-      await this.$store.dispatch("setAdminViewUser", true);
-      await this.$store.dispatch("adminSetUserData", user);
+      console.log(" ####### user: ", user);
+      let resLogin = await AuthApi.login({
+        email: user.email,
+        password: user.password
+      });
+      if (resLogin.status === 200) {
+        user = resLogin.data.userData;
+        await this.$store.dispatch("setAdminViewUser", true);
+        await this.$store.dispatch("adminSetUserData", user);
 
-      let result = await YahooAccountApi.get();
-      if (result && result.status === 200) {
-        let accounts = result.data.accounts || [];
+        let result = await YahooAccountApi.get();
+        if (result && result.status === 200) {
+          let accounts = result.data.accounts || [];
 
-        await this.$store.dispatch("setYahooAccount", accounts);
-        if (accounts && accounts.length > 0) {
-          this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", accounts[0]);
+          await this.$store.dispatch("setYahooAccount", accounts);
+          if (accounts && accounts.length > 0) {
+            this.$store.commit("SET_SELECTED_YAHOO_ACCOUNT", accounts[0]);
+          }
         }
+        this.$router.push({ name: "YahooAccounts" });
+      } else {
+        this.$swal.fire("Error", "Login Failse", "error");
       }
-      this.$router.push({ name: "YahooAccounts" });
     },
     displayStatus(status) {
       return this.STATUS_USER.find(item => item.value === status).display;

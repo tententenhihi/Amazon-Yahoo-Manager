@@ -25,9 +25,9 @@ const changeBank = async (cookie, proxyConfig, oldBank, newBank) => {
     // console.log(' 222222 ');
 
     let $ = cheerio.load(resChangeBank.data);
-    // if (resChangeBank.data.includes('captchaAnswer')) {
-    //     throw new Error('Captcha');
-    // }
+    if (resChangeBank.data.includes('captchaAnswer')) {
+        throw new Error('Captcha Change Bank');
+    }
     // Fs.writeFileSync('changeBank step1.html', resChangeBank.data);
     crumb = $('input[name=".crumb"]').val();
     if (!crumb) {
@@ -138,9 +138,9 @@ const start = async () => {
         });
         $ = cheerio.load(resCheckAmount.data);
 
-        // if (resCheckAmount.data.includes('captchaAnswer')) {
-        //     throw new Error('Captcha');
-        // }
+        if (resCheckAmount.data.includes('captchaAnswer')) {
+            throw new Error('Captcha Home');
+        }
         let amount = $(`#box > div > dl > dd > em`);
         console.log(' 11111 Amount: ', amount.text().trim());
         amount = parseInt(amount.text().trim());

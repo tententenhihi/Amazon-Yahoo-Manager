@@ -1473,7 +1473,7 @@ class AuctionYahooService {
             await Utils.sleep(1000);
             console.log(' #### Submit');
             await waitAndClick('#btnSubmit');
-            await page.waitForSelector('input[type=text]', {
+            await page.waitForSelector('#acHdSchBtn', {
                 timeout: 30000,
                 visible: true,
             });
@@ -1491,7 +1491,7 @@ class AuctionYahooService {
             await Utils.sleep(1000);
             console.log(' #### Submit');
             await waitAndClick('#btnSubmit');
-            await page.waitForSelector('input[type=text]', {
+            await page.waitForSelector('#msthdUserIcon', {
                 timeout: 30000,
                 visible: true,
             });
@@ -1509,7 +1509,7 @@ class AuctionYahooService {
             await Utils.sleep(1000);
             console.log(' #### Submit');
             await waitAndClick('#btnSubmit');
-            await page.waitForSelector('input[type=text]', {
+            await page.waitForSelector('#msthdUserIcon', {
                 timeout: 30000,
                 visible: true,
             });

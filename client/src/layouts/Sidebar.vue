@@ -21,7 +21,7 @@
           <div class="user-pic">
             <img
               class="img-responsive img-rounded"
-              src="https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg"
+              src="https://img.icons8.com/ios/50/000000/user-male-circle.png"
               alt="User picture"
             />
           </div>
