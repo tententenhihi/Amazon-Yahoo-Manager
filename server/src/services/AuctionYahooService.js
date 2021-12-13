@@ -91,7 +91,8 @@ class AuctionYahooService {
 
             let $ = cheerio.load(res.data);
             let textAmount = $('#box > div > dl > dd > em').text().replace(/,/g, '');
-            if (textAmount) {
+            console.log(' #### textAmount: ', textAmount);
+            if (textAmount !== '') {
                 console.log(' SUCCESS ');
                 return {
                     status: 'SUCCESS',
