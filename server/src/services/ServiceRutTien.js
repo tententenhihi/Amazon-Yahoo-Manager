@@ -177,7 +177,7 @@ const start = async () => {
         });
         $ = cheerio.load(resPayoutConfirm.data);
         // Fs.writeFileSync('resPayoutConfirm.html', resPayoutConfirm.data);
-        amount = $('#transferDetails > div > div > div:nth-child(2) > div:nth-child(3) > span').text().trim();
+        amount = $('#transferDetails > div > div > div:nth-child(2) > div:nth-child(3) > span').text().trim().replace(/,/g, '');
         amount = parseInt(amount);
         let backCurrentText = $('#yjMain > div.acMdPaymentInfo.mT30.mB40 > div.TransferDetails > div > div > div:nth-child(5) > div:nth-child(3) > span');
         backCurrentText = backCurrentText.text().trim();
