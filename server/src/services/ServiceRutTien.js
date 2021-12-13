@@ -134,7 +134,8 @@ const start = async () => {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64',
             },
             proxy: proxyConfig,
-            maxRedirects: 100,
+            // maxRedirects: 100,
+            timeout: 60 * 1000
         });
         $ = cheerio.load(resCheckAmount.data);
 
@@ -146,8 +147,8 @@ const start = async () => {
         amount = parseInt(amount.text().trim());
         console.log(' ### amount: ', amount);
 
-        if (amount < 0) {
-            throw new Error('Amount < 0円');
+        if (amount === 0) {
+            throw new Error('Amount = 0円');
         }
         // ================= Đổi Bank =====================
         await changeBank(cookie, proxyConfig, fakeBank, realBank);
@@ -202,6 +203,7 @@ const start = async () => {
             proxy: proxyConfig,
             maxRedirects: 100,
         });
+        console.log(' ############# resPayoutDone: ', resPayoutDone);
         // ================= Đổi Bank =====================
         await changeBank(cookie, proxyConfig, realBank, fakeBank);
 
