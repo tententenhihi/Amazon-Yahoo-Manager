@@ -144,7 +144,7 @@ const start = async () => {
         }
         let amount = $(`#box > div > dl > dd > em`);
         console.log(' 11111 Amount: ', amount.text().trim());
-        amount = parseInt(amount.text().trim());
+        amount = parseInt(amount.text().trim().replace(/,/g, ''));
         console.log(' ### amount: ', amount);
 
         if (amount === 0) {
