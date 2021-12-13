@@ -87,7 +87,10 @@ class AuctionYahooService {
                 timeout: 60 * 1000,
                 maxRedirects: 100,
             });
-            console.log(' 22222 ');
+
+            if (res.data.includes('captchaAnswer')) {
+                throw new Error('Captcha');
+            }
 
             let $ = cheerio.load(res.data);
             let textAmount = $('#box > div > dl > dd > em').text().replace(/,/g, '');
@@ -101,6 +104,7 @@ class AuctionYahooService {
                 };
             } else {
                 console.log(' textAmount not found ');
+                console.log(' 22222 ', res.data);
 
                 return {
                     status: 'ERROR',
