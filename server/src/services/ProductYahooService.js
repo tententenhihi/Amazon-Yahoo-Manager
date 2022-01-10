@@ -934,16 +934,18 @@ export default class ProductYahooService {
             delete defaultSetting._id;
             let dataUpdate = {
                 ...productYahoo._doc,
-                ...defaultSetting,
+                ...dataCalculatorProduct,
                 _id: productYahoo._id,
                 created: productYahoo.created,
             };
             if (!productYahoo.is_user_change) {
                 dataUpdate = {
                     ...dataUpdate,
+                    ...defaultSetting,
                 };
             }
-            if (!dataUpdate.ship_fee1 ) {
+
+            if (!dataUpdate.ship_fee1) {
                 dataUpdate.ship_fee1_temp = defaultSetting.yahoo_auction_shipping;
             }
             if (!dataUpdate.bid_or_buy_price) {
