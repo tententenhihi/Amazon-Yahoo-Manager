@@ -934,29 +934,45 @@ export default class ProductYahooService {
 
             delete defaultSetting._id;
             let dataUpdate = {
-                ...productYahoo._doc,
-                _id: productYahoo._id,
-                created: productYahoo.created,
+                ...dataCalculatorProduct,
             };
+            delete dataUpdate.price;
+            delete dataUpdate.ship_fee1;
+
+            delete dataUpdate._id
+
+            // if (!productYahoo.is_user_change) {
+            //     dataUpdate = {
+            //         ...dataUpdate,
+            //         ...defaultSetting,
+            //     };
+            // }
+
+            if (productYahoo.start_price) {
+                delete dataUpdate.start_price
+            } else {
+                dataUpdate.start_price_temp = dataCalculatorProduct.start_price;
+            }
+            if (productYahoo.bid_or_buy_price) {
+                delete dataUpdate.bid_or_buy_price
+            } else {
+                dataUpdate.bid_or_buy_price_temp = dataCalculatorProduct.bid_or_buy_price;
+            }
+
             if (!productYahoo.start_price || !productYahoo.ship_fee1) {
                 dataUpdate.actual_profit = dataCalculatorProduct.actual_profit;
+
+            } else {
+                delete dataUpdate.amount_received;
+                delete dataUpdate.gross_profit;
+                delete dataUpdate.original_price;
             }
-            if (!productYahoo.is_user_change) {
-                dataUpdate = {
-                    ...dataUpdate,
-                    ...defaultSetting,
-                };
-            }
+
 
             if (!dataUpdate.ship_fee1) {
                 dataUpdate.ship_fee1_temp = defaultSetting.yahoo_auction_shipping;
             }
-            if (!dataUpdate.bid_or_buy_price) {
-                dataUpdate.bid_or_buy_price_temp = dataCalculatorProduct.bid_or_buy_price;
-            }
-            if (!dataUpdate.start_price) {
-                dataUpdate.start_price_temp = dataCalculatorProduct.start_price;
-            }
+
             if (!dataUpdate.quantity) {
                 dataUpdate.quantity_temp = defaultSetting.quantity;
             }
