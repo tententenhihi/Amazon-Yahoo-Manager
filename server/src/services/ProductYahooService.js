@@ -214,7 +214,8 @@ export default class ProductYahooService {
         import_price = parseInt(import_price);
         amazon_shipping_fee = parseInt(amazon_shipping_fee);
         start_price_user_input = parseInt(start_price_user_input);
-
+        fee_ship_user_input = parseInt(fee_ship_user_input);
+        bid_or_buy_price_user_input = parseInt(bid_or_buy_price_user_input);
         //Tỷ suất lơi nhuận
         let profitPersent = '';
         for (let i = 0; i < defaultSetting.list_profit.length; i++) {
