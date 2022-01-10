@@ -938,14 +938,13 @@ export default class ProductYahooService {
                 _id: productYahoo._id,
                 created: productYahoo.created,
             };
-            if (!productYahoo.start_price) {
+            if (!productYahoo.start_price || !productYahoo.ship_fee1) {
                 dataUpdate.actual_profit = dataCalculatorProduct.actual_profit;
             }
             if (!productYahoo.is_user_change) {
                 dataUpdate = {
                     ...dataUpdate,
                     ...defaultSetting,
-                    ...dataCalculatorProduct,
                 };
             }
 
