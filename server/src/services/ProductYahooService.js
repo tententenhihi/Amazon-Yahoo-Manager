@@ -181,7 +181,7 @@ export default class ProductYahooService {
                     if (productYahooData.ship_fee1) {
                         defaultSetting.yahoo_auction_shipping = productYahooData.ship_fee1;
                     }
-                    resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee, productYahooData.start_price,productYahooData.ship_fee1, productYahooData.bid_or_buy_price );
+                    resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee, productYahooData.start_price, productYahooData.ship_fee1, productYahooData.bid_or_buy_price);
                 } else {
                     resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee);
                 }
@@ -958,7 +958,7 @@ export default class ProductYahooService {
                 delete dataUpdate.bid_or_buy_price
             } else {
                 dataUpdate.bid_or_buy_price_temp = dataCalculatorProduct.bid_or_buy_price;
-                delete dataUpdate.bid_or_buy_price_temp
+                delete dataUpdate.bid_or_buy_price
 
             }
 
