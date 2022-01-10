@@ -934,7 +934,7 @@ export default class ProductYahooService {
             delete defaultSetting._id;
             let dataUpdate = {
                 ...productYahoo._doc,
-                ...dataCalculatorProduct,
+                actual_profit: dataCalculatorProduct.actual_profit,
                 _id: productYahoo._id,
                 created: productYahoo.created,
             };
@@ -942,6 +942,7 @@ export default class ProductYahooService {
                 dataUpdate = {
                     ...dataUpdate,
                     ...defaultSetting,
+                    ...dataCalculatorProduct,
                 };
             }
 
