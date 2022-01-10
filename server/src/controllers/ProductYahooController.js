@@ -104,7 +104,12 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files, isCreateifNot
 
     dataUpdate.is_user_change = true;
 
-    let dataPrice = await ProductYahooService.calculatorPrice(defaultSetting, current_product.import_price, current_product.amazon_shipping_fee, dataUpdate.start_price);
+    let dataPrice = await ProductYahooService.calculatorPrice(
+        defaultSetting, current_product.import_price, current_product.amazon_shipping_fee,
+        dataUpdate.start_price, dataUpdate.ship_fee1, dataUpdate.bid_or_buy_price
+    );
+
+
     if (dataUpdate.bid_or_buy_price) {
         dataPrice.bid_or_buy_price = dataUpdate.bid_or_buy_price;
     }
@@ -530,7 +535,7 @@ export default class ProductYahooController {
             response.error500(error);
         }
     }
-    
+
     static async setImageOverlay(req, res) {
         let response = new Response(res);
         try {
@@ -577,7 +582,7 @@ export default class ProductYahooController {
                 const _id = ids[index];
                 try {
                     await ProductYahooService.delete(_id);
-                } catch (error) {}
+                } catch (error) { }
             }
             return response.success200({
                 success: true

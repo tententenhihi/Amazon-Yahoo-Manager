@@ -181,7 +181,7 @@ export default class ProductYahooService {
                     if (productYahooData.ship_fee1) {
                         defaultSetting.yahoo_auction_shipping = productYahooData.ship_fee1;
                     }
-                    resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee, productYahooData.start_price);
+                    resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee, productYahooData.start_price,productYahooData.ship_fee1, productYahooData.bid_or_buy_price );
                 } else {
                     resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee);
                 }
@@ -197,8 +197,8 @@ export default class ProductYahooService {
         }
         return resultData;
     }
-    static async checkProfitToStopUpload(defaultSetting, import_price, amazon_shipping_fee = 0, start_price_user_input = 0) {
-        let dataprofit = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee, start_price_user_input);
+    static async checkProfitToStopUpload(defaultSetting, import_price, amazon_shipping_fee = 0, start_price_user_input = 0, fee_ship_user_input = 0, bid_or_buy_price_user_input = 0) {
+        let dataprofit = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee, start_price_user_input, fee_ship_user_input, bid_or_buy_price_user_input);
         if (dataprofit.actual_profit <= defaultSetting.profit_stop) {
             return {
                 isStopUpload: true,
@@ -210,7 +210,7 @@ export default class ProductYahooService {
             ...dataprofit,
         };
     }
-    static async calculatorPrice(defaultSetting, import_price = 0, amazon_shipping_fee = 0, start_price_user_input = 0) {
+    static async calculatorPrice(defaultSetting, import_price = 0, amazon_shipping_fee = 0, start_price_user_input = 0, fee_ship_user_input = 0, bid_or_buy_price_user_input) {
         import_price = parseInt(import_price);
         amazon_shipping_fee = parseInt(amazon_shipping_fee);
         start_price_user_input = parseInt(start_price_user_input);
@@ -235,7 +235,7 @@ export default class ProductYahooService {
             }
         }
         //Phí gửi ở yahoo
-        let ship_fee_yahoo = defaultSetting.yahoo_auction_shipping;
+        let ship_fee_yahoo = fee_ship_user_input ? fee_ship_user_input : defaultSetting.yahoo_auction_shipping;
         //Phí giao dịch ở yahoo
         let fee_auction_yahoo = 0.1; // 10% default
         //Giá sản phẩm bán
@@ -280,7 +280,7 @@ export default class ProductYahooService {
         amount_buyer_paid = start_price + ship_fee_yahoo;
         amount_received = amount_buyer_paid - parseInt(price * fee_auction_yahoo);
         actual_profit = amount_received - original_price;
-        bid_or_buy_price = start_price + defaultSetting.yahoo_auction_bid_price;
+        bid_or_buy_price = bid_or_buy_price_user_input ? bid_or_buy_price_user_input : start_price + defaultSetting.yahoo_auction_bid_price;
 
         return {
             import_price,
@@ -930,7 +930,7 @@ export default class ProductYahooService {
             let import_price = productYahoo.import_price;
             let amazon_shipping_fee = productYahoo.amazon_shipping_fee;
 
-            let dataCalculatorProduct = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee);
+            let dataCalculatorProduct = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee, productYahoo.start_price, productYahoo.ship_fee1, productYahoo.bid_or_buy_price);
 
             delete defaultSetting._id;
             let dataUpdate = {
@@ -952,11 +952,14 @@ export default class ProductYahooService {
                 delete dataUpdate.start_price
             } else {
                 dataUpdate.start_price_temp = dataCalculatorProduct.start_price;
+                delete dataUpdate.start_price
             }
             if (productYahoo.bid_or_buy_price) {
                 delete dataUpdate.bid_or_buy_price
             } else {
                 dataUpdate.bid_or_buy_price_temp = dataCalculatorProduct.bid_or_buy_price;
+                delete dataUpdate.bid_or_buy_price_temp
+
             }
 
             if (!productYahoo.start_price || !productYahoo.ship_fee1) {
