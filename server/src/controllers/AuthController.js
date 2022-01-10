@@ -64,9 +64,9 @@ class AuthController {
                     if (userLogin.status === 'LOCKED') {
                         return response.success200({ locked: true });
                     }
-                    if (!userLogin.verified_at) {
-                        return response.error400({ message: 'アカウントの有効化についてはメールを確認してください' });
-                    }
+                    // if (!userLogin.verified_at) {
+                    //     return response.error400({ message: 'アカウントの有効化についてはメールを確認してください' });
+                    // }
                     if (userLogin.expired_at && new Date(userLogin.expired_at).getTime() <= new Date().getTime()) {
                         return response.success200({ exprired: true });
                     }

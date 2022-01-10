@@ -109,7 +109,6 @@ const updateProductWithCaculatorProfit = async (dataUpdate, files, isCreateifNot
         dataUpdate.start_price, dataUpdate.ship_fee1, dataUpdate.bid_or_buy_price
     );
 
-
     if (dataUpdate.bid_or_buy_price) {
         dataPrice.bid_or_buy_price = dataUpdate.bid_or_buy_price;
     }

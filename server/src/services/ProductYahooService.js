@@ -216,6 +216,15 @@ export default class ProductYahooService {
         start_price_user_input = parseInt(start_price_user_input);
         fee_ship_user_input = parseInt(fee_ship_user_input);
         bid_or_buy_price_user_input = parseInt(bid_or_buy_price_user_input);
+        console.log(' ### defaultSetting yahoo_auction_shipping: ', defaultSetting.yahoo_auction_shipping);
+        console.log(' ### defaultSetting yahoo_auction_bid_price: ', defaultSetting.yahoo_auction_bid_price);
+        console.log(' ### import_price: ', import_price);
+        console.log(' ### amazon_shipping_fee: ', amazon_shipping_fee);
+        console.log(' ### start_price_user_input: ', start_price_user_input);
+        console.log(' ### fee_ship_user_input: ', fee_ship_user_input);
+        console.log(' ### bid_or_buy_price_user_input: ', bid_or_buy_price_user_input);
+
+
         //Tỷ suất lơi nhuận
         let profitPersent = '';
         for (let i = 0; i < defaultSetting.list_profit.length; i++) {
@@ -283,6 +292,18 @@ export default class ProductYahooService {
         actual_profit = amount_received - original_price;
         bid_or_buy_price = bid_or_buy_price_user_input ? bid_or_buy_price_user_input : start_price + defaultSetting.yahoo_auction_bid_price;
 
+        console.log(" ### calculatorPrice: ",
+            {
+                import_price,
+                price,
+                start_price,
+                bid_or_buy_price,
+                amount_received,
+                gross_profit,
+                actual_profit,
+                original_price,
+                ship_fee1: ship_fee_yahoo,
+            })
         return {
             import_price,
             price,
