@@ -931,13 +931,16 @@ export default class ProductYahooService {
             let amazon_shipping_fee = productYahoo.amazon_shipping_fee;
 
             let dataCalculatorProduct = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee);
+
             delete defaultSetting._id;
             let dataUpdate = {
                 ...productYahoo._doc,
-                actual_profit: dataCalculatorProduct.actual_profit,
                 _id: productYahoo._id,
                 created: productYahoo.created,
             };
+            if (!productYahoo.start_price) {
+                dataUpdate.actual_profit = dataCalculatorProduct.actual_profit;
+            }
             if (!productYahoo.is_user_change) {
                 dataUpdate = {
                     ...dataUpdate,
