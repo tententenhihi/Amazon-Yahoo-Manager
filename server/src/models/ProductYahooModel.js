@@ -47,7 +47,6 @@ var ProductYahoo = new Schema({
     // phí ship amazon
     amazon_shipping_fee: {
         type: Number,
-        default: 0,
     },
     //Temp
     start_price_temp: {
@@ -65,7 +64,6 @@ var ProductYahoo = new Schema({
     //============
     profit_stop: {
         type: Number,
-        default: 0,
     },
     is_user_change: {
         type: Boolean,
@@ -119,19 +117,15 @@ var ProductYahoo = new Schema({
     },
     quantity: {
         type: Number,
-        default: 0,
     },
     quantity_check: {
         type: Number,
-        default: 0,
     },
     duration: {
         type: Number,
-        default: 0,
     },
     closing_time: {
         type: Number,
-        default: 0,
     },
     retpolicy: {
         type: String,
@@ -163,7 +157,6 @@ var ProductYahoo = new Schema({
     },
     num_resubmit: {
         type: Number,
-        default: 0,
     },
 
     description: {
@@ -192,7 +185,6 @@ var ProductYahoo = new Schema({
     },
     ship_fee1: {
         type: Number,
-        default: 0,
     },
     ship_name2: {
         type: String,
@@ -200,7 +192,6 @@ var ProductYahoo = new Schema({
     },
     ship_fee2: {
         type: Number,
-        default: 0,
     },
     ship_name3: {
         type: String,
@@ -208,7 +199,6 @@ var ProductYahoo = new Schema({
     },
     ship_fee3: {
         type: Number,
-        default: 0,
     },
     foreign_check: {
         type: String,
@@ -232,7 +222,6 @@ var ProductYahoo = new Schema({
     },
     gift: {
         type: Number,
-        default: 0,
     },
     wrapping: {
         type: String,
@@ -291,7 +280,6 @@ var ProductYahoo = new Schema({
     },
     extra_stock: {
         type: Number,
-        default: 0,
     },
     image_overlay_index: {
         type: Number,

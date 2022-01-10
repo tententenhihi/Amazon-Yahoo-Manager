@@ -530,6 +530,7 @@ export default class ProductYahooController {
             response.error500(error);
         }
     }
+    
     static async setImageOverlay(req, res) {
         let response = new Response(res);
         try {
@@ -547,6 +548,7 @@ export default class ProductYahooController {
             response.error500(error);
         }
     }
+
     static async changeProductFolder(req, res) {
         let response = new Response(res);
         try {

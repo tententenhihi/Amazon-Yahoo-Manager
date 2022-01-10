@@ -45,9 +45,9 @@ const getPriceProductAmazon = async (asin, user_id) => {
                     sellingPartner = new SellingPartnerAPI({
                         region: 'fe',
                         options: {
-                            only_grantless_operations: true
+                            only_grantless_operations: true,
                         },
-                        credentials
+                        credentials,
                     });
                     let res = await sellingPartner.exchange(apiKey.OAUTH_CODE);
                     apiKey.REFRESH_TOKEN = res.refresh_token;
@@ -128,8 +128,8 @@ const getPriceProductAmazon = async (asin, user_id) => {
 export default class ProductYahooService {
     static async getPriceAndCountByAmazon(asin, user_id) {
         let newProductData = await getPriceProductAmazon(asin, user_id);
-        console.log(' ### getPriceAndCountByAmazon: ', newProductData)
-        return newProductData
+        console.log(' ### getPriceAndCountByAmazon: ', newProductData);
+        return newProductData;
     }
     static async checkStopUpload(productYahooData, defaultSetting) {
         let resultData = {};
@@ -139,7 +139,7 @@ export default class ProductYahooService {
         // Kiểm tra hết hàng
         // 1. Check trong DB
         let productAmazonInDB = await ProductAmazonService.findOne({
-            asin: productYahooData.asin_amazon
+            asin: productYahooData.asin_amazon,
         });
         if (productAmazonInDB) {
             // checkDate
@@ -158,7 +158,7 @@ export default class ProductYahooService {
                 // update product yahoo
                 newProductData = await ProductAmazonService.update(productAmazonInDB._id, {
                     ...newProductData,
-                    created: Date.now()
+                    created: Date.now(),
                 });
             }
         }
@@ -167,7 +167,7 @@ export default class ProductYahooService {
             await ProductYahooService.update(productYahooData._id, {
                 import_price: newProductData.price,
                 amazon_shipping_fee: newProductData.ship_fee,
-                count: newProductData.count
+                count: newProductData.count,
             });
             if (newProductData.count === 0) {
                 resultData = {
@@ -307,9 +307,9 @@ export default class ProductYahooService {
         try {
             let result = await ProductYahooModel.find({
                 user_id: idUser,
-                yahoo_account_id
+                yahoo_account_id,
             }).sort({
-                created: -1
+                created: -1,
             });
             return result;
         } catch (error) {
@@ -346,11 +346,15 @@ export default class ProductYahooService {
     }
     static async update(_id, data) {
         try {
-            let product = await ProductYahooModel.findOneAndUpdate({
-                _id: _id
-            }, data, {
-                new: true
-            });
+            let product = await ProductYahooModel.findOneAndUpdate(
+                {
+                    _id: _id,
+                },
+                data,
+                {
+                    new: true,
+                }
+            );
             if (product) {
                 return product._doc;
             }
@@ -469,7 +473,7 @@ export default class ProductYahooService {
         let totalProduct = 0;
         let result = [];
         let yahooAccount = await AccountYahooService.findOne({
-            _id: yahoo_account_id
+            _id: yahoo_account_id,
         });
         if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
@@ -480,7 +484,7 @@ export default class ProductYahooService {
 
                 let defaultSetting = await ProductInfomationDefaultService.findOne({
                     yahoo_account_id,
-                    user_id
+                    user_id,
                 });
 
                 for (const folder_id of new_list_target_folder) {
@@ -488,13 +492,13 @@ export default class ProductYahooService {
                     if (folder_id === -1) {
                         listProduct = await ProductYahooModel.find({
                             user_id,
-                            yahoo_account_id
+                            yahoo_account_id,
                         });
                     } else {
                         listProduct = await ProductYahooModel.find({
                             user_id,
                             yahoo_account_id,
-                            folder_id
+                            folder_id,
                         });
                     }
                     totalProduct += listProduct.length;
@@ -538,7 +542,7 @@ export default class ProductYahooService {
                                     dataUpdate.thumbnail = uploadAuctionResult.thumbnail;
                                     let newProductYahooAuction = {
                                         ...productYahooData._doc,
-                                        ...dataUpdate
+                                        ...dataUpdate,
                                     };
                                     delete newProductYahooAuction._id;
                                     await ProductYahooAuctionService.create(newProductYahooAuction);
@@ -599,19 +603,19 @@ export default class ProductYahooService {
                 let folder_id = calendar_target_folder[today - 1];
                 if (folder_id) {
                     let yahooAccount = await AccountYahooService.findOne({
-                        _id: yahoo_account_id
+                        _id: yahoo_account_id,
                     });
                     if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
                         let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
                         if (proxyResult.status === 'SUCCESS') {
                             let defaultSetting = await ProductInfomationDefaultService.findOne({
                                 yahoo_account_id,
-                                user_id
+                                user_id,
                             });
                             let listProduct = await ProductYahooModel.find({
                                 user_id,
                                 yahoo_account_id,
-                                folder_id
+                                folder_id,
                             });
                             for (let index = 0; index < listProduct.length; index++) {
                                 let productYahooData = listProduct[index];
@@ -661,7 +665,7 @@ export default class ProductYahooService {
 
                                     let newProductYahooAuction = {
                                         ...productYahooData._doc,
-                                        ...dataUpdate
+                                        ...dataUpdate,
                                     };
                                     delete newProductYahooAuction._id;
                                     await ProductYahooAuctionService.create(newProductYahooAuction);
@@ -709,14 +713,14 @@ export default class ProductYahooService {
 
         let result = [];
         let yahooAccount = await AccountYahooService.findOne({
-            _id: yahoo_account_id
+            _id: yahoo_account_id,
         });
         if (yahooAccount && yahooAccount.proxy_id && yahooAccount.cookie && yahooAccount.status === 'SUCCESS' && !yahooAccount.is_error && yahooAccount.count_error < 3000) {
             let proxyResult = await ProxyService.findByIdAndCheckLive(yahooAccount.proxy_id);
             if (proxyResult.status === 'SUCCESS') {
                 let defaultSetting = await ProductInfomationDefaultService.findOne({
                     yahoo_account_id,
-                    user_id
+                    user_id,
                 });
                 let listProductFinished = await AuctionYahooService.getProductAuctionFinished(yahooAccount.cookie, proxyResult.data);
                 let listProductEnded = await AuctionYahooService.getProductAuctionEnded('', yahooAccount.cookie, proxyResult.data, true);
@@ -745,20 +749,20 @@ export default class ProductYahooService {
                     let newDataUpload = null;
                     let productYahooData = null;
                     let productAuction = await ProductYahooAuctionModel.findOne({
-                        aID: product.aID
+                        aID: product.aID,
                     });
                     if (!productAuction) {
                         let regex = product.title.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
                         productAuction = await ProductYahooAuctionModel.findOne({
                             product_yahoo_title: {
-                                $regex: regex
+                                $regex: regex,
                             },
                         });
                     }
                     if (productAuction) {
                         productYahooData = await ProductYahooModel.findOne({
                             asin_amazon: productAuction.asin_amazon,
-                            yahoo_account_id
+                            yahoo_account_id,
                         });
                         if (productYahooData) {
                             let resultCheckUpload = await this.checkStopUpload(productYahooData, defaultSetting);
@@ -790,7 +794,7 @@ export default class ProductYahooService {
                         delete newDataUpload._id;
                         await ProductYahooAuctionService.create({
                             ...newDataUpload,
-                            aID: uploadAuctionResult.aID
+                            aID: uploadAuctionResult.aID,
                         });
                     }
 
@@ -818,7 +822,7 @@ export default class ProductYahooService {
     static async createFromAmazonProduct(productAmazon, user_id, yahoo_account_id) {
         //Dùng cate amazon Check xem có trong mapping k
         let cateAmazon = await CategoryService.findOne({
-            amazon_cate_id: productAmazon.category_id
+            amazon_cate_id: productAmazon.category_id,
         });
         if (!cateAmazon) {
             cateAmazon = await CategoryService.create({
@@ -838,7 +842,7 @@ export default class ProductYahooService {
         // Data default
         let defaultSetting = await ProductInfomationDefaultService.findOne({
             yahoo_account_id,
-            user_id
+            user_id,
         });
 
         //Giá sản phẩm gốc
@@ -922,32 +926,40 @@ export default class ProductYahooService {
         });
         for (let productYahoo of listProduct) {
             // Product chưa đc user change
+            //Giá sản phẩm gốc
+            let import_price = productYahoo.import_price;
+            let amazon_shipping_fee = productYahoo.amazon_shipping_fee;
+
+            let dataCalculatorProduct = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee);
+            delete defaultSetting._id;
+            let dataUpdate = {
+                ...productYahoo._doc,
+                _id: productYahoo._id,
+                created: productYahoo.created,
+            };
             if (!productYahoo.is_user_change) {
-                //Giá sản phẩm gốc
-                let import_price = productYahoo.import_price;
-                let amazon_shipping_fee = productYahoo.amazon_shipping_fee;
-
-                let dataCalculatorProduct = await this.calculatorPrice(defaultSetting, import_price, amazon_shipping_fee);
-                delete defaultSetting._id;
-
-                let dataUpdate = {
-                    ...productYahoo._doc,
+                dataUpdate = {
+                    ...dataUpdate,
                     ...defaultSetting,
-                    // ...dataCalculatorProduct,
-                    _id: productYahoo._id,
-                    created: productYahoo.created,
-                    ship_fee1_temp: defaultSetting.yahoo_auction_shipping,
-                    bid_or_buy_price_temp: dataCalculatorProduct.bid_or_buy_price,
-                    start_price_temp: dataCalculatorProduct.start_price,
-                    quantity_temp: defaultSetting.quantity,
                 };
-                delete dataUpdate._id;
-                delete dataUpdate.ship_fee1;
-                delete dataUpdate.quantity;
-
-                // console.log(' ########## dataUpdate: ', dataUpdate);
-                await this.update(productYahoo._id, dataUpdate);
             }
+
+            if (!dataUpdate.ship_fee1 ) {
+                dataUpdate.ship_fee1_temp = defaultSetting.yahoo_auction_shipping;
+            }
+            if (!dataUpdate.bid_or_buy_price) {
+                dataUpdate.bid_or_buy_price_temp = dataCalculatorProduct.bid_or_buy_price;
+            }
+            if (!dataUpdate.start_price) {
+                dataUpdate.start_price_temp = dataCalculatorProduct.start_price;
+            }
+            if (!dataUpdate.quantity) {
+                dataUpdate.quantity_temp = defaultSetting.quantity;
+            }
+
+
+            // console.log(' ########## dataUpdate: ', dataUpdate);
+            await this.update(productYahoo._id, dataUpdate);
         }
     }
 }

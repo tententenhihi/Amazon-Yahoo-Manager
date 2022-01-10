@@ -15,15 +15,12 @@ var Product = new Schema({
     },
     price: {
         type: Number,
-        default: 0,
     },
     ship_fee: {
         type: Number,
-        default: 0,
     },
     count: {
         type: Number,
-        default: 0,
     },
     images: {
         type: Array,
