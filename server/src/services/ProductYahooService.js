@@ -186,9 +186,9 @@ export default class ProductYahooService {
                     resultData = await this.checkProfitToStopUpload(defaultSetting, newProductData.price, newProductData.ship_fee);
                 }
 
-                if (resultData && resultData.import_price) {
-                    await ProductYahooService.update(productYahooData._id, resultData);
-                }
+                // if (resultData && resultData.import_price) {
+                //     await ProductYahooService.update(productYahooData._id, resultData);
+                // }
                 if (resultData.isStopUpload) {
                     resultData.message = '低利益';
                     console.log(' ================ Dừng xuất hàng. Sản phẩm lợi nhuận thấp =============== ');
